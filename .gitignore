@@ -1,0 +1,33 @@
+# .gitignore for GitRemastered
+# Lists files Git should never track. Each rule says why.
+
+# --- Personal ---
+
+# The maintainer's own study notes. Students never get these.
+study/
+
+# --- Large or local-only files ---
+
+# Personal PDF copy of Pro Git (18 MB). The course reads the text source in book/progit2 instead.
+progit.pdf
+
+# --- Factory tools ---
+
+# `npx skills` puts Windows links (junctions) here that point into .agents/skills.
+# Git handles those links badly, so we ignore them and commit .agents/skills instead.
+.claude/skills/*
+
+# Exception: humanizer is a real folder, not a link, so it is committed.
+!.claude/skills/humanizer/
+
+# Claude Code settings for this machine only (may hold personal permissions).
+.claude/settings.local.json
+
+# --- Operating system clutter ---
+
+# Windows folder thumbnails and settings.
+Thumbs.db
+desktop.ini
+
+# macOS folder settings.
+.DS_Store
