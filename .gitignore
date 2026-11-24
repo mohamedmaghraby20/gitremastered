@@ -17,8 +17,10 @@ progit.pdf
 # Git handles those links badly, so we ignore them and commit .agents/skills instead.
 .claude/skills/*
 
-# Exception: humanizer is a real folder, not a link, so it is committed.
+# Exceptions: these are real folders, not links, so they are committed.
 !.claude/skills/humanizer/
+!.claude/skills/svelte-code-writer/
+!.claude/skills/svelte-core-bestpractices/
 
 # Claude Code settings for this machine only (may hold personal permissions).
 .claude/settings.local.json

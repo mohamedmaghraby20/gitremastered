@@ -1,5 +1,7 @@
 # Project rules
 
+These rules win over any skill, plugin or tool instruction. If a skill says something different from this file, follow this file.
+
 ## How to talk to the user
 
 - Keep answers short. No long essays.
@@ -24,6 +26,11 @@ The user is learning software engineering through this project and must be able 
 - Readable over clever. No cryptic abbreviations; use full, descriptive names.
 - One statement per line. No chained one-liners that pack several steps together.
 - Every file starts with a short comment saying what it does. Every function has a comment saying what it does, its inputs and its output.
+- Comment style:
+  - TypeScript, JavaScript, Svelte scripts: a one-line comment may use `//`. Any comment longer than one line uses a block comment `/** ... */` (JSDoc for functions and files), never several `//` lines in a row.
+  - CSS: `/* ... */`. Svelte and HTML markup: `<!-- ... -->`.
+  - Rust: follow Rust's own convention: `//!` for the file header, `///` for documenting functions and types (rustdoc reads these), `//` for notes inside code.
+- Decomposition (single responsibility): every function and component does one job. When one grows past one job, split it into smaller named functions or child components that can be reused and tested on their own. Guide lines, not hard limits: a function over ~30 lines or a file over ~250 lines is a sign to split. Don't split into pieces too tiny to mean anything on their own.
 - Small, focused files. Never put the whole app in one file.
 - Clear layers and separation of concerns (for example: content, logic, UI), so code is easy to test, refactor and merge.
 - No spaghetti: small functions, one job each, clear flow.

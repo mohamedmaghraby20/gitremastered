@@ -169,6 +169,20 @@
       "skillPath": "skills/spec-driven-development/SKILL.md",
       "computedHash": "e560111a2823150a1be6d5a264cd3449dbdb9c67de011eea29204b4dee438e58"
     },
+    "svelte-code-writer": {
+      "source": "sveltejs/ai-tools",
+      "commit": "f9d22f2f7f7cd5e4596eef5d108a69ac8f0dd48d",
+      "sourceType": "github",
+      "skillPath": "tools/skills/svelte-code-writer/SKILL.md",
+      "computedHash": "8eccb2e23091d482aeaca1c95db6c5aa34d055ac2d0c9797efbbecbe5a8e4fd0"
+    },
+    "svelte-core-bestpractices": {
+      "source": "sveltejs/ai-tools",
+      "commit": "f9d22f2f7f7cd5e4596eef5d108a69ac8f0dd48d",
+      "sourceType": "github",
+      "skillPath": "tools/skills/svelte-core-bestpractices/SKILL.md",
+      "computedHash": "32070b91f54f92dba3f6e1739d82bf944c14e7a4a75cfe609a59bf1117c34338"
+    },
     "test-driven-development": {
       "source": "addyosmani/agent-skills",
       "commit": "e997ac5b9a74eab332d5e9793bb38a38c8cfdd74",
