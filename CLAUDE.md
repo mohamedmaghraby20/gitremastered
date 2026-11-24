@@ -6,8 +6,16 @@
 - Use simple, plain words. Explain with a small, concrete example.
 - Write for someone smart who has little time and gets lost when things get complicated. Not a naive beginner.
 - Short does not mean incomplete: cover every point that matters, and drop the rest.
+- Be comprehensive and detailed: give the full picture, with options, trade-offs and reasons. Pack the detail into scannable tables and bullets instead of long paragraphs. Don't drop details to look short.
+- When unsure what the user means, ask before acting on a guess.
 - If something is hard, break it into small steps.
 - Apply the humanizer skill's style to replies. If a humanizer rule would make an explanation less clear, keep the clearer version.
+
+## Design
+
+- `DESIGN.md` is the design source of truth; exact values are in `docs/design/tokens.json`. Follow both for every screen and component.
+- Never hard-code a color, font or size in a component: use the tokens.
+- The Claude design system and prototype linked in `DESIGN.md` are review copies. If you change the design, update `DESIGN.md` and `tokens.json` first, then the review copies.
 
 ## How to write code
 
