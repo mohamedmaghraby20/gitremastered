@@ -63,7 +63,7 @@ Full details for each task (acceptance criteria, verification, files) are in `ta
 - [x] Task 4: Turn the design tokens into CSS, with fonts and themes
 - [x] Task 5: Set up Tailwind and shadcn-svelte on top of the tokens
 - [x] Task 6: Build the app shell: top bar, sidebar, empty pages
-- [ ] Task 7: Add the typed bridge between screens and Rust
+- [x] Task 7: Add the typed bridge between screens and Rust
 
 ### Checkpoint A: Foundation
 - [ ] `pnpm tauri dev` opens the app; navigation works; light and dark themes switch

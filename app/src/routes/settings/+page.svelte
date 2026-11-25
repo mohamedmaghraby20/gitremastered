@@ -1,12 +1,13 @@
 <!--
   +page.svelte (settings, "/settings")
-  Settings, as in the prototype. For now only Appearance → Theme, which switches light, dark
-  or the computer's setting. Saving the choice between sessions comes in task 21.
+  Settings, as in the prototype. For now: Appearance → Theme (light, dark or the computer's
+  setting; saved between sessions from task 21) and Terminal → the installed Git version.
 -->
 <script lang="ts">
 	import { buildPageTitle } from '$lib/app-info/page-title';
 	import { applyTheme, readAppliedTheme, type ThemeChoice } from '$lib/theme/theme';
 	import { SegmentedSwitch, type SegmentedSwitchOption } from '$lib/components/ui/segmented-switch';
+	import GitVersionStatus from '$lib/components/settings/GitVersionStatus.svelte';
 
 	const themeOptions: SegmentedSwitchOption<ThemeChoice>[] = [
 		{ value: 'light', label: 'Light' },
@@ -47,5 +48,10 @@
 				onchange={chooseTheme}
 			/>
 		</div>
+	</section>
+
+	<section aria-labelledby="terminal-heading" class="rounded-medium border bg-surface">
+		<h2 id="terminal-heading" class="type-h3 m-0 border-b px-5 py-3.5">Terminal</h2>
+		<GitVersionStatus />
 	</section>
 </div>
