@@ -80,6 +80,7 @@
 				fitView
 				fitViewOptions={{ maxZoom: 1, padding: 0.15 }}
 				{...zoomLimits}
+				proOptions={{ hideAttribution: true }}
 				nodesDraggable={false}
 				nodesConnectable={false}
 				elementsSelectable={false}
