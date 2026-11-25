@@ -6,17 +6,30 @@
  * See https://svelte.dev/docs/kit/single-page-apps and https://v2.tauri.app/start/frontend/sveltekit/
  */
 
-import adapter from "@sveltejs/adapter-static";
-import { vitePreprocess } from "@sveltejs/vite-plugin-svelte";
+import adapter from '@sveltejs/adapter-static';
+import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
-  preprocess: vitePreprocess(),
-  kit: {
-    adapter: adapter({
-      fallback: "index.html",
-    }),
-  },
+	preprocess: vitePreprocess(),
+	kit: {
+		/**
+		 * Adds our config files and build scripts to the TypeScript project SvelteKit generates,
+		 * so type checks and ESLint cover them too.
+		 */
+		typescript: {
+			/**
+			 * Adds our extra files to the generated tsconfig.
+			 * @param {{ include: string[] }} tsconfig - the tsconfig SvelteKit is about to write
+			 */
+			config: (tsconfig) => {
+				tsconfig.include.push('../*.config.js', '../*.config.ts', '../scripts/**/*.ts');
+			}
+		},
+		adapter: adapter({
+			fallback: 'index.html'
+		})
+	}
 };
 
 export default config;

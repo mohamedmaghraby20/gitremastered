@@ -43,14 +43,16 @@ Every task: test first where there is logic; all of `pnpm test`, `pnpm check`, `
 **Description:** Add Vitest, ESLint, Prettier and svelte-check for TypeScript/Svelte, and rustfmt + Clippy for Rust, with the commands from SPEC §6. Prove each with one tiny real test in TypeScript and in Rust. Add a GitHub Actions workflow that runs the same checks on every push and pull request.
 
 **Acceptance criteria:**
-- [ ] `pnpm test`, `pnpm check`, `pnpm lint`, `pnpm format` all work
-- [ ] `cargo test`, `cargo clippy -- -D warnings`, `cargo fmt --check` all pass
+- [x] `pnpm test`, `pnpm check`, `pnpm lint`, `pnpm format` all work
+- [x] `cargo test`, `cargo clippy -- -D warnings`, `cargo fmt --check` all pass
 - [ ] The CI workflow runs them on GitHub and goes green
 
 **Verification:**
-- [ ] Tests pass: all commands above, locally and on GitHub Actions
+- [x] Tests pass: all commands above, locally (GitHub: waiting for the first push)
 
-**Dependencies:** 2 · **Files:** `app/package.json`, `app/vitest.config.ts`, `app/eslint.config.js`, `app/.prettierrc`, `.github/workflows/ci.yml` · **Scope:** M
+**Result (2026-11-25):** Added with the official Svelte CLI (`sv add prettier eslint vitest`). Vitest 5 in two groups: logic tests in Node, component tests (`*.svelte.test.ts`) in headless Chromium via Playwright. First tests: `page-title.test.ts`, the home page component test, and two Rust tests guarding the window settings. CI on ubuntu-latest.
+
+**Dependencies:** 2 · **Files:** `app/package.json`, `app/vitest.config.ts`, `app/eslint.config.js`, `app/prettier.config.js`, `.github/workflows/ci.yml` · **Scope:** M
 
 ### Task 4: Turn the design tokens into CSS, with fonts and themes
 **Description:** A small script reads `docs/design/tokens.json` and writes `app/src/lib/styles/tokens.css` (light values, dark overrides under `[data-theme="dark"]`, and a system-preference fallback). Bundle the three fonts. A theme helper sets light, dark or system.

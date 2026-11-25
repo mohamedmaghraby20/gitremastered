@@ -23,7 +23,7 @@ Build the GitRemastered desktop app (Tauri 2 + SvelteKit + Rust) from an empty f
 | 3 | **Pilot review** | You take the pilot as a student; we fix the lesson format and the engine before scaling | Checkpoint |
 | 4 | **The other screens** | Home, course map (both paths), search, command index and settings work for real, as in the prototype | Planned after phase 3 |
 | 5 | **Core course** | Modules 0–5 (22 lessons) written and playable. The engine grows as lessons need it: branch graphs, merges, a local "origin" remote | Planned after phase 4, module by module |
-| 6 | **Full course** | Modules 6–12 and the 3 capstones. GitHub lessons need a simulated GitHub (see Open questions) | Planned during phase 5 |
+| 6 | **Full course** | Modules 6–12 and the 3 capstones. GitHub lessons run on the student's own real GitHub account and repo (see Open questions) | Planned during phase 5 |
 | 7 | **Release** | Installers for Windows, macOS and Linux built by GitHub Actions; auto-update; v1.0 published on GitHub | Planned before phase 6 ends |
 
 ## Architecture decisions for phases 1–2

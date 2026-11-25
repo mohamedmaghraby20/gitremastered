@@ -4,10 +4,10 @@ The GitRemastered desktop app: lesson pages, the practice terminal and the visua
 
 It has two halves:
 
-| Folder | What it is | Language |
-|---|---|---|
-| `src/` | The screens (SvelteKit, built as static files) | Svelte + TypeScript |
-| `src-tauri/` | The core: window, real shell, Git, files (Tauri) | Rust |
+| Folder       | What it is                                       | Language            |
+| ------------ | ------------------------------------------------ | ------------------- |
+| `src/`       | The screens (SvelteKit, built as static files)   | Svelte + TypeScript |
+| `src-tauri/` | The core: window, real shell, Git, files (Tauri) | Rust                |
 
 Tech stack and folder layout are decided in [`SPEC.md`](../SPEC.md). Licensed under MIT (see `LICENSE` at the repo root).
 
@@ -26,11 +26,29 @@ The first `pnpm tauri dev` compiles the Rust core and takes a few minutes. Later
 
 ## Other commands
 
-| Purpose | Command |
-|---|---|
-| Build the screens only (static files in `build/`) | `pnpm build` |
-| Build the Rust core only | `cargo build --manifest-path src-tauri/Cargo.toml` |
-| Type-check the screens | `pnpm check` |
-| Build installers | `pnpm tauri build` |
+All run from `app/`.
 
-Tests and lint commands arrive in task 3 (full list in `SPEC.md` section 6).
+| Purpose                                           | Command                                                            |
+| ------------------------------------------------- | ------------------------------------------------------------------ |
+| Run all screen tests once                         | `pnpm test`                                                        |
+| Re-run screen tests on every save                 | `pnpm test:watch`                                                  |
+| Type-check the screens                            | `pnpm check`                                                       |
+| Lint and check formatting                         | `pnpm lint`                                                        |
+| Fix formatting                                    | `pnpm format`                                                      |
+| Build the screens only (static files in `build/`) | `pnpm build`                                                       |
+| Rust tests                                        | `cargo test --manifest-path src-tauri/Cargo.toml`                  |
+| Rust lint                                         | `cargo clippy --manifest-path src-tauri/Cargo.toml -- -D warnings` |
+| Rust format                                       | `cargo fmt --manifest-path src-tauri/Cargo.toml`                   |
+| Build installers                                  | `pnpm tauri build`                                                 |
+
+## Tests
+
+| Kind             | File name                                               | Runs in                          |
+| ---------------- | ------------------------------------------------------- | -------------------------------- |
+| Logic            | `name.test.ts` next to `name.ts`                        | Node.js (fast)                   |
+| Svelte component | `Name.svelte.test.ts` next to `Name.svelte`             | Headless Chromium (real browser) |
+| Rust             | `#[cfg(test)] mod tests` at the bottom of the same file | `cargo test`                     |
+
+Before the first component test run on a new PC, download the test browser once: `pnpm exec playwright install chromium`.
+
+GitHub runs all of these on every push (`.github/workflows/ci.yml`).

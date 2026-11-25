@@ -11,3 +11,35 @@ pub fn run() {
         .run(tauri::generate_context!())
         .expect("error while running the GitRemastered app");
 }
+
+#[cfg(test)]
+mod tests {
+    use serde_json::Value;
+
+    /// Reads the main window's settings from tauri.conf.json.
+    ///
+    /// Inputs: none. Output: the first entry of `app.windows` as JSON.
+    fn read_main_window_settings() -> Value {
+        let config_text = include_str!("../tauri.conf.json");
+        let config: Value =
+            serde_json::from_str(config_text).expect("tauri.conf.json is valid JSON");
+        config["app"]["windows"][0].clone()
+    }
+
+    /// The window title must say GitRemastered (task 2).
+    #[test]
+    fn main_window_is_titled_gitremastered() {
+        let window = read_main_window_settings();
+        assert_eq!(window["title"], "GitRemastered");
+    }
+
+    /// The window opens at 1440x900 and cannot shrink below 1024x700 (task 2).
+    #[test]
+    fn main_window_has_the_designed_size_and_minimum() {
+        let window = read_main_window_settings();
+        assert_eq!(window["width"], 1440);
+        assert_eq!(window["height"], 900);
+        assert_eq!(window["minWidth"], 1024);
+        assert_eq!(window["minHeight"], 700);
+    }
+}

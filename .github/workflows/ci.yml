@@ -1,0 +1,80 @@
+# ci.yml: runs every test and code check on GitHub for each push and pull request.
+# Same commands as on your PC (SPEC.md section 6), so "green here" means "green there".
+
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  checks:
+    name: Tests and code checks
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app
+
+    steps:
+      - name: Get the code
+        uses: actions/checkout@v4
+
+      # Linux libraries Tauri needs to compile (from the Tauri prerequisites guide).
+      - name: Install Tauri's Linux libraries
+        working-directory: .
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev build-essential libxdo-dev libssl-dev libayatana-appindicator3-dev librsvg2-dev
+
+      # Uses the pnpm version named in app/package.json ("packageManager").
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          package_json_file: app/package.json
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: app/pnpm-lock.yaml
+
+      - name: Install Rust with rustfmt and Clippy
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      # Keeps compiled Rust libraries between runs, so later runs take minutes, not ten.
+      - name: Reuse compiled Rust libraries
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: app/src-tauri
+
+      - name: Install JavaScript libraries
+        run: pnpm install --frozen-lockfile
+
+      # Component tests run in a real headless Chromium.
+      - name: Install the test browser
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Lint and format check (screens)
+        run: pnpm lint
+
+      - name: Type check (screens)
+        run: pnpm check
+
+      - name: Tests (screens)
+        run: pnpm test
+
+      # The Rust core embeds the built screens, so build them first.
+      - name: Build the screens
+        run: pnpm build
+
+      - name: Format check (Rust)
+        run: cargo fmt --manifest-path src-tauri/Cargo.toml --check
+
+      - name: Lint (Rust)
+        run: cargo clippy --manifest-path src-tauri/Cargo.toml -- -D warnings
+
+      - name: Tests (Rust)
+        run: cargo test --manifest-path src-tauri/Cargo.toml

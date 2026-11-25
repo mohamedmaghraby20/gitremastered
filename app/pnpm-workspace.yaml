@@ -1,0 +1,4 @@
+# pnpm-workspace.yaml: pnpm settings for this folder.
+# Only these packages may run install scripts (esbuild downloads its compiled program).
+allowBuilds:
+  esbuild: true
