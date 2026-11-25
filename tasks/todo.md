@@ -275,13 +275,15 @@ Every task: test first where there is logic; all of `pnpm test`, `pnpm check`, `
 **Description:** The visualizer's desk: working folder (draft), staging area (highlighted), repository (inked), with files as paper sheets and the moving command between zones; plus the caption bar explaining the last command in one sentence.
 
 **Acceptance criteria:**
-- [ ] Files appear in the right zone for every snapshot case from task 15
-- [ ] The last-moved file gets the brief outline; motion respects reduce motion
-- [ ] Captions exist for `status`, `add`, `commit`, `restore` (pilot commands)
+- [x] Files appear in the right zone for every snapshot case from task 15
+- [x] The last-moved file gets the brief outline; motion respects reduce motion
+- [x] Captions exist for `status`, `add`, `commit`, `restore` (pilot commands)
 
 **Verification:**
-- [ ] Tests pass: snapshot → zones; command → caption text
-- [ ] Manual: run the pilot commands and watch the desk
+- [x] Tests pass: snapshot → zones; command → caption text
+- [ ] Manual: run the pilot commands and watch the desk (you, in the desktop app)
+
+**Result (2026-11-25):** Pure logic in `src/lib/visualizer/`: `area-zones.ts` (snapshot → sheets per zone + newest 3 commit cards; spots sheets that just arrived), `explain-command.ts` (captions for status, add, commit, `commit -a`, restore, `restore --staged`), `command-line-tracker.ts` (rebuilds typed lines from terminal keys; lines edited with arrows or Tab are skipped, not guessed). Screens: `VisualizerBoard` (dotted board), `AreaDesk` (three zones with keycap commands between), `FileSheet` (dashed draft / highlighter stripe; brief outline on arrival, length tied to `--duration-visual`, so instant with reduce motion), `CaptionBar` (live region for screen readers). New `PracticeSession` (`mission-engine/practice-session.svelte.ts`) and `LessonScreen` keep the page thin: they own the practice folder, live snapshots and the caption. Not yet checked by you: running the pilot commands in the desktop window.
 
 **Dependencies:** 16 · **Files:** `app/src/lib/components/visualizer/AreaDesk.svelte`, `FileSheet.svelte`, `CaptionBar.svelte`, `app/src/lib/visualizer/explain-command.ts`, `explain-command.test.ts` · **Scope:** M
 

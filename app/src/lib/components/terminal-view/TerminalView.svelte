@@ -6,7 +6,8 @@
 
   Inputs:  practiceFolderPath (where the shell starts),
            bridge (the Rust core's terminal actions; tests pass a fake),
-           onEscape (called after Esc, to move focus somewhere useful).
+           onEscape (called after Esc, to move focus somewhere useful),
+           onCommand (called with each command line the student enters, for the caption).
 -->
 <script lang="ts">
 	import '@xterm/xterm/css/xterm.css';
@@ -15,12 +16,19 @@
 	import { buildTerminalFont, buildTerminalTheme, readTokensFrom } from './terminal-theme';
 	import { tauriTerminalBridge, type TerminalBridge } from './terminal-bridge';
 	import { TerminalConnection } from './terminal-connection';
+	import { CommandLineTracker } from '$lib/visualizer/command-line-tracker';
 
 	let {
 		practiceFolderPath,
 		bridge = tauriTerminalBridge,
-		onEscape = () => {}
-	}: { practiceFolderPath: string; bridge?: TerminalBridge; onEscape?: () => void } = $props();
+		onEscape = () => {},
+		onCommand = () => {}
+	}: {
+		practiceFolderPath: string;
+		bridge?: TerminalBridge;
+		onEscape?: () => void;
+		onCommand?: (commandLine: string) => void;
+	} = $props();
 
 	let screenElement: HTMLDivElement;
 
@@ -66,7 +74,13 @@
 		letEscapeLeave(terminal);
 
 		const connection = new TerminalConnection(bridge, (text) => terminal.write(text));
-		terminal.onData((typedText) => connection.sendInput(typedText));
+		const commandLineTracker = new CommandLineTracker();
+		terminal.onData((typedText) => {
+			connection.sendInput(typedText);
+			for (const commandLine of commandLineTracker.receive(typedText)) {
+				onCommand(commandLine);
+			}
+		});
 		terminal.onResize((size) => connection.resize(size.cols, size.rows));
 		void connection.open(practiceFolderPath, terminal.cols, terminal.rows).catch((error) => {
 			terminal.write(`\r\nThe terminal could not start: ${String(error)}\r\n`);

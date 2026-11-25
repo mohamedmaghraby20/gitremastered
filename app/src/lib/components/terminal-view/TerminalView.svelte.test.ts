@@ -57,6 +57,18 @@ describe('TerminalView', () => {
 		expect(sentText).toBe('ls');
 	});
 
+	it('reports each command line the student enters', async () => {
+		const bridge = createFakeBridge();
+		const onCommand = vi.fn();
+		await render(TerminalView, { practiceFolderPath: '/practice/x', bridge, onCommand });
+		await expect.element(page.getByText('three-areas ❯')).toBeVisible();
+
+		await page.getByTestId('terminal-screen').click();
+		await userEvent.keyboard('git status{Enter}');
+
+		expect(onCommand).toHaveBeenCalledWith('git status');
+	});
+
 	it('moves focus out of the terminal on Esc', async () => {
 		const bridge = createFakeBridge();
 		const onEscape = vi.fn();
