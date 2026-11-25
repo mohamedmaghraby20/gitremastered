@@ -1,7 +1,8 @@
 <!--
   AreaDesk.svelte
-  The visualizer's desk: the three zones side by side (working folder, staging area,
-  repository) with the commands that move files between them as keycaps.
+  The visualizer's desk, kept compact: the three zones side by side (working folder, staging
+  area, repository), each with a one-line header, and the commands that move files between
+  them as small keycaps.
 
   Input: snapshot (the repo state, or null while it loads).
 -->
@@ -13,6 +14,7 @@
 		sortFilesIntoZones,
 		type DeskZones
 	} from '$lib/visualizer/area-zones';
+	import DeskZone from './DeskZone.svelte';
 	import FileSheet from './FileSheet.svelte';
 	import ZoneCommand from './ZoneCommand.svelte';
 
@@ -29,6 +31,15 @@
 	let previousZones: DeskZones | null = null;
 	let justMovedKeys: Set<string> = $state(new Set());
 
+	/**
+	 * Words for a number of files, for a zone's header.
+	 * @param fileCount - how many files
+	 * @returns e.g. "1 file" or "3 files"
+	 */
+	function countFiles(fileCount: number): string {
+		return fileCount === 1 ? '1 file' : `${fileCount} files`;
+	}
+
 	$effect(() => {
 		const currentZones = zones;
 		justMovedKeys = findNewSheets(previousZones, currentZones);
@@ -36,65 +47,59 @@
 	});
 </script>
 
-<div class="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)_auto_minmax(0,1fr)]">
-	<section
-		aria-label="Working folder"
-		class="flex min-h-20 min-w-0 flex-col gap-1 rounded-medium border border-dashed border-git-working bg-surface p-2"
+<div class="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)_auto_minmax(0,1fr)] items-start">
+	<DeskZone
+		name="Working folder"
+		hint="What you're editing"
+		tone="working"
+		countLabel={countFiles(zones.working.length)}
 	>
-		<h3 class="type-label-mono m-0 font-bold">Working folder</h3>
-		<p class="type-sidenote m-0 text-ink-muted">what you're editing</p>
-		<ul class="m-0 flex list-none flex-col gap-1.5 p-0">
-			{#each zones.working as sheet (sheet.path)}
-				<FileSheet
-					{...sheet}
-					zone="working"
-					isJustMoved={justMovedKeys.has(sheetKey('working', sheet.path))}
-				/>
-			{/each}
-		</ul>
-	</section>
+		{#each zones.working as sheet (sheet.path)}
+			<FileSheet
+				{...sheet}
+				zone="working"
+				isJustMoved={justMovedKeys.has(sheetKey('working', sheet.path))}
+			/>
+		{/each}
+	</DeskZone>
 
 	<ZoneCommand command="git add" />
 
-	<section
-		aria-label="Staging area"
-		class="flex min-h-20 min-w-0 flex-col gap-1 rounded-medium border border-git-staging-edge bg-git-staging-wash p-2"
+	<DeskZone
+		name="Staging area"
+		hint="Picked for the next commit"
+		tone="staging"
+		countLabel={countFiles(zones.staging.length)}
 	>
-		<h3 class="type-label-mono m-0 font-bold text-git-staging-edge">Staging area</h3>
-		<p class="type-sidenote m-0 text-git-staging-edge">picked for the next commit</p>
-		<ul class="m-0 flex list-none flex-col gap-1.5 p-0">
-			{#each zones.staging as sheet (sheet.path)}
-				<FileSheet
-					{...sheet}
-					zone="staging"
-					isJustMoved={justMovedKeys.has(sheetKey('staging', sheet.path))}
-				/>
-			{/each}
-		</ul>
-	</section>
+		{#each zones.staging as sheet (sheet.path)}
+			<FileSheet
+				{...sheet}
+				zone="staging"
+				isJustMoved={justMovedKeys.has(sheetKey('staging', sheet.path))}
+			/>
+		{/each}
+	</DeskZone>
 
 	<ZoneCommand command="git commit" />
 
-	<section
-		aria-label="Repository"
-		class="flex min-h-20 min-w-0 flex-col gap-1 rounded-medium bg-git-repository p-2 text-on-git-repository"
+	<DeskZone
+		name="Repository"
+		hint="Every commit you have saved"
+		tone="repository"
+		countLabel={zones.repository.commitCount === 1
+			? '1 commit'
+			: `${zones.repository.commitCount} commits`}
 	>
-		<h3 class="type-label-mono m-0 font-bold">Repository</h3>
-		<p class="type-sidenote m-0 opacity-80">
-			{zones.repository.commitCount === 1 ? '1 commit' : `${zones.repository.commitCount} commits`}
-		</p>
-		<ul class="m-0 flex list-none flex-col gap-1.5 p-0">
-			{#each zones.repository.latestCommits as commitCard, index (commitCard.shortId)}
-				<li
-					class={[
-						'type-label-mono flex justify-between gap-1.5 rounded-small border border-on-git-repository px-2 py-1',
-						index > 0 && 'opacity-60'
-					]}
-				>
-					<span>{commitCard.shortId}</span>
-					<span class="truncate font-sans">{commitCard.message}</span>
-				</li>
-			{/each}
-		</ul>
-	</section>
+		{#each zones.repository.latestCommits as commitCard, index (commitCard.shortId)}
+			<li
+				class={[
+					'type-label-mono flex justify-between gap-1.5 rounded-small border border-on-git-repository px-1.5 py-0.5',
+					index > 0 && 'opacity-60'
+				]}
+			>
+				<span>{commitCard.shortId}</span>
+				<span class="truncate font-sans">{commitCard.message}</span>
+			</li>
+		{/each}
+	</DeskZone>
 </div>

@@ -1,7 +1,7 @@
 /**
  * check-review-fixes.ts
  * Plays the fixes from the second pilot review in the real desktop app and prints each result:
- * the terminal's share of the practice column, even gaps around the desk's commands, paste,
+ * the terminal's share of the practice column (about 55%), even gaps around the desk's commands, paste,
  * Ctrl C still stopping a command, Ctrl + / 0 text size, the mission and quiz headings, and the
  * history map's zoom buttons. Saves a screenshot for a person to look at.
  * Run from app/:  pnpm review:fixes   (build the review copy first: pnpm review:build)
@@ -19,7 +19,7 @@ type ReviewCheck = { name: string; run: (student: StudentActions) => Promise<str
 const terminalFontSize = `parseFloat(getComputedStyle(document.querySelector('.xterm-rows')).fontSize)`;
 
 const checks: ReviewCheck[] = [
-	{ name: 'Terminal takes about 40% of the practice column', run: checkTerminalShare },
+	{ name: 'Terminal takes about 55% of the practice column', run: checkTerminalShare },
 	{ name: 'Even gaps around "git add" and "git commit"', run: checkEvenGaps },
 	{ name: 'Ctrl V pastes into the terminal', run: checkPaste },
 	{ name: 'Ctrl C with nothing selected still stops a command', run: checkInterrupt },
@@ -39,14 +39,14 @@ async function checkTerminalShare(student: StudentActions): Promise<string> {
 		const terminal = document.querySelector('section[aria-label="Terminal"]').getBoundingClientRect();
 		return { percent: Math.round((terminal.height / column.height) * 100), columnHeight: Math.round(column.height) };
 	})()`);
-	if (share.percent < 35 || share.percent > 45) {
+	if (share.percent < 50 || share.percent > 60) {
 		throw new Error(`terminal is ${share.percent}% of the column`);
 	}
 	return `${share.percent}% of ${share.columnHeight} px`;
 }
 
 /**
- * Measures the space left and right of each command keycap between the desk's zones.
+ * Measures the space left and right of each command (keycap and arrow) between the desk's zones.
  * @param student - the student actions
  * @returns the four gaps in pixels
  */
@@ -54,11 +54,14 @@ async function checkEvenGaps(student: StudentActions): Promise<string> {
 	const gaps = await student.evaluate<number[]>(`(() => {
 		const zones = ['Working folder', 'Staging area', 'Repository']
 			.map((name) => document.querySelector('section[aria-label="' + name + '"]').getBoundingClientRect());
-		const keycaps = [...document.querySelectorAll('[aria-label="Visualizer"] [aria-hidden="true"] > span:first-child')]
-			.map((keycap) => keycap.getBoundingClientRect());
+		const commands = [...document.querySelectorAll('#files-desk div[aria-hidden="true"]')]
+			.map((command) => ({
+				left: command.firstElementChild.getBoundingClientRect().left,
+				right: command.lastElementChild.getBoundingClientRect().right
+			}));
 		return [
-			keycaps[0].left - zones[0].right, zones[1].left - keycaps[0].right,
-			keycaps[1].left - zones[1].right, zones[2].left - keycaps[1].right
+			commands[0].left - zones[0].right, zones[1].left - commands[0].right,
+			commands[1].left - zones[1].right, zones[2].left - commands[1].right
 		].map(Math.round);
 	})()`);
 	if (Math.max(...gaps) - Math.min(...gaps) > 2) {

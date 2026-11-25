@@ -25,7 +25,7 @@
 
 <li
 	class={[
-		'file-sheet type-label-mono flex items-center justify-between gap-2 rounded-small bg-surface px-2 py-1',
+		'file-sheet type-label-mono flex items-center justify-between gap-2 rounded-small bg-surface px-1.5 py-0.5',
 		zone === 'working'
 			? 'border border-dashed border-git-working'
 			: 'border border-git-staging-edge',

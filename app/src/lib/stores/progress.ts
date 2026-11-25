@@ -1,7 +1,7 @@
 /**
  * progress.ts
  * The one module that saves and loads the student's progress: finished missions, quiz
- * results, the chosen theme and the terminal's text size. In the desktop app it uses the Tauri store plugin (a small
+ * results, the chosen theme, the terminal's text size and whether the files desk is folded. In the desktop app it uses the Tauri store plugin (a small
  * JSON file in the app's data folder); in a plain browser it keeps progress in memory only.
  * Screens read the `progress` store and call the functions below; nothing else touches storage.
  */
@@ -19,6 +19,7 @@ export type ProgressData = {
 	quizResults: Record<string, QuizResult>; // by lesson ID, the latest result
 	theme: ThemeChoice;
 	terminalFontSize: number | null; // pixels, chosen with Ctrl + / -; null = the design's size
+	isFilesDeskFolded: boolean; // the student folded the visualizer's files desk away
 };
 
 /** The few storage actions this module needs (the Tauri store has them; tests pass a fake). */
@@ -39,7 +40,8 @@ export const emptyProgress: ProgressData = {
 	finishedMissions: [],
 	quizResults: {},
 	theme: 'system',
-	terminalFontSize: null
+	terminalFontSize: null,
+	isFilesDeskFolded: false
 };
 
 const progressStore = writable<ProgressData>(emptyProgress);
@@ -100,13 +102,22 @@ export async function saveTerminalFontSize(fontSize: number | null): Promise<voi
 	await saveProgress({ ...get(progressStore), terminalFontSize: fontSize });
 }
 
-/** Forgets finished missions and quiz results (the theme and terminal text size stay). */
+/**
+ * Remembers whether the files desk is folded away.
+ * @param isFolded - true when folded
+ */
+export async function saveFilesDeskFolded(isFolded: boolean): Promise<void> {
+	await saveProgress({ ...get(progressStore), isFilesDeskFolded: isFolded });
+}
+
+/** Forgets finished missions and quiz results (screen choices like the theme stay). */
 export async function resetProgress(): Promise<void> {
 	const current = get(progressStore);
 	await saveProgress({
 		...emptyProgress,
 		theme: current.theme,
-		terminalFontSize: current.terminalFontSize
+		terminalFontSize: current.terminalFontSize,
+		isFilesDeskFolded: current.isFilesDeskFolded
 	});
 }
 

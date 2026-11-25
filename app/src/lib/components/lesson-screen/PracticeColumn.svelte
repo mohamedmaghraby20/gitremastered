@@ -12,6 +12,7 @@
 	import PracticeTerminal from '$lib/components/terminal-view/PracticeTerminal.svelte';
 	import HistoryMap from '$lib/components/visualizer/HistoryMap.svelte';
 	import VisualizerBoard from '$lib/components/visualizer/VisualizerBoard.svelte';
+	import { progress, saveFilesDeskFolded } from '$lib/stores/progress';
 
 	let {
 		missionId,
@@ -26,15 +27,28 @@
 	function recordCommand(commandLine: string): void {
 		session.recordCommandLine(commandLine);
 	}
+
+	/**
+	 * Remembers that the student folded or unfolded the files desk.
+	 * @param isFolded - the new state
+	 */
+	function rememberDeskFolded(isFolded: boolean): void {
+		void saveFilesDeskFolded(isFolded);
+	}
 </script>
 
 <section aria-label="Practice" class="flex h-full min-w-0 flex-[999_1_26rem] flex-col gap-3 p-3">
-	<VisualizerBoard {snapshot} caption={session.lastCaption}>
+	<VisualizerBoard
+		{snapshot}
+		caption={session.lastCaption}
+		isDeskFolded={$progress.isFilesDeskFolded}
+		onDeskToggle={rememberDeskFolded}
+	>
 		{#snippet history()}
 			<HistoryMap {snapshot} />
 		{/snippet}
 	</VisualizerBoard>
-	<div class="flex min-h-0 flex-[0_0_40%] flex-col">
+	<div class="flex min-h-0 flex-[0_0_55%] flex-col">
 		<PracticeTerminal
 			{missionId}
 			practiceFolderPath={session.practiceFolderPath}

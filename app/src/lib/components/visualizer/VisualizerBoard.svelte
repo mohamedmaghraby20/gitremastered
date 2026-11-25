@@ -3,8 +3,11 @@
   The dotted drawing board from DESIGN.md: the files desk on top, the history map in the
   middle (passed in as "history"), and the caption bar at the bottom.
 
+  The "Files" header folds the desk away, for more room for the history map.
+
   Inputs: snapshot (repo state or null), caption (last command's caption or null),
-          history (optional: the history map).
+          history (optional: the history map), isDeskFolded (optional: start folded),
+          onDeskToggle (optional: called with the new folded state, to remember it).
 -->
 <script lang="ts">
 	import type { Snippet } from 'svelte';
@@ -16,9 +19,16 @@
 	let {
 		snapshot,
 		caption,
-		history
-	}: { snapshot: RepoSnapshot | null; caption: CommandCaption | null; history?: Snippet } =
-		$props();
+		history,
+		isDeskFolded = false,
+		onDeskToggle = () => {}
+	}: {
+		snapshot: RepoSnapshot | null;
+		caption: CommandCaption | null;
+		history?: Snippet;
+		isDeskFolded?: boolean;
+		onDeskToggle?: (isFolded: boolean) => void;
+	} = $props();
 
 	const branchLabel = $derived.by(() => {
 		if (snapshot === null) {
@@ -35,11 +45,20 @@
 	aria-label="Visualizer"
 	class="visualizer-board flex min-h-0 flex-1 flex-col overflow-hidden rounded-large border bg-surface-sunken"
 >
-	<div class="type-caption flex justify-between px-3.5 pt-2 text-ink-muted uppercase">
-		<span>Files</span>
-		<span class="type-label-mono text-ink-faint normal-case">{branchLabel}</span>
+	<div class="flex items-center justify-between px-3.5 pt-1.5">
+		<button
+			type="button"
+			class="type-caption -ml-1 flex items-center gap-1 rounded-small px-1 py-0.5 text-ink-muted uppercase hover:text-ink"
+			aria-expanded={!isDeskFolded}
+			aria-controls="files-desk"
+			onclick={() => onDeskToggle(!isDeskFolded)}
+		>
+			<span aria-hidden="true">{isDeskFolded ? '▸' : '▾'}</span>
+			Files
+		</button>
+		<span class="type-label-mono text-ink-faint">{branchLabel}</span>
 	</div>
-	<div class="px-3.5 pt-1.5 pb-2.5">
+	<div id="files-desk" class="px-3.5 pt-1 pb-2.5" hidden={isDeskFolded}>
 		<AreaDesk {snapshot} />
 	</div>
 	<div class="flex min-h-0 flex-1 flex-col border-t bg-surface">

@@ -23,7 +23,8 @@ describe('progress', () => {
 			finishedMissions: [],
 			quizResults: {},
 			theme: 'system',
-			terminalFontSize: null
+			terminalFontSize: null,
+			isFilesDeskFolded: false
 		});
 	});
 
@@ -43,7 +44,8 @@ describe('progress', () => {
 			finishedMissions: ['three-areas'],
 			quizResults: { 'three-areas': { correctCount: 2, questionCount: 3 } },
 			theme: 'dark',
-			terminalFontSize: 16
+			terminalFontSize: 16,
+			isFilesDeskFolded: false
 		});
 	});
 
@@ -69,7 +71,8 @@ describe('progress', () => {
 			finishedMissions: [],
 			quizResults: {},
 			theme: 'dark',
-			terminalFontSize: 16
+			terminalFontSize: 16,
+			isFilesDeskFolded: false
 		});
 	});
 });
