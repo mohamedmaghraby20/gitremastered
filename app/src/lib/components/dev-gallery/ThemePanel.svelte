@@ -1,6 +1,6 @@
 <!--
   ThemePanel.svelte
-  Dev gallery: one panel locked to a theme (data-theme), showing the buttons, the lesson blocks, every color and every text style.
+  Dev gallery: one panel locked to a theme (data-theme), showing the buttons, the lesson blocks, the visualizer, every color and every text style.
   Two of these side by side show light and dark at the same time.
   Inputs: themeId ("light" or "dark"), title, and the parsed tokens.json.
 -->
@@ -10,6 +10,7 @@
 	import ColorSwatches from './ColorSwatches.svelte';
 	import LessonBlockSamples from './LessonBlockSamples.svelte';
 	import TypeSpecimens from './TypeSpecimens.svelte';
+	import VisualizerSample from './VisualizerSample.svelte';
 
 	let {
 		themeId,
@@ -24,6 +25,8 @@
 	<ButtonSamples />
 	<h3 class="type-h3">Lesson blocks</h3>
 	<LessonBlockSamples />
+	<h3 class="type-h3">Visualizer</h3>
+	<VisualizerSample />
 	<h3 class="type-h3">Colors</h3>
 	<ColorSwatches colorTokens={designTokens.color.tokens} />
 	<h3 class="type-h3">Text styles</h3>

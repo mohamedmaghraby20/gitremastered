@@ -291,13 +291,15 @@ Every task: test first where there is logic; all of `pnpm test`, `pnpm check`, `
 **Description:** The metro-map history with Svelte Flow and ELK: commits as stations, branch lines, the HEAD pin, the faded "next commit" station.
 
 **Acceptance criteria:**
-- [ ] Linear history draws newest on the right with IDs and messages
-- [ ] HEAD and the branch label sit on the right station
-- [ ] Layout logic is a separate tested function
+- [x] Linear history draws newest on the right with IDs and messages
+- [x] HEAD and the branch label sit on the right station
+- [x] Layout logic is a separate tested function
 
 **Verification:**
-- [ ] Tests pass: snapshot → nodes and edges
-- [ ] Manual: commit twice in the pilot and watch the map grow
+- [x] Tests pass: snapshot → nodes and edges
+- [ ] Manual: commit twice in the pilot and watch the map grow (you, in the desktop app)
+
+**Result (2026-11-25):** `history-layout.ts` (tested on its own): `buildHistoryGraph` turns commits into stations and parent links into tracks, puts HEAD and local branch labels on their station, and adds the faded "next commit" station after HEAD; `placeStations` asks ELK for a layered left-to-right layout (oldest left). `HistoryMap` draws it with Svelte Flow (look-only: no drag, connect, select or scroll-zoom; refits when the station count changes); `CommitStation` is the ring, ID, message, branch chip and yellow "HEAD · you" pin. The dev gallery now shows the full visualizer with a sample repo in both themes. Added `@xyflow/svelte`, `elkjs` (approved). Not yet checked by you: committing twice in the desktop app and watching the map grow.
 
 **Dependencies:** 16 · **Files:** `app/src/lib/components/visualizer/HistoryMap.svelte`, `CommitStation.svelte`, `app/src/lib/visualizer/history-layout.ts`, `history-layout.test.ts` · **Scope:** M
 

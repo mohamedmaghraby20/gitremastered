@@ -10,6 +10,7 @@
 	import type { PracticeSession } from '$lib/mission-engine/practice-session.svelte';
 	import type { RepoSnapshot } from '$lib/types/repo-snapshot';
 	import PracticeTerminal from '$lib/components/terminal-view/PracticeTerminal.svelte';
+	import HistoryMap from '$lib/components/visualizer/HistoryMap.svelte';
 	import VisualizerBoard from '$lib/components/visualizer/VisualizerBoard.svelte';
 
 	let {
@@ -28,7 +29,11 @@
 </script>
 
 <section aria-label="Practice" class="flex min-w-0 flex-[999_1_26rem] flex-col gap-3 p-3">
-	<VisualizerBoard {snapshot} caption={session.lastCaption} />
+	<VisualizerBoard {snapshot} caption={session.lastCaption}>
+		{#snippet history()}
+			<HistoryMap {snapshot} />
+		{/snippet}
+	</VisualizerBoard>
 	<div class="flex min-h-0 flex-[0_0_18rem] flex-col">
 		<PracticeTerminal
 			{missionId}
