@@ -1,0 +1,6 @@
+id: pro-path
+title: Pro path
+modules:
+  - id: daily-loop
+    title: Your daily loop
+    lessons: [three-areas]

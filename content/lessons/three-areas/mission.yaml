@@ -1,0 +1,28 @@
+brief: "Your team's project has a new release notes file and an unfinished README edit. Commit the release notes on their own, and keep the README change out of this commit."
+setup:
+  - git init -q -b main
+  - git config core.autocrlf false
+  - git config user.name > /dev/null || git config user.name "Practice Student"
+  - git config user.email > /dev/null || git config user.email "student@example.com"
+  - echo "# Team project" > README.md
+  - git add README.md
+  - git commit -q -m "Add README"
+  - echo "Run the tests before you push." >> README.md
+  - echo "Release notes for version 1.0" > notes.txt
+goal:
+  - check: file-is-committed
+    file: notes.txt
+    label: "notes.txt is saved in a new commit"
+  - check: file-is-modified
+    file: README.md
+    label: "README.md is still changed, not committed"
+  - check: commit-count-at-least
+    count: 2
+    label: "The history has your new commit"
+hints:
+  - "Run git status. Which file is new, and which one only changed?"
+  - "A commit takes only what is in the staging area. Stage notes.txt alone with git add."
+  - "Run: git add notes.txt, then git commit -m \"Add release notes\". Leave README.md as it is."
+solution:
+  - git add notes.txt
+  - git commit -q -m "Add release notes"

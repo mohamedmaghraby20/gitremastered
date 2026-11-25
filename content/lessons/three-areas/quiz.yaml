@@ -1,0 +1,30 @@
+questions:
+  - question: "You run git add notes.txt, then fix a typo in notes.txt, then run git commit. What does the commit contain?"
+    answers:
+      - text: "The notes.txt you see now, with the typo fixed"
+        explanation: "Git commits the staging area, not your screen. The typo fix was made after git add, so it is not staged."
+      - text: "The notes.txt from when you ran git add"
+        correct: true
+        explanation: "Right. git add copies the file as it is at that moment. Run git add again to include later edits."
+      - text: "Nothing, because the file changed after staging"
+        explanation: "The commit still happens. It just uses the staged version and leaves the newer edit in the working folder."
+
+  - question: "git status -s prints \"MM app.js\". What does that tell you?"
+    answers:
+      - text: "app.js was merged twice and needs a review"
+        explanation: "M means modified, not merged. Each letter describes one area."
+      - text: "app.js is modified but nothing about it is staged"
+        explanation: "That would be \" M app.js\", with a space in the left column."
+      - text: "app.js has staged changes and newer unstaged ones"
+        correct: true
+        explanation: "Right. The left M is the staging area, the right M is the working folder: staged once, then edited again."
+
+  - question: "You changed login.js and styles.css, but only the login.js change is ready. What do you run?"
+    answers:
+      - text: "git add login.js, then git commit"
+        correct: true
+        explanation: "Right. Stage only what belongs in this commit. styles.css stays changed in your working folder."
+      - text: "git commit -a, then undo styles.css"
+        explanation: "git commit -a stages every tracked change, so styles.css would go into the commit too."
+      - text: "git add ., then git commit"
+        explanation: "git add . stages everything in the folder, including styles.css."

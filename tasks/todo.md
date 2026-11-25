@@ -146,13 +146,15 @@ Every task: test first where there is logic; all of `pnpm test`, `pnpm check`, `
 **Description:** Write `content/lessons/three-areas/` from Pro Git 2.2 in our style: lede, short sections for all three layers, recap, the mission (setup, goal checks, three hints, solution) and a 3-question quiz. Cite the book; humanizer pass; mission steps as numbered lists.
 
 **Acceptance criteria:**
-- [ ] The loader accepts all three files
-- [ ] Every claim matches Pro Git 2.2 or the official docs (new-vs-old note for `git restore`)
-- [ ] Reading time for "Use it" is about 5 minutes
+- [x] The loader accepts all three files
+- [x] Every claim matches Pro Git 2.2 or the official docs (new-vs-old note for `git restore`)
+- [x] Reading time for "Use it" is about 5 minutes
 
 **Verification:**
-- [ ] Tests pass: loader test over the real pilot files
+- [x] Tests pass: loader test over the real pilot files
 - [ ] Manual: you read the lesson text and approve it
+
+**Result (2026-11-25):** Pilot written from Pro Git 2.2 (status, tracking, staging, short status, committing, skipping the staging area). "Use it" is 353 words plus a Try-it step, about 3 minutes of reading and 2 of trying. The mission is a real job: commit new release notes alone and keep an unfinished README edit out (teaches selective staging). Setup sets a practice identity only when the student has none, and turns off CRLF conversion so Windows warnings don't clutter the terminal. Special blocks use `:::name` markers (definitions, try-it, careful, sidenote, compare), rendered in task 11. Waiting on your read-through and approval.
 
 **Dependencies:** 8 · **Files:** `content/lessons/three-areas/lesson.md`, `mission.yaml`, `quiz.yaml`, `content/paths/pro-path.yaml` · **Scope:** S
 
