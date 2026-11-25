@@ -3,6 +3,7 @@
 //! Registers the commands the screens can call (see SPEC.md section 3.3).
 
 pub mod commands;
+pub mod git_runner;
 pub mod models;
 
 /// Starts the desktop app and keeps it running until the window closes.
@@ -12,7 +13,9 @@ pub mod models;
 pub fn run() {
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
-            commands::git_info::get_git_version
+            commands::git_info::get_git_version,
+            commands::practice::create_practice_repo,
+            commands::practice::reset_practice_repo
         ])
         .run(tauri::generate_context!())
         .expect("error while running the GitRemastered app");

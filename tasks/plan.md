@@ -76,7 +76,7 @@ Full details for each task (acceptance criteria, verification, files) are in `ta
 - [x] Task 9: Write the pilot lesson content (your approval of the text pending)
 - [x] Task 10: Show the pilot lesson on its page
 - [x] Task 11: Show the lesson's special blocks
-- [ ] Task 12: Create and reset practice folders (Rust)
+- [x] Task 12: Create and reset practice folders (Rust)
 - [ ] Task 13: Run a real shell session (Rust)
 - [ ] Task 14: Show the terminal on screen
 

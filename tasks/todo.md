@@ -194,12 +194,14 @@ Every task: test first where there is logic; all of `pnpm test`, `pnpm check`, `
 **Description:** `create_practice_repo` and `reset_practice_repo`: make `<app data>/practice/<missionId>/`, run the mission's setup steps with real Git inside it, and delete-and-rebuild on reset. The app's own commands never run outside a practice folder.
 
 **Acceptance criteria:**
-- [ ] Setup steps produce the expected repo in a temporary folder
-- [ ] Reset gives a fresh copy
-- [ ] A path outside the practice root is refused with an error
+- [x] Setup steps produce the expected repo in a temporary folder
+- [x] Reset gives a fresh copy
+- [x] A path outside the practice root is refused with an error
 
 **Verification:**
-- [ ] Tests pass: Rust integration tests with real Git in temp folders
+- [x] Tests pass: Rust integration tests with real Git in temp folders
+
+**Result (2026-11-25):** `PracticeRoot` opens `<app data>/practice/`; `create` deletes any old folder and runs the steps, `reset` reruns the steps saved in `<root>/<missionId>.setup.json` (outside the repo, so they never show in `git status`). Safety lives in the types: commands run only on a `PracticeFolder`, and only `PracticeRoot` makes one (mission IDs must be `a-z 0-9 -`; paths from the screens go through `check_inside`, which resolves `..` first). Steps run as `bash -c` in Git Bash on Windows (found next to Git via `git --exec-path`), with no console window (`hidden_command.rs`, now shared with `get_git_version`). Added `tempfile` (tests only, approved).
 
 **Dependencies:** 7 · **Files:** `app/src-tauri/src/git_runner/practice_folder.rs`, `app/src-tauri/src/git_runner/setup_steps.rs`, `app/src-tauri/src/commands/practice.rs`, `app/src-tauri/tests/practice_folder.rs` · **Scope:** M
 

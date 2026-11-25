@@ -3,7 +3,7 @@
 //! Shown on the Settings page, and the first end-to-end check that the screens
 //! can call the Rust core.
 
-use std::process::Command;
+use crate::git_runner::hidden_command::hidden_command;
 
 /// Runs `git --version` and returns the version number, like `2.55.0.windows.1`.
 ///
@@ -11,7 +11,7 @@ use std::process::Command;
 /// This touches no repository: `--version` only prints Git's own version.
 #[tauri::command]
 pub async fn get_git_version() -> Result<String, String> {
-    let output = build_git_command()
+    let output = hidden_command("git")
         .arg("--version")
         .output()
         .map_err(|error| format!("Could not run Git. Is it installed? ({error})"))?;
@@ -19,25 +19,6 @@ pub async fn get_git_version() -> Result<String, String> {
     let output_text = String::from_utf8_lossy(&output.stdout);
     parse_git_version(&output_text)
         .ok_or_else(|| format!("Git answered something unexpected: {}", output_text.trim()))
-}
-
-/// Builds a `git` command that never opens a console window.
-///
-/// Inputs: none. Output: the command, ready for arguments.
-fn build_git_command() -> Command {
-    #[allow(unused_mut)] // `mut` is only needed on Windows.
-    let mut git_command = Command::new("git");
-
-    // On Windows, a desktop app that starts a console program flashes a black window.
-    // The CREATE_NO_WINDOW flag (0x08000000) stops that.
-    #[cfg(windows)]
-    {
-        use std::os::windows::process::CommandExt;
-        const CREATE_NO_WINDOW: u32 = 0x0800_0000;
-        git_command.creation_flags(CREATE_NO_WINDOW);
-    }
-
-    git_command
 }
 
 /// Reads the version number out of `git --version`'s output.
