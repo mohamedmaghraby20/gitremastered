@@ -1,6 +1,6 @@
 /**
  * page.svelte.test.ts
- * Component test for the home page: it renders in a real browser and shows the app name.
+ * Component test for the home page: it renders in a real browser and shows its title.
  */
 
 import { page } from 'vitest/browser';
@@ -9,10 +9,10 @@ import { render } from 'vitest-browser-svelte';
 import HomePage from './+page.svelte';
 
 describe('home page', () => {
-	it('shows the app name as the main heading', async () => {
+	it('shows "Home" as the main heading', async () => {
 		await render(HomePage);
 
 		const mainHeading = page.getByRole('heading', { level: 1 });
-		await expect.element(mainHeading).toHaveTextContent('GitRemastered');
+		await expect.element(mainHeading).toHaveTextContent('Home');
 	});
 });

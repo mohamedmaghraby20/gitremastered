@@ -28,7 +28,7 @@
 	<title>{buildPageTitle('Design gallery')}</title>
 </svelte:head>
 
-<main class="gallery">
+<div class="gallery">
 	<header class="gallery-header">
 		<h1 class="type-h1">Design gallery</h1>
 		<div class="theme-switch" role="group" aria-label="App theme">
@@ -48,7 +48,7 @@
 		<ThemePanel themeId="light" title="Light theme" {designTokens} />
 		<ThemePanel themeId="dark" title="Dark theme" {designTokens} />
 	</div>
-</main>
+</div>
 
 <style>
 	.gallery {

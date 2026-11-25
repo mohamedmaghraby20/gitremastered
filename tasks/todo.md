@@ -90,15 +90,17 @@ Every task: test first where there is logic; all of `pnpm test`, `pnpm check`, `
 **Description:** The layout from the prototype: top bar (wordmark, search box, Settings) and sidebar (full and icon-rail versions), with empty pages for home, course map, lesson, search, commands and settings, all linked.
 
 **Acceptance criteria:**
-- [ ] Every sidebar and top-bar link opens its page; the active one is marked
-- [ ] The lesson page uses the icon rail; other pages use the full sidebar
-- [ ] Settings has a working theme switch (light / dark / system)
+- [x] Every sidebar and top-bar link opens its page; the active one is marked
+- [x] The lesson page uses the icon rail; other pages use the full sidebar
+- [x] Settings has a working theme switch (light / dark / system)
 
 **Verification:**
-- [ ] Tests pass: Sidebar marks the active link; rail has labels for screen readers
-- [ ] Manual: click through every page in `pnpm tauri dev`
+- [x] Tests pass: Sidebar marks the active link; rail has labels for screen readers
+- [x] Manual: click through every page (browser pane; scripted click-through of all 8 links + Ctrl K)
 
-**Dependencies:** 5 · **Files:** `app/src/routes/+layout.svelte`, `app/src/lib/components/app-shell/TopBar.svelte`, `app/src/lib/components/app-shell/Sidebar.svelte`, `app/src/lib/components/app-shell/Sidebar.svelte.test.ts`, page files under `app/src/routes/` · **Scope:** M (page stubs are one line each)
+**Result (2026-11-25):** Shell matches the prototype: 48px top bar, 248px sidebar, 64px rail on `/lessons/*`. Links use SvelteKit `resolve()`, so a wrong route is a type error. Ctrl K / Cmd K opens Search. Theme switch is a reusable `SegmentedSwitch` (also for Pro/Book path later). The sidebar shows the pilot lesson until content loading (task 8) lists the real module lessons; path progress waits for task 21.
+
+**Dependencies:** 5 · **Files:** `app/src/lib/navigation/` (links + shortcuts, with tests), `app/src/lib/components/app-shell/` (`TopBar`, `Sidebar`, `SidebarFull`, `SidebarRail`, `NavigationIcon`, `EmptyPage`), `app/src/lib/components/ui/segmented-switch/`, `app/src/routes/+layout.svelte`, `app/src/lib/components/app-shell/TopBar.svelte`, `app/src/lib/components/app-shell/Sidebar.svelte`, `app/src/lib/components/app-shell/Sidebar.svelte.test.ts`, page files under `app/src/routes/` · **Scope:** M (page stubs are one line each)
 
 ### Task 7: Add the typed bridge between screens and Rust
 **Description:** Write the shared data shapes from SPEC §3.4 in TypeScript and Rust, typed wrappers for every contract command and event, and one real command end to end: `get_git_version`, shown on the Settings page.
