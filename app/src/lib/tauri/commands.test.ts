@@ -6,7 +6,13 @@
 
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { invoke } from '@tauri-apps/api/core';
-import { createPracticeRepo, getGitVersion, resizeTerminal, sendTerminalInput } from './commands';
+import {
+	closeTerminalSession,
+	createPracticeRepo,
+	getGitVersion,
+	resizeTerminal,
+	sendTerminalInput
+} from './commands';
 
 // Replace the real bridge: tests run outside the app window, where there is no Rust core.
 vi.mock('@tauri-apps/api/core', () => ({ invoke: vi.fn() }));
@@ -41,6 +47,7 @@ describe('contract commands', () => {
 		await createPracticeRepo('three-areas', ['git init']);
 		await sendTerminalInput('session-1', 'git status\r');
 		await resizeTerminal('session-1', 80, 24);
+		await closeTerminalSession('session-1');
 
 		expect(mockedInvoke).toHaveBeenCalledWith('create_practice_repo', {
 			missionId: 'three-areas',
@@ -55,5 +62,6 @@ describe('contract commands', () => {
 			columns: 80,
 			rows: 24
 		});
+		expect(mockedInvoke).toHaveBeenCalledWith('close_terminal_session', { sessionId: 'session-1' });
 	});
 });

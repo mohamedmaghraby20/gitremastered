@@ -19,6 +19,43 @@ pub fn find_bash_program() -> Result<PathBuf, String> {
     }
 }
 
+/// How to start the student's interactive shell.
+#[derive(Debug, Clone, PartialEq)]
+pub struct ShellLaunch {
+    /// The program to run, e.g. the path of `bash.exe` or `/bin/zsh`.
+    pub program: PathBuf,
+    /// Its arguments: a login, interactive shell.
+    pub arguments: Vec<String>,
+    /// Extra environment variables for the shell.
+    pub environment: Vec<(String, String)>,
+}
+
+/// Chooses the shell for the terminal: Git Bash on Windows, the user's own shell elsewhere.
+///
+/// Inputs: none. Output: how to start the shell, or a readable error.
+pub fn terminal_shell() -> Result<ShellLaunch, String> {
+    let mut environment = vec![
+        // Lets programs know they can use colors.
+        ("TERM".to_string(), "xterm-256color".to_string()),
+        // Git Bash's login script moves to the home folder unless this is set.
+        ("CHERE_INVOKING".to_string(), "1".to_string()),
+    ];
+    if cfg!(windows) {
+        environment.push(("MSYSTEM".to_string(), "MINGW64".to_string()));
+        return Ok(ShellLaunch {
+            program: find_git_bash()?,
+            arguments: vec!["--login".to_string(), "-i".to_string()],
+            environment,
+        });
+    }
+    let user_shell = std::env::var("SHELL").unwrap_or_else(|_| "bash".to_string());
+    Ok(ShellLaunch {
+        program: PathBuf::from(user_shell),
+        arguments: vec!["-l".to_string(), "-i".to_string()],
+        environment,
+    })
+}
+
 /// Finds Git Bash next to the installed Git for Windows.
 ///
 /// Inputs: none. Output: the path of `bash.exe`, or an error saying Git Bash is missing.

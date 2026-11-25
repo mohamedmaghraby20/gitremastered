@@ -12,10 +12,16 @@ pub mod models;
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        // One list of terminal sessions for the whole app; it stops every shell on exit.
+        .manage(git_runner::terminal_session::TerminalSessions::new())
         .invoke_handler(tauri::generate_handler![
             commands::git_info::get_git_version,
             commands::practice::create_practice_repo,
-            commands::practice::reset_practice_repo
+            commands::practice::reset_practice_repo,
+            commands::terminal::start_terminal_session,
+            commands::terminal::send_terminal_input,
+            commands::terminal::resize_terminal,
+            commands::terminal::close_terminal_session
         ])
         .run(tauri::generate_context!())
         .expect("error while running the GitRemastered app");

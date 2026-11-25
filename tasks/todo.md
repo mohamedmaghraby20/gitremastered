@@ -209,13 +209,15 @@ Every task: test first where there is logic; all of `pnpm test`, `pnpm check`, `
 **Description:** `start_terminal_session`, `send_terminal_input`, `resize_terminal` and the `terminal_output` / `terminal_exited` events, using `portable-pty`. Git Bash on Windows, the user's shell on macOS and Linux, started inside the practice folder.
 
 **Acceptance criteria:**
-- [ ] A session starts in the given folder and echoes typed commands
-- [ ] Output arrives as events, in order
-- [ ] Closing the session cleans up the shell process
+- [x] A session starts in the given folder and echoes typed commands
+- [x] Output arrives as events, in order
+- [x] Closing the session cleans up the shell process
 
 **Verification:**
-- [ ] Tests pass: Rust test runs `git --version` through a session and reads the output
-- [ ] Manual: works on your Windows PC with Git Bash
+- [x] Tests pass: Rust test runs `git --version` through a session and reads the output
+- [x] Manual: works on your Windows PC with Git Bash
+
+**Result (2026-11-25):** `TerminalSessions` (`terminal_session.rs`) runs the shell in a PTY with `portable-pty` (ConPTY on Windows): Git Bash `--login -i` on Windows, the user's `$SHELL -l -i` elsewhere, started in the practice folder (`CHERE_INVOKING=1` stops Git Bash jumping to home). One reader thread sends output in order; one waiter thread reports the exit code. The core knows nothing about Tauri: callbacks receive output, and `commands/terminal.rs` turns them into `terminal_output` / `terminal_exited` events. `OutputDecoder` never cuts a multi-byte character (like ❯) in half. Added `close_terminal_session` to the contract (SPEC §3.3) so closing really stops the shell; the app also stops every shell on exit. Lesson learned: ConPTY first asks "where is the cursor?" (`ESC[6n`) and waits for an answer; xterm.js answers it on screen, the test answers it itself. Real-shell tests pass on this Windows PC in under 1 s. Added `portable-pty` (approved).
 
 **Dependencies:** 12 · **Files:** `app/src-tauri/src/git_runner/terminal_session.rs`, `app/src-tauri/src/git_runner/shell_choice.rs`, `app/src-tauri/src/commands/terminal.rs` · **Scope:** M
 

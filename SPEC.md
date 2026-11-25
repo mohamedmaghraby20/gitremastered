@@ -77,6 +77,7 @@ Commands (screen asks, core answers):
 | `start_terminal_session` | practice folder path | session id |
 | `send_terminal_input` | session id, text | nothing |
 | `resize_terminal` | session id, columns, rows | nothing |
+| `close_terminal_session` | session id | nothing (stops the shell; added in task 13) |
 | `get_repo_snapshot` | practice folder path | `RepoSnapshot` |
 
 Events (core announces, screens react):
