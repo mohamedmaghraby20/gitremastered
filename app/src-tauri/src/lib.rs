@@ -15,6 +15,8 @@ pub fn run() {
     tauri::Builder::default()
         // Saves progress (finished missions, quiz results, theme) in a JSON file.
         .plugin(tauri_plugin_store::Builder::default().build())
+        // Opens the Pro Git citation links in the system browser (https:// only, see capabilities).
+        .plugin(tauri_plugin_opener::init())
         // One list of terminal sessions for the whole app; it stops every shell on exit.
         .manage(git_runner::terminal_session::TerminalSessions::new())
         // The watcher of the open lesson's practice folder (one at a time).

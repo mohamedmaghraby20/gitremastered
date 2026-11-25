@@ -73,6 +73,16 @@ describe('parseLessonText', () => {
 		);
 	});
 
+	it('rejects a book link that is not on https://git-scm.com', () => {
+		const otherSite = validLessonText.replace(
+			'bookUrl: https://git-scm.com/',
+			'bookUrl: http://example.com/'
+		);
+		expect(() => parseLessonText(otherSite, fileName)).toThrow(
+			`${fileName}: "bookUrl" must start with https://git-scm.com/`
+		);
+	});
+
 	it('rejects broken YAML in the frontmatter', () => {
 		const brokenYaml = validLessonText.replace(
 			'readFirst: [start-a-repo]',

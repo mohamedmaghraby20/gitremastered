@@ -1,4 +1,4 @@
-# Tasks: Phases 1 and 2
+# Tasks: Phases 1 to 3
 
 Plan: `tasks/plan.md` · Spec: `SPEC.md` · Design: `DESIGN.md` · Rules: `CLAUDE.md`
 
@@ -152,9 +152,9 @@ Every task: test first where there is logic; all of `pnpm test`, `pnpm check`, `
 
 **Verification:**
 - [x] Tests pass: loader test over the real pilot files
-- [ ] Manual: you read the lesson text and approve it
+- [x] Manual: you read the lesson text and approve it (approved 2026-11-25)
 
-**Result (2026-11-25):** Pilot written from Pro Git 2.2 (status, tracking, staging, short status, committing, skipping the staging area). "Use it" is 353 words plus a Try-it step, about 3 minutes of reading and 2 of trying. The mission is a real job: commit new release notes alone and keep an unfinished README edit out (teaches selective staging). Setup sets a practice identity only when the student has none, and turns off CRLF conversion so Windows warnings don't clutter the terminal. Special blocks use `:::name` markers (definitions, try-it, careful, sidenote, compare), rendered in task 11. Waiting on your read-through and approval.
+**Result (2026-11-25):** Pilot written from Pro Git 2.2 (status, tracking, staging, short status, committing, skipping the staging area). "Use it" is 353 words plus a Try-it step, about 3 minutes of reading and 2 of trying. The mission is a real job: commit new release notes alone and keep an unfinished README edit out (teaches selective staging). Setup sets a practice identity only when the student has none, and turns off CRLF conversion so Windows warnings don't clutter the terminal. Special blocks use `:::name` markers (definitions, try-it, careful, sidenote, compare), rendered in task 11. Approved by you on 2026-11-25.
 
 **Dependencies:** 8 · **Files:** `content/lessons/three-areas/lesson.md`, `mission.yaml`, `quiz.yaml`, `content/paths/pro-path.yaml` · **Scope:** S
 
@@ -386,3 +386,79 @@ Every task: test first where there is logic; all of `pnpm test`, `pnpm check`, `
 - [ ] Visualizer updates within 300 ms of a Git command (measured)
 - [ ] Memory use with the pilot open measured and written down
 - [ ] All tests pass → Phase 3: you take the pilot as a student
+
+---
+
+## Phase 3: Pilot review
+
+Goal: take the pilot as a student in the real desktop app, measure it against SPEC §10, fix what the run-through finds, settle the content format, and plan phase 4. You approved this phase and the opener plugin on 2026-11-25; your own student run-through comes in the joint review of phases 2 and 3.
+
+### Task 24: Open the Pro Git link in the system browser
+**Description:** In the desktop window a plain `target="_blank"` link does nothing useful. Add the Tauri opener plugin (approved 2026-11-25) and a small `openExternalLink` wrapper in `app/src/lib/tauri/`, allowed only for `https://` links. The citation link uses it in the desktop app and stays a normal link in a browser.
+
+**Acceptance criteria:**
+- [ ] Clicking "Pro Git 2.2" in the desktop app opens the system browser at the section
+- [x] Only `https://` addresses are opened; anything else is refused
+- [x] The opener permission is limited to `https://` URLs
+
+**Verification:**
+- [x] Tests pass: wrapper test (https opens, other schemes refused, a desktop click goes to the system browser, a browser click is left alone)
+
+**Result (2026-11-25):** `open-external.ts` has three small functions: `isSafeExternalLink` (https only), `openExternalLink` (refuses anything else, then calls the opener plugin) and `handleExternalLinkClick` (in the desktop app it cancels the click and opens the system browser; in a browser it does nothing). The capability allows `opener:allow-open-url` for `https://git-scm.com/*` only, and the content check now rejects a `bookUrl` outside that site, so a lesson can't ship a link the app may not open. Added `@tauri-apps/plugin-opener` and `tauri-plugin-opener` (approved 2026-11-25). The click in the desktop window is checked in task 27.
+
+**Dependencies:** 10 · **Files:** `app/src/lib/tauri/open-external.ts` (+ test), `LessonHeader.svelte`, `src-tauri/Cargo.toml`, `lib.rs`, `capabilities/default.json` · **Scope:** M
+
+### Task 25: A driver that plays the app like a student
+**Description:** A dev script that starts a release copy of the app with its own data folder and the web view's debugging port on, then drives it through the Chrome DevTools Protocol (Node's built-in WebSocket, no new package): open a page, type into the terminal, read the screen. Used by tasks 26–28.
+
+**Acceptance criteria:**
+- [ ] One command builds nothing new, starts the copy, and connects
+- [ ] It can open `/lessons/three-areas`, type `git status` in the terminal and read the output back (Checkpoint B)
+- [ ] It never touches your own app data (separate identifier)
+
+**Verification:**
+- [ ] Manual: the script prints the `git status` output from the real shell
+
+**Dependencies:** 14 · **Files:** `app/scripts/student-driver/` · **Scope:** M
+
+### Task 26: Measure the visualizer delay and memory use
+**Description:** SPEC §10 items 4 and 10. With the driver, run `git add` in the pilot and time until the desk shows the file as staged; repeat and take the slowest. Read the memory of the app and its web view processes with the pilot open. Write both into `docs/measurements.md`.
+
+**Acceptance criteria:**
+- [ ] Delay measured over at least 10 commands; slowest under 300 ms
+- [ ] Memory measured (app + web view processes); under ~250 MB or a written plan to get there
+- [ ] Numbers, date, machine and method written down
+
+**Dependencies:** 25 · **Files:** `docs/measurements.md`, driver script · **Scope:** S
+
+### Task 27: Play the pilot as a student and fix what breaks
+**Description:** With the driver: read the lesson, run the mission from setup to goals met, open every hint, reset, take the quiz with wrong and right answers, restart the app and check progress is kept. Also the second lesson. Write findings in `docs/reviews/pilot-review.md`; fix each real problem with a test.
+
+**Acceptance criteria:**
+- [ ] SPEC §10 items 2, 3, 5, 6, 7, 8 checked in the desktop app and noted
+- [ ] Every problem found is fixed (with a test) or listed with a reason to wait
+
+**Dependencies:** 25 · **Files:** `docs/reviews/pilot-review.md`, fixes as found · **Scope:** M
+
+### Task 28: Settle the content format
+**Description:** SPEC §4 says "revisit after the pilot". Use both lessons and the review to decide what stays, what changes, and write the final V1 format into SPEC §4 and an authoring guide for lesson writers (`docs/writing-lessons.md`).
+
+**Acceptance criteria:**
+- [ ] SPEC §4 marked final for V1, open question 4 closed
+- [ ] `docs/writing-lessons.md` explains every file, field, block and goal check, with the pilot as example
+
+**Dependencies:** 27 · **Files:** `SPEC.md`, `docs/writing-lessons.md` · **Scope:** S
+
+### Task 29: Plan phase 4
+**Description:** Break phase 4 (the other screens: home, course map, search, command index, settings) into detailed tasks in this file, from the prototype and the review findings.
+
+**Acceptance criteria:**
+- [ ] Phase 4 tasks written with acceptance criteria, files and sizes
+- [ ] `tasks/plan.md` updated: phase 3 status, phase 4 task list, dependency table
+
+**Dependencies:** 27 · **Files:** `tasks/todo.md`, `tasks/plan.md` · **Scope:** S
+
+## Checkpoint D: Pilot reviewed
+- [ ] Measurements written down and within SPEC targets (or a plan)
+- [ ] Review findings fixed or listed
+- [ ] You review phases 2 and 3 together and take the pilot yourself

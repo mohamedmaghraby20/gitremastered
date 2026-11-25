@@ -5,6 +5,8 @@
           bookSection (e.g. "2.2 Recording Changes"), bookUrl (the online Pro Git section).
 -->
 <script lang="ts">
+	import { handleExternalLinkClick } from '$lib/tauri/open-external';
+
 	let {
 		title,
 		lessonNumber,
@@ -31,12 +33,14 @@
 		{/if}
 		<span>{moduleTitle}</span>
 		<span aria-hidden="true">·</span>
-		<!-- The online Pro Git is not an app page, so SvelteKit's resolve() does not apply. -->
+		<!-- The online Pro Git is not an app page, so SvelteKit's resolve() does not apply.
+		     In the desktop app the click opens the system browser (see open-external.ts). -->
 		<!-- eslint-disable svelte/no-navigation-without-resolve -->
 		<a
 			href={bookUrl}
 			target="_blank"
 			rel="noreferrer"
+			onclick={(event) => handleExternalLinkClick(event, bookUrl)}
 			class="tracking-normal text-link normal-case hover:underline"
 		>
 			Pro Git {bookSection}

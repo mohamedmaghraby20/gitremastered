@@ -15,6 +15,9 @@ export type LessonText = {
 	sections: LessonSections;
 };
 
+/** The only site a citation link may point to (Pro Git and the official Git docs). */
+const allowedBookSite = 'https://git-scm.com/';
+
 /** The section headings authors write, in the required order, and where each one goes. */
 const sectionHeadings: { heading: string; key: keyof LessonSections }[] = [
 	{ heading: 'Use it', key: 'useIt' },
@@ -72,10 +75,24 @@ function readFrontmatter(reader: FieldReader): LessonFrontmatter {
 		title: reader.text('title'),
 		module: reader.text('module'),
 		bookSection: reader.text('bookSection'),
-		bookUrl: reader.text('bookUrl'),
+		bookUrl: readBookUrl(reader),
 		bookSources: reader.textList('bookSources'),
 		readFirst: reader.textList('readFirst', 0)
 	};
+}
+
+/**
+ * Reads the citation link. It must point at git-scm.com (Pro Git and the official Git docs),
+ * because the desktop app is only allowed to open that site (see capabilities/default.json).
+ * @param reader - a reader for the frontmatter YAML
+ * @returns the link
+ */
+function readBookUrl(reader: FieldReader): string {
+	const bookUrl = reader.text('bookUrl');
+	if (!bookUrl.startsWith(allowedBookSite)) {
+		reader.fail(`"bookUrl" must start with ${allowedBookSite}`);
+	}
+	return bookUrl;
 }
 
 /**
