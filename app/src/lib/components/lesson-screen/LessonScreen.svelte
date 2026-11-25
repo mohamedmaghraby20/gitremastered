@@ -1,6 +1,7 @@
 <!--
   LessonScreen.svelte
-  One open lesson: the lesson column on the left and the practice column on the right.
+  One open lesson: the lesson column (text and mission) on the left and the practice column
+  (visualizer and terminal) on the right.
   It owns the lesson's practice session and listens for live repo snapshots while open.
   The page re-creates it for each lesson, so every lesson starts with a fresh session.
 
@@ -15,7 +16,9 @@
 		currentRepoSnapshot,
 		startRepoSnapshotUpdates
 	} from '$lib/stores/repo-snapshot';
+	import { formatLessonNumber } from '$lib/content/lesson-navigation';
 	import LessonReader from '$lib/components/lesson-reader/LessonReader.svelte';
+	import MissionPanel from '$lib/components/mission-panel/MissionPanel.svelte';
 	import PracticeColumn from './PracticeColumn.svelte';
 
 	let { lesson, place }: { lesson: Lesson; place: LessonPlace | null } = $props();
@@ -56,6 +59,15 @@
 
 <!-- Fills the window under the 48px top bar (h-12), so each column scrolls on its own. -->
 <div class="flex h-[calc(100dvh-(--spacing(12)))] flex-wrap">
-	<LessonReader {lesson} {place} />
+	<LessonReader {lesson} {place}>
+		{#snippet afterText()}
+			<MissionPanel
+				mission={lesson.mission}
+				missionNumber={place === null ? null : formatLessonNumber(place.lessonNumber)}
+				snapshot={$currentRepoSnapshot}
+				onReset={() => session.reset()}
+			/>
+		{/snippet}
+	</LessonReader>
 	<PracticeColumn missionId={lesson.id} {session} snapshot={$currentRepoSnapshot} />
 </div>

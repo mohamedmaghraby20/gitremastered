@@ -87,7 +87,7 @@ Full details for each task (acceptance criteria, verification, files) are in `ta
 - [x] Task 16: Watch the repo and send live updates
 - [x] Task 17: Draw the three areas and the live caption
 - [x] Task 18: Draw the history map
-- [ ] Task 19: Run the mission: setup, goal checks, hints, reset
+- [x] Task 19: Run the mission: setup, goal checks, hints, reset
 - [ ] Task 20: Show the quiz and explain answers
 - [ ] Task 21: Save progress between sessions
 - [ ] Task 22: Test every mission against real Git

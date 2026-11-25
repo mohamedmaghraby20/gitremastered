@@ -307,13 +307,15 @@ Every task: test first where there is logic; all of `pnpm test`, `pnpm check`, `
 **Description:** Opening the lesson sets up its practice repo; the mission panel's checklist ticks itself from the snapshot; "Check mission", "Reset practice" and the hint ladder work.
 
 **Acceptance criteria:**
-- [ ] Goals tick as soon as they are met
-- [ ] Hints reveal one at a time; reset rebuilds the repo and clears the checklist
-- [ ] Goal checking is pure functions with no screen code
+- [x] Goals tick as soon as they are met
+- [x] Hints reveal one at a time; reset rebuilds the repo and clears the checklist
+- [x] Goal checking is pure functions with no screen code
 
 **Verification:**
-- [ ] Tests pass: each goal check type against sample snapshots; hint ladder state
-- [ ] Manual: complete the pilot mission
+- [x] Tests pass: each goal check type against sample snapshots; hint ladder state
+- [ ] Manual: complete the pilot mission (you, in the desktop app)
+
+**Result (2026-11-25):** Pure logic in `mission-engine/`: `goal-checker.ts` (`isGoalMet` / `checkGoals` for all six check kinds; never met before the first snapshot) and `mission-session.ts` (hint ladder, hint button label, "Check mission" message). `MissionPanel` is the worksheet ticket from the prototype: header with mission number and "1 / 3 done", dashed separator, serif brief, self-ticking `GoalRow`s (✓ plus hidden "(done)" words for screen readers), hints revealed one at a time, Check / Reset practice / Show a hint. Reset rebuilds the practice folder (via `PracticeSession`) and hides the hints again; completion is reported once (task 21 saves it). The lesson page opens with the practice folder set up (task 14). Not yet checked by you: completing the pilot mission in the desktop app.
 
 **Dependencies:** 14, 17 · **Files:** `app/src/lib/mission-engine/goal-checker.ts`, `goal-checker.test.ts`, `mission-session.ts`, `app/src/lib/components/mission-panel/MissionPanel.svelte`, `GoalRow.svelte` · **Scope:** M
 
