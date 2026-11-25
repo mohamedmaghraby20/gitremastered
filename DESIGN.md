@@ -35,8 +35,9 @@ Visual references (review copies, kept in sync with this file):
 | `primary` | `#303055` | `#faff69` | Primary button, active tab, heading bar, focus ring |
 | `primary-edge` | `#16162e` | `#b8bc2e` | Keycap bottom edge of the primary button |
 | `on-primary` | `#ffffff` | `#121212` | Text on `primary` |
-| `highlight` | `#faff69` | `#faff69` | Highlighter behind key terms and HEAD; never a text color |
+| `highlight` | `#faff69` | `#faff69` | Highlighter behind HEAD and small labels; never a text color |
 | `on-highlight` | `#1a1a1a` | `#121212` | Text on `highlight` |
+| `highlight-soft` | `#f2f58a` | `#4b4c1c` | Soft marker stroke under key terms in lesson text, behind `ink` |
 | `link` | `#3b61b0` | `#9fb4ff` | Links, Pro Git citations |
 | `success` / `warning` / `danger` | `#2f8f3a` / `#9a6a00` / `#b42318` | `#5cc46a` / `#e0b84a` / `#f06a5f` | Marks and borders only, always with a word or ✓ ✗ |
 
@@ -137,7 +138,7 @@ All three are free and open source and are bundled inside the app.
   --border: #e4e4e0; --border-strong: #8f8f99;
   --ink: #303055; --ink-muted: #5a5a6e; --ink-faint: #6e6e80;
   --primary: #303055; --primary-edge: #16162e; --on-primary: #ffffff;
-  --highlight: #faff69; --on-highlight: #1a1a1a; --link: #3b61b0;
+  --highlight: #faff69; --on-highlight: #1a1a1a; --highlight-soft: #f2f58a; --link: #3b61b0;
   --success: #2f8f3a; --warning: #9a6a00; --danger: #b42318;
   /* Git areas */
   --git-working: #8f8f99; --git-staging: #faff69; --git-staging-wash: #fdffd6; --git-staging-edge: #6f7200;
@@ -161,7 +162,7 @@ All three are free and open source and are bundled inside the app.
   --border: #2a2a2a; --border-strong: #6b6b6b;
   --ink: #f2f2f2; --ink-muted: #a3a3a3; --ink-faint: #8a8a8a;
   --primary: #faff69; --primary-edge: #b8bc2e; --on-primary: #121212;
-  --on-highlight: #121212; --link: #9fb4ff;
+  --on-highlight: #121212; --highlight-soft: #4b4c1c; --link: #9fb4ff;
   --success: #5cc46a; --warning: #e0b84a; --danger: #f06a5f;
   --git-working: #7a7a7a; --git-staging-wash: #24250f; --git-staging-edge: #c9cc3f;
   --git-repository: #f2f2f2; --on-git-repository: #121212;

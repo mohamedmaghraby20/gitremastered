@@ -29,11 +29,16 @@
 	font-weight: var(--type-h3-weight);
 }
 
-/* Bold marks a newly introduced key term: the yellow highlighter behind dark text. */
+/*
+ * Bold marks a newly introduced key term: a soft marker stroke under the lower part of the
+ * words, like a highlighter pen, so long reading stays calm. "clone" repeats the stroke on
+ * each line when a term wraps.
+ */
 .lesson-prose strong {
-	padding: 1px var(--space-1);
-	background: var(--highlight);
-	color: var(--on-highlight);
+	padding: 0 2px;
+	background: linear-gradient(transparent 55%, var(--highlight-soft) 55%);
+	box-decoration-break: clone;
+	color: var(--ink);
 	font-weight: 600;
 }
 

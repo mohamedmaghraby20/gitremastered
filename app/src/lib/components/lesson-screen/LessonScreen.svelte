@@ -19,6 +19,7 @@
 	import { formatLessonNumber } from '$lib/content/lesson-navigation';
 	import LessonReader from '$lib/components/lesson-reader/LessonReader.svelte';
 	import MissionPanel from '$lib/components/mission-panel/MissionPanel.svelte';
+	import PartHeading from '$lib/components/lesson-reader/PartHeading.svelte';
 	import Quiz from '$lib/components/quiz/Quiz.svelte';
 	import type { QuizScore } from '$lib/quiz/score-quiz';
 	import { markMissionFinished, saveQuizResult } from '$lib/stores/progress';
@@ -78,13 +79,20 @@
 <div class="flex h-full flex-wrap overflow-y-auto">
 	<LessonReader {lesson} {place}>
 		{#snippet afterText()}
-			<MissionPanel
-				mission={lesson.mission}
-				missionNumber={place === null ? null : formatLessonNumber(place.lessonNumber)}
-				snapshot={$currentRepoSnapshot}
-				onReset={() => session.reset()}
-				onComplete={() => void markMissionFinished(lesson.id)}
-			/>
+			<section aria-labelledby="mission-heading" class="flex flex-col gap-3">
+				<PartHeading
+					headingId="mission-heading"
+					title="Your mission"
+					description="A real job to do in the terminal on the right. The goals tick by themselves as your repository changes."
+				/>
+				<MissionPanel
+					mission={lesson.mission}
+					missionNumber={place === null ? null : formatLessonNumber(place.lessonNumber)}
+					snapshot={$currentRepoSnapshot}
+					onReset={() => session.reset()}
+					onComplete={() => void markMissionFinished(lesson.id)}
+				/>
+			</section>
 			<Quiz quiz={lesson.quiz} onfinish={saveQuizScore} />
 		{/snippet}
 	</LessonReader>

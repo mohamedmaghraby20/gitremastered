@@ -71,7 +71,7 @@
 <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 <section
 	aria-label={`Question ${questionNumber}`}
-	class="flex flex-col gap-3"
+	class="flex flex-col gap-3 rounded-medium border bg-surface px-5 py-4"
 	onkeydown={handleKeydown}
 	role="group"
 >

@@ -1,11 +1,13 @@
 <!--
   Quiz.svelte
-  The lesson's quiz: every question with its answers, and the score once all are checked.
+  The lesson's quiz: a heading that says what the quiz is for, then every question as its own
+  card, and the score once all are checked.
   Inputs: quiz (from quiz.yaml), onfinish (called once with the score when every question is checked).
 -->
 <script lang="ts">
 	import type { Quiz } from '$lib/types/quiz';
 	import { scoreQuiz, type QuizScore } from '$lib/quiz/score-quiz';
+	import PartHeading from '$lib/components/lesson-reader/PartHeading.svelte';
 	import QuizQuestionCard from './QuizQuestionCard.svelte';
 
 	let { quiz, onfinish = () => {} }: { quiz: Quiz; onfinish?: (score: QuizScore) => void } =
@@ -30,18 +32,20 @@
 	}
 </script>
 
-<section
-	aria-labelledby="quiz-heading"
-	class="flex flex-col gap-5 rounded-medium border bg-surface px-5 py-4"
->
-	<header class="flex items-baseline justify-between">
-		<h2 id="quiz-heading" class="type-caption m-0 text-ink-muted uppercase">Quiz</h2>
-		{#if isFinished}
-			<span class="type-label-mono" role="status">
-				{score.correctCount} / {score.questionCount} right
-			</span>
-		{/if}
-	</header>
+<section aria-labelledby="quiz-heading" class="flex flex-col gap-3">
+	<PartHeading
+		headingId="quiz-heading"
+		title="Quiz"
+		description="Check what you understood. Pick an answer (or press A–D), then press Check."
+	>
+		{#snippet aside()}
+			{#if isFinished}
+				<span class="type-label-mono" role="status">
+					{score.correctCount} / {score.questionCount} right
+				</span>
+			{/if}
+		{/snippet}
+	</PartHeading>
 	{#each quiz.questions as question, questionIndex (question.question)}
 		<QuizQuestionCard
 			{question}
