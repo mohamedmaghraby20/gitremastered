@@ -33,7 +33,8 @@
 		head: { kind: 'branch', branchName: 'main', commitId: secondId },
 		stagedFiles: [{ path: 'notes.txt', changeKind: 'added', oldPath: null }],
 		modifiedFiles: [{ path: 'README.md', changeKind: 'modified', oldPath: null }],
-		untrackedFiles: ['draft.txt']
+		untrackedFiles: ['draft.txt'],
+		committedFiles: []
 	};
 
 	const sampleCaption = {

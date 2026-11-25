@@ -21,6 +21,7 @@ function snapshotWith(changes: Partial<RepoSnapshot>): RepoSnapshot {
 		stagedFiles: [],
 		modifiedFiles: [],
 		untrackedFiles: [],
+		committedFiles: [],
 		...changes
 	};
 }
@@ -60,16 +61,22 @@ describe('isGoalMet', () => {
 		expect(isGoalMet(goal, snapshotWith({ untrackedFiles: ['notes.txt'] }))).toBe(false);
 	});
 
-	it('file-is-committed needs a commit and nothing left to save for the file', () => {
+	it('file-is-committed needs the file in the latest commit and nothing left to save', () => {
 		const goal = { check: 'file-is-committed' as const, file: 'notes.txt' };
-		expect(isGoalMet(goal, snapshotWith({ commits: oneCommit }))).toBe(true);
+		const committed = { commits: oneCommit, committedFiles: ['notes.txt'] };
+		expect(isGoalMet(goal, snapshotWith(committed))).toBe(true);
 		expect(isGoalMet(goal, snapshotWith({}))).toBe(false);
-		expect(
-			isGoalMet(goal, snapshotWith({ commits: oneCommit, untrackedFiles: ['notes.txt'] }))
-		).toBe(false);
-		expect(isGoalMet(goal, snapshotWith({ commits: oneCommit, stagedFiles: [notesChange] }))).toBe(
+		expect(isGoalMet(goal, snapshotWith({ ...committed, stagedFiles: [notesChange] }))).toBe(false);
+		expect(isGoalMet(goal, snapshotWith({ ...committed, modifiedFiles: [notesChange] }))).toBe(
 			false
 		);
+	});
+
+	it('file-is-committed is not met by a file that was never committed (pilot review finding)', () => {
+		// The student deleted notes.txt and made an empty commit: no pending change, but no save either.
+		const goal = { check: 'file-is-committed' as const, file: 'notes.txt' };
+		const deletedInstead = { commits: oneCommit, committedFiles: ['README.md'] };
+		expect(isGoalMet(goal, snapshotWith(deletedInstead))).toBe(false);
 	});
 
 	it('commit-count-at-least', () => {

@@ -21,6 +21,7 @@ function snapshotWith(changes: Partial<RepoSnapshot>): RepoSnapshot {
 		stagedFiles: [],
 		modifiedFiles: [],
 		untrackedFiles: [],
+		committedFiles: [],
 		...changes
 	};
 }

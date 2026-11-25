@@ -25,7 +25,8 @@ function snapshotWithUntracked(untrackedCount: number): RepoSnapshot {
 		head: { kind: 'branch', branchName: 'main', commitId: null },
 		stagedFiles: [],
 		modifiedFiles: [],
-		untrackedFiles: Array.from({ length: untrackedCount }, (_, index) => `file-${index}.txt`)
+		untrackedFiles: Array.from({ length: untrackedCount }, (_, index) => `file-${index}.txt`),
+		committedFiles: []
 	};
 }
 

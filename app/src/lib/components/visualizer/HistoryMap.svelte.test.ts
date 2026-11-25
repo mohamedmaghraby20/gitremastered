@@ -35,7 +35,8 @@ const twoCommitSnapshot: RepoSnapshot = {
 	head: { kind: 'branch', branchName: 'main', commitId: secondId },
 	stagedFiles: [],
 	modifiedFiles: [],
-	untrackedFiles: []
+	untrackedFiles: [],
+	committedFiles: []
 };
 
 describe('HistoryMap', () => {

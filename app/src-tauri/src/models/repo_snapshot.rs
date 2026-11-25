@@ -23,6 +23,8 @@ pub struct RepoSnapshot {
     pub modified_files: Vec<FileChange>,
     /// New files Git does not track yet (their paths).
     pub untracked_files: Vec<String>,
+    /// Every file saved in the latest commit (HEAD), sorted; empty before the first commit.
+    pub committed_files: Vec<String>,
 }
 
 /// One commit.
@@ -139,6 +141,7 @@ mod tests {
             }],
             modified_files: vec![],
             untracked_files: vec!["draft.md".to_string()],
+            committed_files: vec!["notes.txt".to_string()],
         }
     }
 
@@ -150,6 +153,7 @@ mod tests {
         assert_eq!(snapshot_json["stagedFiles"][0]["changeKind"], "added");
         assert_eq!(snapshot_json["stagedFiles"][0]["oldPath"], json!(null));
         assert_eq!(snapshot_json["untrackedFiles"][0], "draft.md");
+        assert_eq!(snapshot_json["committedFiles"][0], "notes.txt");
         assert_eq!(snapshot_json["commits"][0]["parentIds"], json!([]));
         assert_eq!(snapshot_json["branches"][0]["isRemote"], false);
     }

@@ -148,3 +148,32 @@ fn a_folder_without_git_is_an_error() {
 
     assert!(result.is_err());
 }
+
+/// The files of the latest commit are listed, including ones in subfolders; empty before
+/// the first commit. A deleted file stays listed until the deletion is committed.
+#[test]
+fn committed_files_list_the_latest_commit() {
+    let (_temporary, empty_folder) = practice_repo(&[]);
+    assert!(
+        read_snapshot(&empty_folder)
+            .expect("snapshot")
+            .committed_files
+            .is_empty()
+    );
+
+    let (_temporary, folder) = practice_repo(&[
+        "mkdir docs",
+        "echo guide > docs/guide.md",
+        "echo readme > README.md",
+        "git add .",
+        "git commit -q -m 'Add files'",
+        "rm README.md",
+    ]);
+
+    let snapshot = read_snapshot(&folder).expect("snapshot");
+
+    assert_eq!(
+        snapshot.committed_files,
+        vec!["README.md".to_string(), "docs/guide.md".to_string()]
+    );
+}

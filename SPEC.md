@@ -104,6 +104,7 @@ type RepoSnapshot = {
   stagedFiles: FileChange[];     // in the index, not yet committed
   modifiedFiles: FileChange[];   // changed in the working folder, not staged
   untrackedFiles: string[];
+  committedFiles: string[];    // every file in the latest commit (HEAD); added after the pilot review
 };
 
 /** One commit. */

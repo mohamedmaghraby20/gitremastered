@@ -43,3 +43,21 @@ describe('a wrong solution', () => {
 		expect(result.missedGoals).toEqual(['README.md is still changed, not committed']);
 	});
 });
+
+describe('a shortcut that saves nothing', () => {
+	it('does not count as committing the file (pilot review finding)', () => {
+		const pilotMission = courseContent.lessons.get('three-areas')?.mission;
+		if (pilotMission === undefined) {
+			throw new Error('The pilot lesson three-areas is missing');
+		}
+		// Deletes notes.txt and makes an empty commit: no pending change for notes.txt, no save.
+		const shortcutMission = {
+			...pilotMission,
+			solution: ['rm notes.txt', 'git commit -q --allow-empty -m "Nothing"']
+		};
+
+		const result = runMission('shortcut-solution', shortcutMission);
+
+		expect(result.missedGoals).toEqual(['notes.txt is saved in a new commit']);
+	});
+});

@@ -48,18 +48,18 @@ export function checkGoals(goalChecks: GoalCheck[], repoSnapshot: RepoSnapshot |
 }
 
 /**
- * Tells whether a file is saved in a commit with nothing left to save: the repo has a commit,
- * and the file is not new, not staged and not changed since.
+ * Tells whether a file is saved in the latest commit with nothing left to save: it is in
+ * HEAD's files, and not staged or changed since. (Checking only "no pending change" was not
+ * enough: a deleted or never-created file has no pending change either.)
  * @param file - the file's path
  * @param repoSnapshot - the repo state
  * @returns true if the file is committed
  */
 function isFileCommitted(file: string, repoSnapshot: RepoSnapshot): boolean {
-	const repoHasCommits = repoSnapshot.commits.length > 0;
-	const fileIsUntracked = repoSnapshot.untrackedFiles.includes(file);
+	const fileIsInLatestCommit = repoSnapshot.committedFiles.includes(file);
 	const fileIsStaged = isInChanges(repoSnapshot.stagedFiles, file);
 	const fileIsModified = isInChanges(repoSnapshot.modifiedFiles, file);
-	return repoHasCommits && !fileIsUntracked && !fileIsStaged && !fileIsModified;
+	return fileIsInLatestCommit && !fileIsStaged && !fileIsModified;
 }
 
 /**
