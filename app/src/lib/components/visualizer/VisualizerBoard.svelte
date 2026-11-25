@@ -35,11 +35,11 @@
 	aria-label="Visualizer"
 	class="visualizer-board flex min-h-0 flex-1 flex-col overflow-hidden rounded-large border bg-surface-sunken"
 >
-	<div class="type-caption flex justify-between px-3.5 pt-2.5 text-ink-muted uppercase">
+	<div class="type-caption flex justify-between px-3.5 pt-2 text-ink-muted uppercase">
 		<span>Files</span>
 		<span class="type-label-mono text-ink-faint normal-case">{branchLabel}</span>
 	</div>
-	<div class="px-3.5 pt-2.5 pb-3">
+	<div class="px-3.5 pt-1.5 pb-2.5">
 		<AreaDesk {snapshot} />
 	</div>
 	<div class="flex min-h-0 flex-1 flex-col border-t bg-surface">

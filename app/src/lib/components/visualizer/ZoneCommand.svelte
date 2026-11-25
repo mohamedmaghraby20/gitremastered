@@ -2,12 +2,13 @@
   ZoneCommand.svelte
   The command between two desk zones, as a small keycap with an arrow (e.g. "git add →").
   Input: command, the command that moves files to the next zone.
+  Both commands get the same space on each side, so the gaps between zones look even.
 -->
 <script lang="ts">
 	let { command }: { command: string } = $props();
 </script>
 
-<div class="flex flex-col items-center justify-center gap-1.5" aria-hidden="true">
+<div class="flex flex-col items-center justify-center gap-1 px-2" aria-hidden="true">
 	<span
 		class="type-label-mono rounded-small border border-b-2 border-border-strong bg-surface px-1.5 py-0.5 text-center whitespace-nowrap"
 	>

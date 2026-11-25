@@ -51,4 +51,25 @@ describe('HistoryMap', () => {
 		const stations = page.getByTestId('commit-station');
 		await expect.poll(() => stations.elements().length).toBe(3);
 	});
+
+	it('puts HEAD and the branch label above the commit ring', async () => {
+		document.body.style.height = '400px';
+		await render(HistoryMap, { snapshot: twoCommitSnapshot });
+
+		const branchLabel = page.getByText('main', { exact: true });
+		await expect.element(branchLabel).toBeInTheDocument();
+		const headStation = page.getByTestId('commit-station').filter({ hasText: 'HEAD · you' });
+		const ring = headStation.getByTestId('station-ring').element();
+		const labelBottom = branchLabel.element().getBoundingClientRect().bottom;
+		expect(labelBottom).toBeLessThanOrEqual(ring.getBoundingClientRect().top);
+	});
+
+	it('offers zoom in, zoom out and fit buttons', async () => {
+		document.body.style.height = '400px';
+		await render(HistoryMap, { snapshot: twoCommitSnapshot });
+
+		await expect.element(page.getByRole('button', { name: /zoom in/i })).toBeInTheDocument();
+		await expect.element(page.getByRole('button', { name: /zoom out/i })).toBeInTheDocument();
+		await expect.element(page.getByRole('button', { name: /fit view/i })).toBeInTheDocument();
+	});
 });

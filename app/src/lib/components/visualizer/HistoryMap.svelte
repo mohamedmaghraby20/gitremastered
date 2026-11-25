@@ -3,13 +3,14 @@
   The metro-map history from DESIGN.md, drawn with Svelte Flow: commits as stations on a solid
   track, oldest on the left, HEAD and the branch label on their station, and a dashed track to
   the faded "next commit" station. Placement comes from history-layout.ts (ELK).
-  The map is for looking only: no dragging, connecting or selecting.
+  The map is for looking only: no dragging, connecting or selecting. It can be zoomed with
+  the buttons, the mouse wheel or a trackpad pinch, and dragged to look around.
 
   Input: snapshot (the repo state, or null while it loads).
 -->
 <script lang="ts">
 	import '@xyflow/svelte/dist/style.css';
-	import { SvelteFlow, type Edge, type Node } from '@xyflow/svelte';
+	import { Controls, SvelteFlow, type Edge, type Node } from '@xyflow/svelte';
 	import type { RepoSnapshot } from '$lib/types/repo-snapshot';
 	import { buildHistoryGraph, placeStations } from '$lib/visualizer/history-layout';
 	import CommitStation from './CommitStation.svelte';
@@ -17,6 +18,9 @@
 	let { snapshot }: { snapshot: RepoSnapshot | null } = $props();
 
 	const nodeTypes = { station: CommitStation };
+
+	/** How far the map zooms out (to see long histories) and in (to read labels). */
+	const zoomLimits = { minZoom: 0.25, maxZoom: 2 };
 
 	let nodes: Node[] = $state.raw([]);
 	let edges: Edge[] = $state.raw([]);
@@ -75,13 +79,13 @@
 				{nodeTypes}
 				fitView
 				fitViewOptions={{ maxZoom: 1, padding: 0.15 }}
+				{...zoomLimits}
 				nodesDraggable={false}
 				nodesConnectable={false}
 				elementsSelectable={false}
-				zoomOnScroll={false}
-				panOnScroll={false}
-				preventScrolling={false}
-			/>
+			>
+				<Controls showLock={false} orientation="horizontal" position="bottom-left" />
+			</SvelteFlow>
 		{/key}
 	</div>
 </section>
@@ -92,6 +96,19 @@
 		--xy-background-color: transparent;
 		--xy-node-background-color-default: transparent;
 		--xy-node-border-default: none;
+	}
+
+	/* The zoom buttons in our tokens instead of Svelte Flow's own colors. */
+	.history-map :global(.svelte-flow__controls) {
+		--xy-controls-button-background-color: var(--surface);
+		--xy-controls-button-background-color-hover: var(--surface-sunken);
+		--xy-controls-button-color: var(--ink);
+		--xy-controls-button-color-hover: var(--ink);
+		--xy-controls-button-border-color: var(--border);
+		--xy-controls-box-shadow: none;
+		border: 1px solid var(--border);
+		border-radius: var(--radius-small);
+		overflow: hidden;
 	}
 
 	/* The current branch line: solid and thick. */

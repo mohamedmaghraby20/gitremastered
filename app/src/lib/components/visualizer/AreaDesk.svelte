@@ -36,10 +36,10 @@
 	});
 </script>
 
-<div class="grid grid-cols-[minmax(0,1fr)_5rem_minmax(0,1fr)_5.5rem_minmax(0,1fr)]">
+<div class="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)_auto_minmax(0,1fr)]">
 	<section
 		aria-label="Working folder"
-		class="flex min-h-28 min-w-0 flex-col gap-1.5 rounded-medium border border-dashed border-git-working bg-surface p-2.5"
+		class="flex min-h-20 min-w-0 flex-col gap-1 rounded-medium border border-dashed border-git-working bg-surface p-2"
 	>
 		<h3 class="type-label-mono m-0 font-bold">Working folder</h3>
 		<p class="type-sidenote m-0 text-ink-muted">what you're editing</p>
@@ -58,7 +58,7 @@
 
 	<section
 		aria-label="Staging area"
-		class="flex min-h-28 min-w-0 flex-col gap-1.5 rounded-medium border border-git-staging-edge bg-git-staging-wash p-2.5"
+		class="flex min-h-20 min-w-0 flex-col gap-1 rounded-medium border border-git-staging-edge bg-git-staging-wash p-2"
 	>
 		<h3 class="type-label-mono m-0 font-bold text-git-staging-edge">Staging area</h3>
 		<p class="type-sidenote m-0 text-git-staging-edge">picked for the next commit</p>
@@ -77,7 +77,7 @@
 
 	<section
 		aria-label="Repository"
-		class="flex min-h-28 min-w-0 flex-col gap-1.5 rounded-medium bg-git-repository p-2.5 text-on-git-repository"
+		class="flex min-h-20 min-w-0 flex-col gap-1 rounded-medium bg-git-repository p-2 text-on-git-repository"
 	>
 		<h3 class="type-label-mono m-0 font-bold">Repository</h3>
 		<p class="type-sidenote m-0 opacity-80">
