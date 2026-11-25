@@ -260,12 +260,14 @@ Every task: test first where there is logic; all of `pnpm test`, `pnpm check`, `
 **Description:** Watch the whole practice folder, its files and `.git` (debounced ~100 ms; edits to a file change no file inside `.git`, so watching only `.git` would miss them), rebuild the snapshot and emit `repo_changed`. On the screen side, put each snapshot into the `currentRepoSnapshot` store.
 
 **Acceptance criteria:**
-- [ ] `git add` and `git commit` each produce one `repo_changed` with the new state
-- [ ] A burst of changes produces one update, not many
-- [ ] The store holds the latest snapshot
+- [x] `git add` and `git commit` each produce one `repo_changed` with the new state
+- [x] A burst of changes produces one update, not many
+- [x] The store holds the latest snapshot
 
 **Verification:**
-- [ ] Tests pass: Rust test triggers Git changes and counts events; TS store test
+- [x] Tests pass: Rust test triggers Git changes and counts events; TS store test
+
+**Result (2026-11-25):** `RepoWatcher` (`notify-debouncer-mini`, 100 ms quiet time) watches the whole practice folder; after each quiet batch it reads a snapshot and sends it only if it differs from the last one. File reads are ignored (`EventKindMask::CORE`), otherwise our own `git status` would trigger the next snapshot forever. Creating or resetting a practice folder now stops the old watcher and every shell (Windows will not delete a folder a shell is inside; deletes also retry briefly), then starts watching and sends the first snapshot. Screens: `currentRepoSnapshot` store in `stores/repo-snapshot.ts`. Tests with real Git: add → one update, commit → one update, editing a file is seen, 20 quick writes → one update (stable over 4 runs). Added `notify-debouncer-mini` (approved; it brings `notify`).
 
 **Dependencies:** 15 · **Files:** `app/src-tauri/src/repo_inspector/watcher.rs`, `app/src/lib/stores/repo-snapshot.ts`, `repo-snapshot.test.ts` · **Scope:** S
 

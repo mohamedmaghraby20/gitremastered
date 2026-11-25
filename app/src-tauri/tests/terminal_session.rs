@@ -134,3 +134,25 @@ fn closing_stops_the_shell() {
     }
     assert!(sessions.send_input(&session_id, "ls\r").is_err());
 }
+
+/// After closing every shell, the practice folder can be deleted and rebuilt, even on Windows
+/// (where a folder with a running program inside cannot be deleted).
+#[test]
+fn reset_works_after_closing_all_shells() {
+    let sessions = TerminalSessions::new();
+    let temporary_folder = tempfile::tempdir().expect("temporary folder");
+    let practice_root = PracticeRoot::open(temporary_folder.path().join("practice")).expect("root");
+    let folder = practice_root
+        .create("reset-test", &["echo hi > a.txt".to_string()])
+        .expect("practice folder");
+    let shell = terminal_shell().expect("a shell is installed");
+    sessions
+        .start(&folder, &shell, (80, 24), |_, _| {}, |_, _| {})
+        .expect("session starts");
+
+    sessions.close_all().expect("close all works");
+    let reset_folder = practice_root.reset("reset-test");
+
+    assert!(reset_folder.is_ok(), "reset failed: {reset_folder:?}");
+    assert_eq!(sessions.open_session_count(), 0);
+}

@@ -15,6 +15,8 @@ pub fn run() {
     tauri::Builder::default()
         // One list of terminal sessions for the whole app; it stops every shell on exit.
         .manage(git_runner::terminal_session::TerminalSessions::new())
+        // The watcher of the open lesson's practice folder (one at a time).
+        .manage(repo_inspector::watcher::ActiveRepoWatcher::new())
         .invoke_handler(tauri::generate_handler![
             commands::git_info::get_git_version,
             commands::practice::create_practice_repo,

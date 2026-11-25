@@ -144,9 +144,7 @@ impl PracticeRoot {
         folder: &PracticeFolder,
         setup_steps: &[String],
     ) -> Result<(), PracticeError> {
-        if folder.path().exists() {
-            fs::remove_dir_all(folder.path()).map_err(file_system_error)?;
-        }
+        remove_folder_with_retries(folder.path())?;
         fs::create_dir_all(folder.path()).map_err(file_system_error)?;
         run_setup_steps(folder, setup_steps)
     }
@@ -158,6 +156,26 @@ impl PracticeRoot {
     fn saved_setup_path(&self, mission_id: &str) -> PathBuf {
         self.root_path.join(format!("{mission_id}.setup.json"))
     }
+}
+
+/// Deletes a folder and everything in it, if it exists. On Windows a folder stays locked for
+/// a moment after a program inside it stops, so a failed delete is tried again a few times.
+///
+/// Input: the folder. Output: nothing, or the last error.
+fn remove_folder_with_retries(folder_path: &Path) -> Result<(), PracticeError> {
+    const ATTEMPTS: u32 = 10;
+    const PAUSE: std::time::Duration = std::time::Duration::from_millis(100);
+    for attempt in 1..=ATTEMPTS {
+        if !folder_path.exists() {
+            return Ok(());
+        }
+        match fs::remove_dir_all(folder_path) {
+            Ok(()) => return Ok(()),
+            Err(error) if attempt == ATTEMPTS => return Err(file_system_error(error)),
+            Err(_) => std::thread::sleep(PAUSE),
+        }
+    }
+    Ok(())
 }
 
 /// Checks a mission ID: lowercase letters, digits and hyphens only, not empty.

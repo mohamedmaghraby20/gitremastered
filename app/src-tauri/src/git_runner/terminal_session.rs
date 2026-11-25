@@ -149,6 +149,22 @@ impl TerminalSessions {
         Ok(())
     }
 
+    /// Stops every shell, for example before its practice folder is deleted and rebuilt
+    /// (Windows refuses to delete a folder a running program is inside).
+    ///
+    /// Input: none. Output: nothing, or an error if the list is unusable.
+    pub fn close_all(&self) -> Result<(), String> {
+        let removed_sessions: Vec<TerminalSession> = self
+            .lock_sessions()?
+            .drain()
+            .map(|(_, session)| session)
+            .collect();
+        for mut session in removed_sessions {
+            let _ = session.shell_killer.kill();
+        }
+        Ok(())
+    }
+
     /// How many sessions are open. Input: none. Output: the count (0 if the list is unusable).
     pub fn open_session_count(&self) -> usize {
         self.sessions
