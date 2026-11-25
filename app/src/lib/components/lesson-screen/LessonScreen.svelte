@@ -20,6 +20,8 @@
 	import LessonReader from '$lib/components/lesson-reader/LessonReader.svelte';
 	import MissionPanel from '$lib/components/mission-panel/MissionPanel.svelte';
 	import Quiz from '$lib/components/quiz/Quiz.svelte';
+	import type { QuizScore } from '$lib/quiz/score-quiz';
+	import { markMissionFinished, saveQuizResult } from '$lib/stores/progress';
 	import PracticeColumn from './PracticeColumn.svelte';
 
 	let { lesson, place }: { lesson: Lesson; place: LessonPlace | null } = $props();
@@ -50,6 +52,17 @@
 		};
 	}
 
+	/**
+	 * Saves a finished quiz's score for this lesson.
+	 * @param score - the quiz result
+	 */
+	function saveQuizScore(score: QuizScore): void {
+		void saveQuizResult(lesson.id, {
+			correctCount: score.correctCount,
+			questionCount: score.questionCount
+		});
+	}
+
 	$effect(() => {
 		clearRepoSnapshot();
 		const stopFollowing = followSnapshots();
@@ -67,8 +80,9 @@
 				missionNumber={place === null ? null : formatLessonNumber(place.lessonNumber)}
 				snapshot={$currentRepoSnapshot}
 				onReset={() => session.reset()}
+				onComplete={() => void markMissionFinished(lesson.id)}
 			/>
-			<Quiz quiz={lesson.quiz} />
+			<Quiz quiz={lesson.quiz} onfinish={saveQuizScore} />
 		{/snippet}
 	</LessonReader>
 	<PracticeColumn missionId={lesson.id} {session} snapshot={$currentRepoSnapshot} />

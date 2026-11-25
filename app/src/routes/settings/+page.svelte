@@ -1,13 +1,15 @@
 <!--
   +page.svelte (settings, "/settings")
-  Settings, as in the prototype. For now: Appearance → Theme (light, dark or the computer's
-  setting; saved between sessions from task 21) and Terminal → the installed Git version.
+  Settings, as in the prototype: Appearance → Theme (light, dark or the computer's setting,
+  saved between sessions), Progress → reset, and Terminal → the installed Git version.
 -->
 <script lang="ts">
 	import { buildPageTitle } from '$lib/app-info/page-title';
 	import { applyTheme, readAppliedTheme, type ThemeChoice } from '$lib/theme/theme';
 	import { SegmentedSwitch, type SegmentedSwitchOption } from '$lib/components/ui/segmented-switch';
 	import GitVersionStatus from '$lib/components/settings/GitVersionStatus.svelte';
+	import ResetProgress from '$lib/components/settings/ResetProgress.svelte';
+	import { saveThemeChoice } from '$lib/stores/progress';
 
 	const themeOptions: SegmentedSwitchOption<ThemeChoice>[] = [
 		{ value: 'light', label: 'Light' },
@@ -18,12 +20,13 @@
 	let chosenTheme: ThemeChoice = $state(readAppliedTheme());
 
 	/**
-	 * Applies the theme the student picked and remembers it for the switch.
+	 * Applies the theme the student picked, shows it on the switch and saves it.
 	 * @param newTheme - "light", "dark" or "system"
 	 */
 	function chooseTheme(newTheme: ThemeChoice): void {
 		applyTheme(newTheme);
 		chosenTheme = newTheme;
+		void saveThemeChoice(newTheme);
 	}
 </script>
 
@@ -48,6 +51,11 @@
 				onchange={chooseTheme}
 			/>
 		</div>
+	</section>
+
+	<section aria-labelledby="progress-heading" class="rounded-medium border bg-surface">
+		<h2 id="progress-heading" class="type-h3 m-0 border-b px-5 py-3.5">Progress</h2>
+		<ResetProgress />
 	</section>
 
 	<section aria-labelledby="terminal-heading" class="rounded-medium border bg-surface">

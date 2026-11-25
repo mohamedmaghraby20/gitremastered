@@ -89,7 +89,7 @@ Full details for each task (acceptance criteria, verification, files) are in `ta
 - [x] Task 18: Draw the history map
 - [x] Task 19: Run the mission: setup, goal checks, hints, reset
 - [x] Task 20: Show the quiz and explain answers
-- [ ] Task 21: Save progress between sessions
+- [x] Task 21: Save progress between sessions
 - [ ] Task 22: Test every mission against real Git
 - [ ] Task 23: Prove a new lesson needs content files only
 

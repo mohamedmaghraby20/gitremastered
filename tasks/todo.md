@@ -338,13 +338,15 @@ Every task: test first where there is logic; all of `pnpm test`, `pnpm check`, `
 **Description:** Using the Tauri store plugin, save finished missions, quiz results and the chosen theme; show the pilot as done in the sidebar.
 
 **Acceptance criteria:**
-- [ ] Progress and theme survive an app restart
-- [ ] "Reset progress" in Settings clears it after confirmation
-- [ ] Storage access goes through one small module
+- [x] Progress and theme survive an app restart
+- [x] "Reset progress" in Settings clears it after confirmation
+- [x] Storage access goes through one small module
 
 **Verification:**
-- [ ] Tests pass: progress module with a mocked store
-- [ ] Manual: finish the pilot, restart, see it marked done
+- [x] Tests pass: progress module with a mocked store
+- [ ] Manual: finish the pilot, restart, see it marked done (you, in the desktop app)
+
+**Result (2026-11-25):** `stores/progress.ts` is the only module that touches storage: finished missions, latest quiz result per lesson, and the theme, under one key in `progress.json` via the Tauri store plugin (memory-only in a plain browser). It saves to disk after every change. The layout loads progress at startup and applies the saved theme; Settings saves the theme and has a Progress → "Reset progress…" row that asks before forgetting anything (theme stays). Finishing the mission and the quiz save automatically; the sidebar shows ✓ on finished lessons. The plugin is registered in `lib.rs` (Tauri 2's place; `main.rs` only calls it) with the `store:default` permission. Added `tauri-plugin-store` + `@tauri-apps/plugin-store` (approved). Not yet checked by you: finish the pilot, restart, see it marked done.
 
 **Dependencies:** 19, 20 · **Files:** `app/src/lib/stores/progress.ts`, `progress.test.ts`, `app/src-tauri/src/main.rs` (plugin), `app/src/routes/settings/+page.svelte` · **Scope:** M
 

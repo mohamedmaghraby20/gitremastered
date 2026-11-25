@@ -1,12 +1,13 @@
 <!--
   SidebarFull.svelte
   The full, 248px-wide sidebar: the main links with their text, the current module's lessons
-  (from content/), and the book credit. Path progress arrives with saved progress (task 21).
+  (from content/, with a ✓ on finished ones), and the book credit.
   Input: currentPath, the path of the page on screen.
 -->
 <script lang="ts">
 	import { resolve } from '$app/paths';
 	import { getFirstModuleOutline } from '$lib/content/course-content';
+	import { progress } from '$lib/stores/progress';
 	import { isLinkActive, mainLinks } from '$lib/navigation/navigation-links';
 
 	let { currentPath }: { currentPath: string } = $props();
@@ -51,7 +52,10 @@
 							aria-current={isLinkActive(currentPath, lessonHref) ? 'page' : undefined}
 							class="type-small flex py-1 text-ink-muted hover:text-ink aria-[current=page]:font-semibold aria-[current=page]:text-ink"
 						>
-							{lesson.title}
+							<span class="flex-1">{lesson.title}</span>
+							{#if $progress.finishedMissions.includes(lesson.id)}
+								<span class="text-success" aria-label="done">✓</span>
+							{/if}
 						</a>
 					</li>
 				{/each}

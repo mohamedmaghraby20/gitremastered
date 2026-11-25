@@ -197,6 +197,9 @@ importers:
       '@tauri-apps/api':
         specifier: ^2
         version: 2.12.5
+      '@tauri-apps/plugin-store':
+        specifier: ^2.5.1
+        version: 2.5.1
       '@xterm/addon-fit':
         specifier: ^0.11.0
         version: 0.11.0
@@ -747,6 +750,9 @@ packages:
     resolution: {integrity: sha512-/cOeQgqq8PBDPODOjjT0YHs4qxKCHcQMWMiBm4rLM3JNr9mZE+PHNKOK4zAkhIUtYMNL/0fweW48VNvzD1AbqA==}
     engines: {node: '>= 10'}
     hasBin: true
+
+  '@tauri-apps/plugin-store@2.5.1':
+    resolution: {integrity: sha512-lm/84hFRWHKayZI08p4upYYvhujcULXZLIJuATz3Ky6ZUN0hlmgvOIUytl8iTJA/no0nfhnaxDDHrPk1C5psaQ==}
 
   '@testing-library/svelte-core@1.1.3':
     resolution: {integrity: sha512-KkMAvXeWorxN2Yn0kdC1lfoAItxpoj4uOWzxK5leDrNxonLvS5nwBFvztrroyTszQ0Wf/EU6iLT8JhY5qcn22g==}
@@ -2141,6 +2147,10 @@ snapshots:
       '@tauri-apps/cli-win32-arm64-msvc': 2.12.6
       '@tauri-apps/cli-win32-ia32-msvc': 2.12.6
       '@tauri-apps/cli-win32-x64-msvc': 2.12.6
+
+  '@tauri-apps/plugin-store@2.5.1':
+    dependencies:
+      '@tauri-apps/api': 2.12.5
 
   '@testing-library/svelte-core@1.1.3(svelte@5.59.1(@typescript-eslint/types@8.74.0))':
     dependencies:
