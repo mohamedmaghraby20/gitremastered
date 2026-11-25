@@ -115,6 +115,39 @@ export class StudentActions {
 	}
 
 	/**
+	 * Makes the web view act as if its window had focus, which the clipboard needs.
+	 * Input: none. Output: a promise that ends once it applies.
+	 */
+	async emulateFocus(): Promise<void> {
+		await this.connection.send('Emulation.setFocusEmulationEnabled', { enabled: true });
+	}
+
+	/**
+	 * Presses Ctrl plus one key in the terminal, the way a real keyboard does it.
+	 * @param key - the key, e.g. "v"
+	 * @param code - the physical key's name, e.g. "KeyV" or "Equal"
+	 * @param keyCode - its Windows key code, e.g. 86 for V
+	 * @param browserCommand - the editing command a real Ctrl key press runs in the web view
+	 *                         ("paste" for Ctrl V), unless the page stops it
+	 */
+	async pressControlKey(
+		key: string,
+		code: string,
+		keyCode: number,
+		browserCommand?: string
+	): Promise<void> {
+		await this.connection.evaluate(`document.querySelector('.xterm-helper-textarea').focus()`);
+		const keyDetails = { key, code, windowsVirtualKeyCode: keyCode, modifiers: controlKey };
+		const commands = browserCommand === undefined ? [] : [browserCommand];
+		await this.connection.send('Input.dispatchKeyEvent', {
+			type: 'rawKeyDown',
+			...keyDetails,
+			commands
+		});
+		await this.connection.send('Input.dispatchKeyEvent', { type: 'keyUp', ...keyDetails });
+	}
+
+	/**
 	 * Presses and releases one key, sent to the focused element.
 	 * @param key - the key name, e.g. "Enter"
 	 * @param keyCode - its Windows key code, e.g. 13
@@ -126,6 +159,9 @@ export class StudentActions {
 		await this.connection.send('Input.dispatchKeyEvent', { type: 'keyUp', ...keyDetails });
 	}
 }
+
+/** The Chrome DevTools Protocol's flag for "Ctrl is held". */
+const controlKey = 2;
 
 /** Page script that reads xterm.js's rows (its DOM renderer draws one div per row). */
 const readTerminalScript = `[...document.querySelectorAll('.xterm-rows > div')]

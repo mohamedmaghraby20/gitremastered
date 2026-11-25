@@ -468,6 +468,20 @@ Goal: take the pilot as a student in the real desktop app, measure it against SP
 
 **Dependencies:** 27 · **Files:** `tasks/todo.md`, `tasks/plan.md` · **Scope:** S
 
+### Review round 2: your notes from the walkthrough
+**Description:** Fixes from your own run-through of the pilot (2026-11-26), recorded as findings 10–19 in `docs/reviews/pilot-review.md`.
+
+**Acceptance criteria:**
+- [x] Terminal takes about 40% of the practice column (was 280 px)
+- [x] Desk zones smaller; the same space on both sides of "git add" and "git commit"
+- [x] Ctrl V pastes; Ctrl C copies selected text and otherwise still stops a command
+- [x] Ctrl + / − / 0 change the terminal text size, kept after a restart
+- [x] "Your mission" and "Quiz" each have a heading that says what they are for; each quiz question is its own card
+- [x] History map: zoom buttons, mouse wheel and trackpad pinch; HEAD and branch labels above the commit
+- [x] Key terms get a soft marker stroke instead of the full yellow block (new token `highlight-soft`)
+
+**Verification:** unit tests (shortcuts, text size, progress), component tests (labels above, zoom buttons), `pnpm review:fixes` in the desktop app, `pnpm review:play` again · **Scope:** M
+
 ## Checkpoint D: Pilot reviewed
 - [x] Measurements written down and within SPEC targets (or a plan)
 - [x] Review findings fixed or listed
@@ -543,10 +557,14 @@ Goal: home, course map (both paths), search, command index and settings work for
 **Verification:** component tests · **Files:** `routes/commands/`, `components/command-index/` · **Scope:** M
 
 ### Task 37: Search
-**Description:** Search lessons (title, lede, commands used), commands, terms and Pro Git sections, grouped as in the prototype, with filter chips and ↑ ↓ ⏎ Tab Esc. Ctrl K from any screen opens it. Proposed: a small in-memory index over the content the app already loads, instead of Pagefind (Pagefind indexes built HTML pages; our content is already in memory and small). Needs your OK to change SPEC §2.
+**Description:** Search lessons (title, lede, commands used), commands, terms and Pro Git sections, grouped as in the prototype, with filter chips and ↑ ↓ ⏎ Tab Esc. A small in-memory index over the content the app already loads, instead of Pagefind (approved 2026-11-26; SPEC §2 updated).
+
+Ctrl K from any screen opens a **quick search panel** over the current screen, like modern docs sites: type, see the top results grouped in the panel, ↑ ↓ ⏎ opens one, Esc closes it. "See all results" (or expanding the panel) opens the full search page with the same query and the filter chips.
 
 **Acceptance criteria:**
 - [ ] SPEC §10 item 9: finds lessons by title and by command
+- [ ] Ctrl K opens the panel from any screen; focus goes to its search box and comes back on Esc
+- [ ] "See all results" opens `/search` with the query kept
 - [ ] Results update as you type, under 50 ms for the full course size
 
 **Verification:** unit tests (ranking), component tests (keys, Ctrl K) · **Files:** `search/`, `routes/search/`, `components/search/` · **Scope:** M
@@ -571,6 +589,25 @@ Goal: home, course map (both paths), search, command index and settings work for
 - [ ] At 1024 × 700 (the minimum window) nothing is cut off and the switch works by keyboard
 
 **Verification:** layout test at 1024 × 700 (as in the pilot review) · **Files:** `components/lesson-screen/` · **Scope:** M
+
+### Task 41: Resizable lesson panels
+**Description:** Drag handles between the lesson column and the practice column, and between the visualizer and the terminal, so the student picks the sizes (asked for in the walkthrough, 2026-11-26). Arrow keys move a focused handle; double-click goes back to the default split; sizes are remembered.
+
+**Acceptance criteria:**
+- [ ] Both handles work by mouse and keyboard, with a visible focus ring and a screen-reader label
+- [ ] Each panel keeps a minimum size, so the terminal and the lesson text never vanish
+- [ ] Sizes survive a restart
+
+**Verification:** component tests (keys, limits), driver check in the desktop app · **Files:** `components/lesson-screen/` · **Scope:** M
+
+### Task 42: A history map that grows with the course
+**Description:** Branching lessons will make the map too big for its corner. Add an "expand" button that opens the map large over the lesson (Esc closes it; the terminal keeps running), and make the view follow HEAD after each commit. Lanes per branch (one row for each branch) come with the branching lessons.
+
+**Acceptance criteria:**
+- [ ] Expand and close by mouse and keyboard; focus returns to the button
+- [ ] After a commit the newest station is in view, at a readable zoom
+
+**Verification:** component tests, driver check with 20+ commits · **Files:** `components/visualizer/` · **Scope:** M
 
 ## Checkpoint E: The other screens
 - [ ] Every screen in the prototype works with real content and progress

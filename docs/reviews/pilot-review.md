@@ -15,8 +15,27 @@ The pilot lesson (`three-areas`) and the second lesson (`ignoring-files`) played
 | 5   | Component tests could not see Tailwind classes (the test config had no Tailwind plugin), so no layout test was possible and bug 1 went unnoticed.                                                                                                                                                                               | Process        | Fixed: Tailwind added to `vitest.config.ts`.                                                                                                                                                                       |
 | 6   | **The visualizer was a little slow:** 313 ms median from pressing Enter to the desk update (target 300 ms). | Major (target) | Fixed: the snapshot's four Git reads run in parallel; now 234 ms median, 238 ms slowest. Details in `docs/measurements.md`. |
 | 7   | **Quiz said "✓ Right. Right."**: the screen adds "✓ Right." and every right-answer explanation also started with "Right." | Minor (content) | Fixed in both quizzes; the content check now refuses it; rule added to `docs/writing-lessons.md`. |
-| 8   | **The terminal shows only ~7 rows**, so `git status` output scrolls off the top. Its height (280 px) follows the approved prototype. | Design question | For you: keep 280 px, or let the terminal take ~40% of the column (the history map has spare room)? |
+| 8   | **The terminal shows only ~7 rows**, so `git status` output scrolls off the top. Its height (280 px) follows the approved prototype. | Design question | Decided in round 2: the terminal takes ~40% of the column (finding 10). |
 | 9   | Citation links were limited to git-scm.com, but the course map has lessons sourced from GitHub Docs. | Minor | Fixed: `https://docs.github.com/` allowed in the content check and the opener permission. |
+
+## Round 2: your run-through (2026-11-26)
+
+Your notes after taking the pilot yourself. Fixed items were checked in the desktop app with `pnpm review:fixes`.
+
+| # | What you noticed | Kind | Status |
+|---|---|---|---|
+| 10 | The terminal is too small | Layout | Fixed: about 40% of the practice column |
+| 11 | The desk's file zones are too big; "git add" has more space around it than "git commit" | Layout | Fixed: smaller zones and sheets; both commands get the same space on each side |
+| 12 | **Ctrl V does not paste** in the terminal | Bug | Fixed: Ctrl V (and Ctrl Shift V) paste; Ctrl C copies selected text and otherwise still stops a command |
+| 13 | No way to change the terminal's text size | Feature | Fixed: Ctrl + / − / 0, kept after a restart |
+| 14 | The mission and the quiz read as one block; it is not clear the mission checks your work | Clarity | Fixed: "Your mission" and "Quiz" headings, each with one line saying what it is for |
+| 15 | Quiz questions are stuck together in one card | Clarity | Fixed: each question is its own card |
+| 16 | The history map zooms in on double-click but cannot zoom out | Bug | Fixed: zoom in / out / fit buttons, mouse wheel and trackpad pinch; drag to look around |
+| 17 | The branch name under the commit is hard to read as a branch | Clarity | Fixed: HEAD and "branch main" labels sit above the commit, like tags |
+| 18 | The yellow behind key terms is harsh | Design | Fixed: a soft marker stroke under the words (new token `highlight-soft`, in `DESIGN.md` and `tokens.json`) |
+| 19 | The map will not fit once branches grow; panels cannot be resized | Design | Planned: task 41 (drag to resize panels) and task 42 (expand the map, follow HEAD; branch lanes with the branching lessons) |
+
+Also from the walkthrough: Ctrl K should open a quick search panel over the current screen, with "See all results" leading to the search page (added to task 37); a general design pass ("more premium") after all phases; and a review of how deep the lessons go (next discussion).
 
 ## SPEC §10 results
 

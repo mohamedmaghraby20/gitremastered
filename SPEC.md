@@ -28,7 +28,7 @@ A free, open-source desktop app that turns Pro Git into an interactive course. E
 | Visualizer | Svelte Flow + ELK layout |
 | Lesson text | Markdown with frontmatter |
 | Missions, quizzes, paths | YAML |
-| Search | Pagefind |
+| Search | Own small in-memory index over the loaded content (approved 2026-11-26, replaces Pagefind: our content is already in memory) |
 | Progress | Tauri store plugin (local JSON file) |
 | Styling | Tailwind CSS + shadcn-svelte; repeated looks as named classes via `@apply` |
 | Tests | Vitest (TypeScript), `cargo test` (Rust), mission tests against real Git |

@@ -110,6 +110,7 @@ Full details for each task (acceptance criteria, verification, files) are in `ta
 - [x] Task 27: Play the pilot as a student and fix what breaks
 - [x] Task 28: Settle the content format
 - [x] Task 29: Plan phase 4
+- [x] Review round 2: your notes from the walkthrough (terminal size, paste, text size, desk, mission and quiz headings, map zoom and labels, softer highlight)
 
 **Phase 3 status (2026-11-25):** built, tested and pushed. The driver played the pilot in the desktop app; 9 findings, 7 fixed (see `docs/reviews/pilot-review.md`). Waiting on you: your own run-through as a student, the terminal-height question, and the search proposal for phase 4.
 
@@ -126,10 +127,12 @@ Full details for each task (acceptance criteria, verification, files) are in `ta
 - [ ] Task 34: Course map screen
 - [ ] Task 35: Command and glossary content
 - [ ] Task 36: Command index screen
-- [ ] Task 37: Search (proposal: in-memory index instead of Pagefind; needs your OK)
+- [ ] Task 37: Search, with a Ctrl K quick search panel (in-memory index, approved)
 - [ ] Task 38: Settings screen, complete
 - [ ] Task 39: Sidebar with path progress
 - [ ] Task 40: Small-window lesson
+- [ ] Task 41: Resizable lesson panels
+- [ ] Task 42: A history map that grows with the course
 
 ### Checkpoint E: The other screens
 - [ ] Every prototype screen works with real content and progress; search finds lessons by title and command; you review in the desktop app
