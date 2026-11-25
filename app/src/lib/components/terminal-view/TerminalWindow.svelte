@@ -22,7 +22,7 @@
 	bind:this={windowElement}
 	aria-label="Terminal"
 	tabindex="-1"
-	class="flex min-h-0 flex-col overflow-hidden rounded-large bg-terminal-chrome shadow-window"
+	class="flex min-h-0 flex-1 flex-col overflow-hidden rounded-large bg-terminal-chrome shadow-window"
 >
 	<div class="type-label-mono flex items-center gap-3 px-3.5 py-2 text-terminal-muted">
 		<span class="flex gap-1.5" aria-hidden="true">

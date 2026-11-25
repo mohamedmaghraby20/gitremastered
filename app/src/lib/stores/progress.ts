@@ -1,7 +1,7 @@
 /**
  * progress.ts
  * The one module that saves and loads the student's progress: finished missions, quiz
- * results and the chosen theme. In the desktop app it uses the Tauri store plugin (a small
+ * results, the chosen theme and the terminal's text size. In the desktop app it uses the Tauri store plugin (a small
  * JSON file in the app's data folder); in a plain browser it keeps progress in memory only.
  * Screens read the `progress` store and call the functions below; nothing else touches storage.
  */
@@ -18,6 +18,7 @@ export type ProgressData = {
 	finishedMissions: string[]; // lesson IDs whose mission was completed
 	quizResults: Record<string, QuizResult>; // by lesson ID, the latest result
 	theme: ThemeChoice;
+	terminalFontSize: number | null; // pixels, chosen with Ctrl + / -; null = the design's size
 };
 
 /** The few storage actions this module needs (the Tauri store has them; tests pass a fake). */
@@ -37,7 +38,8 @@ const storeFileName = 'progress.json';
 export const emptyProgress: ProgressData = {
 	finishedMissions: [],
 	quizResults: {},
-	theme: 'system'
+	theme: 'system',
+	terminalFontSize: null
 };
 
 const progressStore = writable<ProgressData>(emptyProgress);
@@ -90,9 +92,22 @@ export async function saveThemeChoice(theme: ThemeChoice): Promise<void> {
 	await saveProgress({ ...get(progressStore), theme });
 }
 
-/** Forgets finished missions and quiz results (the theme stays). */
+/**
+ * Remembers the terminal's text size.
+ * @param fontSize - the size in pixels, or null to go back to the design's size
+ */
+export async function saveTerminalFontSize(fontSize: number | null): Promise<void> {
+	await saveProgress({ ...get(progressStore), terminalFontSize: fontSize });
+}
+
+/** Forgets finished missions and quiz results (the theme and terminal text size stay). */
 export async function resetProgress(): Promise<void> {
-	await saveProgress({ ...emptyProgress, theme: get(progressStore).theme });
+	const current = get(progressStore);
+	await saveProgress({
+		...emptyProgress,
+		theme: current.theme,
+		terminalFontSize: current.terminalFontSize
+	});
 }
 
 /**

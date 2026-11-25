@@ -34,7 +34,7 @@
 			<HistoryMap {snapshot} />
 		{/snippet}
 	</VisualizerBoard>
-	<div class="flex min-h-0 flex-[0_0_18rem] flex-col">
+	<div class="flex min-h-0 flex-[0_0_40%] flex-col">
 		<PracticeTerminal
 			{missionId}
 			practiceFolderPath={session.practiceFolderPath}

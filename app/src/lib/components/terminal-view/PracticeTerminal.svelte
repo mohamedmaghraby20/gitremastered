@@ -8,6 +8,7 @@
           onCommand (called with each command line the student enters).
 -->
 <script lang="ts">
+	import { progress, saveTerminalFontSize } from '$lib/stores/progress';
 	import TerminalView from './TerminalView.svelte';
 	import TerminalWindow from './TerminalWindow.svelte';
 
@@ -24,6 +25,14 @@
 	} = $props();
 
 	let windowElement: HTMLElement | undefined = $state();
+
+	/**
+	 * Remembers the text size the student chose with Ctrl + / -.
+	 * @param fontSize - the size in pixels, or null for the design's size
+	 */
+	function rememberFontSize(fontSize: number | null): void {
+		void saveTerminalFontSize(fontSize);
+	}
 </script>
 
 <TerminalWindow folderLabel={`~/practice/${missionId}`} bind:windowElement>
@@ -31,7 +40,13 @@
 		<p class="type-terminal m-0 text-terminal-muted">{statusMessage}</p>
 	{:else}
 		{#key practiceFolderPath}
-			<TerminalView {practiceFolderPath} {onCommand} onEscape={() => windowElement?.focus()} />
+			<TerminalView
+				{practiceFolderPath}
+				{onCommand}
+				savedFontSize={$progress.terminalFontSize}
+				onFontSizeChange={rememberFontSize}
+				onEscape={() => windowElement?.focus()}
+			/>
 		{/key}
 	{/if}
 </TerminalWindow>
