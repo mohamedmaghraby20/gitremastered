@@ -14,10 +14,14 @@
 		"test:watch": "vitest",
 		"lint": "svelte-kit sync && prettier --check . && eslint .",
 		"format": "prettier --write .",
-		"tauri": "tauri"
+		"tauri": "tauri",
+		"tokens": "node scripts/build-tokens.ts"
 	},
 	"license": "MIT",
 	"dependencies": {
+		"@fontsource/ibm-plex-sans": "^5.3.0",
+		"@fontsource/jetbrains-mono": "^5.3.0",
+		"@fontsource/source-serif-4": "^5.3.1",
 		"@tauri-apps/api": "^2"
 	},
 	"devDependencies": {

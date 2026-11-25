@@ -28,18 +28,19 @@ The first `pnpm tauri dev` compiles the Rust core and takes a few minutes. Later
 
 All run from `app/`.
 
-| Purpose                                           | Command                                                            |
-| ------------------------------------------------- | ------------------------------------------------------------------ |
-| Run all screen tests once                         | `pnpm test`                                                        |
-| Re-run screen tests on every save                 | `pnpm test:watch`                                                  |
-| Type-check the screens                            | `pnpm check`                                                       |
-| Lint and check formatting                         | `pnpm lint`                                                        |
-| Fix formatting                                    | `pnpm format`                                                      |
-| Build the screens only (static files in `build/`) | `pnpm build`                                                       |
-| Rust tests                                        | `cargo test --manifest-path src-tauri/Cargo.toml`                  |
-| Rust lint                                         | `cargo clippy --manifest-path src-tauri/Cargo.toml -- -D warnings` |
-| Rust format                                       | `cargo fmt --manifest-path src-tauri/Cargo.toml`                   |
-| Build installers                                  | `pnpm tauri build`                                                 |
+| Purpose                                                                     | Command                                                            |
+| --------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| Run all screen tests once                                                   | `pnpm test`                                                        |
+| Re-run screen tests on every save                                           | `pnpm test:watch`                                                  |
+| Type-check the screens                                                      | `pnpm check`                                                       |
+| Lint and check formatting                                                   | `pnpm lint`                                                        |
+| Fix formatting                                                              | `pnpm format`                                                      |
+| Rebuild `src/lib/styles/tokens.css` after editing `docs/design/tokens.json` | `pnpm tokens`                                                      |
+| Build the screens only (static files in `build/`)                           | `pnpm build`                                                       |
+| Rust tests                                                                  | `cargo test --manifest-path src-tauri/Cargo.toml`                  |
+| Rust lint                                                                   | `cargo clippy --manifest-path src-tauri/Cargo.toml -- -D warnings` |
+| Rust format                                                                 | `cargo fmt --manifest-path src-tauri/Cargo.toml`                   |
+| Build installers                                                            | `pnpm tauri build`                                                 |
 
 ## Tests
 

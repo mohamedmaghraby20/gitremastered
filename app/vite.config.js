@@ -5,7 +5,7 @@
  * Test settings live separately in vitest.config.ts.
  */
 
-import { defineConfig } from 'vite';
+import { defineConfig, searchForWorkspaceRoot } from 'vite';
 import { sveltekit } from '@sveltejs/kit/vite';
 import process from 'node:process';
 
@@ -37,6 +37,13 @@ export default defineConfig(() => ({
 					port: 1421
 				}
 			: undefined,
+		fs: {
+			/**
+			 * Folders the dev server may read: the app itself (Vite default) plus docs/design,
+			 * so the dev gallery can read tokens.json, which sits outside app/.
+			 */
+			allow: [searchForWorkspaceRoot(process.cwd()), '../docs/design']
+		},
 		watch: {
 			// Rust files are rebuilt by Tauri itself, so Vite does not need to watch them.
 			ignored: ['**/src-tauri/**']

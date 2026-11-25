@@ -58,15 +58,17 @@ Every task: test first where there is logic; all of `pnpm test`, `pnpm check`, `
 **Description:** A small script reads `docs/design/tokens.json` and writes `app/src/lib/styles/tokens.css` (light values, dark overrides under `[data-theme="dark"]`, and a system-preference fallback). Bundle the three fonts. A theme helper sets light, dark or system.
 
 **Acceptance criteria:**
-- [ ] Every color, spacing, radius, shadow and duration token becomes a CSS variable; the generated file says not to edit it by hand
-- [ ] Fonts load offline (no network)
-- [ ] Switching the theme changes every token in one step
+- [x] Every color, spacing, radius, shadow and duration token becomes a CSS variable; the generated file says not to edit it by hand
+- [x] Fonts load offline (no network)
+- [x] Switching the theme changes every token in one step
 
 **Verification:**
-- [ ] Tests pass: unit tests for the generator (light value, dark override, token count)
-- [ ] Manual: a developer gallery page (`/dev/gallery`) shows the colors and type styles in both themes
+- [x] Tests pass: unit tests for the generator (light value, dark override, token count)
+- [x] Manual: a developer gallery page (`/dev/gallery`) shows the colors and type styles in both themes
 
-**Dependencies:** 3 · **Files:** `app/scripts/build-tokens.ts`, `app/scripts/build-tokens.test.ts`, `app/src/lib/styles/tokens.css` (generated), `app/src/lib/theme/theme.ts`, `app/src/routes/dev/gallery/+page.svelte` · **Scope:** M
+**Result (2026-11-25):** `pnpm tokens` writes 50 token variables + type-style variables and one `.type-*` class per text style; dark overrides, a system-dark fallback and a reduce-motion block. A test fails if tokens.css drifts from tokens.json. Fonts: Latin subsets only, 7 files, 0 network requests. Gallery checked in the browser: both themes side by side, switch works.
+
+**Dependencies:** 3 · **Files:** `app/scripts/build-tokens.ts`, `app/scripts/design-tokens.ts`, `app/scripts/design-tokens.test.ts`, `app/src/lib/types/design-tokens.ts`, `app/src/lib/styles/fonts.css`, `app/src/lib/styles/tokens.css` (generated), `app/src/lib/theme/theme.ts`, `theme.test.ts`, `app/src/lib/components/dev-gallery/`, `app/src/routes/dev/gallery/+page.svelte` · **Scope:** M
 
 ### Task 5: Set up Tailwind and shadcn-svelte on top of the tokens
 **Description:** Add Tailwind and shadcn-svelte with their theme mapped to our CSS variables (no hard-coded colors). Build the first real component: the keycap Button (primary, secondary, ghost) from `DESIGN.md`, shown in the gallery.

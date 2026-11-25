@@ -20,10 +20,11 @@ const config = {
 		typescript: {
 			/**
 			 * Adds our extra files to the generated tsconfig.
-			 * @param {{ include: string[] }} tsconfig - the tsconfig SvelteKit is about to write
+			 * @param {Record<string, unknown>} tsconfig - the tsconfig SvelteKit is about to write
 			 */
 			config: (tsconfig) => {
-				tsconfig.include.push('../*.config.js', '../*.config.ts', '../scripts/**/*.ts');
+				const includedFiles = /** @type {string[]} */ (tsconfig.include);
+				includedFiles.push('../*.config.js', '../*.config.ts', '../scripts/**/*.ts');
 			}
 		},
 		adapter: adapter({

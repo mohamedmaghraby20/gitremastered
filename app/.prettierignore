@@ -9,3 +9,6 @@ pnpm-lock.yaml
 # Rust: compiled output and generated schemas. Rust code is formatted by rustfmt instead.
 /src-tauri/target/
 /src-tauri/gen/
+
+# Generated from tokens.json by `pnpm tokens`; its exact text is checked by a test.
+/src/lib/styles/tokens.css

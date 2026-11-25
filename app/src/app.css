@@ -1,0 +1,27 @@
+/**
+ * app.css
+ * The global stylesheet: design tokens, fonts, and the few base rules every screen shares.
+ * Every value comes from a token (see DESIGN.md); never write a raw color or size here.
+ */
+
+@import './lib/styles/tokens.css';
+@import './lib/styles/fonts.css';
+
+/* Page background and default text, in the interface font. */
+body {
+	margin: 0;
+	background: var(--canvas);
+	color: var(--ink);
+	font-family: var(--type-body-family);
+	font-size: var(--type-body-size);
+	line-height: var(--type-body-line-height);
+	transition:
+		background-color var(--duration-base) ease-out,
+		color var(--duration-base) ease-out;
+}
+
+/* The 2px focus ring on every interactive element, only when using the keyboard. */
+:focus-visible {
+	outline: 2px solid var(--primary);
+	outline-offset: 2px;
+}

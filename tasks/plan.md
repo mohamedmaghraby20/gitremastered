@@ -60,7 +60,7 @@ Full details for each task (acceptance criteria, verification, files) are in `ta
 - [x] Task 1: Install the missing tools on your PC
 - [x] Task 2: Create the Tauri + SvelteKit app skeleton
 - [ ] Task 3: Set up tests and code checks
-- [ ] Task 4: Turn the design tokens into CSS, with fonts and themes
+- [x] Task 4: Turn the design tokens into CSS, with fonts and themes
 - [ ] Task 5: Set up Tailwind and shadcn-svelte on top of the tokens
 - [ ] Task 6: Build the app shell: top bar, sidebar, empty pages
 - [ ] Task 7: Add the typed bridge between screens and Rust

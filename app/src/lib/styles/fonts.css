@@ -1,0 +1,18 @@
+/**
+ * fonts.css
+ * Loads the three fonts from npm packages, so they ship inside the app and work offline.
+ * Only the Latin letters and the weights the design uses, to keep the app small.
+ */
+
+/* Mono: headings, code, terminal, labels (400 regular, 500 labels, 700 headings). */
+@import '@fontsource/jetbrains-mono/latin-400.css';
+@import '@fontsource/jetbrains-mono/latin-500.css';
+@import '@fontsource/jetbrains-mono/latin-700.css';
+
+/* Serif: lesson reading (400 regular, 400 italic for sidenotes). */
+@import '@fontsource/source-serif-4/latin-400.css';
+@import '@fontsource/source-serif-4/latin-400-italic.css';
+
+/* Sans: interface (400 regular, 600 buttons and captions). */
+@import '@fontsource/ibm-plex-sans/latin-400.css';
+@import '@fontsource/ibm-plex-sans/latin-600.css';
