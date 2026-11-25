@@ -11,6 +11,9 @@
 			"allow": [
 				{
 					"url": "https://git-scm.com/*"
+				},
+				{
+					"url": "https://docs.github.com/*"
 				}
 			]
 		}

@@ -73,13 +73,23 @@ describe('parseLessonText', () => {
 		);
 	});
 
-	it('rejects a book link that is not on https://git-scm.com', () => {
+	it('accepts a link to GitHub Docs, for lessons beyond the book', () => {
+		const githubDocs = validLessonText.replace(
+			'bookUrl: https://git-scm.com/book/en/v2/Git-Basics-Recording-Changes-to-the-Repository',
+			'bookUrl: https://docs.github.com/en/pull-requests'
+		);
+		expect(parseLessonText(githubDocs, fileName).frontmatter.bookUrl).toBe(
+			'https://docs.github.com/en/pull-requests'
+		);
+	});
+
+	it('rejects a book link on any other site', () => {
 		const otherSite = validLessonText.replace(
 			'bookUrl: https://git-scm.com/',
 			'bookUrl: http://example.com/'
 		);
 		expect(() => parseLessonText(otherSite, fileName)).toThrow(
-			`${fileName}: "bookUrl" must start with https://git-scm.com/`
+			`${fileName}: "bookUrl" must start with https://git-scm.com/ or https://docs.github.com/`
 		);
 	});
 
