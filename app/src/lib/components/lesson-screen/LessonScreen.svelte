@@ -71,8 +71,11 @@
 	});
 </script>
 
-<!-- Fills the window under the 48px top bar (h-12), so each column scrolls on its own. -->
-<div class="flex h-[calc(100dvh-(--spacing(12)))] flex-wrap">
+<!-- Fills the page area (all of <main>, under the top bar), so each column scrolls on its own.
+     Each column is h-full: in a wrapping flex row a column would otherwise grow to its whole
+     content height and push the terminal out of sight. In a narrow window the practice column
+     wraps below the lesson and the screen scrolls (overflow-y-auto). -->
+<div class="flex h-full flex-wrap overflow-y-auto">
 	<LessonReader {lesson} {place}>
 		{#snippet afterText()}
 			<MissionPanel

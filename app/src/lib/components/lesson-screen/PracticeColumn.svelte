@@ -28,7 +28,7 @@
 	}
 </script>
 
-<section aria-label="Practice" class="flex min-w-0 flex-[999_1_26rem] flex-col gap-3 p-3">
+<section aria-label="Practice" class="flex h-full min-w-0 flex-[999_1_26rem] flex-col gap-3 p-3">
 	<VisualizerBoard {snapshot} caption={session.lastCaption}>
 		{#snippet history()}
 			<HistoryMap {snapshot} />

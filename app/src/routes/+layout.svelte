@@ -24,11 +24,12 @@
 	});
 </script>
 
-<div class="flex min-h-screen flex-col">
+<!-- Exactly the window height: the top bar stays put and each page scrolls inside <main>. -->
+<div class="flex h-screen flex-col">
 	<TopBar {currentPath} />
-	<div class="flex flex-1">
+	<div class="flex min-h-0 flex-1">
 		<Sidebar {currentPath} variant={isLessonPage ? 'rail' : 'full'} />
-		<main class="min-w-0 flex-1">
+		<main class="min-h-0 min-w-0 flex-1 overflow-y-auto">
 			{@render children()}
 		</main>
 	</div>

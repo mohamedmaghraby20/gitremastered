@@ -11,9 +11,11 @@
 import { defineConfig } from 'vitest/config';
 import { playwright } from '@vitest/browser-playwright';
 import { sveltekit } from '@sveltejs/kit/vite';
+import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
-	plugins: [sveltekit()],
+	// Tailwind too, so component tests that import app.css get real layout (see LessonScreen test).
+	plugins: [tailwindcss(), sveltekit()],
 	test: {
 		// A test that checks nothing is a mistake, so it fails.
 		expect: { requireAssertions: true },

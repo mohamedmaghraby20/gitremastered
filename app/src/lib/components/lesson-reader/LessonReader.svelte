@@ -46,8 +46,10 @@
 	const moduleTitle = $derived(place?.moduleTitle ?? lesson.module);
 </script>
 
-<article class="flex max-w-160 min-w-0 flex-[1_1_35rem] flex-col border-r bg-surface">
-	<div class="flex flex-1 flex-col gap-4.5 overflow-y-auto px-9 pt-7 pb-8">
+<article class="flex h-full max-w-160 min-w-0 flex-[1_1_35rem] flex-col border-r bg-surface">
+	<!-- relative: screen-reader-only text (absolutely positioned) stays inside this scroll area
+	     instead of stretching the whole page. -->
+	<div class="relative flex min-h-0 flex-1 flex-col gap-4.5 overflow-y-auto px-9 pt-7 pb-8">
 		<LessonHeader
 			title={lesson.title}
 			{lessonNumber}
