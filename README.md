@@ -25,7 +25,7 @@ The course follows [Pro Git, 2nd edition](https://git-scm.com/book), by Scott Ch
 The book is a submodule, so clone with `--recurse-submodules`:
 
 ```
-git clone --recurse-submodules https://github.com/<your-username>/gitremastered.git
+git clone --recurse-submodules https://github.com/mohamedmaghraby20/gitremastered.git
 ```
 
 Already cloned without it? Run `git submodule update --init` inside the repository.
