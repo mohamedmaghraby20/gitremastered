@@ -1,0 +1,7 @@
+# .gitignore for the Rust core. Lists generated files Git should never track.
+
+# Compiled Rust code and programs (cargo build recreates them).
+/target/
+
+# Schema files Tauri generates for capability auto-completion.
+/gen/schemas

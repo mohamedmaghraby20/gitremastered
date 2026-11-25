@@ -27,13 +27,15 @@ Every task: test first where there is logic; all of `pnpm test`, `pnpm check`, `
 **Description:** Scaffold `app/` with the official `create-tauri-app` (Svelte + TypeScript), switch SvelteKit to `adapter-static` with server rendering off, and set the window: title "GitRemastered", 1440×900, minimum 1024×700.
 
 **Acceptance criteria:**
-- [ ] `pnpm tauri dev` (from `app/`) opens a desktop window titled GitRemastered
-- [ ] SvelteKit builds as static files (`pnpm build` succeeds)
-- [ ] Template demo code removed; `app/README.md` says how to run it
+- [x] `pnpm tauri dev` (from `app/`) opens a desktop window titled GitRemastered
+- [x] SvelteKit builds as static files (`pnpm build` succeeds)
+- [x] Template demo code removed; `app/README.md` says how to run it
 
 **Verification:**
-- [ ] Build: `pnpm build` and `cargo build --manifest-path src-tauri/Cargo.toml`
-- [ ] Manual: the window opens
+- [x] Build: `pnpm build` and `cargo build --manifest-path src-tauri/Cargo.toml`
+- [x] Manual: the window opens
+
+**Result (2026-11-25):** create-tauri-app 4.7.5 (svelte-ts) · Tauri CLI 2.12.6 · SvelteKit 2.70 · Svelte 5.59 · Vite 8.3. Window opens titled GitRemastered. On a 1536×816 (scaled) screen Windows shrinks it to fit (~1213×724), still above the 1024×700 minimum. Removed the demo greet command and the unused opener plugin.
 
 **Dependencies:** 1 · **Files:** `app/package.json`, `app/svelte.config.js`, `app/src/routes/+layout.ts`, `app/src-tauri/tauri.conf.json`, `app/README.md` · **Scope:** M
 
