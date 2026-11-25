@@ -139,7 +139,9 @@ Approved 2026-11-25 as version 1. Fields are added when a lesson needs them (e.g
 - The app's own automatic Git commands only ever run inside a practice folder, never in the student's own projects.
 - Reset = delete the folder and run the mission setup again.
 
-## 4. Content format (V1, revisit after the pilot)
+## 4. Content format (final for V1, settled in the pilot review 2026-11-25)
+
+The full guide for lesson writers, with every field and an example, is `docs/writing-lessons.md`.
 
 ```
 content/
@@ -166,6 +168,8 @@ bookSources:
   - book/progit2/book/02-git-basics/sections/recording-changes.asc
 readFirst: [first-look-inside, start-a-repo]
 ```
+
+Inside sections, special blocks open with a line `:::name` and close with `:::`. Markdown inside: `try-it`, `careful`, `sidenote`. YAML inside: `definitions` (list of `term`, `text`, optional `area`: working, staging or repository) and `compare` (`today`, `book`). `bookUrl` must start with `https://git-scm.com/` or `https://docs.github.com/`, the only sites the app may open.
 
 `mission.yaml` goal checks are declarative, read against the snapshot. Check kinds: `file-is-untracked`, `file-is-modified`, `file-is-staged`, `file-is-committed` (each with `file`), `commit-count-at-least` (with `count`), `working-folder-clean`. Each goal has a `label` for the checklist.
 
@@ -362,4 +366,4 @@ A task is done only when all tests, type checks and lints pass.
 1. ~~Design system~~ Approved: `DESIGN.md` + `docs/design/tokens.json`.
 2. ~~App prototype~~ Approved: linked in `DESIGN.md` (home, course map, lesson, small-window lesson, search, command index, settings).
 3. Component inventory: derived from the approved prototype during `/plan`, so the plan holds one task per reusable component; components are built after the plan.
-4. Final content format: confirm after the pilot lesson.
+4. ~~Final content format~~ Settled after the pilot review (2026-11-25): §4 as written, unchanged in shape. The review changed the engine, not the format: `file-is-committed` now needs the file in the latest commit.

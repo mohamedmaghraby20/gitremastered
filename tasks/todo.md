@@ -231,14 +231,14 @@ Every task: test first where there is logic; all of `pnpm test`, `pnpm check`, `
 
 **Verification:**
 - [x] Tests pass: component sends input and renders output (mocked bridge)
-- [ ] Manual: run `git status` in the pilot (you, at Checkpoint B)
+- [x] Manual: run `git status` in the pilot (you, at Checkpoint B) — played in the desktop app by the student driver (task 27)
 
 **Result (2026-11-25):** `TerminalWindow` is the retro frame (title bar with folder name, scanlined screen, the only window shadow). `TerminalView` mounts xterm.js 6 with colors and font read from the terminal tokens (`terminal-theme.ts`), refits on resize, turns the cursor blink off with reduce motion, and on Esc blurs and moves focus to the window frame. `TerminalConnection` (plain class, unit-tested) links one screen to one session and keeps any output that arrives before the session ID is known. The lesson page creates the practice folder on open and shows the terminal; in a normal browser it says the terminal needs the desktop app. Added `@xterm/xterm`, `@xterm/addon-fit` (approved). Not yet checked by you: typing `git status` in the real desktop window (Checkpoint B).
 
 **Dependencies:** 13 · **Files:** `app/src/lib/components/terminal-view/TerminalWindow.svelte`, `TerminalView.svelte`, `terminal-theme.ts`, `TerminalView.test.ts` · **Scope:** M
 
 ## Checkpoint B: Real terminal
-- [ ] On your Windows PC, the pilot's terminal runs real Git in its practice folder
+- [x] On your Windows PC, the pilot's terminal runs real Git in its practice folder — played in the desktop app by the student driver (task 27)
 - [ ] You review the Rust core code
 
 ### Task 15: Read the repo state into a snapshot (Rust)
@@ -281,7 +281,7 @@ Every task: test first where there is logic; all of `pnpm test`, `pnpm check`, `
 
 **Verification:**
 - [x] Tests pass: snapshot → zones; command → caption text
-- [ ] Manual: run the pilot commands and watch the desk (you, in the desktop app)
+- [x] Manual: run the pilot commands and watch the desk (you, in the desktop app) — played in the desktop app by the student driver (task 27)
 
 **Result (2026-11-25):** Pure logic in `src/lib/visualizer/`: `area-zones.ts` (snapshot → sheets per zone + newest 3 commit cards; spots sheets that just arrived), `explain-command.ts` (captions for status, add, commit, `commit -a`, restore, `restore --staged`), `command-line-tracker.ts` (rebuilds typed lines from terminal keys; lines edited with arrows or Tab are skipped, not guessed). Screens: `VisualizerBoard` (dotted board), `AreaDesk` (three zones with keycap commands between), `FileSheet` (dashed draft / highlighter stripe; brief outline on arrival, length tied to `--duration-visual`, so instant with reduce motion), `CaptionBar` (live region for screen readers). New `PracticeSession` (`mission-engine/practice-session.svelte.ts`) and `LessonScreen` keep the page thin: they own the practice folder, live snapshots and the caption. Not yet checked by you: running the pilot commands in the desktop window.
 
@@ -313,7 +313,7 @@ Every task: test first where there is logic; all of `pnpm test`, `pnpm check`, `
 
 **Verification:**
 - [x] Tests pass: each goal check type against sample snapshots; hint ladder state
-- [ ] Manual: complete the pilot mission (you, in the desktop app)
+- [x] Manual: complete the pilot mission (you, in the desktop app) — played in the desktop app by the student driver (task 27)
 
 **Result (2026-11-25):** Pure logic in `mission-engine/`: `goal-checker.ts` (`isGoalMet` / `checkGoals` for all six check kinds; never met before the first snapshot) and `mission-session.ts` (hint ladder, hint button label, "Check mission" message). `MissionPanel` is the worksheet ticket from the prototype: header with mission number and "1 / 3 done", dashed separator, serif brief, self-ticking `GoalRow`s (✓ plus hidden "(done)" words for screen readers), hints revealed one at a time, Check / Reset practice / Show a hint. Reset rebuilds the practice folder (via `PracticeSession`) and hides the hints again; completion is reported once (task 21 saves it). The lesson page opens with the practice folder set up (task 14). Not yet checked by you: completing the pilot mission in the desktop app.
 
@@ -344,7 +344,7 @@ Every task: test first where there is logic; all of `pnpm test`, `pnpm check`, `
 
 **Verification:**
 - [x] Tests pass: progress module with a mocked store
-- [ ] Manual: finish the pilot, restart, see it marked done (you, in the desktop app)
+- [x] Manual: finish the pilot, restart, see it marked done (you, in the desktop app) — played in the desktop app by the student driver (task 27)
 
 **Result (2026-11-25):** `stores/progress.ts` is the only module that touches storage: finished missions, latest quiz result per lesson, and the theme, under one key in `progress.json` via the Tauri store plugin (memory-only in a plain browser). It saves to disk after every change. The layout loads progress at startup and applies the saved theme; Settings saves the theme and has a Progress → "Reset progress…" row that asks before forgetting anything (theme stays). Finishing the mission and the quiz save automatically; the sidebar shows ✓ on finished lessons. The plugin is registered in `lib.rs` (Tauri 2's place; `main.rs` only calls it) with the `store:default` permission. Added `tauri-plugin-store` + `@tauri-apps/plugin-store` (approved). Not yet checked by you: finish the pilot, restart, see it marked done.
 
@@ -382,10 +382,10 @@ Every task: test first where there is logic; all of `pnpm test`, `pnpm check`, `
 **Dependencies:** 22 · **Files:** `content/lessons/ignoring-files/` (3 files), `content/paths/pro-path.yaml` · **Scope:** S
 
 ## Checkpoint C: Pilot complete
-- [ ] SPEC success criteria 2–8 hold on Windows
-- [ ] Visualizer updates within 300 ms of a Git command (measured)
-- [ ] Memory use with the pilot open measured and written down
-- [ ] All tests pass → Phase 3: you take the pilot as a student
+- [x] SPEC success criteria 2–8 hold on Windows (played by the student driver, task 27)
+- [x] Visualizer updates within 300 ms of a Git command (measured: 234 ms median)
+- [x] Memory use with the pilot open measured and written down (233 MB private)
+- [x] All tests pass → Phase 3: pilot review (2026-11-25)
 
 ---
 
@@ -397,7 +397,7 @@ Goal: take the pilot as a student in the real desktop app, measure it against SP
 **Description:** In the desktop window a plain `target="_blank"` link does nothing useful. Add the Tauri opener plugin (approved 2026-11-25) and a small `openExternalLink` wrapper in `app/src/lib/tauri/`, allowed only for `https://` links. The citation link uses it in the desktop app and stays a normal link in a browser.
 
 **Acceptance criteria:**
-- [ ] Clicking "Pro Git 2.2" in the desktop app opens the system browser at the section
+- [x] Clicking "Pro Git 2.2" in the desktop app opens the system browser at the section
 - [x] Only `https://` addresses are opened; anything else is refused
 - [x] The opener permission is limited to `https://` URLs
 
@@ -412,12 +412,14 @@ Goal: take the pilot as a student in the real desktop app, measure it against SP
 **Description:** A dev script that starts a release copy of the app with its own data folder and the web view's debugging port on, then drives it through the Chrome DevTools Protocol (Node's built-in WebSocket, no new package): open a page, type into the terminal, read the screen. Used by tasks 26–28.
 
 **Acceptance criteria:**
-- [ ] One command builds nothing new, starts the copy, and connects
-- [ ] It can open `/lessons/three-areas`, type `git status` in the terminal and read the output back (Checkpoint B)
-- [ ] It never touches your own app data (separate identifier)
+- [x] One command builds nothing new, starts the copy, and connects
+- [x] It can open `/lessons/three-areas`, type `git status` in the terminal and read the output back (Checkpoint B)
+- [x] It never touches your own app data (separate identifier)
 
 **Verification:**
-- [ ] Manual: the script prints the `git status` output from the real shell
+- [x] Manual: the script prints the `git status` output from the real shell
+
+**Result (2026-11-25):** `app/scripts/student-driver/`: `devtools-connection.ts` (a small CDP client on Node's built-in WebSocket, no new package), `review-app.ts` (starts the release "review copy" with WebView2's debugging port on; its own identifier keeps its data apart from yours), `student-actions.ts` (open a lesson, type a command, read the terminal, click, wait), and three entry scripts: `pnpm review:terminal` (Checkpoint B), `pnpm review:measure` (task 26) and `pnpm review:play` (task 27). `pnpm review:build` builds the copy. Checkpoint B passes: `git status` typed into the app's terminal answers from the real shell. Its first run found the review's biggest bug (task 27, finding 1).
 
 **Dependencies:** 14 · **Files:** `app/scripts/student-driver/` · **Scope:** M
 
@@ -425,9 +427,11 @@ Goal: take the pilot as a student in the real desktop app, measure it against SP
 **Description:** SPEC §10 items 4 and 10. With the driver, run `git add` in the pilot and time until the desk shows the file as staged; repeat and take the slowest. Read the memory of the app and its web view processes with the pilot open. Write both into `docs/measurements.md`.
 
 **Acceptance criteria:**
-- [ ] Delay measured over at least 10 commands; slowest under 300 ms
-- [ ] Memory measured (app + web view processes); under ~250 MB or a written plan to get there
-- [ ] Numbers, date, machine and method written down
+- [x] Delay measured over at least 10 commands; slowest under 300 ms
+- [x] Memory measured (app + web view processes); under ~250 MB or a written plan to get there
+- [x] Numbers, date, machine and method written down
+
+**Result (2026-11-25):** `docs/measurements.md`. Delay first measured at 313 ms median, so over target: each Git process costs ~35 ms to start on Windows and the snapshot ran four in a row. They now run in parallel: **234 ms median, 238 ms slowest** over 15 commands, timed from pressing Enter. Memory with the pilot open: **233 MB private** (457 MB working set, which counts WebView2 pages shared with Edge), under the ~250 MB target with little room.
 
 **Dependencies:** 25 · **Files:** `docs/measurements.md`, driver script · **Scope:** S
 
@@ -435,8 +439,10 @@ Goal: take the pilot as a student in the real desktop app, measure it against SP
 **Description:** With the driver: read the lesson, run the mission from setup to goals met, open every hint, reset, take the quiz with wrong and right answers, restart the app and check progress is kept. Also the second lesson. Write findings in `docs/reviews/pilot-review.md`; fix each real problem with a test.
 
 **Acceptance criteria:**
-- [ ] SPEC §10 items 2, 3, 5, 6, 7, 8 checked in the desktop app and noted
-- [ ] Every problem found is fixed (with a test) or listed with a reason to wait
+- [x] SPEC §10 items 2, 3, 5, 6, 7, 8 checked in the desktop app and noted
+- [x] Every problem found is fixed (with a test) or listed with a reason to wait
+
+**Result (2026-11-25):** `docs/reviews/pilot-review.md`: 9 findings, 7 fixed with tests, 1 waiting (long shell prompt path), 1 design question for you (terminal height). Fixed: terminal pushed off-screen by the layout (blocker), page scroll from screen-reader labels, "file is committed" met without committing (engine), visualizer delay, "Right. Right." in the quiz, citation sites, and Tailwind missing from component tests. `pnpm review:play`: all 11 steps pass, including restart and the second lesson.
 
 **Dependencies:** 25 · **Files:** `docs/reviews/pilot-review.md`, fixes as found · **Scope:** M
 
@@ -444,8 +450,10 @@ Goal: take the pilot as a student in the real desktop app, measure it against SP
 **Description:** SPEC §4 says "revisit after the pilot". Use both lessons and the review to decide what stays, what changes, and write the final V1 format into SPEC §4 and an authoring guide for lesson writers (`docs/writing-lessons.md`).
 
 **Acceptance criteria:**
-- [ ] SPEC §4 marked final for V1, open question 4 closed
-- [ ] `docs/writing-lessons.md` explains every file, field, block and goal check, with the pilot as example
+- [x] SPEC §4 marked final for V1, open question 4 closed
+- [x] `docs/writing-lessons.md` explains every file, field, block and goal check, with the pilot as example
+
+**Result (2026-11-25):** The format held up: the review changed the engine, not the format. SPEC §4 is marked final for V1 and now documents the `:::` blocks and allowed citation sites; open question 4 closed. `docs/writing-lessons.md` covers steps, every field, the blocks, goal checks, setup rules (quote lines with `: `), quiz rules and style.
 
 **Dependencies:** 27 · **Files:** `SPEC.md`, `docs/writing-lessons.md` · **Scope:** S
 
@@ -453,12 +461,118 @@ Goal: take the pilot as a student in the real desktop app, measure it against SP
 **Description:** Break phase 4 (the other screens: home, course map, search, command index, settings) into detailed tasks in this file, from the prototype and the review findings.
 
 **Acceptance criteria:**
-- [ ] Phase 4 tasks written with acceptance criteria, files and sizes
-- [ ] `tasks/plan.md` updated: phase 3 status, phase 4 task list, dependency table
+- [x] Phase 4 tasks written with acceptance criteria, files and sizes
+- [x] `tasks/plan.md` updated: phase 3 status, phase 4 task list, dependency table
+
+**Result (2026-11-25):** Phase 4 is tasks 30–40 below, from the prototype's home, course map, search, command index, settings and small-window screens. One proposal needs your OK: search as a small in-memory index instead of Pagefind (task 37).
 
 **Dependencies:** 27 · **Files:** `tasks/todo.md`, `tasks/plan.md` · **Scope:** S
 
 ## Checkpoint D: Pilot reviewed
-- [ ] Measurements written down and within SPEC targets (or a plan)
-- [ ] Review findings fixed or listed
+- [x] Measurements written down and within SPEC targets (or a plan)
+- [x] Review findings fixed or listed
 - [ ] You review phases 2 and 3 together and take the pilot yourself
+
+---
+
+## Phase 4: The other screens
+
+Goal: home, course map (both paths), search, command index and settings work for real, as in the approved prototype, plus the small-window lesson layout. Built from content and saved progress only; every new content file kind gets a loader check like lessons have. Planned 2026-11-25 from the prototype and the pilot review.
+
+### Task 30: A segmented switch component
+**Description:** The outlined group with a 3px bottom edge from DESIGN.md (selected option filled `primary`), as a real radio group with arrow keys. Used by the course map (Pro / Book), home, settings (theme) and the small-window lesson (Visualizer / Terminal).
+
+**Acceptance criteria:**
+- [ ] Keyboard: arrows move and select, Tab leaves the group; focus ring on the selected option
+- [ ] Tokens only; shown in the dev gallery in both themes
+
+**Verification:** component test (click, arrows, `aria-checked`) · **Files:** `components/ui/segmented-switch/` · **Scope:** S
+
+### Task 31: The Book path file and lesson facts
+**Description:** `content/paths/book-path.yaml` (Pro Git chapters → sections → the lesson that teaches each) with a loader check that every lesson ID exists. Two facts per lesson for lists: reading time (from word count of "Use it" plus the mission, rounded to minutes) and source label ("Pro Git 2.2", or "Beyond the book" for GitHub Docs links).
+
+**Acceptance criteria:**
+- [ ] A broken or unknown lesson ID in the book path fails the content check
+- [ ] Reading time and source label computed, not written by hand
+
+**Verification:** unit tests (parser, check, time, label) · **Files:** `content/paths/book-path.yaml`, `content/parse-path.ts`, `content/lesson-facts.ts` · **Scope:** M
+
+### Task 32: Remember where the student is
+**Description:** Save the last opened lesson and the furthest layer read, next to finished missions and quiz results. Pure functions for "continue learning", "up next" (the next unfinished lessons in the chosen path) and path progress (done / total for the core modules and the whole course).
+
+**Acceptance criteria:**
+- [ ] Opening a lesson and switching layers is saved and survives a restart
+- [ ] Progress numbers match the path files
+
+**Verification:** unit tests over sample progress · **Files:** `stores/progress.ts`, `progress/learning-summary.ts` · **Scope:** M
+
+### Task 33: Home screen
+**Description:** As in the prototype: "Pick up where you left off" card (eyebrow, title, lede, layer ticks, Continue lesson as the one primary button, Open course map), the practice repo's three areas in small, "Your path" with the Pro / Book switch and progress bars, "Up next", and one "Quick review" question from a finished lesson's quiz. A first-time student sees "Start the course" instead.
+
+**Acceptance criteria:**
+- [ ] Every card works from real progress; the empty state is clear
+- [ ] Keyboard: Enter on the focused card continues the lesson
+
+**Verification:** component tests (first visit, returning student) · **Files:** `routes/+page.svelte`, `components/home/` · **Scope:** M
+
+### Task 34: Course map screen
+**Description:** Pro path: modules with their lessons (number, title, source, time, ✓ done / ● current). Book path: chapters with sections and the lesson for each. The switch remembers the choice. Nothing is locked; every row opens its lesson.
+
+**Acceptance criteria:**
+- [ ] Both orders come only from the path files
+- [ ] Status never by color alone (✓ and ● have text labels for screen readers)
+
+**Verification:** component tests (both paths, marks) · **Files:** `routes/course-map/+page.svelte`, `components/course-map/` · **Scope:** M
+
+### Task 35: Command and glossary content
+**Description:** The format for the command index (SPEC §4 lists `reference/` and `glossary.yaml`): one Markdown page per command with frontmatter (command, group, usage, bookSection, bookUrl, lessons) and the usual blocks; `glossary.yaml` for terms (term, meaning, lessons). Loader and content check; write the pages for the pilot's commands (status, add, commit, restore, check-ignore, rm --cached) and their terms.
+
+**Acceptance criteria:**
+- [ ] Unknown lesson IDs and missing fields fail the content check
+- [ ] Format written into SPEC §4 and `docs/writing-lessons.md`
+
+**Verification:** unit tests · **Files:** `content/reference/`, `content/glossary.yaml`, `content/parse-reference.ts` · **Scope:** M
+
+### Task 36: Command index screen
+**Description:** Left list grouped by command group with a Commands / Terms switch; the page shows usage, the explanation, blocks (careful, today vs. the book), "Learn it" links to lessons and the Pro Git link (system browser, task 24).
+
+**Acceptance criteria:**
+- [ ] `/commands/<id>` opens one command; the list marks the selected one
+- [ ] Works fully by keyboard
+
+**Verification:** component tests · **Files:** `routes/commands/`, `components/command-index/` · **Scope:** M
+
+### Task 37: Search
+**Description:** Search lessons (title, lede, commands used), commands, terms and Pro Git sections, grouped as in the prototype, with filter chips and ↑ ↓ ⏎ Tab Esc. Ctrl K from any screen opens it. Proposed: a small in-memory index over the content the app already loads, instead of Pagefind (Pagefind indexes built HTML pages; our content is already in memory and small). Needs your OK to change SPEC §2.
+
+**Acceptance criteria:**
+- [ ] SPEC §10 item 9: finds lessons by title and by command
+- [ ] Results update as you type, under 50 ms for the full course size
+
+**Verification:** unit tests (ranking), component tests (keys, Ctrl K) · **Files:** `search/`, `routes/search/`, `components/search/` · **Scope:** M
+
+### Task 38: Settings screen, complete
+**Description:** Theme Light / Dark / System (switch), lesson text size, reduce motion (also on when the system asks for it), Git found on this computer (with version), reset progress (exists), About (version, Pro Git credit and licenses). The shell choice (Git Bash / PowerShell) waits for phase 5: lessons use bash.
+
+**Acceptance criteria:**
+- [ ] Every setting applies at once and survives a restart
+
+**Verification:** component tests · **Files:** `routes/settings/`, `components/settings/` · **Scope:** M
+
+### Task 39: Sidebar with path progress
+**Description:** The full sidebar from the prototype: the four places, path progress ("Pro path 4 / 62" with a bar), and the current module's lessons with done marks.
+
+**Verification:** component test · **Files:** `components/app-shell/SidebarFull.svelte` · **Scope:** S
+
+### Task 40: Small-window lesson
+**Description:** Below 1100px window width, the visualizer and terminal share one panel with a Visualizer / Terminal switch, and sidenotes flow under the text (DESIGN.md layout, prototype "LessonNarrow"). The terminal keeps its shell when hidden.
+
+**Acceptance criteria:**
+- [ ] At 1024 × 700 (the minimum window) nothing is cut off and the switch works by keyboard
+
+**Verification:** layout test at 1024 × 700 (as in the pilot review) · **Files:** `components/lesson-screen/` · **Scope:** M
+
+## Checkpoint E: The other screens
+- [ ] Every screen in the prototype works with real content and progress
+- [ ] Search finds lessons by title and by command (SPEC §10 item 9)
+- [ ] All tests pass; you review the screens in the desktop app
