@@ -114,7 +114,7 @@ Every task: test first where there is logic; all of `pnpm test`, `pnpm check`, `
 - [x] Tests pass: Rust test for parsing `git --version`; TS test for the wrapper with a mock
 - [ ] Manual: Settings shows your Git version (waiting for you)
 
-**Result (2026-11-25):** SPEC 3.4 only names Commit, Branch, Tag, HeadState and FileChange; their fields were filled in minimally (see `repo-snapshot.ts`) and need your review, since the contract is "ask first". A Rust test checks the JSON names match the TypeScript ones. Wrappers exist for every contract command and event; only `get_git_version` has its Rust side so far. Commands are registered in `lib.rs` (Tauri 2 puts them there; `main.rs` only calls it). Git runs with no console window on Windows.
+**Result (2026-11-25):** SPEC 3.4 only names Commit, Branch, Tag, HeadState and FileChange; their fields were filled in minimally (see `repo-snapshot.ts`) and were approved on 2026-11-25 and are now written into SPEC §3.4. A Rust test checks the JSON names match the TypeScript ones. Wrappers exist for every contract command and event; only `get_git_version` has its Rust side so far. Commands are registered in `lib.rs` (Tauri 2 puts them there; `main.rs` only calls it). Git runs with no console window on Windows.
 
 **Dependencies:** 6 · **Files:** `app/src/lib/types/repo-snapshot.ts`, `app/src/lib/tauri/commands.ts`, `commands.test.ts`, `events.ts`, `app/src-tauri/src/models/repo_snapshot.rs`, `app/src-tauri/src/commands/git_info.rs`, `app/src-tauri/src/lib.rs`, `app/src/lib/components/settings/GitVersionStatus.svelte` · **Scope:** M
 
@@ -241,7 +241,7 @@ Every task: test first where there is logic; all of `pnpm test`, `pnpm check`, `
 **Dependencies:** 12 · **Files:** `app/src-tauri/src/repo_inspector/snapshot.rs`, `parse_status.rs`, `parse_log.rs`, `app/src-tauri/tests/snapshot.rs` · **Scope:** M
 
 ### Task 16: Watch the repo and send live updates
-**Description:** Watch the practice folder's `.git` (debounced ~100 ms), rebuild the snapshot and emit `repo_changed`. On the screen side, put each snapshot into the `currentRepoSnapshot` store.
+**Description:** Watch the whole practice folder, its files and `.git` (debounced ~100 ms; edits to a file change no file inside `.git`, so watching only `.git` would miss them), rebuild the snapshot and emit `repo_changed`. On the screen side, put each snapshot into the `currentRepoSnapshot` store.
 
 **Acceptance criteria:**
 - [ ] `git add` and `git commit` each produce one `repo_changed` with the new state

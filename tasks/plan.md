@@ -43,13 +43,14 @@ Approving this plan approves these. Anything not listed is asked about separatel
 |---|---|---|
 | Tools | pnpm, rustup (Rust), Microsoft C++ Build Tools | Required by Tauri and our package manager |
 | App | `@tauri-apps/cli`, `@tauri-apps/api`, `@sveltejs/kit`, `@sveltejs/adapter-static`, `svelte`, `vite`, `typescript` | The stack |
-| App | `tailwindcss`, `shadcn-svelte` (with its `bits-ui` base) | Styling and accessible building blocks |
+| App | `tailwindcss` (+ `@tailwindcss/vite`), `shadcn-svelte` (with its `bits-ui` base and helpers `tailwind-variants`, `cn`, `tw-animate-css`) | Styling and accessible building blocks |
 | App | `@fontsource/jetbrains-mono`, `@fontsource/source-serif-4`, `@fontsource/ibm-plex-sans` | Bundled fonts |
 | App | `@xterm/xterm`, `@xterm/addon-fit` | The terminal on screen |
 | App | `@xyflow/svelte` (Svelte Flow), `elkjs` | The history map in the visualizer |
 | App | `yaml`, `marked` | Reading missions, quizzes and lesson Markdown |
 | App | `@tauri-apps/plugin-store` | Saving progress |
-| Dev | `vitest`, `eslint`, `prettier`, `svelte-check`, their Svelte/TypeScript plugins | Tests and code checks |
+| Dev | `vitest`, `eslint`, `prettier`, `svelte-check`, their Svelte/TypeScript/Tailwind plugins | Tests and code checks |
+| Dev | `playwright`, `@vitest/browser-playwright`, `vitest-browser-svelte` (approved 2026-11-25) | Component tests in a real headless Chromium, close to the app's own web view; needed for terminal and keyboard tests |
 | Rust | `tauri`, `serde`, `serde_json`, `portable-pty`, `notify`, `notify-debouncer-mini`, `tempfile` (tests only) | Core, terminal, folder watching |
 
 ## Task list

@@ -54,7 +54,7 @@ A free, open-source desktop app that turns Pro Git into an interactive course. E
 |---|---|---|---|---|
 | 1 | `content` | Load and validate lessons, missions, quizzes, paths, glossary | — | Screens (TS) |
 | 2 | `git-runner` | Open the real shell; create, reset and delete practice folders | — | Core |
-| 3 | `repo-inspector` | Watch `.git`; build a `RepoSnapshot` with read-only Git commands | git-runner | Core |
+| 3 | `repo-inspector` | Watch the practice folder; build a `RepoSnapshot` with read-only Git commands | git-runner | Core |
 | 4 | `mission-engine` | Run mission setup; check goals against the snapshot; serve hints | content, git-runner, repo-inspector | Screens (TS) |
 | 5 | `lesson-reader` | Lesson page: three layers, recap card, book link | content | Screens |
 | 6 | `terminal-view` | xterm.js wired to the shell | git-runner | Screens |
@@ -104,13 +104,30 @@ type RepoSnapshot = {
   modifiedFiles: FileChange[];   // changed in the working folder, not staged
   untrackedFiles: string[];
 };
+
+/** One commit. */
+type Commit = { id: string; message: string; parentIds: string[]; authorName: string; authoredAt: string };
+
+/** A local ("main") or remote-tracking ("origin/main") branch. */
+type Branch = { name: string; commitId: string; isRemote: boolean };
+
+type Tag = { name: string; commitId: string };
+
+/** HEAD follows a branch (commitId is null before the first commit) or points straight at a commit. */
+type HeadState =
+  | { kind: "branch"; branchName: string; commitId: string | null }
+  | { kind: "detached"; commitId: string };
+
+type FileChange = { path: string; changeKind: "added" | "modified" | "deleted" | "renamed"; oldPath: string | null };
 ```
+
+Approved 2026-11-25 as version 1. Fields are added when a lesson needs them (e.g. conflicted files for merging, ahead/behind counts for remotes).
 
 ### 3.5 Data flow (one command)
 
 1. Student types in `terminal-view` → `send_terminal_input`.
 2. `git-runner` passes it to the real shell; real Git runs; output returns as `terminal_output`.
-3. `repo-inspector` sees `.git` change, waits ~100 ms for it to settle, builds a `RepoSnapshot`, emits `repo_changed`.
+3. `repo-inspector` sees the practice folder change (its files or `.git`), waits ~100 ms for it to settle, builds a `RepoSnapshot`, emits `repo_changed`.
 4. The event handler writes the snapshot into the `currentRepoSnapshot` store.
 5. `visualizer` redraws; `mission-engine` re-checks the goal.
 
