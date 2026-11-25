@@ -1,0 +1,30 @@
+questions:
+  - question: "Your .gitignore contains *.log. Which file does Git ignore?"
+    answers:
+      - text: "logs/error.log, in a subfolder"
+        correct: true
+        explanation: "Right. A pattern without a slash matches in every folder of the project."
+      - text: "log.txt, at the top of the project"
+        explanation: "*.log matches names that end in .log. log.txt ends in .txt."
+      - text: "Only app.log, and only at the top"
+        explanation: "To match only at the top you would write /app.log. *.log matches everywhere."
+
+  - question: "secrets.env was committed last week. Today you add secrets.env to .gitignore. What happens?"
+    answers:
+      - text: "Git deletes it from the repository"
+        explanation: ".gitignore never removes anything. It only stops untracked files from showing up."
+      - text: "Nothing changes: Git still tracks the file"
+        correct: true
+        explanation: "Right. Ignoring only affects untracked files. Use git rm --cached secrets.env to stop tracking it."
+      - text: "Git hides it, and its history is gone"
+        explanation: "The old commits still contain the file. Ignoring does not rewrite history."
+
+  - question: "Why commit the .gitignore file itself?"
+    answers:
+      - text: "Git only reads it once it is committed"
+        explanation: "Git reads .gitignore from your working folder right away, committed or not."
+      - text: "It stops Git from tracking the file"
+        explanation: "Committing .gitignore makes Git track it, which is what you want."
+      - text: "So everyone on the team ignores the same files"
+        correct: true
+        explanation: "Right. A committed .gitignore travels with the project to every clone."
