@@ -24,7 +24,12 @@ const config = {
 			 */
 			config: (tsconfig) => {
 				const includedFiles = /** @type {string[]} */ (tsconfig.include);
-				includedFiles.push('../*.config.js', '../*.config.ts', '../scripts/**/*.ts');
+				includedFiles.push(
+					'../*.config.js',
+					'../*.config.ts',
+					'../scripts/**/*.ts',
+					'../tests/**/*.ts'
+				);
 			}
 		},
 		adapter: adapter({

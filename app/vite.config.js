@@ -42,9 +42,9 @@ export default defineConfig(() => ({
 		fs: {
 			/**
 			 * Folders the dev server may read: the app itself (Vite default) plus docs/design,
-			 * so the dev gallery can read tokens.json, which sits outside app/.
+			 * so the dev gallery can read tokens.json, and content/, where the lessons live (both outside app/).
 			 */
-			allow: [searchForWorkspaceRoot(process.cwd()), '../docs/design']
+			allow: [searchForWorkspaceRoot(process.cwd()), '../docs/design', '../content']
 		},
 		watch: {
 			// Rust files are rebuilt by Tauri itself, so Vite does not need to watch them.

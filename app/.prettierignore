@@ -12,3 +12,6 @@ pnpm-lock.yaml
 
 # Generated from tokens.json by `pnpm tokens`; its exact text is checked by a test.
 /src/lib/styles/tokens.css
+
+# Sample content files are kept exactly as lesson authors would write them.
+tests/fixtures/
