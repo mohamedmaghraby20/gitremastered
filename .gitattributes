@@ -1,0 +1,14 @@
+# .gitattributes: how Git treats files when saving and checking them out.
+
+# Keep Unix line endings (LF) in every text file, on every system.
+# Prettier and rustfmt expect LF; without this, Git on Windows would switch files to CRLF
+# on checkout and every format check would fail.
+* text=auto eol=lf
+
+# Binary files: never touch their bytes.
+*.png binary
+*.ico binary
+*.icns binary
+*.pdf binary
+*.woff binary
+*.woff2 binary
