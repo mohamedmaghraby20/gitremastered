@@ -3,8 +3,6 @@
  * Typed wrappers for every command the screens can ask the Rust core to run (SPEC.md section 3.3).
  * Screens call these functions, never Tauri's invoke() by a raw name, so a typo or a wrong
  * argument is a type error instead of a runtime surprise.
- *
- * getRepoSnapshot gets its Rust side in task 15 and fails with "command not found" until then.
  */
 
 import { invoke } from '@tauri-apps/api/core';

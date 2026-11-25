@@ -245,12 +245,14 @@ Every task: test first where there is logic; all of `pnpm test`, `pnpm check`, `
 **Description:** `get_repo_snapshot` runs read-only Git commands (`status --porcelain=v2`, `log`, `for-each-ref`) and builds a `RepoSnapshot`: commits with parents, branches, tags, HEAD, staged, modified and untracked files.
 
 **Acceptance criteria:**
-- [ ] Correct snapshot for: empty repo, one untracked file, one staged file, two commits
-- [ ] Parsing is split into small functions, one per Git output
-- [ ] Never writes to the repo
+- [x] Correct snapshot for: empty repo, one untracked file, one staged file, two commits
+- [x] Parsing is split into small functions, one per Git output
+- [x] Never writes to the repo
 
 **Verification:**
-- [ ] Tests pass: Rust tests for each case with real Git; parser unit tests with sample output
+- [x] Tests pass: Rust tests for each case with real Git; parser unit tests with sample output
+
+**Result (2026-11-25):** `read_snapshot` runs three read-only commands and gives each its own parser: `parse_status.rs` (porcelain v2 with `-z`, so spaces in file names are safe; sorts files into staged / modified / untracked and reads HEAD), `parse_log.rs` (our own `--format` with separator bytes 0x1E/0x1F), `parse_refs.rs` (branches, remote branches, tags; annotated tags resolved to their commit). `GIT_OPTIONAL_LOCKS=0` stops `git status` from rewriting the index, and a test proves the repo is unchanged after reading. A folder without Git gives a readable error. `get_repo_snapshot` command registered.
 
 **Dependencies:** 12 · **Files:** `app/src-tauri/src/repo_inspector/snapshot.rs`, `parse_status.rs`, `parse_log.rs`, `app/src-tauri/tests/snapshot.rs` · **Scope:** M
 

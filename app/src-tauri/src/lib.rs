@@ -5,6 +5,7 @@
 pub mod commands;
 pub mod git_runner;
 pub mod models;
+pub mod repo_inspector;
 
 /// Starts the desktop app and keeps it running until the window closes.
 ///
@@ -21,7 +22,8 @@ pub fn run() {
             commands::terminal::start_terminal_session,
             commands::terminal::send_terminal_input,
             commands::terminal::resize_terminal,
-            commands::terminal::close_terminal_session
+            commands::terminal::close_terminal_session,
+            commands::snapshot::get_repo_snapshot
         ])
         .run(tauri::generate_context!())
         .expect("error while running the GitRemastered app");

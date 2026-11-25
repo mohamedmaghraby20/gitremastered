@@ -83,7 +83,7 @@ Full details for each task (acceptance criteria, verification, files) are in `ta
 ### Checkpoint B: Real terminal
 - [ ] Typing in the app's terminal runs real Git in the pilot's practice folder, on your Windows PC with Git Bash
 
-- [ ] Task 15: Read the repo state into a snapshot (Rust)
+- [x] Task 15: Read the repo state into a snapshot (Rust)
 - [ ] Task 16: Watch the repo and send live updates
 - [ ] Task 17: Draw the three areas and the live caption
 - [ ] Task 18: Draw the history map
