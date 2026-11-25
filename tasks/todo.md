@@ -12,12 +12,14 @@ Every task: test first where there is logic; all of `pnpm test`, `pnpm check`, `
 **Description:** Install pnpm, Rust (via rustup, MSVC toolchain) and the Microsoft C++ Build Tools, plus the two language servers for the LSP plugins. Write a short setup guide so any contributor can do the same.
 
 **Acceptance criteria:**
-- [ ] `pnpm --version`, `rustc --version`, `cargo --version` print versions
-- [ ] `rustup component list --installed` includes `rust-analyzer`, `clippy`, `rustfmt`
-- [ ] `docs/setup.md` lists every install command for Windows, macOS and Linux
+- [x] `pnpm --version`, `rustc --version`, `cargo --version` print versions
+- [x] `rustup component list --installed` includes `rust-analyzer`, `clippy`, `rustfmt`
+- [x] `docs/setup.md` lists every install command for Windows, macOS and Linux
 
 **Verification:**
-- [ ] Manual: run the version commands in a new terminal
+- [x] Manual: run the version commands in a new terminal (also built and ran a test Rust program)
+
+**Result (2026-11-25):** pnpm 12.23.0 · rustc/cargo 1.100.0 (stable-msvc) · VS Build Tools 2022 (C++) · Node 24.19.0 · Git 2.55.0 · typescript-language-server 6.1.0
 
 **Dependencies:** None · **Files:** `docs/setup.md` · **Scope:** XS
 

@@ -57,7 +57,7 @@ Approving this plan approves these. Anything not listed is asked about separatel
 Full details for each task (acceptance criteria, verification, files) are in `tasks/todo.md`.
 
 ### Phase 1: Foundation
-- [ ] Task 1: Install the missing tools on your PC
+- [x] Task 1: Install the missing tools on your PC
 - [ ] Task 2: Create the Tauri + SvelteKit app skeleton
 - [ ] Task 3: Set up tests and code checks
 - [ ] Task 4: Turn the design tokens into CSS, with fonts and themes
