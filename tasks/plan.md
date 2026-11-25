@@ -90,7 +90,7 @@ Full details for each task (acceptance criteria, verification, files) are in `ta
 - [x] Task 19: Run the mission: setup, goal checks, hints, reset
 - [x] Task 20: Show the quiz and explain answers
 - [x] Task 21: Save progress between sessions
-- [ ] Task 22: Test every mission against real Git
+- [x] Task 22: Test every mission against real Git
 - [ ] Task 23: Prove a new lesson needs content files only
 
 ### Checkpoint C: Pilot complete (SPEC success criteria 2–8)

@@ -78,3 +78,7 @@ jobs:
 
       - name: Tests (Rust)
         run: cargo test --manifest-path src-tauri/Cargo.toml
+
+      # Every lesson's mission, run with real Git: setup + reference solution must reach every goal.
+      - name: Mission tests
+        run: pnpm test:missions

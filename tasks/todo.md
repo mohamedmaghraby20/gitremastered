@@ -354,12 +354,14 @@ Every task: test first where there is logic; all of `pnpm test`, `pnpm check`, `
 **Description:** `pnpm test:missions` takes every lesson's mission, runs its setup and reference solution with real Git in a temporary folder, takes a snapshot and confirms every goal is met.
 
 **Acceptance criteria:**
-- [ ] The pilot mission passes
-- [ ] A deliberately wrong solution fails with the goal it missed
-- [ ] Runs in under a minute
+- [x] The pilot mission passes
+- [x] A deliberately wrong solution fails with the goal it missed
+- [x] Runs in under a minute
 
 **Verification:**
-- [ ] Tests pass: `pnpm test:missions`
+- [x] Tests pass: `pnpm test:missions`
+
+**Result (2026-11-25):** `pnpm test:missions` (`vitest.missions.config.ts`) loads every lesson from content/, and for each one `mission-runner.ts` runs setup + reference solution through bash with real Git in a temporary folder, then checks the goals with the app's own `goal-checker.ts`. The snapshot comes from the app's own Rust reader through a tiny Cargo example (`src-tauri/examples/print_snapshot.rs`), so there is no second copy of the parsing code. A wrong pilot solution (committing README.md too) fails with "README.md is still changed, not committed". 36 s on the first run (compiles the printer), under 3 s after. Added to CI. `scripts/read-content-files.ts` is now shared by the content check and the mission tests.
 
 **Dependencies:** 19 · **Files:** `app/tests/missions/run-missions.test.ts`, `app/tests/missions/mission-runner.ts`, `app/package.json` · **Scope:** S
 
