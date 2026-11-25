@@ -369,13 +369,15 @@ Every task: test first where there is logic; all of `pnpm test`, `pnpm check`, `
 **Description:** Add a short second lesson (`ignoring-files`, Pro Git 2.2 "Ignoring Files") with no app code changes, to prove SPEC success criterion 8.
 
 **Acceptance criteria:**
-- [ ] The lesson appears, its mission and quiz work
-- [ ] `git diff` shows changes only under `content/`
-- [ ] Its mission passes `pnpm test:missions`
+- [x] The lesson appears, its mission and quiz work
+- [x] `git diff` shows changes only under `content/`
+- [x] Its mission passes `pnpm test:missions`
 
 **Verification:**
-- [ ] Tests pass: loader and mission tests
-- [ ] Manual: open the lesson from the pilot's "next" link
+- [x] Tests pass: loader and mission tests
+- [x] Manual: open the lesson from the pilot's "next" link (checked in the browser pane; mission play-through is yours)
+
+**Result (2026-11-25):** `content/lessons/ignoring-files/` (lesson, mission, quiz from Pro Git 2.2 "Ignoring Files" plus the gitignore docs) and one line in `pro-path.yaml`. The commit touches only `content/` (see `git show --stat` of "Second lesson: ignore files…"). It appears in the sidebar and as "02 …" behind the pilot's Next link; its mission passes `pnpm test:missions`. The content check caught a real authoring slip on the way (`echo "debug: started"` read as a YAML key until quoted), which shows the loader doing its job. Not yet checked by you: playing it in the desktop app.
 
 **Dependencies:** 22 · **Files:** `content/lessons/ignoring-files/` (3 files), `content/paths/pro-path.yaml` · **Scope:** S
 

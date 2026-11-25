@@ -80,6 +80,8 @@ Full details for each task (acceptance criteria, verification, files) are in `ta
 - [x] Task 13: Run a real shell session (Rust)
 - [x] Task 14: Show the terminal on screen
 
+**Phase 2 status (2026-11-25):** tasks 8–23 built, tested and pushed. Waiting on you: Checkpoint B, approving the pilot text (task 9), and the desktop-app checks marked "(you…)" in todo.md.
+
 ### Checkpoint B: Real terminal
 - [ ] Typing in the app's terminal runs real Git in the pilot's practice folder, on your Windows PC with Git Bash
 
@@ -91,12 +93,12 @@ Full details for each task (acceptance criteria, verification, files) are in `ta
 - [x] Task 20: Show the quiz and explain answers
 - [x] Task 21: Save progress between sessions
 - [x] Task 22: Test every mission against real Git
-- [ ] Task 23: Prove a new lesson needs content files only
+- [x] Task 23: Prove a new lesson needs content files only
 
 ### Checkpoint C: Pilot complete (SPEC success criteria 2–8)
 - [ ] The pilot lesson works end to end on Windows
 - [ ] Visualizer updates within 300 ms of a Git command
-- [ ] A second sample lesson works by adding content files only
+- [x] A second sample lesson works by adding content files only (ignoring-files, 2026-11-25)
 - [ ] Memory use measured with the pilot open
 - [ ] All tests pass → Phase 3, pilot review with you
 
