@@ -323,12 +323,14 @@ Every task: test first where there is logic; all of `pnpm test`, `pnpm check`, `
 **Description:** The quiz from DESIGN.md: scenario questions, lettered keycap answers, check, and the explanation for right and wrong picks.
 
 **Acceptance criteria:**
-- [ ] Answers are selectable by mouse and keyboard (A–D)
-- [ ] Checking marks right and wrong with icons, not color alone, and shows the explanation
-- [ ] Scoring is a pure tested function
+- [x] Answers are selectable by mouse and keyboard (A–D)
+- [x] Checking marks right and wrong with icons, not color alone, and shows the explanation
+- [x] Scoring is a pure tested function
 
 **Verification:**
-- [ ] Tests pass: scoring; keyboard selection
+- [x] Tests pass: scoring; keyboard selection
+
+**Result (2026-11-25):** `quiz/score-quiz.ts` holds the pure logic (letters A–D, key → answer, judging a pick, scoring). `Quiz` lists every question as a `QuizQuestionCard`: scenario in serif, `QuizOption` keycaps lettered A–D (real buttons, `aria-pressed`), pick by mouse or by pressing A–D inside the question, then "Check answer". Checking locks the pick, marks "✓ Right" / "✗ Wrong" (icon and word), shows the picked answer's explanation and, if wrong, the right answer's. The score shows once every question is checked and is passed on (task 21 saves it). The quiz sits under the mission in the lesson column.
 
 **Dependencies:** 10 · **Files:** `app/src/lib/components/quiz/Quiz.svelte`, `QuizOption.svelte`, `app/src/lib/quiz/score-quiz.ts`, `score-quiz.test.ts` · **Scope:** M
 
