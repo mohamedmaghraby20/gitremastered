@@ -15,9 +15,9 @@ Navigation is never locked. Each lesson lists what to read first, as advice.
 
 | Layer | Purpose | Length |
 |---|---|---|
-| Must know | The command and the everyday case | About 5 minutes |
-| Under the hood | What Git does inside (objects, refs, index), shown in the visualizer | About 5 minutes |
-| Advanced | Important options, edge cases, failure modes and recovery, team conventions | As needed |
+| Must know | Everything a working developer needs for this job: every common command and option, the output to read, the usual traps. Complete, not minimal | About 10 minutes |
+| Under the hood | How Git does it inside (objects, refs, index), shown in the visualizer | About 5 minutes |
+| Advanced | Advanced commands and options for people who want to master the tool; rare cases and recovery | As needed |
 
 A learner can stop after "Must know" and come back for the rest. Revisiting a lesson means reading its recap card, or going straight to the layer they need.
 

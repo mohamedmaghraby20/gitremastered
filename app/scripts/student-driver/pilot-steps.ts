@@ -128,21 +128,21 @@ export const pilotSteps: PilotStep[] = [
 			await student.typeCommand('git add notes.txt');
 			await pause(300);
 			await student.typeCommand('git commit -q -m "Add release notes"');
-			const milliseconds = await student.waitUntil(`${missionProgress}.includes('3 / 3 done')`);
+			const milliseconds = await student.waitUntil(`${missionProgress}.includes('2 / 2 done')`);
 			await student.clickButton('Check mission');
 			const message = await student.readText('section[aria-label="Mission"] [role="status"]');
-			return `3 / 3 done ${Math.round(milliseconds)} ms after the commit was typed; message: ${message}`;
+			return `2 / 2 done ${Math.round(milliseconds)} ms after the commit was typed; message: ${message}`;
 		}
 	},
 	{
 		name: '5 · reset rebuilds the practice folder and hides the hints',
 		run: async (student) => {
 			await student.clickButton('Reset practice');
-			await student.waitUntil(`${missionProgress}.includes('1 / 3 done')`, 15_000);
+			await student.waitUntil(`${missionProgress}.includes('1 / 2 done')`, 15_000);
 			const hintCount = await student.evaluate<number>(
 				`document.querySelectorAll('ol[aria-label="Hints"] li').length`
 			);
-			return `back to 1 / 3 (README.md starts changed), ${hintCount} hints showing`;
+			return `back to 1 / 2 (README.md starts changed), ${hintCount} hints showing`;
 		}
 	},
 	{

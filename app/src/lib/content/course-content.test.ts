@@ -24,10 +24,10 @@ describe('courseContent', () => {
 		expect(pilotLesson?.quiz.questions).toHaveLength(3);
 	});
 
-	it('keeps the pilot\'s "Must know" layer short enough to read in about 5 minutes', () => {
-		const useItWordCount = countWords(getLesson('three-areas')?.sections.mustKnow ?? '');
-		expect(useItWordCount).toBeGreaterThan(250);
-		expect(useItWordCount).toBeLessThan(1000);
+	it('keeps the pilot\'s "Must know" layer complete but readable in about 10 minutes', () => {
+		const mustKnowWordCount = countWords(getLesson('three-areas')?.sections.mustKnow ?? '');
+		expect(mustKnowWordCount).toBeGreaterThan(600);
+		expect(mustKnowWordCount).toBeLessThan(2000);
 	});
 
 	it('lists the pilot in the pro path', () => {

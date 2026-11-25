@@ -14,7 +14,12 @@ import { findLessonPlace, type LessonPlace } from './lesson-navigation.ts';
  * (e.g. "../../../../content/lessons/three-areas/lesson.md").
  */
 const filesByImportPath = import.meta.glob<string>(
-	['../../../../content/lessons/*/*.{md,yaml}', '../../../../content/paths/*.yaml'],
+	[
+		'../../../../content/lessons/*/*.{md,yaml}',
+		'../../../../content/paths/*.yaml',
+		// coverage.md is for course reviewers, not students: it stays out of the app.
+		'!../../../../content/lessons/*/coverage.md'
+	],
 	{ query: '?raw', import: 'default', eager: true }
 );
 

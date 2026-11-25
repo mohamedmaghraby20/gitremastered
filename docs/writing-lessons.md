@@ -5,7 +5,7 @@ How to add a lesson to GitRemastered. A lesson is three files in one folder; no 
 ## Steps
 
 1. Pick an ID: lowercase words joined by `-` (`ignoring-files`). The folder name must equal the ID.
-2. Create `content/lessons/<id>/` with `lesson.md`, `mission.yaml` and `quiz.yaml`.
+2. Create `content/lessons/<id>/` with `lesson.md`, `mission.yaml`, `quiz.yaml` and `coverage.md`.
 3. Add the ID to a module in `content/paths/pro-path.yaml`.
 4. Run `pnpm content:check` (from `app/`). It names the file and the problem if something is wrong.
 5. Run `pnpm test:missions`. It runs your mission's setup and solution with real Git and checks every goal.
@@ -48,9 +48,9 @@ One sentence: what this lesson gives the student.
 | Section | Job | Length |
 |---|---|---|
 | Lede | The first paragraph before `## Must know`. One sentence | 1 sentence |
-| `## Must know` | The commands for the daily job, with one Try-it | About 5 minutes of reading and trying |
-| `## Under the hood` | What Git does underneath | Short |
-| `## Advanced` | Extra options and edge cases for later | Short `###` topics |
+| `## Must know` | Everything a working developer needs for this job: the commands, their common options, the output to read and the usual traps, with Try-its. Complete, not minimal | About 10 minutes of reading and trying |
+| `## Under the hood` | How Git does it inside: index, objects, refs | Short |
+| `## Advanced` | Advanced commands and options for mastering the tool; rare cases | Short `###` topics |
 | `## Recap` | Bullets; shown as the recap card | 3–5 bullets |
 
 Inside sections, use `###` subheadings, short paragraphs, and ` ```console ` blocks for terminal output. A `##` line inside a code block is fine; anywhere else it must be one of the four section names.
@@ -73,6 +73,19 @@ today: "`git restore --staged notes.txt` takes a file out of the staging area."
 book: "`git reset HEAD notes.txt` does the same and still works."
 :::
 ```
+
+## coverage.md
+
+For reviewers; the app does not show it. It proves the lesson covers its Pro Git sections well. `content/lessons/three-areas/coverage.md` is the example.
+
+- **Sources:** every book section and reference page used.
+- **Point by point:** each point of the book section, whether the lesson covers it, and in which layer.
+- **Left out on purpose:** each skipped point, why, and which lesson teaches it.
+- **Beyond the book:** what comes from the Git reference or GitHub Docs.
+
+Rule: every important point of the book section is in "Must know" or "Under the hood", or listed under "Left out" with the lesson that teaches it.
+
+Try-its must not solve the mission: practise on a separate file, so the mission still has work to do.
 
 ## mission.yaml
 

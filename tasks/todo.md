@@ -482,6 +482,17 @@ Goal: take the pilot as a student in the real desktop app, measure it against SP
 
 **Verification:** unit tests (shortcuts, text size, progress), component tests (labels above, zoom buttons), `pnpm review:fixes` in the desktop app, `pnpm review:play` again · **Scope:** M
 
+### Lesson depth: the pilot as the model
+**Description:** Your review (2026-11-26): lessons must cover their Pro Git sections well, not scratch the surface. "Must know" is everything a working developer needs for the job; "Under the hood" is how Git does it; "Advanced" is for mastering the tool. The pilot is rewritten first; the other lessons follow once you approve its style.
+
+**Acceptance criteria:**
+- [x] Pilot audited point by point against Pro Git 2.2 (its share of the section), 1.3 and 10.2: `content/lessons/three-areas/coverage.md`
+- [x] Must know adds: clean status, reading the hints, why untracked files wait, two jobs of `git add`, short status with a code table, the editor and Vim trap, `commit -a`
+- [x] Under the hood adds: `.git/index`, what `git add` stores, `git ls-files --stage`, what a commit is (snapshot, checksum)
+- [x] Advanced adds: `add .` / `-A` / `-u` / `-n`, `status -sb`
+- [x] Try-its use their own file, so they no longer solve the mission
+- [ ] You read the pilot in the app and approve the style → then the same pass for every lesson
+
 ## Checkpoint D: Pilot reviewed
 - [x] Measurements written down and within SPEC targets (or a plan)
 - [x] Review findings fixed or listed

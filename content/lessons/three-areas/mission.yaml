@@ -16,9 +16,6 @@ goal:
   - check: file-is-modified
     file: README.md
     label: "README.md is still changed, not committed"
-  - check: commit-count-at-least
-    count: 2
-    label: "The history has your new commit"
 hints:
   - "Run git status. Which file is new, and which one only changed?"
   - "A commit takes only what is in the staging area. Stage notes.txt alone with git add."

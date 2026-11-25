@@ -86,3 +86,35 @@
 .lesson-prose a {
 	color: var(--link);
 }
+
+/* Tables: hairline rows, a small uppercase header, interface font for scanning. */
+.lesson-prose table {
+	width: 100%;
+	border-collapse: collapse;
+	font-family: var(--type-body-family);
+	font-size: var(--type-small-size);
+	line-height: var(--type-small-line-height);
+}
+
+.lesson-prose th {
+	padding: var(--space-2) var(--space-3) var(--space-2) 0;
+	border-bottom: 1px solid var(--border-strong);
+	color: var(--ink-muted);
+	font-family: var(--type-caption-family);
+	font-size: var(--type-caption-size);
+	font-weight: var(--type-caption-weight);
+	letter-spacing: var(--type-caption-tracking);
+	text-align: left;
+	text-transform: uppercase;
+}
+
+.lesson-prose td {
+	padding: var(--space-2) var(--space-3) var(--space-2) 0;
+	border-bottom: 1px solid var(--border);
+	vertical-align: top;
+}
+
+/* Keeps a code cell like "??" or " M" on one line, so the two columns stay readable. */
+.lesson-prose td code {
+	white-space: pre;
+}
