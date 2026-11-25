@@ -159,6 +159,7 @@ id: three-areas
 title: "Status, stage, commit: the three areas"
 module: daily-loop
 bookSection: "2.2 Recording Changes"   # shown in the lesson eyebrow
+bookUrl: https://git-scm.com/book/en/v2/Git-Basics-Recording-Changes-to-the-Repository   # the citation link
 bookSources:
   - book/progit2/book/02-git-basics/sections/recording-changes.asc
 readFirst: [first-look-inside, start-a-repo]

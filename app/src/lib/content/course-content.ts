@@ -7,6 +7,7 @@
 
 import { buildCourseContent, findLessonById, type ContentFiles } from './load-lessons.ts';
 import type { Lesson } from '../types/lesson.ts';
+import { findLessonPlace, type LessonPlace } from './lesson-navigation.ts';
 
 /**
  * Every lesson file and path file, as text, keyed by Vite's relative path
@@ -41,4 +42,42 @@ export const courseContent = buildCourseContent(keyByContentPath(filesByImportPa
  */
 export function getLesson(lessonId: string): Lesson | undefined {
 	return findLessonById(courseContent, lessonId);
+}
+
+/** The path the app follows for numbering and Previous / Next links. */
+const mainPathId = 'pro-path';
+
+/**
+ * Finds a lesson's place in the pro path: its number, module and neighbours.
+ * @param lessonId - e.g. "three-areas"
+ * @returns its place, or undefined if the pro path does not list it
+ */
+export function getLessonPlace(lessonId: string): LessonPlace | undefined {
+	const mainPath = courseContent.paths.get(mainPathId);
+	if (mainPath === undefined) {
+		return undefined;
+	}
+	const lessonTitles = new Map(
+		[...courseContent.lessons.values()].map((lesson) => [lesson.id, lesson.title])
+	);
+	return findLessonPlace(mainPath, lessonTitles, lessonId);
+}
+
+/**
+ * Lists the lessons of the first module of the pro path, for the sidebar.
+ * @returns the module's title and its lessons (ID and title), or null if there is no path yet
+ */
+export function getFirstModuleOutline(): {
+	moduleTitle: string;
+	lessons: { id: string; title: string }[];
+} | null {
+	const firstModule = courseContent.paths.get(mainPathId)?.modules[0];
+	if (firstModule === undefined) {
+		return null;
+	}
+	const lessons = firstModule.lessonIds.map((lessonId) => ({
+		id: lessonId,
+		title: getLesson(lessonId)?.title ?? lessonId
+	}));
+	return { moduleTitle: firstModule.title, lessons };
 }

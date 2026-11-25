@@ -19,6 +19,7 @@ describe('parseLessonText', () => {
 			title: 'A sample lesson',
 			module: 'daily-loop',
 			bookSection: '2.2 Recording Changes',
+			bookUrl: 'https://git-scm.com/book/en/v2/Git-Basics-Recording-Changes-to-the-Repository',
 			bookSources: ['book/progit2/book/02-git-basics/sections/recording-changes.asc'],
 			readFirst: ['start-a-repo']
 		});

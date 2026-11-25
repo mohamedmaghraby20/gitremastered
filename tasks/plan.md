@@ -74,7 +74,7 @@ Full details for each task (acceptance criteria, verification, files) are in `ta
 ### Phase 2: Pilot lesson
 - [x] Task 8: Define the lesson content types and the content loader
 - [x] Task 9: Write the pilot lesson content (your approval of the text pending)
-- [ ] Task 10: Show the pilot lesson on its page
+- [x] Task 10: Show the pilot lesson on its page
 - [ ] Task 11: Show the lesson's special blocks
 - [ ] Task 12: Create and reset practice folders (Rust)
 - [ ] Task 13: Run a real shell session (Rust)

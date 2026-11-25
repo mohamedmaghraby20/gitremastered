@@ -162,13 +162,15 @@ Every task: test first where there is logic; all of `pnpm test`, `pnpm check`, `
 **Description:** `/lessons/[lessonId]` shows the eyebrow, title, layer tabs and each layer's text, with a book citation link and previous/next links, matching the prototype's lesson column.
 
 **Acceptance criteria:**
-- [ ] `/lessons/three-areas` shows the pilot; the three tabs switch layers
-- [ ] An unknown lesson ID shows a friendly "lesson not found" page
-- [ ] Text uses the serif reading styles, max 64 characters wide
+- [x] `/lessons/three-areas` shows the pilot; the three tabs switch layers
+- [x] An unknown lesson ID shows a friendly "lesson not found" page
+- [x] Text uses the serif reading styles, max 64 characters wide
 
 **Verification:**
-- [ ] Tests pass: tabs switch; unknown ID handled
-- [ ] Manual: compare with the prototype's Lesson screen
+- [x] Tests pass: tabs switch; unknown ID handled
+- [x] Manual: compare with the prototype's Lesson screen
+
+**Result (2026-11-25):** `/lessons/[lessonId]` loads the lesson and its place in the pro path (`+page.ts`); the page is just layout. The lesson column is `LessonReader` (header, `LayerTabs`, text, `RecapCard`, `LessonPager`), matching the prototype. Tabs follow the WAI-ARIA pattern (arrow keys, Home/End). Bold in lesson text is the yellow highlighter for new key terms; text is max 64ch in the serif styles (`lesson-prose.css`). Added `bookUrl` to the frontmatter for the citation link (SPEC §4 updated). The sidebar now lists the first module's lessons from content/. Note: in the desktop window the citation link needs the Tauri opener plugin to open the system browser (not in the approved table; ask first). Comparison checked in the browser pane against the prototype's lesson column.
 
 **Dependencies:** 9 · **Files:** `app/src/routes/lessons/[lessonId]/+page.ts`, `+page.svelte`, `app/src/lib/components/lesson-reader/LessonHeader.svelte`, `LayerTabs.svelte`, `LayerTabs.test.ts` · **Scope:** M
 

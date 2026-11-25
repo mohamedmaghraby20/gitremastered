@@ -1,0 +1,73 @@
+/**
+ * lesson-prose.css
+ * Reading styles for lesson text rendered from Markdown (the .lesson-prose wrapper).
+ * Markdown becomes plain HTML tags, so the styles target those tags inside the wrapper.
+ * Every value comes from a design token.
+ */
+
+.lesson-prose {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-4);
+	max-width: 64ch; /* DESIGN.md: lesson text at most 64 characters wide */
+	color: var(--ink);
+	font-family: var(--type-lesson-family);
+	font-size: var(--type-lesson-size);
+	line-height: var(--type-lesson-line-height);
+}
+
+.lesson-prose > * {
+	margin: 0;
+}
+
+/* "###" headings inside a section: mono, like every heading. */
+.lesson-prose h3 {
+	margin-top: var(--space-2);
+	font-family: var(--type-h3-family);
+	font-size: var(--type-h3-size);
+	line-height: var(--type-h3-line-height);
+	font-weight: var(--type-h3-weight);
+}
+
+/* Bold marks a newly introduced key term: the yellow highlighter behind dark text. */
+.lesson-prose strong {
+	padding: 1px var(--space-1);
+	background: var(--highlight);
+	color: var(--on-highlight);
+	font-weight: 600;
+}
+
+/* Inline code: small mono chip. */
+.lesson-prose :not(pre) > code,
+.lesson-lede code {
+	padding: 1px var(--space-1);
+	border: 1px solid var(--border);
+	border-radius: var(--radius-small);
+	background: var(--surface-sunken);
+	font-family: var(--type-code-family);
+	font-size: 0.86em;
+}
+
+/* Code blocks: a sunken well that scrolls sideways instead of wrapping commands. */
+.lesson-prose pre {
+	overflow-x: auto;
+	padding: var(--space-3) var(--space-4);
+	border: 1px solid var(--border);
+	border-radius: var(--radius-medium);
+	background: var(--surface-sunken);
+	font-family: var(--type-code-family);
+	font-size: var(--type-code-size);
+	line-height: var(--type-code-line-height);
+}
+
+.lesson-prose ul,
+.lesson-prose ol {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-1);
+	padding-left: var(--space-6);
+}
+
+.lesson-prose a {
+	color: var(--link);
+}

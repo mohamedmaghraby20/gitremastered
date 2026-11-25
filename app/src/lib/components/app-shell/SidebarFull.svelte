@@ -1,17 +1,18 @@
 <!--
   SidebarFull.svelte
-  The full, 248px-wide sidebar: the main links with their text, the pilot lesson, and the book credit.
-  Path progress and the current module's lessons arrive with the content loader (task 8 onwards).
+  The full, 248px-wide sidebar: the main links with their text, the current module's lessons
+  (from content/), and the book credit. Path progress arrives with saved progress (task 21).
   Input: currentPath, the path of the page on screen.
 -->
 <script lang="ts">
 	import { resolve } from '$app/paths';
+	import { getFirstModuleOutline } from '$lib/content/course-content';
 	import { isLinkActive, mainLinks } from '$lib/navigation/navigation-links';
 
 	let { currentPath }: { currentPath: string } = $props();
 
-	// The pilot lesson; task 8 replaces this with the current module's lessons from content/.
-	const pilotLessonHref = resolve('/lessons/[lessonId]', { lessonId: 'three-areas' });
+	// The lessons of the module the student is in (for now: the first module of the pro path).
+	const moduleOutline = getFirstModuleOutline();
 </script>
 
 <nav
@@ -38,16 +39,25 @@
 		{/each}
 	</ul>
 
-	<div class="flex flex-col gap-1 pl-3">
-		<span class="type-caption text-ink-muted uppercase">Pilot lesson</span>
-		<a
-			href={pilotLessonHref}
-			aria-current={isLinkActive(currentPath, pilotLessonHref) ? 'page' : undefined}
-			class="type-small py-1 text-ink-muted hover:text-ink"
-		>
-			Status, stage, commit
-		</a>
-	</div>
+	{#if moduleOutline !== null}
+		<div class="flex flex-col gap-1 pl-3">
+			<span class="type-caption text-ink-muted uppercase">{moduleOutline.moduleTitle}</span>
+			<ul class="flex flex-col">
+				{#each moduleOutline.lessons as lesson (lesson.id)}
+					{@const lessonHref = resolve('/lessons/[lessonId]', { lessonId: lesson.id })}
+					<li>
+						<a
+							href={lessonHref}
+							aria-current={isLinkActive(currentPath, lessonHref) ? 'page' : undefined}
+							class="type-small flex py-1 text-ink-muted hover:text-ink aria-[current=page]:font-semibold aria-[current=page]:text-ink"
+						>
+							{lesson.title}
+						</a>
+					</li>
+				{/each}
+			</ul>
+		</div>
+	{/if}
 
 	<p class="type-caption mt-auto pl-3 font-normal text-ink-muted normal-case">
 		Built on Pro Git · CC BY-NC-SA

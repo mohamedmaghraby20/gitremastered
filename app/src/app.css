@@ -13,6 +13,7 @@
 @import 'tw-animate-css';
 @import './lib/styles/tokens.css';
 @import './lib/styles/fonts.css';
+@import './lib/styles/lesson-prose.css';
 
 /* Tailwind's dark: variant follows our theme attribute, same as tokens.css. */
 @custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));

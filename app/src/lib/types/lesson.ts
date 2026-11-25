@@ -20,6 +20,7 @@ export type LessonFrontmatter = {
 	title: string;
 	module: string; // the module ID from docs/course-map.md, e.g. "daily-loop"
 	bookSection: string; // the Pro Git section shown to students, e.g. "2.2 Recording Changes"
+	bookUrl: string; // the section in the official online Pro Git, for the citation link
 	bookSources: string[]; // paths of the Pro Git source files under book/
 	readFirst: string[]; // lesson IDs worth reading before this one
 };

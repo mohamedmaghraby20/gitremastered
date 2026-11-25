@@ -72,6 +72,7 @@ function readFrontmatter(reader: FieldReader): LessonFrontmatter {
 		title: reader.text('title'),
 		module: reader.text('module'),
 		bookSection: reader.text('bookSection'),
+		bookUrl: reader.text('bookUrl'),
 		bookSources: reader.textList('bookSources'),
 		readFirst: reader.textList('readFirst', 0)
 	};
