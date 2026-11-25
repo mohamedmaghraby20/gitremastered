@@ -1,27 +1,159 @@
 /**
  * app.css
- * The global stylesheet: design tokens, fonts, and the few base rules every screen shares.
+ * The global stylesheet: Tailwind, the design tokens, fonts, and the base rules every screen shares.
  * Every value comes from a token (see DESIGN.md); never write a raw color or size here.
+ *
+ * Three layers, from the bottom up:
+ * 1. tokens.css   our design tokens as CSS variables (generated from docs/design/tokens.json)
+ * 2. shadcn names the names shadcn-svelte components expect (--background, --ring…), pointed at our tokens
+ * 3. @theme       Tailwind classes for both sets, e.g. bg-surface, text-ink, bg-primary, rounded-medium
  */
 
+@import 'tailwindcss';
+@import 'tw-animate-css';
 @import './lib/styles/tokens.css';
 @import './lib/styles/fonts.css';
 
-/* Page background and default text, in the interface font. */
-body {
-	margin: 0;
-	background: var(--canvas);
-	color: var(--ink);
-	font-family: var(--type-body-family);
-	font-size: var(--type-body-size);
-	line-height: var(--type-body-line-height);
-	transition:
-		background-color var(--duration-base) ease-out,
-		color var(--duration-base) ease-out;
+/* Tailwind's dark: variant follows our theme attribute, same as tokens.css. */
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+
+/**
+ * Layer 2: shadcn-svelte's names, pointed at our tokens.
+ * Same in both themes, because our tokens already switch with the theme.
+ */
+:root {
+	--background: var(--canvas);
+	--foreground: var(--ink);
+	--card: var(--surface);
+	--card-foreground: var(--ink);
+	--popover: var(--surface);
+	--popover-foreground: var(--ink);
+	--primary-foreground: var(--on-primary);
+	--secondary: var(--surface-sunken);
+	--secondary-foreground: var(--ink);
+	--muted: var(--surface-sunken);
+	--muted-foreground: var(--ink-muted);
+	--accent: var(--surface-sunken);
+	--accent-foreground: var(--ink);
+	--destructive: var(--danger);
+	--input: var(--border-strong);
+	--ring: var(--primary);
 }
 
-/* The 2px focus ring on every interactive element, only when using the keyboard. */
-:focus-visible {
-	outline: 2px solid var(--primary);
-	outline-offset: 2px;
+/**
+ * Layer 3: Tailwind's theme.
+ * "initial" removes Tailwind's own palette, fonts, radii and shadows, so only our tokens exist:
+ * a class like bg-red-500 simply does nothing. Spacing keeps Tailwind's 4px step, which matches
+ * our space-* scale (p-4 = 16px = space-4).
+ */
+@theme inline {
+	--color-*: initial;
+	--font-*: initial;
+	--radius-*: initial;
+	--shadow-*: initial;
+
+	/* Interface colors */
+	--color-canvas: var(--canvas);
+	--color-surface: var(--surface);
+	--color-surface-sunken: var(--surface-sunken);
+	--color-border: var(--border);
+	--color-border-strong: var(--border-strong);
+	--color-ink: var(--ink);
+	--color-ink-muted: var(--ink-muted);
+	--color-ink-faint: var(--ink-faint);
+	--color-primary: var(--primary);
+	--color-primary-edge: var(--primary-edge);
+	--color-on-primary: var(--on-primary);
+	--color-highlight: var(--highlight);
+	--color-on-highlight: var(--on-highlight);
+	--color-link: var(--link);
+	--color-success: var(--success);
+	--color-warning: var(--warning);
+	--color-danger: var(--danger);
+
+	/* Git's three areas and history lines */
+	--color-git-working: var(--git-working);
+	--color-git-staging: var(--git-staging);
+	--color-git-staging-wash: var(--git-staging-wash);
+	--color-git-staging-edge: var(--git-staging-edge);
+	--color-git-repository: var(--git-repository);
+	--color-on-git-repository: var(--on-git-repository);
+	--color-git-branch: var(--git-branch);
+	--color-git-branch-alt: var(--git-branch-alt);
+	--color-git-remote: var(--git-remote);
+
+	/* Terminal */
+	--color-terminal-bg: var(--terminal-bg);
+	--color-terminal-chrome: var(--terminal-chrome);
+	--color-terminal-ink: var(--terminal-ink);
+	--color-terminal-muted: var(--terminal-muted);
+	--color-terminal-prompt: var(--terminal-prompt);
+	--color-terminal-green: var(--terminal-green);
+	--color-terminal-red: var(--terminal-red);
+
+	/* shadcn-svelte names, for its building blocks */
+	--color-background: var(--background);
+	--color-foreground: var(--foreground);
+	--color-card: var(--card);
+	--color-card-foreground: var(--card-foreground);
+	--color-popover: var(--popover);
+	--color-popover-foreground: var(--popover-foreground);
+	--color-primary-foreground: var(--primary-foreground);
+	--color-secondary: var(--secondary);
+	--color-secondary-foreground: var(--secondary-foreground);
+	--color-muted: var(--muted);
+	--color-muted-foreground: var(--muted-foreground);
+	--color-accent: var(--accent);
+	--color-accent-foreground: var(--accent-foreground);
+	--color-destructive: var(--destructive);
+	--color-input: var(--input);
+	--color-ring: var(--ring);
+
+	/**
+	 * Fonts (font-mono, font-serif, font-sans) read the type tokens, which hold the font stacks.
+	 * They point at --type-*-family rather than --font-* because Tailwind uses the same names.
+	 */
+	--font-mono: var(--type-code-family);
+	--font-serif: var(--type-lesson-family);
+	--font-sans: var(--type-body-family);
+
+	/* Corners: rounded-small, rounded-medium, rounded-large; shadcn's sm/md/lg map onto them. */
+	--radius-small: var(--radius-small);
+	--radius-medium: var(--radius-medium);
+	--radius-large: var(--radius-large);
+	--radius-sm: var(--radius-small);
+	--radius-md: var(--radius-medium);
+	--radius-lg: var(--radius-large);
+
+	/* Shadows: only menus (shadow-floating) and the terminal window (shadow-window). */
+	--shadow-floating: var(--shadow-floating);
+	--shadow-window: var(--shadow-window);
+}
+
+@layer base {
+	/* Hairline borders use the border token unless a class says otherwise. */
+	*,
+	::before,
+	::after {
+		border-color: var(--border);
+	}
+
+	/* Page background and default text, in the interface font. */
+	body {
+		margin: 0;
+		background: var(--canvas);
+		color: var(--ink);
+		font-family: var(--type-body-family);
+		font-size: var(--type-body-size);
+		line-height: var(--type-body-line-height);
+		transition:
+			background-color var(--duration-base) ease-out,
+			color var(--duration-base) ease-out;
+	}
+
+	/* The 2px focus ring on every interactive element, only when using the keyboard. */
+	:focus-visible {
+		outline: 2px solid var(--primary);
+		outline-offset: 2px;
+	}
 }

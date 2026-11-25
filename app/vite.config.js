@@ -1,3 +1,5 @@
+import tailwindcss from '@tailwindcss/vite';
+
 /**
  * vite.config.js
  * Settings for Vite, the tool that serves the screens while developing and bundles them for release.
@@ -17,7 +19,7 @@ const tauriDevHost = process.env.TAURI_DEV_HOST;
  * @returns the Vite configuration object
  */
 export default defineConfig(() => ({
-	plugins: [sveltekit()],
+	plugins: [tailwindcss(), sveltekit()],
 
 	// Keep Rust's error messages visible in the terminal instead of clearing the screen.
 	clearScreen: false,

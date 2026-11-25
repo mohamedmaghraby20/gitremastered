@@ -1,11 +1,12 @@
 <!--
   ThemePanel.svelte
-  Dev gallery: one panel locked to a theme (data-theme), showing every color and text style.
+  Dev gallery: one panel locked to a theme (data-theme), showing the buttons, every color and every text style.
   Two of these side by side show light and dark at the same time.
   Inputs: themeId ("light" or "dark"), title, and the parsed tokens.json.
 -->
 <script lang="ts">
 	import type { DesignTokens } from '$lib/types/design-tokens';
+	import ButtonSamples from './ButtonSamples.svelte';
 	import ColorSwatches from './ColorSwatches.svelte';
 	import TypeSpecimens from './TypeSpecimens.svelte';
 
@@ -18,6 +19,8 @@
 
 <section class="theme-panel" data-theme={themeId} aria-label={title}>
 	<h2 class="type-h2">{title}</h2>
+	<h3 class="type-h3">Buttons</h3>
+	<ButtonSamples />
 	<h3 class="type-h3">Colors</h3>
 	<ColorSwatches colorTokens={designTokens.color.tokens} />
 	<h3 class="type-h3">Text styles</h3>

@@ -74,15 +74,17 @@ Every task: test first where there is logic; all of `pnpm test`, `pnpm check`, `
 **Description:** Add Tailwind and shadcn-svelte with their theme mapped to our CSS variables (no hard-coded colors). Build the first real component: the keycap Button (primary, secondary, ghost) from `DESIGN.md`, shown in the gallery.
 
 **Acceptance criteria:**
-- [ ] Tailwind classes use our tokens (e.g. `bg-primary` = `var(--primary)`)
-- [ ] Button has the three variants, the 3px keycap edge, the press-down and the focus ring
-- [ ] Gallery shows the buttons in both themes
+- [x] Tailwind classes use our tokens (e.g. `bg-primary` = `var(--primary)`)
+- [x] Button has the three variants, the 3px keycap edge, the press-down and the focus ring
+- [x] Gallery shows the buttons in both themes
 
 **Verification:**
-- [ ] Tests pass: Button renders the right variant and is a real `<button>`
-- [ ] Manual: compare with the design system's Button preview
+- [x] Tests pass: Button renders the right variant and is a real `<button>`
+- [x] Manual: compare with the design system's Button preview
 
-**Dependencies:** 4 · **Files:** `app/src/app.css`, `app/components.json`, `app/src/lib/components/ui/button/Button.svelte`, `app/src/lib/components/ui/button/Button.test.ts` · **Scope:** M
+**Result (2026-11-25):** Tailwind 4 via `sv add`; shadcn-svelte set up by its manual steps (its `init` only offers themes we replace anyway). Tailwind's own palette, fonts, radii and shadows are switched off, so only token classes exist. Button files follow shadcn-svelte's lowercase layout; variants live in `button-variants.ts` so ESLint can read their types. Checked against the design system's Button preview.
+
+**Dependencies:** 4 · **Files:** `app/src/app.css`, `app/components.json`, `app/src/lib/utils.ts`, `app/src/lib/components/ui/button/` (`button.svelte`, `button-variants.ts`, `index.ts`, `button.svelte.test.ts`) · **Scope:** M
 
 ### Task 6: Build the app shell: top bar, sidebar, empty pages
 **Description:** The layout from the prototype: top bar (wordmark, search box, Settings) and sidebar (full and icon-rail versions), with empty pages for home, course map, lesson, search, commands and settings, all linked.
@@ -96,7 +98,7 @@ Every task: test first where there is logic; all of `pnpm test`, `pnpm check`, `
 - [ ] Tests pass: Sidebar marks the active link; rail has labels for screen readers
 - [ ] Manual: click through every page in `pnpm tauri dev`
 
-**Dependencies:** 5 · **Files:** `app/src/routes/+layout.svelte`, `app/src/lib/components/app-shell/TopBar.svelte`, `app/src/lib/components/app-shell/Sidebar.svelte`, `app/src/lib/components/app-shell/Sidebar.test.ts`, page files under `app/src/routes/` · **Scope:** M (page stubs are one line each)
+**Dependencies:** 5 · **Files:** `app/src/routes/+layout.svelte`, `app/src/lib/components/app-shell/TopBar.svelte`, `app/src/lib/components/app-shell/Sidebar.svelte`, `app/src/lib/components/app-shell/Sidebar.svelte.test.ts`, page files under `app/src/routes/` · **Scope:** M (page stubs are one line each)
 
 ### Task 7: Add the typed bridge between screens and Rust
 **Description:** Write the shared data shapes from SPEC §3.4 in TypeScript and Rust, typed wrappers for every contract command and event, and one real command end to end: `get_git_version`, shown on the Settings page.
