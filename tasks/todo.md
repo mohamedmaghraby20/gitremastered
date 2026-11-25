@@ -225,13 +225,15 @@ Every task: test first where there is logic; all of `pnpm test`, `pnpm check`, `
 **Description:** The retro terminal window from DESIGN.md (title bar with folder, warm screen, glowing prompt) using xterm.js, wired to the session through the typed bridge, resizing with its pane.
 
 **Acceptance criteria:**
-- [ ] Typing in the app's terminal runs commands in the practice folder
-- [ ] Colors and fonts come from the terminal tokens
-- [ ] Esc moves focus out of the terminal
+- [x] Typing in the app's terminal runs commands in the practice folder
+- [x] Colors and fonts come from the terminal tokens
+- [x] Esc moves focus out of the terminal
 
 **Verification:**
-- [ ] Tests pass: component sends input and renders output (mocked bridge)
-- [ ] Manual: run `git status` in the pilot
+- [x] Tests pass: component sends input and renders output (mocked bridge)
+- [ ] Manual: run `git status` in the pilot (you, at Checkpoint B)
+
+**Result (2026-11-25):** `TerminalWindow` is the retro frame (title bar with folder name, scanlined screen, the only window shadow). `TerminalView` mounts xterm.js 6 with colors and font read from the terminal tokens (`terminal-theme.ts`), refits on resize, turns the cursor blink off with reduce motion, and on Esc blurs and moves focus to the window frame. `TerminalConnection` (plain class, unit-tested) links one screen to one session and keeps any output that arrives before the session ID is known. The lesson page creates the practice folder on open and shows the terminal; in a normal browser it says the terminal needs the desktop app. Added `@xterm/xterm`, `@xterm/addon-fit` (approved). Not yet checked by you: typing `git status` in the real desktop window (Checkpoint B).
 
 **Dependencies:** 13 · **Files:** `app/src/lib/components/terminal-view/TerminalWindow.svelte`, `TerminalView.svelte`, `terminal-theme.ts`, `TerminalView.test.ts` · **Scope:** M
 

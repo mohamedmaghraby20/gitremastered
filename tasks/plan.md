@@ -78,7 +78,7 @@ Full details for each task (acceptance criteria, verification, files) are in `ta
 - [x] Task 11: Show the lesson's special blocks
 - [x] Task 12: Create and reset practice folders (Rust)
 - [x] Task 13: Run a real shell session (Rust)
-- [ ] Task 14: Show the terminal on screen
+- [x] Task 14: Show the terminal on screen
 
 ### Checkpoint B: Real terminal
 - [ ] Typing in the app's terminal runs real Git in the pilot's practice folder, on your Windows PC with Git Bash
