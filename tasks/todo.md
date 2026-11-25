@@ -178,13 +178,15 @@ Every task: test first where there is logic; all of `pnpm test`, `pnpm check`, `
 **Description:** The blocks from DESIGN.md inside lesson text: definition rows (with area swatches), "Try it" steps, "Use today / In the book" comparison, sidenotes, careful notes and the recap card.
 
 **Acceptance criteria:**
-- [ ] Each block is its own small component, written in Markdown by lesson authors with a simple marker
-- [ ] The pilot shows each block correctly
-- [ ] Blocks read well in both themes
+- [x] Each block is its own small component, written in Markdown by lesson authors with a simple marker
+- [x] The pilot shows each block correctly
+- [x] Blocks read well in both themes
 
 **Verification:**
-- [ ] Tests pass: Markdown marker → right component, for each block
-- [ ] Manual: gallery shows every block
+- [x] Tests pass: Markdown marker → right component, for each block
+- [x] Manual: gallery shows every block
+
+**Result (2026-11-25):** Authors write `:::name` … `:::`. Markdown inside: `try-it`, `careful`, `sidenote`; YAML inside: `definitions` (term, area, text) and `compare` (today, book). `render-blocks.ts` splits a section into blocks; the loader runs it too, so a broken block fails the build. One component per block (`DefinitionRows`, `TryItSteps`, `CarefulNote`, `Sidenote`, `CompareCells`) picked by `LessonBlocks`; the recap card is the Recap section. Status words ("Careful", "From Pro Git") are always written, never color alone. Gallery shows every block in both themes.
 
 **Dependencies:** 10 · **Files:** `app/src/lib/components/lesson-reader/` (one file per block), `app/src/lib/content/render-blocks.ts`, `render-blocks.test.ts` · **Scope:** M
 

@@ -12,6 +12,7 @@ import { parseLessonText } from './parse-lesson.ts';
 import { parseMissionText } from './parse-mission.ts';
 import { parseLearningPathText } from './parse-path.ts';
 import { parseQuizText } from './parse-quiz.ts';
+import { splitIntoBlocks } from './render-blocks.ts';
 
 /** Content files keyed by their path inside content/, e.g. "lessons/three-areas/lesson.md". */
 export type ContentFiles = Record<string, string>;
@@ -89,6 +90,10 @@ function loadLesson(contentFiles: ContentFiles, folderName: string): Lesson {
 	if (lessonText.frontmatter.id !== folderName) {
 		const problem = `the id "${lessonText.frontmatter.id}" must match the folder name "${folderName}"`;
 		throw new ContentError(lessonFileName, problem);
+	}
+	// Reading the special blocks now makes a broken block fail the build, not the lesson page.
+	for (const sectionText of Object.values(lessonText.sections)) {
+		splitIntoBlocks(sectionText, lessonFileName);
 	}
 	const mission = parseMissionText(
 		requireFile(contentFiles, `lessons/${folderName}/mission.yaml`),

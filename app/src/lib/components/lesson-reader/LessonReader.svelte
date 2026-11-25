@@ -13,7 +13,7 @@
 	import { renderInlineMarkdown } from '$lib/content/render-markdown';
 	import LayerTabs from './LayerTabs.svelte';
 	import LessonHeader from './LessonHeader.svelte';
-	import LessonMarkdown from './LessonMarkdown.svelte';
+	import LessonBlocks from './LessonBlocks.svelte';
 	import LessonPager from './LessonPager.svelte';
 	import RecapCard from './RecapCard.svelte';
 
@@ -70,7 +70,7 @@
 					{@html renderInlineMarkdown(lesson.lede)}
 				</p>
 			{/if}
-			<LessonMarkdown markdown={lesson.sections[activeLayerId]} />
+			<LessonBlocks markdown={lesson.sections[activeLayerId]} />
 		</div>
 
 		<RecapCard markdown={lesson.sections.recap} />

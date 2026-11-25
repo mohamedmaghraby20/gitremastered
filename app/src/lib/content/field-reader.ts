@@ -67,6 +67,19 @@ export class FieldReader {
 	}
 
 	/**
+	 * Reads an optional text field.
+	 * @param fieldName - the field's name
+	 * @returns the text, trimmed, or null when the field is absent
+	 */
+	optionalText(fieldName: string): string | null {
+		const value = this.record[fieldName];
+		if (value === undefined || value === null) {
+			return null;
+		}
+		return this.text(fieldName);
+	}
+
+	/**
 	 * Reads a required whole number field.
 	 * @param fieldName - the field's name
 	 * @returns the number

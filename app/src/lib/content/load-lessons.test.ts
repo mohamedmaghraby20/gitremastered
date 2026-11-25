@@ -59,6 +59,15 @@ describe('buildCourseContent', () => {
 		);
 	});
 
+	it('rejects a lesson with a broken special block', () => {
+		const contentFiles = sampleContentFiles();
+		contentFiles['lessons/sample-lesson/lesson.md'] = readSampleLessonFile('lesson.md').replace(
+			'Git keeps three areas.',
+			':::shiny\nText\n:::'
+		);
+		expect(() => buildCourseContent(contentFiles)).toThrow('unknown block ":::shiny"');
+	});
+
 	it('rejects a lesson folder without quiz.yaml', () => {
 		const contentFiles = sampleContentFiles();
 		delete contentFiles['lessons/sample-lesson/quiz.yaml'];
