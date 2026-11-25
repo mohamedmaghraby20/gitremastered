@@ -4,7 +4,8 @@
   page adds after the text (mission, quiz), and the Previous / Next links.
 
   Inputs:  lesson (the loaded lesson), place (its number and neighbours in the path, or null),
-           afterText (optional: content shown under the recap, like the mission panel).
+           afterText (optional: content shown under the recap on the "Must know" tab only,
+           like the mission and the quiz).
 -->
 <script lang="ts">
 	import type { Snippet } from 'svelte';
@@ -77,7 +78,11 @@
 
 		<RecapCard markdown={lesson.sections.recap} />
 
-		{@render afterText?.()}
+		<!-- The mission and quiz practise "Must know". On the other tabs they are hidden, not
+		     removed, so revealed hints and checked answers survive a tab switch. -->
+		<div class="flex flex-col gap-12 pt-6" hidden={activeLayerId !== 'mustKnow'}>
+			{@render afterText?.()}
+		</div>
 	</div>
 
 	<LessonPager

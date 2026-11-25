@@ -53,6 +53,16 @@
 	font-size: 0.86em;
 }
 
+/*
+ * Inside a box that is already sunken (like "Try it"), commands sit on white with a stronger
+ * edge, so they stand out from the gray box instead of melting into it.
+ */
+.sunken-box .lesson-prose :not(pre) > code,
+.sunken-box .lesson-prose pre {
+	border-color: var(--border-strong);
+	background: var(--surface);
+}
+
 /* Code blocks: a sunken well that scrolls sideways instead of wrapping commands. */
 .lesson-prose pre {
 	overflow-x: auto;

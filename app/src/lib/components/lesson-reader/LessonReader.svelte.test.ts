@@ -6,6 +6,7 @@
 
 import { page, userEvent } from 'vitest/browser';
 import { describe, expect, it } from 'vitest';
+import { createRawSnippet } from 'svelte';
 import { render } from 'vitest-browser-svelte';
 import { sampleLesson } from '../../../../tests/fixtures/sample-lesson-object.ts';
 import LessonReader from './LessonReader.svelte';
@@ -57,6 +58,16 @@ describe('LessonReader', () => {
 		await expect.element(page.getByText('Under the hood text.')).toBeVisible();
 		await userEvent.keyboard('{ArrowLeft}{ArrowLeft}');
 		await expect.element(page.getByText('Advanced text.')).toBeVisible();
+	});
+
+	it('shows the mission and quiz under "Must know" only, keeping them on other tabs', async () => {
+		const afterText = createRawSnippet(() => ({ render: () => '<p>Mission and quiz here</p>' }));
+		await render(LessonReader, { lesson: sampleLesson, place: samplePlace, afterText });
+
+		await expect.element(page.getByText('Mission and quiz here')).toBeVisible();
+		await page.getByRole('tab', { name: /Under the hood/ }).click();
+		await expect.element(page.getByText('Mission and quiz here')).not.toBeVisible();
+		await expect.element(page.getByText('Mission and quiz here')).toBeInTheDocument();
 	});
 
 	it('always shows the recap card', async () => {
