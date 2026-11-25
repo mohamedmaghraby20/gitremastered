@@ -3,7 +3,7 @@ questions:
     answers:
       - text: "logs/error.log, in a subfolder"
         correct: true
-        explanation: "Right. A pattern without a slash matches in every folder of the project."
+        explanation: "A pattern without a slash matches in every folder of the project."
       - text: "log.txt, at the top of the project"
         explanation: "*.log matches names that end in .log. log.txt ends in .txt."
       - text: "Only app.log, and only at the top"
@@ -15,7 +15,7 @@ questions:
         explanation: ".gitignore never removes anything. It only stops untracked files from showing up."
       - text: "Nothing changes: Git still tracks the file"
         correct: true
-        explanation: "Right. Ignoring only affects untracked files. Use git rm --cached secrets.env to stop tracking it."
+        explanation: "Ignoring only affects untracked files. Use git rm --cached secrets.env to stop tracking it."
       - text: "Git hides it, and its history is gone"
         explanation: "The old commits still contain the file. Ignoring does not rewrite history."
 
@@ -27,4 +27,4 @@ questions:
         explanation: "Committing .gitignore makes Git track it, which is what you want."
       - text: "So everyone on the team ignores the same files"
         correct: true
-        explanation: "Right. A committed .gitignore travels with the project to every clone."
+        explanation: "A committed .gitignore travels with the project to every clone."

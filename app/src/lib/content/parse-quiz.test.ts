@@ -22,6 +22,16 @@ describe('parseQuizText', () => {
 		expect(quiz.questions[0].answers[1].isCorrect).toBe(false);
 	});
 
+	it('rejects a right-answer explanation that starts with "Right" (the screen adds it)', () => {
+		const saysRightTwice = validQuizText.replace(
+			'explanation: "Edits stay in the working folder until you stage them."',
+			'explanation: "Right. Edits stay in the working folder."'
+		);
+		expect(() => parseQuizText(saysRightTwice, fileName)).toThrow(
+			'should not start with "Right": the quiz already shows "✓ Right."'
+		);
+	});
+
 	it('rejects a question with two correct answers', () => {
 		const twoCorrect = validQuizText.replace(
 			'      - text: "In the repository"\n',

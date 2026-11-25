@@ -41,9 +41,16 @@ function readQuestion(questionReader: FieldReader): QuizQuestion {
  * @returns the typed answer
  */
 function readAnswer(answerReader: FieldReader): QuizAnswer {
-	return {
+	const answer = {
 		text: answerReader.text('text'),
 		isCorrect: answerReader.optionalFlag('correct'),
 		explanation: answerReader.text('explanation')
 	};
+	// Found in the pilot review: "✓ Right. Right. …" when the content repeats the screen's word.
+	if (answer.isCorrect && answer.explanation.startsWith('Right')) {
+		answerReader.fail(
+			'the explanation should not start with "Right": the quiz already shows "✓ Right."'
+		);
+	}
+	return answer;
 }
