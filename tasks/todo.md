@@ -45,10 +45,10 @@ Every task: test first where there is logic; all of `pnpm test`, `pnpm check`, `
 **Acceptance criteria:**
 - [x] `pnpm test`, `pnpm check`, `pnpm lint`, `pnpm format` all work
 - [x] `cargo test`, `cargo clippy -- -D warnings`, `cargo fmt --check` all pass
-- [ ] The CI workflow runs them on GitHub and goes green
+- [x] The CI workflow runs them on GitHub and goes green (first run 2026-11-25)
 
 **Verification:**
-- [x] Tests pass: all commands above, locally (GitHub: waiting for the first push)
+- [x] Tests pass: all commands above, locally and on GitHub Actions
 
 **Result (2026-11-25):** Added with the official Svelte CLI (`sv add prettier eslint vitest`). Vitest 5 in two groups: logic tests in Node, component tests (`*.svelte.test.ts`) in headless Chromium via Playwright. First tests: `page-title.test.ts`, the home page component test, and two Rust tests guarding the window settings. CI on ubuntu-latest.
 
