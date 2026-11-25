@@ -29,9 +29,9 @@ readFirst: [three-areas]
 
 One sentence: what this lesson gives the student.
 
-## Use it
-## How it works
-## Pro
+## Must know
+## Under the hood
+## Advanced
 ## Recap
 ```
 
@@ -47,10 +47,10 @@ One sentence: what this lesson gives the student.
 
 | Section | Job | Length |
 |---|---|---|
-| Lede | The first paragraph before `## Use it`. One sentence | 1 sentence |
-| `## Use it` | The commands for the daily job, with one Try-it | About 5 minutes of reading and trying |
-| `## How it works` | What Git does underneath | Short |
-| `## Pro` | Extra options and edge cases for later | Short `###` topics |
+| Lede | The first paragraph before `## Must know`. One sentence | 1 sentence |
+| `## Must know` | The commands for the daily job, with one Try-it | About 5 minutes of reading and trying |
+| `## Under the hood` | What Git does underneath | Short |
+| `## Advanced` | Extra options and edge cases for later | Short `###` topics |
 | `## Recap` | Bullets; shown as the recap card | 3–5 bullets |
 
 Inside sections, use `###` subheadings, short paragraphs, and ` ```console ` blocks for terminal output. A `##` line inside a code block is fine; anywhere else it must be one of the four section names.

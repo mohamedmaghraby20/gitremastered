@@ -1,6 +1,6 @@
 <!--
   LayerTabs.svelte
-  The layer tabs from DESIGN.md: "1 Use it / 2 How it works / 3 Pro", with a 2px primary
+  The layer tabs from DESIGN.md: "1 Must know / 2 Under the hood / 3 Advanced", with a 2px primary
   underline on the active tab. Follows the WAI-ARIA tabs pattern: only the active tab is in the
   Tab order, and the Left / Right arrow keys (plus Home / End) move between tabs.
 

@@ -11,7 +11,7 @@ readFirst: [first-look-inside, start-a-repo]
 
 Every change you save in Git goes through three places, and three commands move it along: `git status` shows where things are, `git add` picks what goes next, `git commit` saves it.
 
-## Use it
+## Must know
 
 You will run these three commands many times a day. Here is the loop.
 
@@ -73,7 +73,7 @@ Git prints the branch, the start of the new commit's ID (`463dc4f`) and a short 
 
 The loop is always the same: edit, `git status`, `git add`, `git commit`, `git status`.
 
-## How it works
+## Under the hood
 
 Git keeps three copies of your project in mind at once.
 
@@ -95,7 +95,7 @@ That is why one file can appear in both lists at once. The staging area holds th
 Pro Git suggests reading `git add` as "add precisely this content to the next commit", not "add this file to the project". (Pro Git 2.2)
 :::
 
-## Pro
+## Advanced
 
 ### Short status
 

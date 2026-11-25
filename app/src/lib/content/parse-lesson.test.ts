@@ -28,15 +28,15 @@ describe('parseLessonText', () => {
 	it('reads the lede and all four sections', () => {
 		const lessonText = parseLessonText(validLessonText, fileName);
 		expect(lessonText.lede).toBe('This sentence is the lede.');
-		expect(lessonText.sections.useIt).toContain('Run `git status`');
-		expect(lessonText.sections.howItWorks).toBe('Git keeps three areas.');
-		expect(lessonText.sections.pro).toBe('Use `git status -s` for a short view.');
+		expect(lessonText.sections.mustKnow).toContain('Run `git status`');
+		expect(lessonText.sections.underTheHood).toBe('Git keeps three areas.');
+		expect(lessonText.sections.advanced).toBe('Use `git status -s` for a short view.');
 		expect(lessonText.sections.recap).toBe('- Status shows the three areas.');
 	});
 
 	it('ignores "##" lines inside code blocks', () => {
 		const lessonText = parseLessonText(validLessonText, fileName);
-		expect(lessonText.sections.useIt).toContain('## this line is inside a code block');
+		expect(lessonText.sections.mustKnow).toContain('## this line is inside a code block');
 	});
 
 	it('reads files saved with Windows line endings', () => {
@@ -46,18 +46,18 @@ describe('parseLessonText', () => {
 	});
 
 	it('rejects a lesson with a missing section, naming the file and the section', () => {
-		const withoutPro = validLessonText.replace('## Pro', '### Pro');
+		const withoutPro = validLessonText.replace('## Advanced', '### Advanced');
 		expect(() => parseLessonText(withoutPro, fileName)).toThrow(ContentError);
 		expect(() => parseLessonText(withoutPro, fileName)).toThrow(
-			`${fileName}: the "## Pro" section is missing`
+			`${fileName}: the "## Advanced" section is missing`
 		);
 	});
 
 	it('rejects sections in the wrong order', () => {
 		const swapped = validLessonText
-			.replace('## Pro', '## TEMP')
-			.replace('## How it works', '## Pro')
-			.replace('## TEMP', '## How it works');
+			.replace('## Advanced', '## TEMP')
+			.replace('## Under the hood', '## Advanced')
+			.replace('## TEMP', '## Under the hood');
 		expect(() => parseLessonText(swapped, fileName)).toThrow('sections must be in this order');
 	});
 
@@ -104,7 +104,7 @@ describe('parseLessonText', () => {
 	});
 
 	it('rejects a file with no frontmatter', () => {
-		expect(() => parseLessonText('## Use it\n\nText', fileName)).toThrow(
+		expect(() => parseLessonText('## Must know\n\nText', fileName)).toThrow(
 			'must start with frontmatter'
 		);
 	});

@@ -24,8 +24,8 @@ describe('courseContent', () => {
 		expect(pilotLesson?.quiz.questions).toHaveLength(3);
 	});
 
-	it('keeps the pilot\'s "Use it" layer short enough to read in about 5 minutes', () => {
-		const useItWordCount = countWords(getLesson('three-areas')?.sections.useIt ?? '');
+	it('keeps the pilot\'s "Must know" layer short enough to read in about 5 minutes', () => {
+		const useItWordCount = countWords(getLesson('three-areas')?.sections.mustKnow ?? '');
 		expect(useItWordCount).toBeGreaterThan(250);
 		expect(useItWordCount).toBeLessThan(1000);
 	});

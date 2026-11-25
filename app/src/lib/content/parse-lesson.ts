@@ -1,7 +1,7 @@
 /**
  * parse-lesson.ts
  * Reads the text of one lesson.md: the frontmatter at the top, the lede (the opening sentence),
- * and the four "## " sections: Use it, How it works, Pro, Recap.
+ * and the four "## " sections: Must know, Under the hood, Advanced, Recap.
  */
 
 import type { LessonFrontmatter, LessonSections } from '../types/lesson.ts';
@@ -23,9 +23,9 @@ const allowedBookSites = ['https://git-scm.com/', 'https://docs.github.com/'];
 
 /** The section headings authors write, in the required order, and where each one goes. */
 const sectionHeadings: { heading: string; key: keyof LessonSections }[] = [
-	{ heading: 'Use it', key: 'useIt' },
-	{ heading: 'How it works', key: 'howItWorks' },
-	{ heading: 'Pro', key: 'pro' },
+	{ heading: 'Must know', key: 'mustKnow' },
+	{ heading: 'Under the hood', key: 'underTheHood' },
+	{ heading: 'Advanced', key: 'advanced' },
 	{ heading: 'Recap', key: 'recap' }
 ];
 
@@ -137,7 +137,7 @@ function splitIntoChunks(bodyText: string, fileName: string): TextChunk[] {
 function readLede(chunks: TextChunk[], fileName: string): string {
 	const lede = chunks[0].lines.join('\n').trim();
 	if (lede === '') {
-		throw new ContentError(fileName, 'the lede is missing (one sentence before "## Use it")');
+		throw new ContentError(fileName, 'the lede is missing (one sentence before "## Must know")');
 	}
 	return lede;
 }

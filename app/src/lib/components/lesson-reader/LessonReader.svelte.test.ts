@@ -30,39 +30,39 @@ describe('LessonReader', () => {
 		await expect.element(citation).toHaveAttribute('href', sampleLesson.bookUrl);
 	});
 
-	it('starts on "Use it" with the lede', async () => {
+	it('starts on "Must know" with the lede', async () => {
 		await render(LessonReader, { lesson: sampleLesson, place: samplePlace });
 
 		await expect
-			.element(page.getByRole('tab', { name: /Use it/ }))
+			.element(page.getByRole('tab', { name: /Must know/ }))
 			.toHaveAttribute('aria-selected', 'true');
 		await expect.element(page.getByText('This sentence is the lede.')).toBeVisible();
-		await expect.element(page.getByText(/Use it text with/)).toBeVisible();
+		await expect.element(page.getByText(/Must know text with/)).toBeVisible();
 	});
 
 	it('switches layers when a tab is clicked', async () => {
 		await render(LessonReader, { lesson: sampleLesson, place: samplePlace });
 
-		await page.getByRole('tab', { name: /How it works/ }).click();
-		await expect.element(page.getByText('How it works text.')).toBeVisible();
-		await expect.element(page.getByText(/Use it text with/)).not.toBeInTheDocument();
+		await page.getByRole('tab', { name: /Under the hood/ }).click();
+		await expect.element(page.getByText('Under the hood text.')).toBeVisible();
+		await expect.element(page.getByText(/Must know text with/)).not.toBeInTheDocument();
 	});
 
 	it('moves between tabs with the arrow keys', async () => {
 		await render(LessonReader, { lesson: sampleLesson, place: samplePlace });
 
-		await page.getByRole('tab', { name: /Use it/ }).click();
+		await page.getByRole('tab', { name: /Must know/ }).click();
 		await userEvent.keyboard('{ArrowRight}');
-		await expect.element(page.getByRole('tab', { name: /How it works/ })).toHaveFocus();
-		await expect.element(page.getByText('How it works text.')).toBeVisible();
+		await expect.element(page.getByRole('tab', { name: /Under the hood/ })).toHaveFocus();
+		await expect.element(page.getByText('Under the hood text.')).toBeVisible();
 		await userEvent.keyboard('{ArrowLeft}{ArrowLeft}');
-		await expect.element(page.getByText('Pro text.')).toBeVisible();
+		await expect.element(page.getByText('Advanced text.')).toBeVisible();
 	});
 
 	it('always shows the recap card', async () => {
 		await render(LessonReader, { lesson: sampleLesson, place: samplePlace });
 
-		await page.getByRole('tab', { name: /Pro/ }).click();
+		await page.getByRole('tab', { name: /Advanced/ }).click();
 		await expect.element(page.getByText('Recap point.')).toBeVisible();
 	});
 

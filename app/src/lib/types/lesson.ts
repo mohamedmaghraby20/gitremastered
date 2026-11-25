@@ -8,9 +8,9 @@ import type { Quiz } from './quiz.ts';
 
 /** The four parts of lesson.md, in the order a student meets them. */
 export type LessonSections = {
-	useIt: string; // "Use it": the commands for everyday work (Markdown)
-	howItWorks: string; // "How it works": what Git does underneath (Markdown)
-	pro: string; // "Pro": details and edge cases for experienced users (Markdown)
+	mustKnow: string; // "Must know": the commands for everyday work (Markdown)
+	underTheHood: string; // "Under the hood": what Git does underneath (Markdown)
+	advanced: string; // "Advanced": details and edge cases for experienced users (Markdown)
 	recap: string; // "Recap": the short summary card (Markdown)
 };
 

@@ -103,7 +103,7 @@ All three are free and open source and are bundled inside the app.
 |---|---|
 | Buttons | Keycaps with a 3px bottom edge that press down 2px. Primary (`primary` face, `primary-edge`), secondary (`surface`, `border-strong`), ghost (text only). One primary per screen. |
 | Segmented switch | Outlined group with a 3px bottom edge; the selected option is filled `primary`. Used for Pro / Book path, theme, Visualizer / Terminal. |
-| Layer tabs | "1 Use it / 2 How it works / 3 Pro", 2px `primary` underline on the active tab. |
+| Layer tabs | "1 Must know / 2 Under the hood / 3 Advanced", 2px `primary` underline on the active tab. |
 | Lesson text | Eyebrow (lesson number box + module + Pro Git section), `h1`, tabs, one `lede`, short `lesson` paragraphs, definition rows, "Try it" steps, "Use today / In the book" comparison, sidenotes. |
 | Mission panel | Worksheet ticket: dashed separator under the header, goal in serif, self-ticking checklist, Check / Reset / Hint actions. |
 | Quiz | Scenario question in serif, answers lettered A–D on keycaps, feedback explaining why. |

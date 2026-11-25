@@ -146,7 +146,7 @@ The full guide for lesson writers, with every field and an example, is `docs/wri
 ```
 content/
 ├── lessons/<lesson-id>/
-│   ├── lesson.md      frontmatter + sections: Use it, How it works, Pro, Recap
+│   ├── lesson.md      frontmatter + sections: Must know, Under the hood, Advanced, Recap
 │   ├── mission.yaml   setup steps, goal checks, hint ladder, reference solution
 │   └── quiz.yaml      2–4 questions, each with an explanation
 ├── paths/
@@ -156,7 +156,7 @@ content/
 └── glossary.yaml
 ```
 
-`lesson.md` holds frontmatter, then the lede (one sentence), then four sections written as `## Use it`, `## How it works`, `## Pro`, `## Recap`, in that order:
+`lesson.md` holds frontmatter, then the lede (one sentence), then four sections written as `## Must know`, `## Under the hood`, `## Advanced`, `## Recap`, in that order:
 
 ```yaml
 id: three-areas

@@ -20,7 +20,7 @@ const missionProgress = `document.querySelector('section[aria-label="Mission"] h
 /**
  * Clicks a layer tab and checks its panel shows.
  * @param student - the student actions
- * @param tabName - the tab's text, e.g. "How it works"
+ * @param tabName - the tab's text, e.g. "Under the hood"
  * @returns a short note
  */
 async function openLayerTab(student: StudentActions, tabName: string): Promise<string> {
@@ -63,10 +63,10 @@ export const pilotSteps: PilotStep[] = [
 		run: async (student) => {
 			await student.openLesson('three-areas');
 			const notes = [
-				await openLayerTab(student, 'How it works'),
-				await openLayerTab(student, 'Pro')
+				await openLayerTab(student, 'Under the hood'),
+				await openLayerTab(student, 'Advanced')
 			];
-			notes.push(await openLayerTab(student, 'Use it'));
+			notes.push(await openLayerTab(student, 'Must know'));
 			const hasRecap = await student.evaluate<boolean>(
 				`document.querySelector('#recap-heading') !== null`
 			);

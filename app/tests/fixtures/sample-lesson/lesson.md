@@ -11,7 +11,7 @@ readFirst: [start-a-repo]
 
 This sentence is the lede.
 
-## Use it
+## Must know
 
 Run `git status` to see where your files are.
 
@@ -20,11 +20,11 @@ Run `git status` to see where your files are.
 git status
 ```
 
-## How it works
+## Under the hood
 
 Git keeps three areas.
 
-## Pro
+## Advanced
 
 Use `git status -s` for a short view.
 

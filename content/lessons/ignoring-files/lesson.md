@@ -11,7 +11,7 @@ readFirst: [three-areas]
 
 A `.gitignore` file lists the files Git should leave alone, so build output and logs never clutter `git status` or sneak into a commit.
 
-## Use it
+## Must know
 
 Every project makes files you never want to save: compiled programs, log files, editor backups. Without help, `git status` lists them all as untracked, and one careless `git add .` commits them.
 
@@ -41,7 +41,7 @@ The `.gitignore` file itself is a normal file. Commit it like any other, so the 
 A `.gitignore` only affects files Git does not track yet. If a file was already committed, adding it to `.gitignore` does not remove it from the repository.
 :::
 
-## How it works
+## Under the hood
 
 Before `git status` lists untracked files, Git checks each one against the patterns in `.gitignore`. A file that matches is treated as if it were not there: it is never listed as untracked, and `git add .` skips it.
 
@@ -64,7 +64,7 @@ The patterns use the same simple wildcards as the shell:
 Pro Git advises setting up a `.gitignore` before you start, so unwanted files never get committed by accident. (Pro Git 2.2)
 :::
 
-## Pro
+## Advanced
 
 ### More pattern rules
 

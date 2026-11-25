@@ -17,9 +17,9 @@ export const sampleLesson: Lesson = {
 	readFirst: [],
 	lede: 'This sentence is the lede.',
 	sections: {
-		useIt: 'Use it text with `git status`.',
-		howItWorks: 'How it works text.',
-		pro: 'Pro text.',
+		mustKnow: 'Must know text with `git status`.',
+		underTheHood: 'Under the hood text.',
+		advanced: 'Advanced text.',
 		recap: '- Recap point.'
 	},
 	mission: {

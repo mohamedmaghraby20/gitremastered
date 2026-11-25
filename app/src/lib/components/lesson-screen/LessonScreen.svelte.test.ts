@@ -14,12 +14,12 @@ import { sampleLesson } from '../../../../tests/fixtures/sample-lesson-object.ts
 import type { Lesson } from '$lib/types/lesson';
 import LessonScreen from './LessonScreen.svelte';
 
-/** A lesson whose "Use it" text is far taller than the window. */
+/** A lesson whose "Must know" text is far taller than the window. */
 const longLesson: Lesson = {
 	...sampleLesson,
 	sections: {
 		...sampleLesson.sections,
-		useIt: Array.from(
+		mustKnow: Array.from(
 			{ length: 80 },
 			(_, index) => `Paragraph ${index + 1} of a long lesson.`
 		).join('\n\n')

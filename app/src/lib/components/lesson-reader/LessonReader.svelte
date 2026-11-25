@@ -26,13 +26,13 @@
 	/** The three reading layers; the recap is always shown, so it is not a tab. */
 	type LayerId = Exclude<keyof LessonSections, 'recap'>;
 	const layers: readonly { id: LayerId; label: string }[] = [
-		{ id: 'useIt', label: 'Use it' },
-		{ id: 'howItWorks', label: 'How it works' },
-		{ id: 'pro', label: 'Pro' }
+		{ id: 'mustKnow', label: 'Must know' },
+		{ id: 'underTheHood', label: 'Under the hood' },
+		{ id: 'advanced', label: 'Advanced' }
 	];
 	const panelIdPrefix = 'lesson-layer';
 
-	let activeLayerId: LayerId = $state('useIt');
+	let activeLayerId: LayerId = $state('mustKnow');
 
 	/**
 	 * Shows another layer.
@@ -66,7 +66,7 @@
 			aria-labelledby={`${panelIdPrefix}-tab-${activeLayerId}`}
 			class="flex flex-col gap-4"
 		>
-			{#if activeLayerId === 'useIt'}
+			{#if activeLayerId === 'mustKnow'}
 				<p class="lesson-lede type-lede m-0 max-w-[64ch]">
 					<!-- eslint-disable-next-line svelte/no-at-html-tags -- only our own bundled lesson files reach here -->
 					{@html renderInlineMarkdown(lesson.lede)}

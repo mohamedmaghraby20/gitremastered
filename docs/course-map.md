@@ -15,11 +15,11 @@ Navigation is never locked. Each lesson lists what to read first, as advice.
 
 | Layer | Purpose | Length |
 |---|---|---|
-| Use it | The command and the everyday case | About 5 minutes |
-| How it works | What Git does inside (objects, refs, index), shown in the visualizer | About 5 minutes |
-| Pro | Important options, edge cases, failure modes and recovery, team conventions | As needed |
+| Must know | The command and the everyday case | About 5 minutes |
+| Under the hood | What Git does inside (objects, refs, index), shown in the visualizer | About 5 minutes |
+| Advanced | Important options, edge cases, failure modes and recovery, team conventions | As needed |
 
-A learner can stop after "Use it" and come back for the rest. Revisiting a lesson means reading its recap card, or going straight to the layer they need.
+A learner can stop after "Must know" and come back for the rest. Revisiting a lesson means reading its recap card, or going straight to the layer they need.
 
 **Sources.**
 
