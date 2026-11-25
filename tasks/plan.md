@@ -67,9 +67,9 @@ Full details for each task (acceptance criteria, verification, files) are in `ta
 - [x] Task 7: Add the typed bridge between screens and Rust
 
 ### Checkpoint A: Foundation
-- [ ] `pnpm tauri dev` opens the app; navigation works; light and dark themes switch
-- [ ] All tests, type checks and lints pass
-- [ ] You review the code structure
+- [x] `pnpm tauri dev` opens the app; navigation works; light and dark themes switch
+- [x] All tests, type checks and lints pass
+- [x] You review the code structure
 
 ### Phase 2: Pilot lesson
 - [ ] Task 8: Define the lesson content types and the content loader
