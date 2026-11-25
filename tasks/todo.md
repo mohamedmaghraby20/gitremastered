@@ -131,12 +131,14 @@ Every task: test first where there is logic; all of `pnpm test`, `pnpm check`, `
 **Description:** Types for lesson, mission, quiz and path (SPEC §4). A loader reads `content/` at build time, splits `lesson.md` into its sections (Use it, How it works, Pro, Recap), parses the YAML, and rejects broken files with a clear message naming the file and problem.
 
 **Acceptance criteria:**
-- [ ] A valid fixture lesson loads into typed objects
-- [ ] A missing field or bad YAML fails the build with a readable error
-- [ ] Lessons are looked up by ID
+- [x] A valid fixture lesson loads into typed objects
+- [x] A missing field or bad YAML fails the build with a readable error
+- [x] Lessons are looked up by ID
 
 **Verification:**
-- [ ] Tests pass: valid fixture, missing section, bad YAML, unknown ID
+- [x] Tests pass: valid fixture, missing section, bad YAML, unknown ID
+
+**Result (2026-11-25):** Types in `lesson.ts`, `mission.ts`, `quiz.ts`, `learning-path.ts`. One parser per file kind (`parse-lesson.ts`, `parse-mission.ts`, `parse-quiz.ts`, `parse-path.ts`) plus a small `FieldReader` that checks field types and builds messages like `content/lessons/x/mission.yaml: goal 1: the "file" field is missing`. The lede is the text before `## Use it`. `pnpm build` runs `pnpm content:check` first (`scripts/check-content.ts`, same loader in Node), so a broken file stops the build; `course-content.test.ts` makes `pnpm test` fail too. Format additions written into SPEC §4: `bookSection`, mission `brief` and goal `label`, the quiz and path shapes, and the goal check kinds. Added `yaml` and `marked` (approved table).
 
 **Dependencies:** 7 · **Files:** `app/src/lib/types/lesson.ts`, `app/src/lib/content/load-lessons.ts`, `app/src/lib/content/parse-lesson.ts`, `app/src/lib/content/parse-lesson.test.ts`, `app/tests/fixtures/sample-lesson/` · **Scope:** M
 

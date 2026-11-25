@@ -72,7 +72,7 @@ Full details for each task (acceptance criteria, verification, files) are in `ta
 - [x] You review the code structure
 
 ### Phase 2: Pilot lesson
-- [ ] Task 8: Define the lesson content types and the content loader
+- [x] Task 8: Define the lesson content types and the content loader
 - [ ] Task 9: Write the pilot lesson content
 - [ ] Task 10: Show the pilot lesson on its page
 - [ ] Task 11: Show the lesson's special blocks

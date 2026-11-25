@@ -152,26 +152,29 @@ content/
 └── glossary.yaml
 ```
 
-`lesson.md` frontmatter:
+`lesson.md` holds frontmatter, then the lede (one sentence), then four sections written as `## Use it`, `## How it works`, `## Pro`, `## Recap`, in that order:
 
 ```yaml
 id: three-areas
 title: "Status, stage, commit: the three areas"
 module: daily-loop
+bookSection: "2.2 Recording Changes"   # shown in the lesson eyebrow
 bookSources:
   - book/progit2/book/02-git-basics/sections/recording-changes.asc
 readFirst: [first-look-inside, start-a-repo]
 ```
 
-`mission.yaml` goal checks are declarative, read against the snapshot:
+`mission.yaml` goal checks are declarative, read against the snapshot. Check kinds: `file-is-untracked`, `file-is-modified`, `file-is-staged`, `file-is-committed` (each with `file`), `commit-count-at-least` (with `count`), `working-folder-clean`. Each goal has a `label` for the checklist.
 
 ```yaml
+brief: "Save notes.txt in the repository."
 setup:
   - git init
   - echo "draft" > notes.txt
 goal:
   - check: file-is-committed
     file: notes.txt
+    label: "notes.txt is committed"
 hints:
   - "Which area does a file need to be in before you can commit it?"
   - "Use git add to move notes.txt into the staging area."
@@ -180,6 +183,32 @@ solution:
   - git add notes.txt
   - git commit -m "Add notes"
 ```
+
+`quiz.yaml`: 2–4 questions, each with 2–4 answers, exactly one `correct: true`, and an `explanation` on every answer.
+
+```yaml
+questions:
+  - question: "You edited a file. Where is the change?"
+    answers:
+      - text: "In the working folder"
+        correct: true
+        explanation: "Edits stay in the working folder until you stage them."
+      - text: "In the repository"
+        explanation: "Only commits reach the repository."
+```
+
+Path files (`paths/<path-id>.yaml`):
+
+```yaml
+id: pro-path
+title: Pro path
+modules:
+  - id: daily-loop
+    title: Your daily loop
+    lessons: [three-areas, ignoring-files]
+```
+
+The loader (`app/src/lib/content/`) rejects a broken file with `<file>: <problem>`. `pnpm build` runs `pnpm content:check` first, so a broken lesson stops the build.
 
 ## 5. Project structure
 
