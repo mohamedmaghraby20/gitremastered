@@ -94,13 +94,61 @@ async function startChallenge(student: StudentActions, challenge: Challenge): Pr
 		`${card}.innerText.includes('Working on it') && ${ticket} !== null`,
 		20_000
 	);
+	if (challenge.github !== null) {
+		await acceptGitHubConsentIfAsked(student);
+	}
 	// The practice folder is rebuilt: the old terminal goes away and a new shell starts.
 	await student
 		.waitUntil(`document.querySelector('.xterm-helper-textarea') === null`, 3_000)
 		.catch(() => undefined);
-	await student.waitUntil(`document.querySelector('.xterm-helper-textarea') !== null`, 30_000);
+	// A GitHub challenge first prepares its repository on GitHub, which takes longer.
+	const buildTime = challenge.github === null ? 30_000 : 120_000;
+	await student.waitUntil(`document.querySelector('.xterm-helper-textarea') !== null`, buildTime);
 	await pause(1_000);
 	await student.waitForPrompt(30_000);
+}
+
+/** Page script: the consent card's accept button, or undefined. */
+const consentButton = `[...document.querySelectorAll('button')].find((button) => button.innerText.includes('Allow practice on GitHub'))`;
+
+/**
+ * Accepts the one-time GitHub consent card, the way a student would, if it is on screen.
+ * After the first acceptance it never shows again.
+ * @param student - the student actions
+ */
+async function acceptGitHubConsentIfAsked(student: StudentActions): Promise<void> {
+	const isAsked = await student
+		.waitUntil(`${consentButton} !== undefined`, 10_000)
+		.then(() => true)
+		.catch(() => false);
+	if (isAsked) {
+		await student.evaluate(`${consentButton}.click()`);
+	}
+}
+
+/**
+ * Waits until every goal of the active challenge is ticked. For a GitHub challenge it also
+ * presses "Check GitHub now" every 10 seconds, for up to three minutes (an Actions run).
+ * @param student - the student actions
+ * @param challenge - the challenge being played
+ */
+async function waitForAllGoals(student: StudentActions, challenge: Challenge): Promise<void> {
+	const goalCount = challenge.goals.length;
+	const allDone = `${ticket}.querySelector('header').innerText.includes('${goalCount} / ${goalCount} done')`;
+	if (challenge.github === null) {
+		await student.waitUntil(allDone, 15_000);
+		return;
+	}
+	const checkNowButton = `[...${ticket}.querySelectorAll('button')].find((button) => button.innerText.includes('Check GitHub now'))`;
+	for (let attempt = 0; attempt < 18; attempt += 1) {
+		const isDone = await student.evaluate<boolean>(allDone);
+		if (isDone) {
+			return;
+		}
+		await student.evaluate(`${checkNowButton}?.click()`);
+		await pause(10_000);
+	}
+	await student.waitUntil(allDone, 5_000);
 }
 
 /**
@@ -135,10 +183,7 @@ async function playChallenge(
 	try {
 		await startChallenge(student, challenge);
 		await typeSolution(student, challenge);
-		await student.waitUntil(
-			`${ticket}.querySelector('header').innerText.includes('${goalCount} / ${goalCount} done')`,
-			15_000
-		);
+		await waitForAllGoals(student, challenge);
 		const pictureCheck = pictureChecks[label];
 		if (pictureCheck !== undefined) {
 			await student.waitUntil(pictureCheck.condition, 10_000);
