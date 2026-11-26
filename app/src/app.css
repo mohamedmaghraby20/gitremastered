@@ -31,6 +31,12 @@
 	}
 }
 
+/**
+ * narrow: the small-window layout from DESIGN.md "Layout": below 1100px window width the
+ * visualizer and terminal share one panel with a switch. Example: narrow:hidden.
+ */
+@custom-variant narrow (@media (width < 1100px));
+
 /* The app's "Reduce motion" switch does what tokens.css does for the computer's setting. */
 :root[data-motion='reduced'] {
 	--duration-fast: 0ms;

@@ -597,7 +597,7 @@ Ctrl K from any screen opens a **quick search panel** over the current screen, l
 **Description:** Below 1100px window width, the visualizer and terminal share one panel with a Visualizer / Terminal switch, and sidenotes flow under the text (DESIGN.md layout, prototype "LessonNarrow"). The terminal keeps its shell when hidden.
 
 **Acceptance criteria:**
-- [ ] At 1024 × 700 (the minimum window) nothing is cut off and the switch works by keyboard
+- [x] At 1024 × 700 (the minimum window) nothing is cut off and the switch works by keyboard
 
 **Verification:** layout test at 1024 × 700 (as in the pilot review) · **Files:** `components/lesson-screen/` · **Scope:** M
 

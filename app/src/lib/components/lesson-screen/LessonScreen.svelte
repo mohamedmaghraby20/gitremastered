@@ -94,9 +94,9 @@
 
 <!-- Fills the page area (all of <main>, under the top bar), so each column scrolls on its own.
      Each column is h-full: in a wrapping flex row a column would otherwise grow to its whole
-     content height and push the terminal out of sight. In a narrow window the practice column
-     wraps below the lesson and the screen scrolls (overflow-y-auto). -->
-<div class="flex h-full flex-wrap overflow-y-auto">
+     content height and push the terminal out of sight. Below 1100px (narrow:) the columns stay
+     side by side and the practice column shows one tool at a time (PracticeColumn). -->
+<div class="flex h-full flex-wrap overflow-y-auto narrow:flex-nowrap">
 	<LessonReader {lesson} {place} onLayerChange={rememberLayer}>
 		{#snippet afterText()}
 			<section aria-labelledby="mission-heading" class="flex flex-col gap-3">

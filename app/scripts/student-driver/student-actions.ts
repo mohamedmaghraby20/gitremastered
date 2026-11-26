@@ -131,6 +131,22 @@ export class StudentActions {
 	}
 
 	/**
+	 * Makes the page act as if the window had this size, or goes back to the real size.
+	 * @param size - width and height in pixels, or null to stop pretending
+	 */
+	async emulateWindowSize(size: { width: number; height: number } | null): Promise<void> {
+		if (size === null) {
+			await this.connection.send('Emulation.clearDeviceMetricsOverride');
+			return;
+		}
+		await this.connection.send('Emulation.setDeviceMetricsOverride', {
+			...size,
+			deviceScaleFactor: 1,
+			mobile: false
+		});
+	}
+
+	/**
 	 * Presses Ctrl plus one key in the terminal, the way a real keyboard does it.
 	 * @param key - the key, e.g. "v"
 	 * @param code - the physical key's name, e.g. "KeyV" or "Equal"

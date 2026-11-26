@@ -1,6 +1,7 @@
 <!--
   ZoneCommand.svelte
-  The command between two desk zones, as a small keycap followed by an arrow, on one line (e.g. "git add →").
+  The command between two desk zones, as a small keycap followed by an arrow, on one line
+  (e.g. "git add →"; "git add ↓" when the narrow desk stacks the zones).
   Input: command, the command that moves files to the next zone.
   Both commands get the same space on each side, so the gaps between zones look even.
 -->
@@ -14,5 +15,7 @@
 	>
 		{command}
 	</span>
-	<span class="text-border-strong">→</span>
+	<!-- → when the zones sit side by side, ↓ when the narrow desk stacks them (AreaDesk). -->
+	<span class="text-border-strong @max-[34rem]:hidden">→</span>
+	<span class="hidden text-border-strong @max-[34rem]:inline">↓</span>
 </div>

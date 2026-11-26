@@ -3,7 +3,8 @@
  * Plays the fixes from the second pilot review in the real desktop app and prints each result:
  * the terminal's share of the practice column (about 55%), even gaps around the desk's commands, paste,
  * Ctrl C still stopping a command, Ctrl + / 0 text size, the mission and quiz headings, and the
- * history map's zoom buttons, Esc reaching Vim for a commit message, and F6 leaving the terminal. Saves a screenshot for a person to look at.
+ * history map's zoom buttons, Esc reaching Vim for a commit message, F6 leaving the terminal,
+ * and the small-window layout at 1024 × 700. Saves a screenshot for a person to look at.
  * Run from app/:  pnpm review:fixes   (build the review copy first: pnpm review:build)
  */
 
@@ -14,6 +15,23 @@ import { StudentActions } from './student-actions.ts';
 
 /** One check: its name and a function that returns what it found, or throws. */
 type ReviewCheck = { name: string; run: (student: StudentActions) => Promise<string> };
+
+/** Page script: focuses the chosen option of the small-window Visualizer / Terminal switch. */
+const focusChosenToolScript = `document.querySelector('[aria-label="Practice tool"] [role=radio][aria-checked=true]').focus()`;
+
+/** Page script: do the desk zones fit the board, and does the page avoid sideways scrolling? */
+const smallWindowLayoutScript = `(() => {
+	const board = document.querySelector('.visualizer-board').getBoundingClientRect();
+	const zonesFit = ['Working tree', 'Staging area', 'Repository']
+		.map((name) => document.querySelector('section[aria-label="' + name + '"]').getBoundingClientRect())
+		.every((zone) => zone.left >= board.left - 0.5 && zone.right <= board.right + 0.5);
+	const noSidewaysScroll = document.documentElement.scrollWidth <= innerWidth;
+	return {
+		fits: zonesFit && noSidewaysScroll,
+		lessonWidth: Math.round(document.querySelector('article').getBoundingClientRect().width),
+		practiceWidth: Math.round(document.querySelector('section[aria-label="Practice"]').getBoundingClientRect().width)
+	};
+})()`;
 
 /** Page script: the terminal's text size in pixels (xterm.js sets it on its rows). */
 const terminalFontSize = `parseFloat(getComputedStyle(document.querySelector('.xterm-rows')).fontSize)`;
@@ -27,7 +45,8 @@ const checks: ReviewCheck[] = [
 	{ name: 'Mission and quiz have their own headings', run: checkHeadings },
 	{ name: 'History map zooms out with its button', run: checkZoomOut },
 	{ name: 'Esc reaches Vim: a commit message written in the editor', run: checkVimCommit },
-	{ name: 'F6 moves focus out of the terminal', run: checkLeaveTerminal }
+	{ name: 'F6 moves focus out of the terminal', run: checkLeaveTerminal },
+	{ name: 'Small window (1024 × 700): one practice panel, nothing cut off', run: checkSmallWindow }
 ];
 
 /**
@@ -59,7 +78,8 @@ async function checkEvenGaps(student: StudentActions): Promise<string> {
 		const commands = [...document.querySelectorAll('#files-desk div[aria-hidden="true"]')]
 			.map((command) => ({
 				left: command.firstElementChild.getBoundingClientRect().left,
-				right: command.lastElementChild.getBoundingClientRect().right
+				// The last visible child: the → arrow (the ↓ arrow is hidden while the zones sit side by side).
+				right: Math.max(...[...command.children].map((child) => child.getBoundingClientRect().right))
 			}));
 		return [
 			commands[0].left - zones[0].right, zones[1].left - commands[0].right,
@@ -155,7 +175,19 @@ async function checkZoomOut(student: StudentActions): Promise<string> {
  * @returns the message Git saved
  */
 async function checkVimCommit(student: StudentActions): Promise<string> {
-	await student.typeCommand('echo "check $RANDOM" > vim-check.txt && git add vim-check.txt');
+	/*
+	 * Start from a fresh prompt: right after an interrupted command (the Ctrl C check), the first
+	 * key typed can be lost while bash redraws its long prompt (review finding 4).
+	 */
+	await student.typeCommand('');
+	await student.waitForPrompt();
+	// The shell prints "staged-2" only after git add has finished (the typed line shows $((1+1))).
+	await student.typeCommand(
+		'echo "check $RANDOM" > vim-check.txt && git add vim-check.txt && echo staged-$((1+1))'
+	);
+	await student.waitUntil(
+		`[...document.querySelectorAll('.xterm-rows > div')].some((row) => row.textContent.trim() === 'staged-2')`
+	);
 	await student.typeCommand('git commit');
 	await student.waitUntil(
 		`[...document.querySelectorAll('.xterm-rows > div')].some((row) => row.textContent.includes('Please enter the commit message'))`
@@ -181,6 +213,37 @@ async function checkLeaveTerminal(student: StudentActions): Promise<string> {
 	await student.pressSpecialKey('F6', 117);
 	await student.waitUntil(`!document.querySelector('.xterm').contains(document.activeElement)`);
 	return `focus moved to the ${await student.evaluate<string>('document.activeElement.tagName.toLowerCase()')} around the terminal`;
+}
+
+/**
+ * Shrinks the page to the smallest window (1024 × 700), switches the practice panel to the
+ * visualizer by keyboard, and checks the columns fit and the desk is not cut off.
+ * @param student - the student actions
+ * @returns the column widths
+ */
+async function checkSmallWindow(student: StudentActions): Promise<string> {
+	await student.emulateWindowSize({ width: 1024, height: 700 });
+	try {
+		await student.waitUntil(focusChosenToolScript.replace('.focus()', '.offsetParent !== null'));
+		await student.evaluate(focusChosenToolScript);
+		await student.pressSpecialKey('ArrowLeft', 37);
+		await student.waitUntil(
+			`document.querySelector('.visualizer-board').getBoundingClientRect().height > 200`
+		);
+		const layout = await student.evaluate<{
+			fits: boolean;
+			lessonWidth: number;
+			practiceWidth: number;
+		}>(smallWindowLayoutScript);
+		if (!layout.fits) {
+			throw new Error('something is cut off or the page scrolls sideways');
+		}
+		await student.evaluate(focusChosenToolScript);
+		await student.pressSpecialKey('ArrowRight', 39);
+		return `lesson ${layout.lessonWidth} px and practice ${layout.practiceWidth} px side by side; the desk fits`;
+	} finally {
+		await student.emulateWindowSize(null);
+	}
 }
 
 /**

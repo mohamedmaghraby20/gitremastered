@@ -130,7 +130,7 @@ Full details for each task (acceptance criteria, verification, files) are in `ta
 - [x] Task 37: Search, with a Ctrl K quick search panel (in-memory index, approved)
 - [x] Task 38: Settings screen, complete
 - [x] Task 39: Sidebar with path progress
-- [ ] Task 40: Small-window lesson
+- [x] Task 40: Small-window lesson
 - [ ] Task 41: Resizable lesson panels
 - [ ] Task 42: A history map that grows with the course
 - [ ] Task 43: Links between lessons, with hover cards
