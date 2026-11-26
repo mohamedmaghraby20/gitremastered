@@ -1,0 +1,92 @@
+challenges:
+  - id: release-notes
+    title: Save the release notes on their own
+    level: easy
+    brief: "Your team's project has a new release notes file and an unfinished README edit. Commit the release notes on their own, and keep the README change out of this commit."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Team project" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - echo "Run the tests before you push." >> README.md
+      - echo "Release notes for version 1.0" > notes.txt
+    goal:
+      - check: file-is-committed
+        file: notes.txt
+        label: "notes.txt is saved in a new commit"
+      - check: file-is-modified
+        file: README.md
+        label: "README.md is still changed, not committed"
+    hints:
+      - "Run git status. Which file is new, and which one only changed?"
+      - "A commit takes only what is in the staging area. Stage notes.txt alone with git add."
+      - "Run: git add notes.txt, then git commit -m \"Add release notes\". Leave README.md as it is."
+    solution:
+      - git add notes.txt
+      - git commit -q -m "Add release notes"
+
+  - id: two-commits
+    title: Two changes, two commits
+    level: medium
+    brief: "You fixed a typo in README.md and wrote a new login.js. They are two different jobs, so save them as two commits: the README fix first, then login.js."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - 'echo "# Shop app: sell bokks online" > README.md'
+      - git add README.md
+      - git commit -q -m "Add README"
+      - 'echo "# Shop app: sell books online" > README.md'
+      - echo "function logIn() {}" > login.js
+    goal:
+      - check: commit-count-at-least
+        count: 3
+        label: "The history has two new commits"
+      - check: file-is-committed
+        file: login.js
+        label: "login.js is saved in a commit"
+      - check: working-folder-clean
+        label: "git status shows nothing left to do"
+    hints:
+      - "Run git status. Two files wait: which one belongs to the typo fix?"
+      - "Stage and commit README.md alone first. Then stage and commit login.js."
+      - "Run: git add README.md, git commit -m \"Fix typo in README\", then git add login.js, git commit -m \"Add login\"."
+    solution:
+      - git add README.md
+      - git commit -q -m "Fix typo in README"
+      - git add login.js
+      - git commit -q -m "Add login"
+
+  - id: unstage-secret
+    title: A password file was staged by mistake
+    level: hard
+    brief: "Someone staged everything, and secrets.env (a file with a password) sits in the staging area next to app.js. Take secrets.env back out without deleting it, then commit app.js alone."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Shop app" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - echo "console.log('shop is open')" > app.js
+      - echo "PASSWORD=hunter2" > secrets.env
+      - git add app.js secrets.env
+    goal:
+      - check: file-is-committed
+        file: app.js
+        label: "app.js is saved in a new commit"
+      - check: file-is-untracked
+        file: secrets.env
+        label: "secrets.env is out of the staging area and not committed"
+    hints:
+      - "Run git status. Both files are under \"Changes to be committed\". Read the hint line Git prints there."
+      - "git restore --staged takes a file out of the staging area and keeps your file as it is."
+      - "Run: git restore --staged secrets.env, then git commit -m \"Add app\"."
+    solution:
+      - git restore --staged secrets.env
+      - git commit -q -m "Add app"

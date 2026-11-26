@@ -1,7 +1,8 @@
 /**
  * practice-session.svelte.ts
- * The practice side of one open lesson: builds its practice folder, rebuilds it on reset,
- * and remembers the caption for the last command typed in the terminal.
+ * The practice side of one open lesson: builds its practice folder for the active challenge,
+ * rebuilds it on reset or when another challenge starts, and remembers the caption for the last
+ * command typed in the terminal.
  * Its fields are Svelte state ($state), so screens that read them update by themselves.
  */
 
@@ -32,12 +33,12 @@ export class PracticeSession {
 	lastCaption: CommandCaption | null = $state(null);
 
 	private readonly missionId: string;
-	private readonly setupSteps: string[];
+	private setupSteps: string[];
 	private readonly commands: PracticeCommands;
 
 	/**
 	 * @param missionId - names the practice folder (the lesson ID)
-	 * @param setupSteps - the mission's setup commands
+	 * @param setupSteps - the active challenge's setup commands
 	 * @param commands - the core commands (real ones by default)
 	 */
 	constructor(missionId: string, setupSteps: string[], commands: PracticeCommands = realCommands) {
@@ -73,6 +74,27 @@ export class PracticeSession {
 		this.lastCaption = null;
 		await this.buildFolder('Resetting the practice folder…', () =>
 			this.commands.resetPracticeRepo(this.missionId)
+		);
+	}
+
+	/**
+	 * Starts a challenge: builds the practice folder in that challenge's starting state.
+	 * Starting the same challenge again starts it over from a fresh folder.
+	 * @param setupSteps - the challenge's setup commands
+	 */
+	async startChallenge(setupSteps: string[]): Promise<void> {
+		const isSameChallenge = JSON.stringify(setupSteps) === JSON.stringify(this.setupSteps);
+		this.setupSteps = setupSteps;
+		if (isSameChallenge) {
+			await this.reset();
+			return;
+		}
+		if (!this.commands.isDesktopApp()) {
+			return;
+		}
+		this.lastCaption = null;
+		await this.buildFolder('Setting up the challenge…', () =>
+			this.commands.openPracticeRepo(this.missionId, this.setupSteps)
 		);
 	}
 

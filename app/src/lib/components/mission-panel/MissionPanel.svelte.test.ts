@@ -49,7 +49,7 @@ describe('MissionPanel', () => {
 	it('ticks goals as soon as the snapshot meets them', async () => {
 		await render(MissionPanel, {
 			mission,
-			missionNumber: '05',
+			heading: 'Challenge 1 · Easy',
 			snapshot: stagedSnapshot,
 			onReset: () => Promise.resolve()
 		});
@@ -62,7 +62,7 @@ describe('MissionPanel', () => {
 	it('reveals hints one at a time', async () => {
 		await render(MissionPanel, {
 			mission,
-			missionNumber: null,
+			heading: 'Challenge 1 · Easy',
 			snapshot: null,
 			onReset: () => Promise.resolve()
 		});
@@ -77,18 +77,18 @@ describe('MissionPanel', () => {
 	it('explains what is left when checking', async () => {
 		await render(MissionPanel, {
 			mission,
-			missionNumber: null,
+			heading: 'Challenge 1 · Easy',
 			snapshot: stagedSnapshot,
 			onReset: () => Promise.resolve()
 		});
 
-		await page.getByRole('button', { name: 'Check mission' }).click();
+		await page.getByRole('button', { name: 'Check challenge' }).click();
 		await expect.element(page.getByRole('status').getByText(/1 goal to go/)).toBeVisible();
 	});
 
 	it('resets the practice folder and hides the hints again', async () => {
 		const onReset = vi.fn(() => Promise.resolve());
-		await render(MissionPanel, { mission, missionNumber: null, snapshot: null, onReset });
+		await render(MissionPanel, { mission, heading: 'Challenge 1 · Easy', snapshot: null, onReset });
 		await page.getByRole('button', { name: 'Show a hint (1 of 3)' }).click();
 
 		await page.getByRole('button', { name: 'Reset practice' }).click();
@@ -113,7 +113,7 @@ describe('MissionPanel', () => {
 		};
 		const screen = await render(MissionPanel, {
 			mission,
-			missionNumber: null,
+			heading: 'Challenge 1 · Easy',
 			snapshot: doneSnapshot,
 			onReset: () => Promise.resolve(),
 			onComplete

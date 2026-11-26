@@ -1,0 +1,58 @@
+challenges:
+  - id: commit-notes
+    title: Commit the notes
+    level: easy
+    brief: "Commit notes.txt."
+    setup:
+      - git init
+      - echo "draft" > notes.txt
+    goal:
+      - check: file-is-committed
+        file: notes.txt
+        label: "notes.txt is committed"
+      - check: commit-count-at-least
+        count: 1
+        label: "The repo has a commit"
+    hints:
+      - "Which area does a file need to be in before you can commit it?"
+      - "Use git add to move notes.txt into the staging area."
+      - "Run: git add notes.txt, then git commit -m \"Add notes\""
+    solution:
+      - git add notes.txt
+      - git commit -m "Add notes"
+  - id: commit-two-files
+    title: Commit two files
+    level: medium
+    brief: "Commit both files in one commit."
+    setup:
+      - git init
+      - echo "a" > a.txt
+      - echo "b" > b.txt
+    goal:
+      - check: working-folder-clean
+        label: "Nothing is left to commit"
+    hints:
+      - "git add can take more than one file."
+    solution:
+      - git add a.txt b.txt
+      - git commit -m "Add both"
+  - id: keep-one-out
+    title: Keep one file out
+    level: hard
+    brief: "Commit keep.txt and leave draft.txt untracked."
+    setup:
+      - git init
+      - echo "keep" > keep.txt
+      - echo "draft" > draft.txt
+    goal:
+      - check: file-is-committed
+        file: keep.txt
+        label: "keep.txt is committed"
+      - check: file-is-untracked
+        file: draft.txt
+        label: "draft.txt is still untracked"
+    hints:
+      - "Stage only keep.txt."
+    solution:
+      - git add keep.txt
+      - git commit -m "Add keep"

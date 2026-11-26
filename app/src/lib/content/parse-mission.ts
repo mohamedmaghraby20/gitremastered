@@ -1,6 +1,7 @@
 /**
  * parse-mission.ts
- * Reads mission.yaml: the brief, setup steps, goal checks, hint ladder and reference solution.
+ * Reads the mission part of a challenge: the brief, setup steps, goal checks, hint ladder and
+ * reference solution (parse-challenges.ts reads the rest of each challenge).
  */
 
 import {
@@ -12,14 +13,12 @@ import {
 import { FieldReader } from './field-reader.ts';
 
 /**
- * Reads a whole mission.yaml.
- * @param fileText - the file's text
- * @param fileName - its path, for error messages
+ * Reads the mission fields of one challenge.
+ * @param reader - a reader for one challenge (its brief, setup, goal, hints, solution)
  * @returns the typed mission
- * @throws ContentError naming the file and the problem
+ * @throws ContentError naming the file, the challenge and the problem
  */
-export function parseMissionText(fileText: string, fileName: string): Mission {
-	const reader = FieldReader.fromYaml(fileText, fileName);
+export function readMissionFields(reader: FieldReader): Mission {
 	const goalReaders = reader.recordList('goal', 'goal');
 	return {
 		brief: reader.text('brief'),
@@ -56,6 +55,7 @@ function readGoalCheck(goalReader: FieldReader): GoalCheck {
 		case 'file-is-modified':
 		case 'file-is-staged':
 		case 'file-is-committed':
+		case 'file-is-not-committed':
 			return { check: checkKind, file: goalReader.text('file') };
 		case 'commit-count-at-least':
 			return { check: checkKind, count: goalReader.wholeNumber('count') };

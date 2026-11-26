@@ -3,7 +3,7 @@
  * The shape of one lesson after it is read from content/lessons/<lesson-id>/ (SPEC.md section 4).
  */
 
-import type { Mission } from './mission.ts';
+import type { Challenge } from './mission.ts';
 import type { Quiz } from './quiz.ts';
 
 /** The four parts of lesson.md, in the order a student meets them. */
@@ -31,10 +31,10 @@ export type LessonFrontmatter = {
 	readFirst: string[]; // lesson IDs worth reading before this one
 };
 
-/** One complete lesson: its text, its mission and its quiz. */
+/** One complete lesson: its text, its challenges (3 or more, easy to hard) and its quiz. */
 export type Lesson = LessonFrontmatter & {
 	lede: string; // the one opening sentence before the first section
 	sections: LessonSections;
-	mission: Mission;
+	challenges: Challenge[];
 	quiz: Quiz;
 };

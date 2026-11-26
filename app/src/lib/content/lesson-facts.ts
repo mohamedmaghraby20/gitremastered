@@ -20,16 +20,18 @@ const proGitUrlStart = 'https://git-scm.com/book/';
 /** The parts of a lesson the reading time needs. */
 type ReadingParts = {
 	sections: Pick<Lesson['sections'], 'mustKnow'>;
-	mission: Pick<Lesson['mission'], 'brief'>;
+	challenges: Pick<Lesson['challenges'][number], 'brief'>[];
 };
 
 /**
- * Estimates how long the lesson's main part takes to read: "Must know" plus the mission brief.
- * @param lesson - the lesson (only its Must know text and mission brief are used)
+ * Estimates how long the lesson's main part takes to read: "Must know" plus the first
+ * (easy) challenge's brief.
+ * @param lesson - the lesson (only its Must know text and first challenge brief are used)
  * @returns whole minutes, at least 1
  */
 export function findReadingMinutes(lesson: ReadingParts): number {
-	const wordCount = countWords(lesson.sections.mustKnow) + countWords(lesson.mission.brief);
+	const wordCount =
+		countWords(lesson.sections.mustKnow) + countWords(lesson.challenges[0]?.brief ?? '');
 	return Math.max(1, Math.round(wordCount / wordsPerMinute));
 }
 

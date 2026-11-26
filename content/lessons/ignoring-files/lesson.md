@@ -44,13 +44,13 @@ Read it line by line:
 - `build/`: a name ending in `/` matches a folder, and everything inside it.
 - `*.log`: `*` means "any characters", so this matches every file ending in `.log`, in every folder of the project.
 
-Practise with a file of your own, so the practice project's files stay as they are for the mission at the end (a short real job on its build folder and log file).
+Practise with a file of your own, so the practice project's files stay as they are for the challenges at the end (short real jobs on its build folder and log file).
 
 :::try-it
 1. Make a scratch file: `echo "draft" > ideas.tmp`. Run `git status`: Git lists `ideas.tmp` as untracked.
 2. Create a `.gitignore` that ignores it: `echo "*.tmp" > .gitignore`.
 3. Run `git status` again. The file `ideas.tmp` is gone from the list: Git now skips it. The new file `.gitignore` appears instead, as untracked.
-4. Don't commit yet: the mission at the end of the lesson finishes this `.gitignore`.
+4. Don't commit yet: the first challenge at the end of the lesson finishes this `.gitignore`.
 :::
 
 ### Commit the `.gitignore` itself

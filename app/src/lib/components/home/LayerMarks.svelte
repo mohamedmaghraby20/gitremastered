@@ -28,5 +28,5 @@
 			{layerMark.label}
 		</li>
 	{/each}
-	<li>· Mission · Quiz</li>
+	<li>· Challenges · Quiz</li>
 </ul>

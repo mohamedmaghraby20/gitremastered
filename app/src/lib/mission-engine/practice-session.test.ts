@@ -34,6 +34,21 @@ describe('PracticeSession', () => {
 		expect(session.practiceFolderPath).toBe('/practice/three-areas');
 	});
 
+	it('builds another challenge from its own setup, and starts the same one over', async () => {
+		const commands = fakeCommands();
+		const session = new PracticeSession('three-areas', ['git init'], commands);
+		await session.start();
+
+		await session.startChallenge(['git init', 'echo two > two.txt']);
+		expect(commands.openPracticeRepo).toHaveBeenLastCalledWith('three-areas', [
+			'git init',
+			'echo two > two.txt'
+		]);
+
+		await session.startChallenge(['git init', 'echo two > two.txt']);
+		expect(commands.resetPracticeRepo).toHaveBeenCalledWith('three-areas');
+	});
+
 	it('explains that the terminal needs the desktop app in a plain browser', async () => {
 		const commands = fakeCommands(false);
 		const session = new PracticeSession('three-areas', [], commands);

@@ -96,7 +96,7 @@ It does this for both kinds of file you just met:
 - A **new file**: Git starts tracking it, which means it will watch the file and include it in saves from now on.
 - A **modified file**: Git puts its newest content in the staging area.
 
-Practise on a file of your own, so `README.md` and `notes.txt` stay as they are for the mission at the end of this lesson (a short real job you will do on those two files).
+Practise on a file of your own, so `README.md` and `notes.txt` stay as they are for the challenges at the end of this lesson (short real jobs you will do in this practice project).
 
 :::try-it
 1. Create a file: `echo "Buy milk" > todo.txt`. This writes the line "Buy milk" into a new file called `todo.txt`.

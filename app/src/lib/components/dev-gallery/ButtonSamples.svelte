@@ -8,7 +8,7 @@
 </script>
 
 <div class="flex flex-wrap items-center gap-3">
-	<Button shortcut="⏎">Check mission</Button>
+	<Button shortcut="⏎">Check challenge</Button>
 	<Button variant="secondary">Reset practice</Button>
 	<Button variant="ghost">Show a hint</Button>
 	<Button disabled>Disabled</Button>

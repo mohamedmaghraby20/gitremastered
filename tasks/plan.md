@@ -134,7 +134,7 @@ Full details for each task (acceptance criteria, verification, files) are in `ta
 - [x] Task 41: Resizable lesson panels
 - [x] Task 42: A history map that grows with the course
 - [x] Task 43: Links between lessons, with hover cards
-- [ ] Task 44: Challenges instead of one mission (3+ per lesson, easy to hard)
+- [x] Task 44: Challenges instead of one mission (3+ per lesson, easy to hard)
 
 ### Checkpoint E: The other screens
 - [ ] Every prototype screen works with real content and progress; search finds lessons by title and command; you review in the desktop app

@@ -56,8 +56,10 @@ What this lesson takes from its sources, what it leaves out, and where the rest 
 - `git ls-files --stage` to look at the index (Git reference, `git-ls-files`; Pro Git 10.2 shows the same idea with plumbing).
 - How to leave Vim and set `core.editor`: the most common first-commit trap on Git Bash.
 
-## Mission and quiz
+## Challenges and quiz
 
-- Mission: commit `notes.txt` alone and keep the `README.md` edit out. Practises selective staging, the lesson's main skill.
-- Try-its use a separate file (`todo.txt`), so following the lesson does not solve the mission.
+- Easy, `release-notes`: commit `notes.txt` alone and keep the `README.md` edit out. Practises selective staging, the lesson's main skill.
+- Medium, `two-commits`: two changes become two commits (a README fix first, then a new file).
+- Hard, `unstage-secret`: a password file was staged by mistake; take it out with `git restore --staged` (Advanced layer) and commit the rest.
+- Try-its use a separate file (`todo.txt`), so following the lesson does not solve a challenge.
 - Quiz: staged vs. later edit; reading `MM`; choosing what to stage.

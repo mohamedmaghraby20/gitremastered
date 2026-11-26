@@ -4,7 +4,8 @@
  * the terminal's share of the practice column (about 55%), even gaps around the desk's commands, paste,
  * Ctrl C still stopping a command, Ctrl + / 0 text size, the mission and quiz headings, and the
  * history map's zoom buttons, Esc reaching Vim for a commit message, F6 leaving the terminal,
- * the small-window layout at 1024 × 700, the resize handle, and a long history. Saves a screenshot for a person to look at.
+ * the small-window layout at 1024 × 700, the resize handle, a long history, and starting a
+ * challenge. Saves a screenshot for a person to look at.
  * Run from app/:  pnpm review:fixes   (build the review copy first: pnpm review:build)
  */
 
@@ -41,6 +42,18 @@ const newestStationInViewScript = `(() => {
 	return map !== undefined && station !== undefined && station.left >= map.left && station.right <= map.right;
 })()`;
 
+/**
+ * Page script: clicks the start button of the challenge card with this title (if it has one:
+ * the active challenge has none, so starting it again is skipped).
+ * @param title - the challenge's title, e.g. "Two changes, two commits"
+ * @returns the script
+ */
+function startChallengeScript(title: string): string {
+	return `[...document.querySelectorAll('section[aria-labelledby="challenges-heading"] li')]
+		.find((card) => card.querySelector('h3')?.textContent.trim() === ${JSON.stringify(title)})
+		?.querySelector('button')?.click()`;
+}
+
 /** Page script: the terminal's text size in pixels (xterm.js sets it on its rows). */
 const terminalFontSize = `parseFloat(getComputedStyle(document.querySelector('.xterm-rows')).fontSize)`;
 
@@ -60,7 +73,8 @@ const checks: ReviewCheck[] = [
 	{ name: 'Esc reaches Vim: a commit message written in the editor', run: checkVimCommit },
 	{ name: 'F6 moves focus out of the terminal', run: checkLeaveTerminal },
 	{ name: 'Small window (1024 × 700): one practice panel, nothing cut off', run: checkSmallWindow },
-	{ name: 'Column handle resizes by keyboard and resets', run: checkColumnHandle }
+	{ name: 'Column handle resizes by keyboard and resets', run: checkColumnHandle },
+	{ name: 'Starting a challenge rebuilds the practice project for it', run: checkStartChallenge }
 ];
 
 /**
@@ -160,7 +174,7 @@ async function checkTextSize(student: StudentActions): Promise<string> {
  * @returns both headings
  */
 async function checkHeadings(student: StudentActions): Promise<string> {
-	const mission = await student.readText('#mission-heading');
+	const mission = await student.readText('#challenges-heading');
 	const quiz = await student.readText('#quiz-heading');
 	if (mission === '' || quiz === '') {
 		throw new Error('a heading is missing');
@@ -319,6 +333,30 @@ async function checkLongHistory(student: StudentActions): Promise<string> {
 	await student.clickButton('Reset practice');
 	await pause(3_000);
 	return '"Step 22" is in view; the large map opened and Esc closed it';
+}
+
+/**
+ * Starts the medium challenge and checks its files appear, then goes back to the easy one.
+ * @param student - the student actions
+ * @returns what the working tree showed
+ */
+async function checkStartChallenge(student: StudentActions): Promise<string> {
+	const workingTreeShows = (fileName: string): string =>
+		`document.querySelector('section[aria-label="Working tree"]')?.innerText.includes('${fileName}')`;
+	// The heading is styled in capitals, so compare without case.
+	const activeHeadingIs = (heading: string): string =>
+		`document.querySelector('section[aria-label="Active challenge"] header')?.innerText.toLowerCase().includes('${heading.toLowerCase()}')`;
+	try {
+		await student.evaluate(startChallengeScript('Two changes, two commits'));
+		await student.waitUntil(workingTreeShows('login.js'), 20_000);
+		await student.waitUntil(activeHeadingIs('Challenge 2 · Medium'));
+	} finally {
+		// Always go back to the easy challenge, so later checks start from it.
+		await student.evaluate(startChallengeScript('Save the release notes on their own'));
+		await student.waitUntil(activeHeadingIs('Challenge 1 · Easy'));
+		await student.waitUntil(workingTreeShows('notes.txt'), 20_000);
+	}
+	return 'medium set up login.js; the easy one brought notes.txt back';
 }
 
 /**

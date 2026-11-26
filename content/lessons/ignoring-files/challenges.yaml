@@ -1,0 +1,99 @@
+challenges:
+  - id: ignore-build-and-logs
+    title: Ignore build output and logs
+    level: easy
+    brief: "The build just made a build folder and a log file, and git status is full of noise. Ignore them with a .gitignore and commit it, so the working tree is clean."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Shop app" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - mkdir build
+      - echo "compiled program" > build/app.bin
+      - 'echo "debug: started" > app.log'
+    goal:
+      - check: file-is-committed
+        file: .gitignore
+        label: ".gitignore is committed"
+      - check: working-folder-clean
+        label: "git status shows nothing left to do"
+      - check: commit-count-at-least
+        count: 2
+        label: "The history has your new commit"
+    hints:
+      - "Run git status. Which two things should never be committed?"
+      - "Add two lines to .gitignore: one for the build folder, one for log files. Keep any line you already wrote."
+      - "Run: printf 'build/\\n*.log\\n' >> .gitignore, then git add .gitignore and git commit -m \"Ignore build output and logs\""
+    solution:
+      - printf 'build/\n*.log\n' >> .gitignore
+      - git add .gitignore
+      - git commit -q -m "Ignore build output and logs"
+
+  - id: stop-tracking-log
+    title: A log file was committed by mistake
+    level: medium
+    brief: "app.log was committed by mistake, and every run changes it. Make Git stop tracking it, but keep the file on your disk. Ignore all .log files, and commit."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Shop app" > README.md
+      - 'echo "debug: started" > app.log'
+      - git add README.md app.log
+      - git commit -q -m "Add README and log"
+      - 'echo "debug: running" >> app.log'
+    goal:
+      - check: file-is-not-committed
+        file: app.log
+        label: "app.log is no longer in the latest commit"
+      - check: file-is-committed
+        file: .gitignore
+        label: ".gitignore with a rule for logs is committed"
+      - check: working-folder-clean
+        label: "git status shows nothing left to do"
+    hints:
+      - "Adding app.log to .gitignore is not enough: Git keeps following files it already tracks."
+      - "git rm --cached takes a file out of Git and keeps it on your disk. Then a *.log rule keeps it out."
+      - "Run: echo '*.log' >> .gitignore, git rm --cached app.log, git add .gitignore, then git commit -m \"Stop tracking app.log\"."
+    solution:
+      - echo '*.log' >> .gitignore
+      - git rm -q --cached app.log
+      - git add .gitignore
+      - git commit -q -m "Stop tracking app.log"
+
+  - id: keep-one-build-file
+    title: Ignore a folder, keep one file
+    level: hard
+    brief: "The build folder must stay out of Git, except build/NOTES.md, which the team needs. Ignore everything else in build, keep NOTES.md, and commit both."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Shop app" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - mkdir build
+      - echo "compiled program" > build/app.bin
+      - echo "How to read the build reports" > build/NOTES.md
+    goal:
+      - check: file-is-committed
+        file: build/NOTES.md
+        label: "build/NOTES.md is committed"
+      - check: file-is-committed
+        file: .gitignore
+        label: ".gitignore is committed"
+      - check: working-folder-clean
+        label: "git status shows nothing left to do (build/app.bin is ignored)"
+    hints:
+      - "Try build/ and then !build/NOTES.md. Does git status show NOTES.md? The lesson's Advanced layer says why not."
+      - "Git never looks inside an ignored folder. Ignore the folder's contents instead, with build/*, then bring NOTES.md back with !."
+      - "Run: printf 'build/*\\n!build/NOTES.md\\n' >> .gitignore, then git add .gitignore build/NOTES.md and git commit -m \"Ignore build output, keep notes\"."
+    solution:
+      - printf 'build/*\n!build/NOTES.md\n' >> .gitignore
+      - git add .gitignore build/NOTES.md
+      - git commit -q -m "Ignore build output, keep notes"

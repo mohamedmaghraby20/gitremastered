@@ -2,7 +2,7 @@
  * mission-session.ts
  * The parts of a mission that are pure state, with no screen code: the hint ladder
  * (hints revealed one at a time, gentle first, the answer last) and the message shown after
- * "Check mission".
+ * "Check challenge".
  */
 
 /** The hint ladder: how many hints are showing, out of how many. */
@@ -49,7 +49,7 @@ export function hintButtonLabel(ladder: HintLadder): string {
 }
 
 /**
- * Writes the answer to "Check mission".
+ * Writes the answer to "Check challenge".
  * @param goalResults - one true/false per goal
  * @returns a short, encouraging sentence
  */

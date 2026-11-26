@@ -1,7 +1,7 @@
 <!--
   ContinueCard.svelte
   "Pick up where you left off": the last opened lesson (number, module, source, title, lede,
-  layer marks) with Continue lesson as the screen's one primary button, and the practice
+  layer marks: read layers, then Challenges and Quiz) with Continue lesson as the screen's one primary button, and the practice
   repository's three areas beside it. Enter anywhere on the page also continues (the ⏎ key
   on the button says so); the page handles that key.
 

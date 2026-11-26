@@ -5,7 +5,7 @@ How to add a lesson to GitRemastered. A lesson is three files in one folder; no 
 ## Steps
 
 1. Pick an ID: lowercase words joined by `-` (`ignoring-files`). The folder name must equal the ID.
-2. Create `content/lessons/<id>/` with `lesson.md`, `mission.yaml`, `quiz.yaml` and `coverage.md`.
+2. Create `content/lessons/<id>/` with `lesson.md`, `challenges.yaml`, `quiz.yaml` and `coverage.md`.
 3. Add the ID to a module in `content/paths/pro-path.yaml`.
 4. Run `pnpm content:check` (from `app/`). It names the file and the problem if something is wrong.
 5. Run `pnpm test:missions`. It runs your mission's setup and solution with real Git and checks every goal.
@@ -87,29 +87,38 @@ Rule: every important point of the book section is in "Must know" or "Under the 
 
 Try-its must not solve the mission: practise on a separate file, so the mission still has work to do.
 
-## mission.yaml
+## challenges.yaml
 
-A real small job in a practice folder. The goals tick themselves from the live repo state.
+Three or more challenges, from easy to hard (decided 2026-11-26). Each is a real small job in the practice project; the student picks any one, and starting it rebuilds the project in that challenge's starting state. The goals tick themselves from the live repo state. Challenges test whether the student can do the job; the quiz tests understanding.
+
+Each challenge has an `id` (unique in the lesson; it names the challenge in saved progress), a `title`, a `level` (`easy`, `medium` or `hard`, never going back down), and the mission fields below.
 
 ```yaml
-brief: "Commit the release notes on their own, and keep the README change out of this commit."
-setup:            # bash commands run in a new empty folder, in order
-  - git init -q -b main
-  - git config core.autocrlf false
-  - git config user.name > /dev/null || git config user.name "Practice Student"
-  - git config user.email > /dev/null || git config user.email "student@example.com"
-  - echo "Release notes for version 1.0" > notes.txt
-goal:             # every goal must be met at the end
-  - check: file-is-committed
-    file: notes.txt
-    label: "notes.txt is saved in a new commit"
-hints:            # from a nudge to the exact commands
-  - "Run git status. Which file is new?"
-  - "A commit takes only what is in the staging area."
-  - "Run: git add notes.txt, then git commit -m \"Add release notes\""
-solution:         # the reference answer; pnpm test:missions runs it
-  - git add notes.txt
-  - git commit -q -m "Add release notes"
+challenges:
+  - id: release-notes          # unique in the lesson
+    title: Save the release notes on their own
+    level: easy                # easy, medium or hard; never going back down
+    brief: "Commit the release notes on their own, and keep the README change out of this commit."
+    setup:                     # bash commands run in a new empty folder, in order
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "Release notes for version 1.0" > notes.txt
+    goal:                      # every goal must be met at the end
+      - check: file-is-committed
+        file: notes.txt
+        label: "notes.txt is saved in a new commit"
+    hints:                     # from a nudge to the exact commands
+      - "Run git status. Which file is new?"
+      - "A commit takes only what is in the staging area."
+      - "Run: git add notes.txt, then git commit -m \"Add release notes\""
+    solution:                  # the reference answer; pnpm test:missions runs it
+      - git add notes.txt
+      - git commit -q -m "Add release notes"
+  - id: two-commits
+    level: medium
+    # ...
 ```
 
 | Goal check | Extra field | Met when |
@@ -118,12 +127,14 @@ solution:         # the reference answer; pnpm test:missions runs it
 | `file-is-modified` | `file` | The file changed and the change is not staged |
 | `file-is-staged` | `file` | The file has a change in the staging area |
 | `file-is-committed` | `file` | The file is in the latest commit and has no pending change |
+| `file-is-not-committed` | `file` | The file is not in the latest commit (for example after `git rm --cached`) |
 | `commit-count-at-least` | `count` | The branch has at least that many commits |
 | `working-folder-clean` | none | `git status` has nothing to report |
 
 Setup rules:
 - Start with the four lines above: `git init -q -b main`, no CRLF conversion (keeps Windows warnings out of the terminal), and a practice identity only when the student has none.
 - Quote any line that contains `: ` (colon and space), or YAML reads it as a field: `'echo "debug: started" > app.log'`.
+- Easy practises the lesson's main skill; medium combines it with a second step; hard needs a detail from Under the hood or Advanced (and its hints point there).
 - Make the starting state need the lesson's skill. A goal that is already met at the start should be one the student must keep, like "README.md is still changed".
 
 ## quiz.yaml

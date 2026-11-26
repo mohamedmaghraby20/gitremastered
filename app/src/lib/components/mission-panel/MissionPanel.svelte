@@ -1,12 +1,12 @@
 <!--
   MissionPanel.svelte
-  The mission as a worksheet ticket (DESIGN.md): header with the mission number and progress,
-  a dashed separator, the brief in serif, a checklist that ticks itself from the live snapshot,
-  and the actions: Check mission, Reset practice, and the hint ladder.
+  The active challenge as a worksheet ticket (DESIGN.md): header with the challenge's name and
+  progress, a dashed separator, the brief in serif, a checklist that ticks itself from the live
+  snapshot, and the actions: Check challenge, Reset practice, and the hint ladder.
 
-  Inputs:  mission (from mission.yaml), missionNumber (e.g. "05", or null), snapshot (live repo
-           state or null), onReset (rebuilds the practice folder), onComplete (called once when
-           every goal is met).
+  Inputs:  mission (the challenge's mission fields), heading (e.g. "Challenge 2 · Medium"),
+           snapshot (live repo state or null), onReset (rebuilds the practice folder),
+           onComplete (called once when every goal is met).
 -->
 <script lang="ts">
 	import type { Mission } from '$lib/types/mission';
@@ -24,13 +24,13 @@
 
 	let {
 		mission,
-		missionNumber,
+		heading,
 		snapshot,
 		onReset,
 		onComplete = () => {}
 	}: {
 		mission: Mission;
-		missionNumber: string | null;
+		heading: string;
 		snapshot: RepoSnapshot | null;
 		onReset: () => Promise<void>;
 		onComplete?: () => void;
@@ -58,7 +58,7 @@
 		checkMessage = describeCheckResult(goalResults);
 	}
 
-	/** Rebuilds the practice folder and starts the mission over (hints hidden again). */
+	/** Rebuilds the practice folder and starts the challenge over (hints hidden again). */
 	async function resetPractice(): Promise<void> {
 		isResetting = true;
 		checkMessage = null;
@@ -68,16 +68,11 @@
 	}
 </script>
 
-<section aria-label="Mission" class="rounded-medium border bg-surface">
+<section aria-label="Active challenge" class="rounded-medium border bg-surface">
 	<header
 		class="flex items-center justify-between border-b border-dashed border-b-border-strong px-5 py-2.5"
 	>
-		<span class="type-caption text-ink-muted uppercase">
-			Mission
-			{#if missionNumber !== null}
-				<b class="type-label-mono font-bold text-ink">{missionNumber}</b>
-			{/if}
-		</span>
+		<span class="type-caption text-ink-muted uppercase">{heading}</span>
 		<span class="type-label-mono text-ink-muted">{metCount} / {mission.goals.length} done</span>
 	</header>
 
@@ -109,7 +104,7 @@
 		{/if}
 
 		<div class="flex flex-wrap gap-2.5">
-			<Button onclick={checkMission}>Check mission</Button>
+			<Button onclick={checkMission}>Check challenge</Button>
 			<Button variant="secondary" onclick={resetPractice} disabled={isResetting}>
 				{isResetting ? 'Resetting…' : 'Reset practice'}
 			</Button>

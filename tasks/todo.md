@@ -642,9 +642,9 @@ Ctrl K from any screen opens a **quick search panel** over the current screen, l
 - After release, test the other option as an experiment: a thin goals strip inside the terminal window, between its title bar and the screen, folding to one line.
 
 **Acceptance criteria:**
-- [ ] Both lessons have 3 challenges, easy to hard; `pnpm test:missions` runs every one
-- [ ] Starting a challenge rebuilds the practice project; finishing one is remembered
-- [ ] The content check fails with fewer than 3 challenges
+- [x] Both lessons have 3 challenges, easy to hard; `pnpm test:missions` runs every one
+- [x] Starting a challenge rebuilds the practice project; finishing one is remembered
+- [x] The content check fails with fewer than 3 challenges
 
 **Verification:** unit tests (parsing, progress), mission tests, driver play-through · **Files:** `content/`, `mission-engine/`, `components/mission-panel/` · **Scope:** L
 

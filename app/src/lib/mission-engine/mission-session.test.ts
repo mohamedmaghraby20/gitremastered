@@ -1,6 +1,6 @@
 /**
  * mission-session.test.ts
- * Tests for the hint ladder and the "Check mission" message.
+ * Tests for the hint ladder and the "Check challenge" message.
  */
 
 import { describe, expect, it } from 'vitest';

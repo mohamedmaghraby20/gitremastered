@@ -54,7 +54,7 @@ chapters:
 function sampleContentFiles(): ContentFiles {
 	return {
 		'lessons/sample-lesson/lesson.md': readSampleLessonFile('lesson.md'),
-		'lessons/sample-lesson/mission.yaml': readSampleLessonFile('mission.yaml'),
+		'lessons/sample-lesson/challenges.yaml': readSampleLessonFile('challenges.yaml'),
 		'lessons/sample-lesson/quiz.yaml': readSampleLessonFile('quiz.yaml'),
 		'paths/pro-path.yaml': pathText
 	};
@@ -66,7 +66,7 @@ describe('buildCourseContent', () => {
 		const lesson = findLessonById(courseContent, 'sample-lesson');
 		expect(lesson?.title).toBe('A sample lesson');
 		expect(lesson?.lede).toBe('This sentence is the lede.');
-		expect(lesson?.mission.goals).toHaveLength(2);
+		expect(lesson?.challenges).toHaveLength(3);
 		expect(lesson?.quiz.questions).toHaveLength(2);
 	});
 
@@ -84,7 +84,7 @@ describe('buildCourseContent', () => {
 	it('rejects a lesson whose ID does not match its folder', () => {
 		const contentFiles = sampleContentFiles();
 		contentFiles['lessons/other-name/lesson.md'] = readSampleLessonFile('lesson.md');
-		contentFiles['lessons/other-name/mission.yaml'] = readSampleLessonFile('mission.yaml');
+		contentFiles['lessons/other-name/challenges.yaml'] = readSampleLessonFile('challenges.yaml');
 		contentFiles['lessons/other-name/quiz.yaml'] = readSampleLessonFile('quiz.yaml');
 		expect(() => buildCourseContent(contentFiles)).toThrow(
 			'content/lessons/other-name/lesson.md: the id "sample-lesson" must match the folder name "other-name"'

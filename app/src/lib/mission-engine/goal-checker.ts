@@ -26,6 +26,8 @@ export function isGoalMet(goalCheck: GoalCheck, repoSnapshot: RepoSnapshot | nul
 			return isInChanges(repoSnapshot.stagedFiles, goalCheck.file);
 		case 'file-is-committed':
 			return isFileCommitted(goalCheck.file, repoSnapshot);
+		case 'file-is-not-committed':
+			return !repoSnapshot.committedFiles.includes(goalCheck.file);
 		case 'commit-count-at-least':
 			return repoSnapshot.commits.length >= goalCheck.count;
 		case 'working-folder-clean':

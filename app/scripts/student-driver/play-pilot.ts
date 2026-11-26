@@ -1,7 +1,7 @@
 /**
  * play-pilot.ts
  * Plays the pilot lesson as a student in the real desktop app (the review copy), then restarts
- * the app to check progress was kept, and plays the second lesson's mission.
+ * the app to check progress was kept, and plays the second lesson's first challenge.
  * Prints one line per step: PASS or FAIL, with what was seen.
  * Run from app/:  node scripts/student-driver/play-pilot.ts
  */
@@ -58,7 +58,7 @@ async function runSteps(steps: PilotStep[], student: StudentActions): Promise<nu
 	return failedCount;
 }
 
-/** Steps after a restart: progress kept, then the second lesson's mission. */
+/** Steps after a restart: progress kept, then the second lesson's first challenge. */
 const afterRestartSteps: PilotStep[] = [
 	{
 		name: '7 · progress survives an app restart',
@@ -80,9 +80,9 @@ const afterRestartSteps: PilotStep[] = [
 			await pause(300);
 			await student.typeCommand('git commit -q -m "Ignore build output and logs"');
 			await student.waitUntil(
-				`document.querySelector('section[aria-label="Mission"] header').innerText.includes('3 / 3 done')`
+				`document.querySelector('section[aria-label="Active challenge"] header').innerText.includes('3 / 3 done')`
 			);
-			return 'ignoring-files mission reaches 3 / 3';
+			return 'ignoring-files first challenge reaches 3 / 3';
 		}
 	}
 ];

@@ -47,8 +47,10 @@ What this lesson takes from its sources, what it leaves out, and where the rest 
 - `.git/info/exclude` for personal patterns (Git reference, `gitignore`).
 - `git check-ignore -v`, `git status --ignored`, `git rm --cached`, `git add -f`.
 
-## Mission and quiz
+## Challenges and quiz
 
-- Mission: ignore a build folder and a log file, commit `.gitignore`, end with a clean working tree.
-- The Try-it uses its own file (`ideas.tmp`) and does not commit, so it does not solve the mission. The mission's hint appends with `>>`, so a `.gitignore` started in the Try-it keeps its line.
+- Easy, `ignore-build-and-logs`: ignore a build folder and a log file, commit `.gitignore`, end with a clean working tree.
+- Medium, `stop-tracking-log`: a committed log file; stop tracking it with `git rm --cached`, ignore `*.log`, keep the file on disk.
+- Hard, `keep-one-build-file`: ignore `build/` except `build/NOTES.md`, which needs `build/*` plus `!build/NOTES.md` (the re-include trap from the Advanced layer; `pnpm test:missions` checks that `build/` alone fails).
+- The Try-it uses its own file (`ideas.tmp`) and does not commit, so it does not solve a challenge. The hints append with `>>`, so a `.gitignore` started in the Try-it keeps its line.
 - Quiz: where `*.log` matches; a committed file added to `.gitignore`; why commit `.gitignore`.

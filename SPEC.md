@@ -10,7 +10,7 @@ Related documents:
 
 ## 1. Objective
 
-A free, open-source desktop app that turns Pro Git into an interactive course. Each lesson combines short text, a real terminal with real Git in a ready-made practice repository, a live visualizer of what Git is doing, a mission, hints and a quiz.
+A free, open-source desktop app that turns Pro Git into an interactive course. Each lesson combines short text, a real terminal with real Git in a ready-made practice repository, a live visualizer of what Git is doing, challenges (easy to hard) with hints, and a quiz.
 
 **Users:** developers who want to become professional with Git and GitHub. Smart, busy, little patience for long reading.
 
@@ -72,7 +72,8 @@ Commands (screen asks, core answers):
 
 | Command | Input | Output |
 |---|---|---|
-| `create_practice_repo` | `missionId`, setup steps | practice folder path |
+| `open_practice_repo` | `missionId`, setup steps | practice folder path (kept as the student left it; rebuilt when the setup steps changed) |
+| `find_practice_repo` | `missionId` | practice folder path, or null if never built |
 | `reset_practice_repo` | `missionId` | practice folder path |
 | `start_terminal_session` | practice folder path | session id |
 | `send_terminal_input` | session id, text | nothing |
@@ -137,7 +138,7 @@ Approved 2026-11-25 as version 1. Fields are added when a lesson needs them (e.g
 
 - Location: the app's local data folder, `<app data>/practice/<missionId>/`.
 - The app's own automatic Git commands only ever run inside a practice folder, never in the student's own projects.
-- Reset = delete the folder and run the mission setup again.
+- Reset = delete the folder and run the active challenge's setup again. Starting another challenge builds the folder from that challenge's setup.
 
 ## 4. Content format (final for V1, settled in the pilot review 2026-11-25)
 
@@ -147,7 +148,7 @@ The full guide for lesson writers, with every field and an example, is `docs/wri
 content/
 ├── lessons/<lesson-id>/
 │   ├── lesson.md      frontmatter + sections: Must know, Under the hood, Advanced, Recap
-│   ├── mission.yaml   setup steps, goal checks, hint ladder, reference solution
+│   ├── challenges.yaml 3+ challenges, easy to hard: setup, goal checks, hints, solution
 │   └── quiz.yaml      2–4 questions, each with an explanation
 ├── paths/
 │   ├── pro-path.yaml  ordered lesson ids, grouped by module
@@ -172,7 +173,7 @@ readFirst: [first-look-inside, start-a-repo]
 
 Inside sections, special blocks open with a line `:::name` and close with `:::`. Markdown inside: `try-it`, `careful`, `sidenote`. YAML inside: `definitions` (list of `term`, `text`, optional `area`: working, staging or repository) and `compare` (`today`, `book`). `bookUrl` must start with `https://git-scm.com/` or `https://docs.github.com/`, the only sites the app may open.
 
-`mission.yaml` goal checks are declarative, read against the snapshot. Check kinds: `file-is-untracked`, `file-is-modified`, `file-is-staged`, `file-is-committed` (each with `file`), `commit-count-at-least` (with `count`), `working-folder-clean`. Each goal has a `label` for the checklist.
+`challenges.yaml` holds 3 or more challenges from easy to hard, each with `id`, `title`, `level` and the mission fields (brief, setup, goal, hints, solution); the content check fails with fewer than 3. Goal checks are declarative, read against the snapshot. Check kinds: `file-is-untracked`, `file-is-modified`, `file-is-staged`, `file-is-committed`, `file-is-not-committed` (each with `file`), `commit-count-at-least` (with `count`), `working-folder-clean`. Each goal has a `label` for the checklist.
 
 ```yaml
 brief: "Save notes.txt in the repository."
@@ -230,7 +231,7 @@ chapters:
         lessons: [three-areas, ignoring-files]
 ```
 
-Lists show two facts per lesson, computed by `app/src/lib/content/lesson-facts.ts`, never written by hand: reading time (words of "Must know" plus the mission brief, at 200 words a minute, rounded, at least 1) and source label ("Pro Git 2.2" from `bookSection`, or "Beyond the book" when `bookUrl` is not a Pro Git link).
+Lists show two facts per lesson, computed by `app/src/lib/content/lesson-facts.ts`, never written by hand: reading time (words of "Must know" plus the first challenge's brief, at 200 words a minute, rounded, at least 1) and source label ("Pro Git 2.2" from `bookSection`, or "Beyond the book" when `bookUrl` is not a Pro Git link).
 
 Command pages (`commands/<command-id>.md`): frontmatter, then the explanation in Markdown with the usual lesson blocks. The `id` must match the file name, and every lesson in `lessons` must exist.
 

@@ -1,6 +1,6 @@
 /**
  * load-lessons.ts
- * Turns the raw files of content/ into the course: every lesson (with its mission and quiz),
+ * Turns the raw files of content/ into the course: every lesson (with its challenges and quiz),
  * looked up by ID, every learning path, the Book path, the command pages and the glossary.
  * It only works on texts it is given, so tests can pass in sample files; course-content.ts
  * passes in the real ones.
@@ -15,7 +15,7 @@ import { loadCommandPages, loadGlossary } from './load-reference.ts';
 import { checkCourseLinks } from './check-course-links.ts';
 import { ContentError } from './content-error.ts';
 import { parseLessonText } from './parse-lesson.ts';
-import { parseMissionText } from './parse-mission.ts';
+import { parseChallengesText } from './parse-challenges.ts';
 import { parseBookPathText } from './parse-book-path.ts';
 import { parseLearningPathText } from './parse-path.ts';
 import { parseQuizText } from './parse-quiz.ts';
@@ -134,7 +134,7 @@ function findLessonFolderNames(contentFiles: ContentFiles): string[] {
 }
 
 /**
- * Loads one lesson folder: lesson.md, mission.yaml and quiz.yaml.
+ * Loads one lesson folder: lesson.md, challenges.yaml and quiz.yaml.
  * @param contentFiles - the files of content/
  * @param folderName - the lesson's folder, which must equal its ID
  * @returns the complete lesson
@@ -153,9 +153,9 @@ function loadLesson(contentFiles: ContentFiles, folderName: string): Lesson {
 	for (const sectionText of Object.values(lessonText.sections)) {
 		splitIntoBlocks(sectionText, lessonFileName);
 	}
-	const mission = parseMissionText(
-		requireFile(contentFiles, `lessons/${folderName}/mission.yaml`),
-		`content/lessons/${folderName}/mission.yaml`
+	const challenges = parseChallengesText(
+		requireFile(contentFiles, `lessons/${folderName}/challenges.yaml`),
+		`content/lessons/${folderName}/challenges.yaml`
 	);
 	const quiz = parseQuizText(
 		requireFile(contentFiles, `lessons/${folderName}/quiz.yaml`),
@@ -165,7 +165,7 @@ function loadLesson(contentFiles: ContentFiles, folderName: string): Lesson {
 		...lessonText.frontmatter,
 		lede: lessonText.lede,
 		sections: lessonText.sections,
-		mission,
+		challenges,
 		quiz
 	};
 }

@@ -23,7 +23,9 @@ export type CoursePathId = 'pro-path' | 'book-path';
 
 /** Everything the app remembers between sessions. */
 export type ProgressData = {
-	finishedMissions: string[]; // lesson IDs whose mission was completed
+	finishedMissions: string[]; // lesson IDs with at least one finished challenge ("lesson done")
+	finishedChallenges: Record<string, string[]>; // by lesson ID, the challenge IDs finished
+	activeChallengeIds: Record<string, string>; // by lesson ID, the challenge being worked on
 	quizResults: Record<string, QuizResult>; // by lesson ID, the latest result
 	theme: ThemeChoice;
 	terminalFontSize: number | null; // pixels, chosen with Ctrl + / -; null = the design's size
@@ -53,6 +55,8 @@ const storeFileName = 'progress.json';
 /** Progress for a student who has not started yet. */
 export const emptyProgress: ProgressData = {
 	finishedMissions: [],
+	finishedChallenges: {},
+	activeChallengeIds: {},
 	quizResults: {},
 	theme: 'system',
 	terminalFontSize: null,
@@ -96,6 +100,43 @@ export async function markMissionFinished(lessonId: string): Promise<void> {
 		return;
 	}
 	await saveProgress({ ...current, finishedMissions: [...current.finishedMissions, lessonId] });
+}
+
+/**
+ * Remembers that a challenge is done; the lesson then counts as done too.
+ * @param lessonId - the lesson
+ * @param challengeId - the finished challenge
+ */
+export async function markChallengeFinished(lessonId: string, challengeId: string): Promise<void> {
+	const current = get(progressStore);
+	const finishedHere = current.finishedChallenges[lessonId] ?? [];
+	if (finishedHere.includes(challengeId)) {
+		return;
+	}
+	await saveProgress({
+		...current,
+		finishedChallenges: {
+			...current.finishedChallenges,
+			[lessonId]: [...finishedHere, challengeId]
+		},
+		finishedMissions: current.finishedMissions.includes(lessonId)
+			? current.finishedMissions
+			: [...current.finishedMissions, lessonId]
+	});
+}
+
+/**
+ * Remembers which challenge a lesson's practice project is set up for, so reopening the lesson
+ * keeps the student's work in it.
+ * @param lessonId - the lesson
+ * @param challengeId - the challenge just started
+ */
+export async function saveActiveChallenge(lessonId: string, challengeId: string): Promise<void> {
+	const current = get(progressStore);
+	await saveProgress({
+		...current,
+		activeChallengeIds: { ...current.activeChallengeIds, [lessonId]: challengeId }
+	});
 }
 
 /**

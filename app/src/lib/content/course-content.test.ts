@@ -25,10 +25,10 @@ function countWords(markdownText: string): number {
 }
 
 describe('courseContent', () => {
-	it('loads the pilot lesson with its mission and quiz', () => {
+	it('loads the pilot lesson with its challenges and quiz', () => {
 		const pilotLesson = getLesson('three-areas');
 		expect(pilotLesson?.title).toBe('Status, stage, commit: the three areas');
-		expect(pilotLesson?.mission.hints).toHaveLength(3);
+		expect(pilotLesson?.challenges.length).toBeGreaterThanOrEqual(3);
 		expect(pilotLesson?.quiz.questions).toHaveLength(3);
 	});
 

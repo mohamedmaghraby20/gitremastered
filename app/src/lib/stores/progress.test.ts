@@ -8,7 +8,9 @@ import { describe, expect, it, vi } from 'vitest';
 import {
 	createMemoryStorage,
 	loadProgress,
+	markChallengeFinished,
 	markMissionFinished,
+	saveActiveChallenge,
 	progress,
 	resetProgress,
 	saveChosenPath,
@@ -27,6 +29,8 @@ describe('progress', () => {
 		const loaded = await loadProgress(createMemoryStorage());
 		expect(loaded).toEqual({
 			finishedMissions: [],
+			finishedChallenges: {},
+			activeChallengeIds: {},
 			quizResults: {},
 			theme: 'system',
 			terminalFontSize: null,
@@ -55,6 +59,8 @@ describe('progress', () => {
 		const reloaded = await loadProgress(storage);
 		expect(reloaded).toEqual({
 			finishedMissions: ['three-areas'],
+			finishedChallenges: {},
+			activeChallengeIds: {},
 			quizResults: { 'three-areas': { correctCount: 2, questionCount: 3 } },
 			theme: 'dark',
 			terminalFontSize: 16,
@@ -105,6 +111,8 @@ describe('progress', () => {
 
 		expect(get(progress)).toEqual({
 			finishedMissions: [],
+			finishedChallenges: {},
+			activeChallengeIds: {},
 			quizResults: {},
 			theme: 'dark',
 			terminalFontSize: 16,
@@ -136,5 +144,19 @@ describe('progress', () => {
 		expect(reloaded.isMotionReduced).toBe(true);
 		expect(reloaded.lessonColumnShare).toBe(40);
 		expect(reloaded.terminalShare).toBe(60);
+	});
+
+	it('remembers finished challenges and the active one; a finished challenge marks the lesson done', async () => {
+		const storage = createMemoryStorage();
+		await loadProgress(storage);
+
+		await saveActiveChallenge('three-areas', 'two-commits');
+		await markChallengeFinished('three-areas', 'two-commits');
+		await markChallengeFinished('three-areas', 'two-commits');
+
+		const reloaded = await loadProgress(storage);
+		expect(reloaded.finishedChallenges).toEqual({ 'three-areas': ['two-commits'] });
+		expect(reloaded.activeChallengeIds).toEqual({ 'three-areas': 'two-commits' });
+		expect(reloaded.finishedMissions).toEqual(['three-areas']);
 	});
 });

@@ -16,15 +16,14 @@
 		currentRepoSnapshot,
 		startRepoSnapshotUpdates
 	} from '$lib/stores/repo-snapshot';
-	import { formatLessonNumber } from '$lib/content/lesson-navigation';
 	import LessonReader from '$lib/components/lesson-reader/LessonReader.svelte';
-	import MissionPanel from '$lib/components/mission-panel/MissionPanel.svelte';
-	import PartHeading from '$lib/components/lesson-reader/PartHeading.svelte';
+	import ChallengesSection from '$lib/components/challenges/ChallengesSection.svelte';
 	import Quiz from '$lib/components/quiz/Quiz.svelte';
 	import type { QuizScore } from '$lib/quiz/score-quiz';
 	import type { LessonLayerId } from '$lib/types/lesson';
 	import {
-		markMissionFinished,
+		markChallengeFinished,
+		saveActiveChallenge,
 		saveLayerRead,
 		saveLessonOpened,
 		progress,
@@ -37,9 +36,37 @@
 
 	let { lesson, place }: { lesson: Lesson; place: LessonPlace | null } = $props();
 
+	/** The challenge the practice project is set up for: the saved one, or the first (easy). */
+	const activeChallenge = $derived(
+		lesson.challenges.find(
+			(challenge) => challenge.id === $progress.activeChallengeIds[lesson.id]
+		) ?? lesson.challenges[0]
+	);
+
 	// Created once per lesson: the page wraps this component in {#key lesson.id}.
 	// svelte-ignore state_referenced_locally
-	const session = new PracticeSession(lesson.id, lesson.mission.setup);
+	const session = new PracticeSession(lesson.id, activeChallenge.setup);
+
+	/**
+	 * Starts a challenge: remembers it and rebuilds the practice project in its starting state.
+	 * @param challengeId - the challenge the student picked
+	 */
+	function startChallenge(challengeId: string): void {
+		const challenge = lesson.challenges.find((candidate) => candidate.id === challengeId);
+		if (challenge === undefined) {
+			return;
+		}
+		void saveActiveChallenge(lesson.id, challengeId);
+		void session.startChallenge(challenge.setup);
+	}
+
+	/**
+	 * Remembers a finished challenge (the lesson then counts as done).
+	 * @param challengeId - the challenge whose goals are all met
+	 */
+	function finishChallenge(challengeId: string): void {
+		void markChallengeFinished(lesson.id, challengeId);
+	}
 
 	/**
 	 * Starts copying live snapshots into the store, if the app runs in the desktop window.
@@ -132,20 +159,15 @@
 <div class="flex h-full overflow-y-auto">
 	<LessonReader {lesson} {place} onLayerChange={rememberLayer} widthShare={lessonColumnShare}>
 		{#snippet afterText()}
-			<section aria-labelledby="mission-heading" class="flex flex-col gap-3">
-				<PartHeading
-					headingId="mission-heading"
-					title="Your mission"
-					description="A real job to do in the terminal on the right. The goals tick by themselves as your repository changes."
-				/>
-				<MissionPanel
-					mission={lesson.mission}
-					missionNumber={place === null ? null : formatLessonNumber(place.lessonNumber)}
-					snapshot={$currentRepoSnapshot}
-					onReset={() => session.reset()}
-					onComplete={() => void markMissionFinished(lesson.id)}
-				/>
-			</section>
+			<ChallengesSection
+				challenges={lesson.challenges}
+				activeChallengeId={activeChallenge.id}
+				finishedChallengeIds={$progress.finishedChallenges[lesson.id] ?? []}
+				snapshot={$currentRepoSnapshot}
+				onstart={startChallenge}
+				onreset={() => session.reset()}
+				oncomplete={finishChallenge}
+			/>
 			<Quiz quiz={lesson.quiz} onfinish={saveQuizScore} />
 		{/snippet}
 	</LessonReader>

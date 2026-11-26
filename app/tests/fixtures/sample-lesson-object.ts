@@ -22,13 +22,38 @@ export const sampleLesson: Lesson = {
 		advanced: 'Advanced text.',
 		recap: '- Recap point.'
 	},
-	mission: {
-		brief: 'Commit notes.txt.',
-		setup: ['git init'],
-		goals: [{ check: 'file-is-committed', file: 'notes.txt', label: 'notes.txt is committed' }],
-		hints: ['First hint', 'Second hint', 'Third hint'],
-		solution: ['git add notes.txt', 'git commit -m "Add notes"']
-	},
+	challenges: [
+		{
+			id: 'commit-notes',
+			title: 'Commit the notes',
+			level: 'easy',
+			brief: 'Commit notes.txt.',
+			setup: ['git init'],
+			goals: [{ check: 'file-is-committed', file: 'notes.txt', label: 'notes.txt is committed' }],
+			hints: ['First hint', 'Second hint', 'Third hint'],
+			solution: ['git add notes.txt', 'git commit -m "Add notes"']
+		},
+		{
+			id: 'commit-two',
+			title: 'Commit two files',
+			level: 'medium',
+			brief: 'Commit both files.',
+			setup: ['git init'],
+			goals: [{ check: 'file-is-committed', file: 'notes.txt', label: 'notes.txt is committed' }],
+			hints: ['First hint', 'Second hint', 'Third hint'],
+			solution: ['git add notes.txt', 'git commit -m "Add notes"']
+		},
+		{
+			id: 'keep-one-out',
+			title: 'Keep one file out',
+			level: 'hard',
+			brief: 'Commit one file only.',
+			setup: ['git init'],
+			goals: [{ check: 'file-is-committed', file: 'notes.txt', label: 'notes.txt is committed' }],
+			hints: ['First hint', 'Second hint', 'Third hint'],
+			solution: ['git add notes.txt', 'git commit -m "Add notes"']
+		}
+	],
 	quiz: {
 		questions: [
 			{

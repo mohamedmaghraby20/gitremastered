@@ -14,8 +14,8 @@ export type PilotStep = {
 	run: (student: StudentActions) => Promise<string>;
 };
 
-/** Page script: the mission header's "n / m done" text. */
-const missionProgress = `document.querySelector('section[aria-label="Mission"] header').innerText`;
+/** Page script: the active challenge header's "n / m done" text. */
+const missionProgress = `document.querySelector('section[aria-label="Active challenge"] header').innerText`;
 
 /**
  * Clicks a layer tab and checks its panel shows.
@@ -97,14 +97,14 @@ export const pilotSteps: PilotStep[] = [
 		run: async (student) => {
 			for (let hintNumber = 1; hintNumber <= 3; hintNumber += 1) {
 				await student.evaluate(
-					`[...document.querySelectorAll('section[aria-label="Mission"] button')].at(-1).click()`
+					`[...document.querySelectorAll('section[aria-label="Active challenge"] button')].at(-1).click()`
 				);
 			}
 			const hintCount = await student.evaluate<number>(
 				`document.querySelectorAll('ol[aria-label="Hints"] li').length`
 			);
 			const isButtonDisabled = await student.evaluate<boolean>(
-				`[...document.querySelectorAll('section[aria-label="Mission"] button')].at(-1).disabled`
+				`[...document.querySelectorAll('section[aria-label="Active challenge"] button')].at(-1).disabled`
 			);
 			if (hintCount !== 3 || !isButtonDisabled) {
 				throw new Error(`${hintCount} hints shown, button disabled: ${isButtonDisabled}`);
@@ -113,13 +113,13 @@ export const pilotSteps: PilotStep[] = [
 		}
 	},
 	{
-		name: '5 · "Check mission" before solving says what is missing',
+		name: '5 · "Check challenge" before solving says what is missing',
 		run: async (student) => {
-			await student.clickButton('Check mission');
+			await student.clickButton('Check challenge');
 			await student.waitUntil(
-				`document.querySelector('section[aria-label="Mission"] [role="status"]') !== null`
+				`document.querySelector('section[aria-label="Active challenge"] [role="status"]') !== null`
 			);
-			return student.readText('section[aria-label="Mission"] [role="status"]');
+			return student.readText('section[aria-label="Active challenge"] [role="status"]');
 		}
 	},
 	{
@@ -129,8 +129,10 @@ export const pilotSteps: PilotStep[] = [
 			await pause(300);
 			await student.typeCommand('git commit -q -m "Add release notes"');
 			const milliseconds = await student.waitUntil(`${missionProgress}.includes('2 / 2 done')`);
-			await student.clickButton('Check mission');
-			const message = await student.readText('section[aria-label="Mission"] [role="status"]');
+			await student.clickButton('Check challenge');
+			const message = await student.readText(
+				'section[aria-label="Active challenge"] [role="status"]'
+			);
 			return `2 / 2 done ${Math.round(milliseconds)} ms after the commit was typed; message: ${message}`;
 		}
 	},

@@ -16,21 +16,21 @@ function wordsOfLength(wordCount: number): string {
 }
 
 describe('findReadingMinutes', () => {
-	it('counts the Must know text and the mission brief at 200 words a minute', () => {
+	it('counts the Must know text and the first challenge brief at 200 words a minute', () => {
 		const facts = {
 			sections: { mustKnow: wordsOfLength(1990) },
-			mission: { brief: wordsOfLength(10) }
+			challenges: [{ brief: wordsOfLength(10) }]
 		};
 		expect(findReadingMinutes(facts)).toBe(10);
 	});
 
 	it('rounds to the nearest minute', () => {
-		const facts = { sections: { mustKnow: wordsOfLength(1350) }, mission: { brief: '' } };
+		const facts = { sections: { mustKnow: wordsOfLength(1350) }, challenges: [{ brief: '' }] };
 		expect(findReadingMinutes(facts)).toBe(7);
 	});
 
 	it('never says less than one minute', () => {
-		const facts = { sections: { mustKnow: 'Short.' }, mission: { brief: '' } };
+		const facts = { sections: { mustKnow: 'Short.' }, challenges: [{ brief: '' }] };
 		expect(findReadingMinutes(facts)).toBe(1);
 	});
 });
