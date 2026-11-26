@@ -162,6 +162,37 @@ Scope approved 2026-11-26: modules 0–4, offline. Run in one go; you review the
 - [x] All 23 lessons of modules 0–4 and the 4 checkpoints playable (83 challenges played in the desktop app); tests pass; measurements within targets
 - [ ] You review the whole app
 
+### Phase 6: Full course
+Decisions made 2026-11-27 (todo.md, "Phase 6 decisions"). Run in one go; you review the whole app at the end.
+
+**Wave A: Git only**
+- [ ] Task 76: Snapshot version 3 and the goal checks for wave A
+- [ ] Tasks 77–82: modules 5 (Git part), 6, 7, 9, 10 and 11 (24 lessons)
+- [ ] Task 83: Wave A checkpoints, paths, glossary and links
+
+**Wave B: connect a real GitHub account**
+- [ ] Task 84: The GitHub guard (Rust)
+- [ ] Task 85: GitHub practice repositories and teammate steps
+- [ ] Task 86: GitHub state and goal checks
+- [ ] Task 87: Connect GitHub: guided setup, consent, clean-up
+- [ ] Task 88: GitHub challenges tested against the real account
+- [ ] Task 89: Lesson `github-account-ssh`
+
+**Wave C: GitHub lessons**
+- [ ] Task 90: Module 5 GitHub part and `force-push-safely`
+- [ ] Task 91: The GitHub-release half of `tags-and-releases`
+- [ ] Task 92: Module 8, Professional GitHub (6 lessons)
+- [ ] Task 93: Wave C checkpoints, paths, glossary and links
+
+**Wave D: capstones**
+- [ ] Task 94: `capstone-solo-rescue`
+- [ ] Task 95: `capstone-team-release`, `capstone-open-source`
+- [ ] Task 96: Finish phase 6: measure, review, push
+
+### Checkpoint G: Full course
+- [ ] All 62 lessons, every module checkpoint and the 3 capstones playable; tests pass; measurements within targets
+- [ ] You review the whole app
+
 ## Risks and mitigations
 
 | Risk | Impact | Mitigation |

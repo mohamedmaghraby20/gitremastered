@@ -855,6 +855,14 @@ Phase 6 is built in one run with no questions. Where something is not covered he
 
 **Assumptions** (the agent adds lines here during the run):
 
+- A1. The `gh` login on this PC has the `repo` scope but not `delete_repo`, and adding a scope needs a browser sign-in. So resetting a GitHub challenge never deletes the repository: it closes open pull requests and issues, deletes releases and rulesets, and force-pushes the starting state. Deleting the practice repositories is a separate button that first asks the student to run `gh auth refresh -h github.com -s delete_repo`.
+- A2. Wave A lessons whose remote is only a source to clone from (`submodules`, `large-repos`) keep a folder remote beside the project, like phase 5's Remotes lessons. Lessons whose skill is pushing to a shared server (`force-push-safely`, the GitHub half of `tags-and-releases`) move to wave C and use the GitHub practice repository.
+- A3. The picture keeps following `project/` only. Linked worktrees and submodules show up in goal checks (snapshot fields `worktrees` and `submodules`), not on the map.
+- A4. A free personal account cannot fork its own repository. The open-source capstone and `team-contributing` explain forks in words and practise the same mechanics with two practice repositories: `…-upstream` (the project) and the student's own copy with an `upstream` remote.
+- A5. Setup and solution lines never call `gh` or name a GitHub address: GitHub writes in a challenge's setup go through the guarded Rust module as structured `github` steps, and setup lines reach the practice repository only through `$PRACTICE_GITHUB_URL`. The content check enforces this.
+- A6. GitHub goal checks read GitHub through `gh api` with a 15-second time limit, only when the challenge starts, after a push (at most once every 10 seconds), every 20 seconds while a GitHub goal is still open, and on a "Check GitHub now" button. Pull requests, issues and workflow runs count only when made after the challenge started.
+- A7. `pnpm test:missions` and CI skip GitHub challenges (no account there). `pnpm test:github` runs them against the real account on this PC.
+
 ### Wave B: connect a real GitHub account (design first)
 
 Direction already decided: the student connects their own GitHub account, and GitHub lessons run on a real repository of theirs. Open, and yours to decide:
@@ -879,3 +887,95 @@ Also to settle in the design: what the app never does on a real account without 
 - `remote-has-tag` only sees a tag's name on the practice remote, not which commit it is on.
 - Mission tests have only run on Windows locally; watch the first Linux CI run (a plain `git pull` of diverged branches needs `pull.rebase` set, which the remote setups do).
 - The picture shows nothing while `project/` is not a repository yet; it could say "no repository here yet" instead of "waiting".
+
+---
+
+## Phase 6 tasks (broken down 2026-11-27)
+
+Every lesson task follows `docs/writing-lessons.md` exactly as in phase 5: four files, 3+ challenges, quiz, command pages and glossary terms, the 18 teaching rules, real Git output, `pnpm lesson:check` green per lesson. One commit per task (a module's lessons are one task, as in phase 5). After each wave: `pnpm content:check`, `pnpm test`, `pnpm test:missions`, `pnpm lint`, `pnpm check`, the Rust checks, `pnpm review:build`, `pnpm review:course`.
+
+### Wave A: the lessons that need only Git
+
+### Task 76: Snapshot version 3 and the goal checks for wave A
+**Description:** Add what wave A's lessons need to check, in one step (as task 47 did): file contents, every path any commit ever held, linked worktrees, submodules, signed commits. New checks: `file-contains`, `file-lacks`, `committed-file-contains`, `committed-file-lacks`, `file-is-in-no-commit`, `history-is-linear`, `commit-comes-before`, `config-is-unset`, `worktree-exists`, `submodule-exists`, `latest-commit-is-signed`.
+
+**Acceptance criteria:**
+- [ ] Rust and TypeScript shapes match; the JSON-name test covers the new fields
+- [ ] File texts are capped (8 KB per file, 40 files), so the snapshot stays small and fast
+- [ ] Every new check has a passing and a failing test; real-Git tests for worktrees, submodules, signing and history paths
+- [ ] SPEC 3.4 and `docs/writing-lessons.md` list the new fields and checks
+
+**Verification:** Rust tests, goal-checker tests · **Files:** `models/`, `repo_inspector/`, `mission-engine/`, `types/` · **Scope:** M
+
+| Task | Module | Lessons |
+|---|---|---|
+| 77 | 5 Working in a team (Git part) | `team-workflows`, `commit-craft`, `rebasing`, `integrating-work` |
+| 78 | 6 History mastery | `revision-selection`, `clean-up-history`, `partial-staging`, `search-blame-bisect`, `advanced-merging` |
+| 79 | 7 Recovery and incidents | `rescue-lost-work`, `incident-playbook`, `remove-sensitive-data` |
+| 80 | 9 Make Git yours | `config-pro`, `git-in-your-tools`, `hooks`, `attributes`, `signing` |
+| 81 | 10 Large repos and modern Git | `worktrees`, `submodules`, `large-repos` |
+| 82 | 11 Under the hood | `objects-deep`, `refs-deep`, `packfiles-gc`, `plumbing-toolkit` |
+
+### Task 83: Wave A checkpoints, paths, glossary and links
+**Description:** Checkpoints for modules 6, 7, 9, 10 and 11 (modules 5 and 8 get theirs in wave C, when all their lessons exist). Add the modules to both path files, merge the glossary, run `pnpm lesson:link`, tighten phase 5's conflict challenges with `file-contains` (carried over).
+
+**Verification:** `pnpm content:check`, `pnpm test:missions`, `pnpm review:course` · **Scope:** M
+
+### Wave B: connect a real GitHub account
+
+### Task 84: The GitHub guard (Rust)
+**Description:** One small module, `github/`, is the only code that writes to GitHub. It runs `gh` with a time limit, reads the signed-in login, and refuses any repository whose name does not start with `gitremastered-practice` or whose owner is not the signed-in user. Deleting also needs the consent flag. Nothing it logs contains a token. A read-only `get_github_connection` command reports: `gh` installed, signed in, login, scopes.
+
+**Acceptance criteria:**
+- [ ] Unit tests: the name and owner rules refuse every other repository; a timeout stops a hanging `gh`
+- [ ] `gh` is never called on a snapshot
+
+**Verification:** Rust tests · **Files:** `src-tauri/src/github/`, `commands/github.rs` · **Scope:** M
+
+### Task 85: GitHub practice repositories and teammate steps
+**Description:** A challenge may have a `github` field: the practice repository's name and the scripted teammate steps (open, comment on, merge a pull request; open an issue; push a branch). Starting the challenge creates the repository if needed (public), resets it (A1), runs the setup with `PRACTICE_GITHUB_URL` set, then the teammate steps, all through the guard.
+
+**Acceptance criteria:**
+- [ ] The content check refuses a `github` repo name without the prefix, and any setup or solution line that calls `gh` or names github.com (A5)
+- [ ] Without consent, nothing is created
+
+**Verification:** parser tests, Rust tests · **Files:** `content/parse-challenges.ts`, `types/mission.ts`, `github/`, `commands/` · **Scope:** L
+
+### Task 86: GitHub state and goal checks
+**Description:** `get_github_state` reads the practice repository (branches, pull requests, issues, releases, rules, workflow runs) through `gh api` with a time limit. New `github-…` goal checks read it. The mission panel refreshes it as A6 says and shows "Check GitHub now".
+
+**Verification:** goal-checker tests, Rust parser tests · **Scope:** L
+
+### Task 87: Connect GitHub: guided setup, consent, clean-up
+**Description:** A "GitHub" part in Settings and in the challenge panel: why, the install command per system, `gh auth login`, `gh auth setup-git`, "Check again", and a clear "Connected as …" state. A one-time consent screen that says exactly what the app creates and deletes. A "Delete my practice repositories" button (A1).
+
+**Verification:** component tests, accessibility check · **Scope:** M
+
+### Task 88: GitHub challenges tested against the real account
+**Description:** `pnpm test:github` runs every GitHub challenge's setup, teammate steps and solution on the account on this PC, then checks every goal; `pnpm test:missions` and CI skip them (A7).
+
+**Verification:** a run on this PC · **Scope:** M
+
+### Task 89: Lesson `github-account-ssh`
+The first GitHub lesson: account, SSH keys, credential helpers, and connecting the app through `gh`. Challenges only read (decision 6).
+
+### Wave C: the GitHub lessons
+
+| Task | Lessons |
+|---|---|
+| 90 | Module 5 GitHub part: `github-flow-prs`, `code-review`, `team-contributing`, `pr-merge-strategies`; module 6: `force-push-safely` |
+| 91 | The GitHub-release half of `tags-and-releases` |
+| 92 | Module 8: `maintaining-github-repo`, `orgs-teams-permissions`, `branch-protection-codeowners`, `github-actions-ci`, `gh-cli-and-api`, `issues-projects-security` |
+
+### Task 93: Wave C checkpoints, paths, glossary and links
+Checkpoints for modules 5 and 8; both path files; `pnpm lesson:link`; `pnpm test:github`; `pnpm review:course`.
+
+### Wave D: the capstones
+
+| Task | Lessons |
+|---|---|
+| 94 | `capstone-solo-rescue` (Git only) |
+| 95 | `capstone-team-release`, `capstone-open-source` (GitHub) |
+
+### Task 96: Finish phase 6
+Measure again (`pnpm review:measure`), run `code-reviewer`, `lesson-tester`, `accessibility-auditor` and `security-auditor`, fix every real finding, delete the practice repositories (or list them, A1), update `docs/measurements.md` and `tasks/plan.md`, push to `main`, confirm CI.
