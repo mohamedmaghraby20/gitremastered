@@ -14,7 +14,7 @@
 	import type { PracticeSession } from '$lib/mission-engine/practice-session.svelte';
 	import type { RepoSnapshot } from '$lib/types/repo-snapshot';
 	import PracticeTerminal from '$lib/components/terminal-view/PracticeTerminal.svelte';
-	import HistoryMap from '$lib/components/visualizer/HistoryMap.svelte';
+	import HistoryPanel from '$lib/components/visualizer/HistoryPanel.svelte';
 	import VisualizerBoard from '$lib/components/visualizer/VisualizerBoard.svelte';
 	import { SegmentedSwitch, type SegmentedSwitchOption } from '$lib/components/ui/segmented-switch';
 	import { progress, saveFilesDeskFolded, savePanelSizes } from '$lib/stores/progress';
@@ -116,7 +116,7 @@
 			onDeskToggle={rememberDeskFolded}
 		>
 			{#snippet history()}
-				<HistoryMap {snapshot} />
+				<HistoryPanel {snapshot} />
 			{/snippet}
 		</VisualizerBoard>
 	</div>

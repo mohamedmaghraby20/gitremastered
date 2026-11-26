@@ -615,8 +615,8 @@ Ctrl K from any screen opens a **quick search panel** over the current screen, l
 **Description:** Branching lessons will make the map too big for its corner. Add an "expand" button that opens the map large over the lesson (Esc closes it; the terminal keeps running), and make the view follow HEAD after each commit. Lanes per branch (one row for each branch) come with the branching lessons.
 
 **Acceptance criteria:**
-- [ ] Expand and close by mouse and keyboard; focus returns to the button
-- [ ] After a commit the newest station is in view, at a readable zoom
+- [x] Expand and close by mouse and keyboard; focus returns to the button
+- [x] After a commit the newest station is in view, at a readable zoom
 
 **Verification:** component tests, driver check with 20+ commits · **Files:** `components/visualizer/` · **Scope:** M
 

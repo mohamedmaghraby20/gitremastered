@@ -4,7 +4,7 @@
  * the terminal's share of the practice column (about 55%), even gaps around the desk's commands, paste,
  * Ctrl C still stopping a command, Ctrl + / 0 text size, the mission and quiz headings, and the
  * history map's zoom buttons, Esc reaching Vim for a commit message, F6 leaving the terminal,
- * the small-window layout at 1024 × 700, and the resize handle. Saves a screenshot for a person to look at.
+ * the small-window layout at 1024 × 700, the resize handle, and a long history. Saves a screenshot for a person to look at.
  * Run from app/:  pnpm review:fixes   (build the review copy first: pnpm review:build)
  */
 
@@ -33,6 +33,14 @@ const smallWindowLayoutScript = `(() => {
 	};
 })()`;
 
+/** Page script: is the station of the newest commit ("Step 22") inside the small map's view? */
+const newestStationInViewScript = `(() => {
+	const map = document.querySelector('section[aria-label="History"] .svelte-flow')?.getBoundingClientRect();
+	const station = [...document.querySelectorAll('section[aria-label="History"] .svelte-flow__node')]
+		.find((node) => node.textContent.includes('Step 22'))?.getBoundingClientRect();
+	return map !== undefined && station !== undefined && station.left >= map.left && station.right <= map.right;
+})()`;
+
 /** Page script: the terminal's text size in pixels (xterm.js sets it on its rows). */
 const terminalFontSize = `parseFloat(getComputedStyle(document.querySelector('.xterm-rows')).fontSize)`;
 
@@ -44,6 +52,11 @@ const checks: ReviewCheck[] = [
 	{ name: 'Ctrl + makes the text bigger, Ctrl 0 resets it', run: checkTextSize },
 	{ name: 'Mission and quiz have their own headings', run: checkHeadings },
 	{ name: 'History map zooms out with its button', run: checkZoomOut },
+	// Before the window-size checks: resizing reflows the long prompt badly (review finding 4).
+	{
+		name: 'History follows HEAD after 22 commits; Expand opens and Esc closes',
+		run: checkLongHistory
+	},
 	{ name: 'Esc reaches Vim: a commit message written in the editor', run: checkVimCommit },
 	{ name: 'F6 moves focus out of the terminal', run: checkLeaveTerminal },
 	{ name: 'Small window (1024 × 700): one practice panel, nothing cut off', run: checkSmallWindow },
@@ -274,6 +287,38 @@ async function checkColumnHandle(student: StudentActions): Promise<string> {
 	// Give the saved reset a moment to reach the disk before the app closes.
 	await pause(500);
 	return `${before} px → ${after} px → ${before} px after double-click`;
+}
+
+/**
+ * Makes 22 commits in the terminal, checks the newest station is inside the map's view,
+ * opens the large map and closes it with Esc, then resets the practice project.
+ * @param student - the student actions
+ * @returns what was seen
+ */
+async function checkLongHistory(student: StudentActions): Promise<string> {
+	// Clear the terminal first: q leaves a pager (like git log's) if one is open, Ctrl C drops a
+	// half-typed line (see finding 4), and an empty Enter gives a fresh prompt.
+	await student.typeText('q');
+	await student.pressControlKey('c', 'KeyC', 67);
+	await student.typeCommand('');
+	await student.waitForPrompt();
+	await student.typeCommand(
+		'git --no-pager log -1 >/dev/null; for step in $(seq 1 22); do echo $step > step.txt && git add step.txt && git commit -q -m "Step $step"; done; echo made-$((20+2))'
+	);
+	await student.waitUntil(
+		`[...document.querySelectorAll('.xterm-rows > div')].some((row) => row.textContent.trim() === 'made-22')`,
+		30_000
+	);
+	await student.waitUntil(newestStationInViewScript, 10_000);
+	await student.evaluate(
+		`[...document.querySelectorAll('button')].find((button) => button.textContent.includes('Expand')).click()`
+	);
+	await student.waitUntil(`document.querySelector('dialog[aria-label="History, large"]').open`);
+	await student.pressSpecialKey('Escape', 27);
+	await student.waitUntil(`!document.querySelector('dialog[aria-label="History, large"]').open`);
+	await student.clickButton('Reset practice');
+	await pause(3_000);
+	return '"Step 22" is in view; the large map opened and Esc closed it';
 }
 
 /**

@@ -132,7 +132,7 @@ Full details for each task (acceptance criteria, verification, files) are in `ta
 - [x] Task 39: Sidebar with path progress
 - [x] Task 40: Small-window lesson
 - [x] Task 41: Resizable lesson panels
-- [ ] Task 42: A history map that grows with the course
+- [x] Task 42: A history map that grows with the course
 - [ ] Task 43: Links between lessons, with hover cards
 - [ ] Task 44: Challenges instead of one mission (3+ per lesson, easy to hard)
 

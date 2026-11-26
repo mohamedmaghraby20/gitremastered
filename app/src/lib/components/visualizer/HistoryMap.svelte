@@ -4,18 +4,32 @@
   track, oldest on the left, HEAD and the branch label on their station, and a dashed track to
   the faded "next commit" station. Placement comes from history-layout.ts (ELK).
   The map is for looking only: no dragging, connecting or selecting. It can be zoomed with
-  the buttons, the mouse wheel or a trackpad pinch, and dragged to look around.
+  the buttons, the mouse wheel or a trackpad pinch, and dragged to look around. After each
+  change the view shows the whole history, or follows HEAD once the history is too long to
+  read whole (FollowHead).
 
-  Input: snapshot (the repo state, or null while it loads).
+  Inputs: snapshot (the repo state, or null while it loads),
+          headerAside (optional: shown at the right of the "History" heading, e.g. Expand),
+          headingLevel (optional: 3 by default; 2 when the map is the main thing on screen).
 -->
 <script lang="ts">
 	import '@xyflow/svelte/dist/style.css';
+	import type { Snippet } from 'svelte';
 	import { Controls, SvelteFlow, type Edge, type Node } from '@xyflow/svelte';
 	import type { RepoSnapshot } from '$lib/types/repo-snapshot';
-	import { buildHistoryGraph, placeStations } from '$lib/visualizer/history-layout';
+	import {
+		buildHistoryGraph,
+		placeStations,
+		type PlacedStation
+	} from '$lib/visualizer/history-layout';
 	import CommitStation from './CommitStation.svelte';
+	import FollowHead from './FollowHead.svelte';
 
-	let { snapshot }: { snapshot: RepoSnapshot | null } = $props();
+	let {
+		snapshot,
+		headerAside,
+		headingLevel = 3
+	}: { snapshot: RepoSnapshot | null; headerAside?: Snippet; headingLevel?: 2 | 3 } = $props();
 
 	const nodeTypes = { station: CommitStation };
 
@@ -24,6 +38,9 @@
 
 	let nodes: Node[] = $state.raw([]);
 	let edges: Edge[] = $state.raw([]);
+	let placedStations: PlacedStation[] = $state.raw([]);
+	let mapWidth = $state(0);
+	let mapHeight = $state(0);
 
 	/**
 	 * Builds and places the map for a snapshot, then hands it to Svelte Flow.
@@ -35,11 +52,12 @@
 		isStillCurrent: () => boolean
 	): Promise<void> {
 		const graph = buildHistoryGraph(currentSnapshot);
-		const placedStations = await placeStations(graph);
+		const newStations = await placeStations(graph);
 		if (!isStillCurrent()) {
 			return;
 		}
-		nodes = placedStations.map((station) => ({
+		placedStations = newStations;
+		nodes = newStations.map((station) => ({
 			id: station.id,
 			type: 'station',
 			position: { x: station.x, y: station.y },
@@ -69,25 +87,26 @@
 </script>
 
 <section aria-label="History" class="history-map flex min-h-40 flex-1 flex-col">
-	<h3 class="type-caption m-0 px-3.5 pt-2 text-ink-muted uppercase">History</h3>
-	<div class="min-h-0 flex-1">
-		<!-- Re-created when the number of stations changes, so the new map fits the view. -->
-		{#key nodes.length}
-			<SvelteFlow
-				bind:nodes
-				bind:edges
-				{nodeTypes}
-				fitView
-				fitViewOptions={{ maxZoom: 1, padding: 0.15 }}
-				{...zoomLimits}
-				proOptions={{ hideAttribution: true }}
-				nodesDraggable={false}
-				nodesConnectable={false}
-				elementsSelectable={false}
-			>
-				<Controls showLock={false} orientation="horizontal" position="bottom-left" />
-			</SvelteFlow>
-		{/key}
+	<div class="flex items-center justify-between gap-2 px-3.5 pt-2">
+		<svelte:element this={`h${headingLevel}`} class="type-caption m-0 text-ink-muted uppercase">
+			History
+		</svelte:element>
+		{@render headerAside?.()}
+	</div>
+	<div class="min-h-0 flex-1" bind:clientWidth={mapWidth} bind:clientHeight={mapHeight}>
+		<SvelteFlow
+			bind:nodes
+			bind:edges
+			{nodeTypes}
+			{...zoomLimits}
+			proOptions={{ hideAttribution: true }}
+			nodesDraggable={false}
+			nodesConnectable={false}
+			elementsSelectable={false}
+		>
+			<Controls showLock={false} orientation="horizontal" position="bottom-left" />
+			<FollowHead stations={placedStations} viewSize={{ width: mapWidth, height: mapHeight }} />
+		</SvelteFlow>
 	</div>
 </section>
 
