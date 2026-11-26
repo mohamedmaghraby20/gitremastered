@@ -1,0 +1,40 @@
+questions:
+  - question: "Ten minutes ago you pushed a commit with your payment provider's API key to a public repository on GitHub. What do you do first?"
+    answers:
+      - text: "Delete the file, commit and push"
+        explanation: "The older commit still contains the key, and anyone can read it there. The key also stays valid."
+      - text: "Rewrite the history and force-push"
+        explanation: "That cleans your repository, but the key was public for ten minutes and may already be copied. It still works until you replace it."
+      - text: "Revoke or rotate the key at the payment provider"
+        correct: true
+        explanation: "A leaked key must stop working before anything else. Rewriting history cannot reach copies other people already made."
+
+  - question: "You ran git filter-branch to remove secrets.env from all branches. Right afterwards, git log --oneline --all -- secrets.env still lists the old commit. Why?"
+    answers:
+      - text: "filter-branch keeps a backup of each rewritten ref under refs/original, and --all includes it"
+        correct: true
+        explanation: "The old commits stay reachable through the backup until you delete it with git update-ref -d. Your branches themselves are clean."
+      - text: "filter-branch failed without saying so"
+        explanation: "It printed \"Ref 'refs/heads/main' was rewritten\". The commit you see belongs to the backup, not to your branch."
+      - text: "The file is still in your working tree"
+        explanation: "git log reads commits, not your folder. And the rewrite removed the file from the working tree as well."
+
+  - question: "You removed a file from a commit five commits back. Which commits have a new ID afterwards?"
+    answers:
+      - text: "Only the commit that contained the file"
+        explanation: "Each commit stores its parent's ID. When the parent's ID changes, the commit on top of it changes too."
+      - text: "That commit and every commit after it"
+        correct: true
+        explanation: "The ID is a checksum of the content and the parent's ID. The change travels up the chain to the newest commit; older commits are untouched."
+      - text: "Every commit in the repository"
+        explanation: "Commits older than the changed one keep the same content and the same parent, so their IDs stay."
+
+  - question: "You rewrote history and force-pushed all branches. A teammate who was on holiday runs git pull in their old clone, then git push. What happens?"
+    answers:
+      - text: "Git refuses the pull, because the histories differ"
+        explanation: "A pull merges the two histories without complaint. Nothing warns the teammate."
+      - text: "Their clone is cleaned by the pull"
+        explanation: "A pull only adds commits. The old commits in their clone stay, and the merge ties them to the new history."
+      - text: "The old commits, with the secret, are merged in and pushed back to the server"
+        correct: true
+        explanation: "Their clone still has the old history. That is why everyone must clone again, or rebase unpushed work, after a rewrite."

@@ -1,0 +1,152 @@
+challenges:
+  - id: bring-back-the-search
+    title: Bring back the search commits
+    level: easy
+    brief: "A moment ago someone ran git reset --hard HEAD~2 on main, and the two newest commits, \"Add search box\" and \"Show search results\", dropped out of the history. Bring both back onto main, so that \"Show search results\" is the newest commit again."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Shop app" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - echo "function addToCart() {}" > cart.js
+      - git add cart.js
+      - git commit -q -m "Add cart"
+      - echo "function checkout() {}" > checkout.js
+      - git add checkout.js
+      - git commit -q -m "Add checkout"
+      - echo "function search() {}" > search.js
+      - git add search.js
+      - git commit -q -m "Add search box"
+      - echo "function showResults() {}" >> search.js
+      - git commit -q -am "Show search results"
+      - git reset -q --hard HEAD~2
+    goal:
+      - check: branch-contains-commit
+        branch: main
+        message: "Add search box"
+        label: "main holds the commit \"Add search box\" again"
+      - check: branch-is-at-commit
+        branch: main
+        message: "Show search results"
+        label: "\"Show search results\" is the newest commit of main"
+      - check: commit-count-is
+        count: 5
+        label: "The history has its five commits"
+      - check: head-is-on-branch
+        branch: main
+        label: "You are on main"
+      - check: working-folder-clean
+        label: "git status shows nothing left to do"
+    hints:
+      - "The two commits are the faded stations marked \"no branch\" on the map. Which command lists every commit HEAD has stood on, with its ID?"
+      - "Run git reflog. The line under the reset reads \"commit: Show search results\": that is where main was. Rescuing the newest commit brings its parent along."
+      - "Run: git reflog, copy the ID of \"commit: Show search results\", then git reset --hard <that-id>. The reset was the last thing that happened, so git reset --hard ORIG_HEAD does the same."
+    solution:
+      - git reset -q --hard ORIG_HEAD
+
+  - id: deleted-gift-cards
+    title: The gift cards branch was deleted
+    level: medium
+    brief: "The branch gift-cards held two commits that were never merged. Someone deleted it by mistake, and work on main went on afterwards. Bring the branch back under its old name, pointing at its newest commit, \"Show gift card balance\", and switch to it so you can continue the work. Do not merge it into main."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Shop app" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - echo "function addToCart() {}" > cart.js
+      - git add cart.js
+      - git commit -q -m "Add cart"
+      - git switch -q -c gift-cards
+      - echo "<form>Gift card number</form>" > gift-card.html
+      - git add gift-card.html
+      - git commit -q -m "Add gift card form"
+      - echo "<p>Balance</p>" >> gift-card.html
+      - git commit -q -am "Show gift card balance"
+      - git switch -q main
+      - echo "function checkout() {}" > checkout.js
+      - git add checkout.js
+      - git commit -q -m "Add checkout"
+      - git branch -q -D gift-cards
+    goal:
+      - check: branch-exists
+        branch: gift-cards
+        label: "The branch gift-cards exists again"
+      - check: branch-is-at-commit
+        branch: gift-cards
+        message: "Show gift card balance"
+        label: "gift-cards points at the commit \"Show gift card balance\""
+      - check: branch-contains-commit
+        branch: gift-cards
+        message: "Add gift card form"
+        label: "gift-cards holds \"Add gift card form\" too"
+      - check: head-is-on-branch
+        branch: gift-cards
+        label: "You are on gift-cards"
+      - check: branch-lacks-commit
+        branch: main
+        message: "Show gift card balance"
+        label: "main is unchanged: the gift card work is not merged into it"
+      - check: branch-is-at-commit
+        branch: main
+        message: "Add checkout"
+        label: "\"Add checkout\" is still the newest commit of main"
+    hints:
+      - "Deleting a branch removes a name, not commits. The \"Deleted branch\" message is long gone, but HEAD stood on those commits while they were made. Two of them are on the map, faded: which is the newer one?"
+      - "git reflog has a line \"commit: Show gift card balance\". The ID at its start is where the branch pointed. A branch is a name on a commit, so the old name on that commit is the old branch."
+      - "Run: git reflog, copy the ID of \"commit: Show gift card balance\", then git branch gift-cards <that-id>, then git switch gift-cards."
+    solution:
+      - git branch gift-cards $(git log -g --format=%h --grep="Show gift card balance" -1)
+      - git switch -q gift-cards
+
+  - id: dropped-coupon-stash
+    title: The stash that was dropped
+    level: hard
+    brief: "Two unfinished changes were stashed and then dropped: some debug printing in cart.js that nobody needs, and an hour of work on coupon.js that you need back. Both stash entries had the same message. Find the entry that changed coupon.js and bring its change back into your working tree, uncommitted. The debug printing must stay out of cart.js."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Shop app" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - echo "function addToCart() {}" > cart.js
+      - git add cart.js
+      - git commit -q -m "Add cart"
+      - echo "function applyCoupon() {}" > coupon.js
+      - git add coupon.js
+      - git commit -q -m "Add coupon field"
+      - echo 'console.log("cart opened");' >> cart.js
+      - git stash -q
+      - git stash drop -q
+      - echo 'function applyCoupon(code) { return lookUp(code); }' > coupon.js
+      - git stash -q
+      - git stash drop -q
+    goal:
+      - check: file-contains
+        file: coupon.js
+        text: "return lookUp(code)"
+        label: "coupon.js holds the coupon work again"
+      - check: file-is-modified
+        file: coupon.js
+        label: "The coupon work is in your working tree, not committed"
+      - check: file-lacks
+        file: cart.js
+        text: "console.log"
+        label: "cart.js has no debug printing"
+      - check: branch-is-at-commit
+        branch: main
+        message: "Add coupon field"
+        label: "\"Add coupon field\" is still the newest commit of main"
+    hints:
+      - "git stash list is empty and git reflog has no line for a stash entry: HEAD never stood on one. Which command lists commits that nothing at all points at? (See \"Rescue 3\".)"
+      - "git fsck prints two \"dangling commit\" lines, one per dropped entry. IDs alone do not say which is which: git show --stat <id> lists the files an entry changed (Advanced, \"Many dangling commits\")."
+      - "Run: git fsck, then git show --stat <id> for each dangling commit. For the one that changed coupon.js, run git stash apply <that-id>. If you applied the wrong one, git restore cart.js undoes it."
+    solution:
+      - for id in $(git fsck 2>/dev/null | awk '/dangling commit/ {print $3}'); do git diff --quiet $id^1 $id -- coupon.js || git stash apply -q $id; done

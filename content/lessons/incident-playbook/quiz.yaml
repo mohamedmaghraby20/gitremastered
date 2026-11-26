@@ -1,0 +1,40 @@
+questions:
+  - question: "Something went wrong with your branch and you are not sure what. You have a recipe in mind that uses git reset --hard. What do you do first?"
+    answers:
+      - text: "Run the recipe quickly, before anything else changes"
+        explanation: "Nothing changes while you look. A reset on a state you have not read is how a small incident becomes a big one."
+      - text: "Read git status and git log --oneline --graph --all, then put a backup branch on the commit you are on"
+        correct: true
+        explanation: "Status shows uncommitted work a hard reset would destroy, the log shows where every branch is, and the backup branch keeps today's commits reachable whatever you try next."
+      - text: "Delete the folder and clone the project again"
+        explanation: "That throws away the reflog and every commit you have not pushed, which is exactly where the lost work is."
+
+  - question: "You made two commits on main that belong on a new branch, feature-login. You run git reset --hard HEAD~2 first and plan to create the branch afterwards. What is the problem?"
+    answers:
+      - text: "None: the order does not matter"
+        explanation: "After the reset no branch reaches the two commits, so git branch feature-login would be created on the old commit, without them."
+      - text: "The two commits are deleted for good"
+        explanation: "They are not deleted. They are still in Git, and ORIG_HEAD or the reflog finds them. You only made the job harder than it had to be."
+      - text: "No branch reaches the two commits any more, so you now have to find them through ORIG_HEAD or the reflog"
+        correct: true
+        explanation: "Create the branch first: it is a label that keeps the commits reachable. Then move main back. In that order you never need the reflog."
+
+  - question: "Last week a teammate merged the branch reports into main and pushed. Five more commits from the team have landed on main since. The merge must be undone today. Which command?"
+    answers:
+      - text: "git reset --hard on the commit before the merge, then a force push"
+        explanation: "That drops the five later commits too, and rewrites history everyone already has."
+      - text: "git revert -m 1 followed by the merge commit's ID"
+        correct: true
+        explanation: "It adds one commit that takes out what the merge brought in. The merge, the five later commits and everyone's history stay as they are."
+      - text: "git revert followed by the merge commit's ID, with no option"
+        explanation: "Git refuses: a merge commit has two parents, and it needs -m 1 to know which one is the main line to keep."
+
+  - question: "You undid a merge of the branch reports with git revert -m 1. A month later reports has new commits and you run git merge reports. The files from the first merge do not come back. Why?"
+    answers:
+      - text: "The revert deleted the old commits of reports"
+        explanation: "Revert never deletes a commit. The old commits of reports are still in main's history."
+      - text: "Git still counts the old commits of reports as merged, so it only brings in the commits made after the first merge"
+        correct: true
+        explanation: "The revert undid the changes, not the fact that the commits are in main's history. Revert the revert commit first, then merge reports again."
+      - text: "You have to delete the branch and create it again before a second merge"
+        explanation: "The branch name plays no part. What counts is which commits main's history already reaches."

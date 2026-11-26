@@ -1,0 +1,40 @@
+questions:
+  - question: "Three things went missing this morning. Which one can Git NOT bring back?"
+    answers:
+      - text: "Two commits you removed with git reset --hard HEAD~2"
+        explanation: "Those were commits, so they are still in the repository. git reflog lists them, and git reset --hard <id> or git branch <name> <id> brings them back."
+      - text: "A stash entry you removed with git stash drop"
+        explanation: "A stash entry is a commit. After the drop it is a dangling commit, which git fsck lists and git stash apply <id> brings back."
+      - text: "An hour of edits to cart.js that you never staged, wiped by git restore cart.js"
+        correct: true
+        explanation: "Git only stores content when you stage or commit it. These edits were never stored, so no Git command can find them."
+
+  - question: "You dropped a stash entry yesterday and need it back. git stash list is empty, and git reflog shows no line with it. Why, and what do you run?"
+    answers:
+      - text: "git stash drop deletes the commit at once; nothing can be done"
+        explanation: "The drop only removes the entry from the list. The commit stays in the repository for at least two weeks."
+      - text: "HEAD never stood on the stash commit, so the reflog has no line for it; git fsck lists it as a dangling commit"
+        correct: true
+        explanation: "The reflog records where HEAD has been. git fsck checks every stored object, so it also finds commits that nothing points at. git stash apply <id> then brings the work back."
+      - text: "The reflog only shows today's moves; git reflog --all shows yesterday's"
+        explanation: "The reflog keeps lines for 30 to 90 days, not one day. The line is missing because HEAD was never on that commit."
+
+  - question: "On your laptop you reset away a commit by mistake. At your desktop you clone the project from the server and run git reflog to find the commit. What do you see?"
+    answers:
+      - text: "The same lines as on the laptop, because a clone copies the whole repository"
+        explanation: "A clone copies commits that branches and tags reach. The reflog is not part of what is sent."
+      - text: "The laptop's lines, but only after git fetch"
+        explanation: "No command transfers a reflog. Fetch brings commits and moves remote-tracking branches."
+      - text: "Only the clone's own first line: the reflog is private to each copy, so the rescue has to happen on the laptop"
+        correct: true
+        explanation: "Each copy of a project keeps its own diary of its own HEAD. The lost commit and the line that leads to it exist only on the laptop."
+
+  - question: "You found the ID of a lost commit in git reflog. Your working tree has edits to checkout.js that are not committed yet. Which rescue is safe right now?"
+    answers:
+      - text: "git branch recover-branch <id>"
+        correct: true
+        explanation: "It only adds a branch name on the lost commit. Your branch, the staging area and your files stay as they are."
+      - text: "git reset --hard <id>"
+        explanation: "A hard reset overwrites every tracked file, so the uncommitted edits to checkout.js would be destroyed. Commit or stash them first, or use git branch."
+      - text: "Neither: a lost commit can only be rescued from a clean working tree"
+        explanation: "git branch does not touch any file, so it works in any state of the working tree."

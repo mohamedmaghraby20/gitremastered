@@ -1,0 +1,186 @@
+challenges:
+  - id: search-on-the-wrong-branch
+    title: Three commits on the wrong branch
+    level: easy
+    brief: "You built the search feature in three commits (\"Add search box\", \"Add search filters\", \"Add search results page\") and only then saw you were on main the whole time. Move the three commits to a branch named feature-search and put main back on \"Add cart\". No work may be lost."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Shop app" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - echo "function addToCart() {}" > cart.js
+      - git add cart.js
+      - git commit -q -m "Add cart"
+      - echo "function search() {}" > search.js
+      - git add search.js
+      - git commit -q -m "Add search box"
+      - echo "function filter() {}" > filter.js
+      - git add filter.js
+      - git commit -q -m "Add search filters"
+      - echo "<h1>Results</h1>" > results.html
+      - git add results.html
+      - git commit -q -m "Add search results page"
+    goal:
+      - check: branch-is-at-commit
+        branch: feature-search
+        message: "Add search results page"
+        label: "The branch feature-search ends with \"Add search results page\""
+      - check: branch-contains-commit
+        branch: feature-search
+        message: "Add search box"
+        label: "feature-search holds \"Add search box\""
+      - check: branch-contains-commit
+        branch: feature-search
+        message: "Add search filters"
+        label: "feature-search holds \"Add search filters\""
+      - check: branch-is-at-commit
+        branch: main
+        message: "Add cart"
+        label: "main is back on \"Add cart\""
+      - check: branch-lacks-commit
+        branch: main
+        message: "Add search box"
+        label: "main no longer holds the search commits"
+      - check: working-folder-clean
+        label: "git status shows nothing left to do"
+    hints:
+      - "The three commits are fine; only the label is wrong. Which label should stay on them, and which one should step back?"
+      - "First put a new branch on the commit you are on (git branch feature-search). The commits are then safe. Only after that, move main back three commits."
+      - "Run: git branch feature-search, then git reset --hard HEAD~3. Check with git log --oneline --graph --all."
+    solution:
+      - git branch feature-search
+      - git reset -q --hard HEAD~3
+
+  - id: rebase-ate-two-commits
+    title: The rebase that ate two commits
+    level: medium
+    brief: "The branch checkout had three commits: \"Add checkout page\", \"Add payment form\" and \"Add order summary\". A rebase onto main with a wrong option has just finished, and only \"Add order summary\" is left. Put checkout back exactly as it was before the rebase: all three commits, and without main's newer commit \"Update README\" under them."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Shop app" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - echo "function addToCart() {}" > cart.js
+      - git add cart.js
+      - git commit -q -m "Add cart"
+      - git switch -q -c checkout
+      - echo "<h1>Checkout</h1>" > checkout.html
+      - git add checkout.html
+      - git commit -q -m "Add checkout page"
+      - echo "function pay() {}" > payment.js
+      - git add payment.js
+      - git commit -q -m "Add payment form"
+      - echo "function summary() {}" > summary.js
+      - git add summary.js
+      - git commit -q -m "Add order summary"
+      - git switch -q main
+      - echo "A small shop that sells coffee and cake." >> README.md
+      - git commit -q -am "Update README"
+      - git switch -q checkout
+      - git rebase -q --onto main HEAD~1
+    goal:
+      - check: head-is-on-branch
+        branch: checkout
+        label: "You are on the branch checkout"
+      - check: branch-contains-commit
+        branch: checkout
+        message: "Add checkout page"
+        label: "checkout holds \"Add checkout page\" again"
+      - check: branch-contains-commit
+        branch: checkout
+        message: "Add payment form"
+        label: "checkout holds \"Add payment form\" again"
+      - check: branch-is-at-commit
+        branch: checkout
+        message: "Add order summary"
+        label: "checkout still ends with \"Add order summary\""
+      - check: branch-lacks-commit
+        branch: checkout
+        message: "Update README"
+        label: "The rebase is undone: \"Update README\" is not in checkout's history"
+      - check: commit-count-is
+        count: 5
+        label: "The history of checkout has five commits, as before the rebase"
+      - check: working-folder-clean
+        label: "git status shows nothing left to do"
+    hints:
+      - "Start with the first steps: git status, then git log --oneline --graph --all. The two commits are on no branch now. Where does Git remember the place checkout had before the rebase?"
+      - "Run git reflog and find the line \"rebase (start)\". The line right below it is where you were before the rebase. Git also wrote that place into ORIG_HEAD when the rebase began."
+      - "Run: git reset --hard ORIG_HEAD (or git reset --hard followed by the ID from the reflog line below \"rebase (start)\"). Then check with git log --oneline."
+    solution:
+      - git reset -q --hard ORIG_HEAD
+
+  - id: undo-a-shared-merge
+    title: Undo a merge the team already has
+    level: hard
+    brief: "The branch discount was merged into main too early, and the merge is already on the team's server, so main's history must not be rewritten. Two good commits were made after it: \"Add footer\" and \"Describe the shop\". Undo what the merge brought in (discount.js and the SUMMER20 line in prices.txt) with one new commit. Keep the merge commit and both later commits in the history."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Shop app" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - printf "Coffee = 3.00\nCake = 4.50\n" > prices.txt
+      - git add prices.txt
+      - git commit -q -m "Add prices"
+      - git switch -q -c discount
+      - echo "function applyCode() {}" > discount.js
+      - git add discount.js
+      - git commit -q -m "Add discount codes"
+      - echo "SUMMER20 = 20% off" >> prices.txt
+      - git commit -q -am "Add summer discount"
+      - git switch -q main
+      - echo "function addToCart() {}" > cart.js
+      - git add cart.js
+      - git commit -q -m "Add cart"
+      - git merge -q --no-edit discount
+      - echo "Shop app, 2026" > footer.txt
+      - git add footer.txt
+      - git commit -q -m "Add footer"
+      - echo "A small shop that sells coffee and cake." >> README.md
+      - git commit -q -am "Describe the shop"
+    goal:
+      - check: latest-commit-message-contains
+        text: "Revert"
+        label: "The newest commit is a revert"
+      - check: file-is-missing
+        file: discount.js
+        label: "discount.js is gone from the working tree"
+      - check: file-lacks
+        file: prices.txt
+        text: "SUMMER20"
+        label: "prices.txt no longer has the SUMMER20 line"
+      - check: file-contains
+        file: prices.txt
+        text: "Cake = 4.50"
+        label: "prices.txt still has the ordinary prices"
+      - check: commit-exists
+        message: "Merge branch 'discount'"
+        label: "The merge commit is still in the history"
+      - check: commit-exists
+        message: "Add footer"
+        label: "\"Add footer\" is still in the history"
+      - check: commit-exists
+        message: "Describe the shop"
+        label: "\"Describe the shop\" is still in the history"
+      - check: file-exists
+        file: footer.txt
+        label: "footer.txt is still there"
+      - check: no-operation-in-progress
+        label: "No revert is left half done"
+      - check: working-folder-clean
+        label: "git status shows nothing left to do"
+    hints:
+      - "A reset would throw away the two later commits and rewrite shared history. Which tool undoes a commit by adding a new one? And which commit do you name: the merge is not the newest commit here."
+      - "Find the merge commit's ID with git log --oneline --graph (or git log --oneline --merges). A plain git revert refuses a merge commit: it needs to know which parent is the main line. See \"Parent 1 and parent 2\" in Under the hood."
+      - "Run: git log --oneline --merges, copy the ID of \"Merge branch 'discount'\", then git revert -m 1 <that ID>. Your editor opens with the message Revert \"Merge branch 'discount'\": save and close it (or add --no-edit to skip the editor)."
+    solution:
+      - git revert --no-edit -m 1 HEAD~2

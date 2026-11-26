@@ -1,0 +1,181 @@
+challenges:
+  - id: secret-in-last-commit
+    title: The key in the last commit
+    level: easy
+    brief: "Your last commit, \"Add payment\", took secrets.env along with payment.js. Nothing is pushed yet. Take secrets.env out of that commit, keep the file on your disk, and make Git ignore it from now on. The history must still have three commits, so the .gitignore goes into the same commit."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Shop app" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - echo "function addToCart() {}" > cart.js
+      - git add cart.js
+      - git commit -q -m "Add cart"
+      - echo "function pay() {}" > payment.js
+      - echo "PAYMENT_API_KEY=demo-key-12345" > secrets.env
+      - git add .
+      - git commit -q -m "Add payment"
+    goal:
+      - check: file-is-in-no-commit
+        file: secrets.env
+        label: "No commit on your branch contains secrets.env"
+      - check: commit-count-is
+        count: 3
+        label: "The history still has three commits"
+      - check: latest-commit-message-contains
+        text: "Add payment"
+        label: "The newest commit is still \"Add payment\""
+      - check: file-is-committed
+        file: payment.js
+        label: "payment.js is still committed"
+      - check: file-contains
+        file: .gitignore
+        text: "secrets.env"
+        label: ".gitignore lists secrets.env"
+      - check: file-is-committed
+        file: .gitignore
+        label: ".gitignore is committed"
+      - check: working-folder-clean
+        label: "git status shows nothing left to do"
+    hints:
+      - "The secret is only in the newest commit, so that commit can be replaced. Which command takes a file out of the staging area and leaves it on disk?"
+      - "git rm --cached secrets.env stages the removal and keeps the file. Add a line to .gitignore and stage that too. Then replace the last commit instead of making a new one."
+      - "Run: git rm --cached secrets.env, then echo \"secrets.env\" >> .gitignore, then git add .gitignore, then git commit --amend --no-edit."
+    solution:
+      - git rm -q --cached secrets.env
+      - echo "secrets.env" >> .gitignore
+      - git add .gitignore
+      - git commit -q --amend --no-edit
+
+  - id: secret-three-commits-deep
+    title: The key under three commits
+    level: medium
+    brief: "secrets.env went in with \"Add payment\", and three commits were made on top: \"Add cart\", \"Add checkout\" and \"Add search\". Nothing is pushed yet. Remove secrets.env from every commit and keep all the other work. Then add a .gitignore that lists secrets.env and commit it, so the file cannot slip in again."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Shop app" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - echo "function pay() {}" > payment.js
+      - echo "PAYMENT_API_KEY=demo-key-12345" > secrets.env
+      - git add .
+      - git commit -q -m "Add payment"
+      - echo "function addToCart() {}" > cart.js
+      - git add cart.js
+      - git commit -q -m "Add cart"
+      - echo "function checkout() {}" > checkout.js
+      - git add checkout.js
+      - git commit -q -m "Add checkout"
+      - echo "function search() {}" > search.js
+      - git add search.js
+      - git commit -q -m "Add search"
+    goal:
+      - check: file-is-in-no-commit
+        file: secrets.env
+        label: "No commit on your branch contains secrets.env"
+      - check: commit-exists
+        message: "Add payment"
+        label: "The commit \"Add payment\" is still in the history"
+      - check: commit-exists
+        message: "Add cart"
+        label: "The commit \"Add cart\" is still in the history"
+      - check: commit-exists
+        message: "Add checkout"
+        label: "The commit \"Add checkout\" is still in the history"
+      - check: commit-exists
+        message: "Add search"
+        label: "The commit \"Add search\" is still in the history"
+      - check: file-is-committed
+        file: payment.js
+        label: "payment.js is still committed"
+      - check: file-is-committed
+        file: search.js
+        label: "search.js is still committed"
+      - check: file-contains
+        file: .gitignore
+        text: "secrets.env"
+        label: ".gitignore lists secrets.env"
+      - check: file-is-committed
+        file: .gitignore
+        label: ".gitignore is committed"
+      - check: working-folder-clean
+        label: "git status shows nothing left to do"
+    hints:
+      - "Amend only reaches the last commit, and this file is four commits down. Which command runs a small command on every commit and builds new ones?"
+      - "git filter-branch with --index-filter, and git rm --cached --ignore-unmatch secrets.env as the command to run. End with -- --all. Put FILTER_BRANCH_SQUELCH_WARNING=1 in front to skip the ten-second warning. The .gitignore is an ordinary new commit afterwards."
+      - "Run: FILTER_BRANCH_SQUELCH_WARNING=1 git filter-branch --index-filter 'git rm --cached --ignore-unmatch secrets.env' -- --all. Then echo \"secrets.env\" > .gitignore, git add .gitignore, git commit -m \"Ignore secrets.env\"."
+    solution:
+      - "FILTER_BRANCH_SQUELCH_WARNING=1 git filter-branch --index-filter 'git rm --cached --ignore-unmatch secrets.env' -- --all"
+      - echo "secrets.env" > .gitignore
+      - git add .gitignore
+      - git commit -q -m "Ignore secrets.env"
+
+  - id: secret-on-two-branches-and-a-tag
+    title: Two branches and a tag
+    level: hard
+    brief: "secrets.env went in with \"Add payment\". The next commit, \"Add cart\", was tagged v1.0, and two branches grew from it: main (\"Add checkout\") and coupons (\"Add coupons\"). Nothing is pushed yet. Remove secrets.env from everything: both branches and the tag. The tag v1.0 must still exist and still mark \"Add cart\". Stay on main."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Shop app" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - echo "function pay() {}" > payment.js
+      - echo "PAYMENT_API_KEY=demo-key-12345" > secrets.env
+      - git add .
+      - git commit -q -m "Add payment"
+      - echo "function addToCart() {}" > cart.js
+      - git add cart.js
+      - git commit -q -m "Add cart"
+      - git tag -a v1.0 -m "Version 1.0"
+      - git switch -q -c coupons
+      - echo "function applyCoupon() {}" > coupons.js
+      - git add coupons.js
+      - git commit -q -m "Add coupons"
+      - git switch -q main
+      - echo "function checkout() {}" > checkout.js
+      - git add checkout.js
+      - git commit -q -m "Add checkout"
+    goal:
+      - check: file-is-in-no-commit
+        file: secrets.env
+        label: "No commit that a branch or a tag reaches contains secrets.env"
+      - check: branch-contains-commit
+        branch: main
+        message: "Add checkout"
+        label: "main still has \"Add checkout\""
+      - check: branch-contains-commit
+        branch: coupons
+        message: "Add coupons"
+        label: "coupons still has \"Add coupons\""
+      - check: branch-contains-commit
+        branch: coupons
+        message: "Add payment"
+        label: "coupons still has \"Add payment\""
+      - check: tag-exists
+        tag: v1.0
+        label: "The tag v1.0 still exists"
+      - check: tag-is-on-commit
+        tag: v1.0
+        message: "Add cart"
+        label: "v1.0 still marks \"Add cart\""
+      - check: file-is-committed
+        file: payment.js
+        label: "payment.js is still committed"
+      - check: head-is-on-branch
+        branch: main
+        label: "You are on main"
+    hints:
+      - "A rewrite of main alone leaves two more labels on the old commits: the branch coupons and the tag v1.0. Run git log --oneline --all -- secrets.env afterwards to see whether anything still reaches the file."
+      - "-- --all covers every branch. A tag stays on its old commit unless you ask for more: read \"Tags need one more option\" in Advanced. If a first try left backups behind, add -f to run again."
+      - "Run: FILTER_BRANCH_SQUELCH_WARNING=1 git filter-branch --index-filter 'git rm --cached --ignore-unmatch secrets.env' --tag-name-filter cat -- --all"
+    solution:
+      - "FILTER_BRANCH_SQUELCH_WARNING=1 git filter-branch --index-filter 'git rm --cached --ignore-unmatch secrets.env' --tag-name-filter cat -- --all"
