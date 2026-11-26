@@ -5,8 +5,10 @@
  */
 
 import {
+	goalCheckFields,
 	goalCheckKinds,
 	type GoalCheck,
+	type GoalCheckKind,
 	type Mission,
 	type MissionGoal
 } from '../types/mission.ts';
@@ -40,8 +42,12 @@ function readGoal(goalReader: FieldReader): MissionGoal {
 	return { ...goalCheck, label };
 }
 
+/** The one goal field that is a whole number; every other field is text. */
+const numberFieldName = 'count';
+
 /**
- * Reads the check part of a goal. Each kind of check needs different fields.
+ * Reads the check part of a goal. Each kind of check needs different fields; the table
+ * goalCheckFields (types/mission.ts) lists them.
  * @param goalReader - a reader for one goal
  * @returns the typed goal check
  */
@@ -50,18 +56,15 @@ function readGoalCheck(goalReader: FieldReader): GoalCheck {
 	if (!isGoalCheckKind(checkKind)) {
 		goalReader.fail(`unknown check "${checkKind}"`);
 	}
-	switch (checkKind) {
-		case 'file-is-untracked':
-		case 'file-is-modified':
-		case 'file-is-staged':
-		case 'file-is-committed':
-		case 'file-is-not-committed':
-			return { check: checkKind, file: goalReader.text('file') };
-		case 'commit-count-at-least':
-			return { check: checkKind, count: goalReader.wholeNumber('count') };
-		case 'working-folder-clean':
-			return { check: checkKind };
+	const fields: Record<string, string | number> = {};
+	for (const fieldName of goalCheckFields[checkKind]) {
+		fields[fieldName] =
+			fieldName === numberFieldName
+				? goalReader.wholeNumber(fieldName)
+				: goalReader.text(fieldName);
 	}
+	// The table guarantees the fields fit the check kind, which TypeScript cannot see here.
+	return { check: checkKind, ...fields } as GoalCheck;
 }
 
 /**
@@ -69,6 +72,6 @@ function readGoalCheck(goalReader: FieldReader): GoalCheck {
  * @param checkKind - the "check" value from the file
  * @returns true if the app knows this check
  */
-function isGoalCheckKind(checkKind: string): checkKind is GoalCheck['check'] {
+function isGoalCheckKind(checkKind: string): checkKind is GoalCheckKind {
 	return (goalCheckKinds as readonly string[]).includes(checkKind);
 }

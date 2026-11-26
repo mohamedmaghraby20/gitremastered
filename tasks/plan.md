@@ -144,7 +144,7 @@ Scope approved 2026-11-26: modules 0–4, offline. Run in one go; you review the
 
 - [x] Task 45: A short shell prompt
 - [x] Task 46: The `predict` and `graph` lesson blocks
-- [ ] Task 47: Goal checks for the first three modules
+- [x] Task 47: Snapshot version 2 and the goal checks for all of phase 5
 - [ ] Tasks 48–50: Orientation (`what-is-git`, `setup`, `first-look-inside`)
 - [ ] Tasks 51–54: Your daily loop (`start-a-repo`, `remove-move-files`, `reading-history`, `diffs-in-depth`)
 - [ ] Task 55: The map shows commits that lost their branch

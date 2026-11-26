@@ -106,15 +106,25 @@ type RepoSnapshot = {
   modifiedFiles: FileChange[];   // changed in the working tree, not staged
   untrackedFiles: string[];
   committedFiles: string[];    // every file in the latest commit (HEAD); added after the pilot review
+  // Version 2 (phase 5):
+  conflictedFiles: string[];   // unresolved merge conflicts (also listed in modifiedFiles)
+  operation: "merge" | "rebase" | "revert" | "cherry-pick" | "bisect" | null;  // waiting to be finished
+  stashes: string[];           // the message of each stash entry, newest first
+  remotes: Remote[];
+  localConfig: { key: string; value: string }[];  // git config --local
+  answer: string | null;       // first line of answer.txt, for "find out and write it down" challenges
 };
 
-/** One commit. */
-type Commit = { id: string; message: string; parentIds: string[]; authorName: string; authoredAt: string };
+/** One commit. isReachable is false for a commit only the reflog remembers (after amend or reset). */
+type Commit = { id: string; message: string; parentIds: string[]; authorName: string; authoredAt: string; isReachable: boolean };
 
-/** A local ("main") or remote-tracking ("origin/main") branch. */
-type Branch = { name: string; commitId: string; isRemote: boolean };
+/** A local ("main") or remote-tracking ("origin/main") branch, with the branch it follows. */
+type Branch = { name: string; commitId: string; isRemote: boolean; upstream: string | null; ahead: number; behind: number };
 
-type Tag = { name: string; commitId: string };
+type Tag = { name: string; commitId: string; isAnnotated: boolean };
+
+/** tagNames is only known for a remote that is a folder on this computer (the practice "origin"). */
+type Remote = { name: string; url: string; tagNames: string[] };
 
 /** HEAD follows a branch (commitId is null before the first commit) or points straight at a commit. */
 type HeadState =
@@ -124,7 +134,7 @@ type HeadState =
 type FileChange = { path: string; changeKind: "added" | "modified" | "deleted" | "renamed"; oldPath: string | null };
 ```
 
-Approved 2026-11-25 as version 1. Fields are added when a lesson needs them (e.g. conflicted files for merging, ahead/behind counts for remotes).
+Approved 2026-11-25 as version 1. Fields are added when a lesson needs them. Version 2 (2026-11-26, phase 5) added the fields for undo, branching and remote lessons in one step: lost commits, conflicts, an operation in progress, stashes, upstreams with ahead/behind, remotes, local settings and the answer file.
 
 ### 3.5 Data flow (one command)
 

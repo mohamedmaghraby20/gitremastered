@@ -37,6 +37,12 @@ function snapshotWith(changes: Partial<RepoSnapshot>): RepoSnapshot {
 		modifiedFiles: [],
 		untrackedFiles: [],
 		committedFiles: [],
+		conflictedFiles: [],
+		operation: null,
+		stashes: [],
+		remotes: [],
+		localConfig: [],
+		answer: null,
 		...changes
 	};
 }
@@ -107,9 +113,11 @@ describe('MissionPanel', () => {
 					message: 'Add notes',
 					parentIds: [],
 					authorName: 'Student',
-					authoredAt: '2026-11-25T10:00:00+00:00'
+					authoredAt: '2026-11-25T10:00:00+00:00',
+					isReachable: true
 				}
-			]
+			],
+			head: { kind: 'branch' as const, branchName: 'main', commitId: 'a'.repeat(40) }
 		};
 		const screen = await render(MissionPanel, {
 			mission,

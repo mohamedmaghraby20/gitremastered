@@ -123,15 +123,66 @@ challenges:
     # ...
 ```
 
-| Goal check | Extra field | Met when |
+Every goal has a `check`, a `label` (the sentence in the checklist) and the extra fields below. `count` is a whole number; every other field is text. A `message` or `text` matches when the commit's first line contains it, in any letter case.
+
+**Files**
+
+| Goal check | Extra fields | Met when |
 |---|---|---|
-| `file-is-untracked` | `file` | Git has never saved the file |
+| `file-is-untracked` | `file` | Git does not track the file |
 | `file-is-modified` | `file` | The file changed and the change is not staged |
 | `file-is-staged` | `file` | The file has a change in the staging area |
 | `file-is-committed` | `file` | The file is in the latest commit and has no pending change |
 | `file-is-not-committed` | `file` | The file is not in the latest commit (for example after `git rm --cached`) |
-| `commit-count-at-least` | `count` | The branch has at least that many commits |
+| `file-exists` | `file` | The file is in the working tree (ignored files do not count) |
+| `file-is-missing` | `file` | The file is not in the working tree |
 | `working-folder-clean` | none | `git status` has nothing to report |
+
+**History, settings and answers** ("history" means the commits you reach from HEAD)
+
+| Goal check | Extra fields | Met when |
+|---|---|---|
+| `commit-count-at-least` | `count` | The history has at least that many commits |
+| `commit-count-is` | `count` | The history has exactly that many commits |
+| `latest-commit-message-contains` | `text` | The commit HEAD is on has that text in its message |
+| `commit-exists` | `message` | A commit with that message is in the history |
+| `commit-is-gone` | `message` | No commit with that message is in the history |
+| `head-commit-is-merge` | none | The commit HEAD is on has two parents |
+| `no-operation-in-progress` | none | No merge, rebase, revert or cherry-pick is waiting, and no file is conflicted |
+| `stash-count-is` | `count` | The stash holds exactly that many entries |
+| `config-is` | `key`, `value` | The repository's own settings (`git config --local`) hold that value |
+| `answer-is` | `answer` | The first line of `answer.txt` is that text (letter case and outer spaces ignored) |
+| `answer-is-commit` | `message` | The first line of `answer.txt` is the ID, short or full, of the commit with exactly that message |
+
+**Branches** (a `branch` may be local, like `main`, or remote-tracking, like `origin/main`, unless noted)
+
+| Goal check | Extra fields | Met when |
+|---|---|---|
+| `branch-exists` | `branch` | The local branch exists |
+| `branch-is-missing` | `branch` | The local branch does not exist |
+| `head-is-on-branch` | `branch` | HEAD is on that branch |
+| `head-is-detached` | none | HEAD points straight at a commit |
+| `branch-is-merged-into` | `branch`, `into` | The newest commit of `branch` is in the history of `into` |
+| `branch-contains-commit` | `branch`, `message` | The branch's history holds a commit with that message |
+| `branch-lacks-commit` | `branch`, `message` | The branch exists and its history holds no such commit |
+| `branch-is-at-commit` | `branch`, `message` | The branch's newest commit has that message |
+
+**Remotes and tags**
+
+| Goal check | Extra fields | Met when |
+|---|---|---|
+| `remote-exists` | `remote` | A remote with that name is set up |
+| `branch-tracks` | `branch`, `upstream` | The local branch follows that upstream, like `origin/main` |
+| `branch-is-in-sync` | `branch` | The local branch has an upstream and is neither ahead nor behind |
+| `remote-branch-exists` | `branch` | The remote-tracking branch exists, like `origin/feature` |
+| `remote-branch-is-missing` | `branch` | The remote-tracking branch does not exist |
+| `tag-exists` | `tag` | The tag exists here |
+| `tag-is-missing` | `tag` | The tag does not exist here |
+| `tag-is-annotated` | `tag` | The tag exists and is annotated |
+| `tag-is-on-commit` | `tag`, `message` | The tag points at a commit with that message |
+| `remote-has-tag` | `tag` | The tag exists on the practice remote (it was pushed) |
+
+**Answer challenges.** Some skills only read: finding a commit, reading a diff. Their challenges ask the student to write what they found into `answer.txt` (`echo 3 > answer.txt`, or `git rev-parse --short HEAD~2 > answer.txt`), and a goal checks the answer. Say exactly what form the answer takes ("the short commit ID", "a number", "the file name"). Add `echo answer.txt >> .git/info/exclude` to the setup, so the answer file stays out of `git status`.
 
 Setup rules:
 - Start with the four lines above: `git init -q -b main`, no CRLF conversion (keeps Windows warnings out of the terminal), and a practice identity only when the student has none.

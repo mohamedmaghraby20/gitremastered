@@ -52,6 +52,24 @@ describe('parseChallengesText', () => {
 		).toThrow('challenge 1, goal 1: unknown check "file-is-shiny"');
 	});
 
+	it('reads a goal check with two text fields, and names a missing one', () => {
+		const mergedGoal = validChallengesText.replace(
+			'check: file-is-committed\n        file: notes.txt',
+			'check: branch-is-merged-into\n        branch: feature\n        into: main'
+		);
+		expect(parseChallengesText(mergedGoal, fileName)[0].goals[0]).toEqual({
+			check: 'branch-is-merged-into',
+			branch: 'feature',
+			into: 'main',
+			label: 'notes.txt is committed'
+		});
+
+		const withoutInto = mergedGoal.replace('        into: main\n', '');
+		expect(() => parseChallengesText(withoutInto, fileName)).toThrow(
+			'challenge 1, goal 1: the "into" field is missing'
+		);
+	});
+
 	it('rejects two challenges with the same id', () => {
 		const sameId = validChallengesText.replace('id: commit-two-files', 'id: commit-notes');
 		expect(() => parseChallengesText(sameId, fileName)).toThrow(

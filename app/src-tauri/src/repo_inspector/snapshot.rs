@@ -1,55 +1,24 @@
-//! Builds a `RepoSnapshot` by running read-only Git commands in a practice folder:
-//! `git status`, `git log`, `git for-each-ref` and `git ls-tree`, each read by its own small parser.
+//! Builds a `RepoSnapshot` from a practice folder: runs the read-only Git commands
+//! (`git_reads`), hands each output to its own small parser, reads a few facts straight from
+//! files (`repo_files`), and puts the pieces together.
 //!
-//! The four commands run at the same time, one thread each: they don't depend on each other,
-//! and on Windows each Git process takes ~35 ms to start, so running them one after another
-//! made the visualizer miss its 300 ms target (pilot review, docs/measurements.md).
-//!
-//! Never writes to the repo. `git status` normally refreshes the index file as a side effect;
-//! `GIT_OPTIONAL_LOCKS=0` turns that off (Git docs: "git status --no-optional-locks").
+//! Never writes to the repo.
 
-use std::thread;
-
-use crate::git_runner::hidden_command::hidden_command;
 use crate::git_runner::practice_folder::PracticeFolder;
-use crate::models::repo_snapshot::{HeadState, RepoSnapshot};
+use crate::models::repo_snapshot::{Branch, HeadState, Remote, RepoSnapshot, Tag};
 
-use super::parse_log::{LOG_FORMAT, parse_log};
-use super::parse_refs::{REFS_FORMAT, parse_refs};
+use super::git_reads::run_reads_at_once;
+use super::parse_config::{parse_config, remotes_from_config};
+use super::parse_log::parse_log;
+use super::parse_refs::parse_refs;
 use super::parse_status::parse_status;
+use super::reachability::mark_reachability;
+use super::repo_files::{find_operation, read_answer, read_remote_tag_names};
 
-/// `git status` in a form made for programs: one entry per file, ends marked by zero bytes.
-const STATUS_ARGUMENTS: [&str; 5] = [
-    "status",
-    "--porcelain=v2",
-    "--branch",
-    "-z",
-    "--untracked-files=all",
-];
-
-/// `--all` lists every commit reachable from any ref; an empty repo simply prints nothing.
-const LOG_ARGUMENTS: [&str; 4] = ["log", "--all", "--date-order", LOG_FORMAT];
-
-/// Every local branch, remote-tracking branch and tag.
-const REFS_ARGUMENTS: [&str; 5] = [
-    "for-each-ref",
-    REFS_FORMAT,
-    "refs/heads",
-    "refs/remotes",
-    "refs/tags",
-];
-
-/// Every file in the latest commit; -z ends each path with a zero byte, so unusual names
-/// arrive unquoted. Fails before the first commit (there is no HEAD commit yet).
-const TREE_ARGUMENTS: [&str; 5] = ["ls-tree", "-r", "--name-only", "-z", "HEAD"];
-
-/// What the four Git commands printed. The tree listing keeps its error, because it is
-/// expected to fail in a repo with no commits.
-struct GitReadings {
-    status: Result<String, String>,
-    log: Result<String, String>,
-    refs: Result<String, String>,
-    tree: Result<String, String>,
+/// One stash entry: the commit Git made for it, and its message.
+struct StashEntry {
+    commit_id: String,
+    message: String,
 }
 
 /// Reads the practice repository's current state.
@@ -61,9 +30,18 @@ pub fn read_snapshot(folder: &PracticeFolder) -> Result<RepoSnapshot, String> {
     let status = parse_status(&readings.status?);
     let committed_files = committed_files_from(readings.tree, &status.head)?;
     let refs = parse_refs(&readings.refs?);
+    let stash_entries = parse_stash_list(&readings.stash.unwrap_or_default());
+    let local_config = parse_config(&readings.config?);
+
+    let tip_ids = find_tip_ids(&refs.branches, &refs.tags, &status.head);
+    let stash_ids: Vec<String> = stash_entries
+        .iter()
+        .map(|entry| entry.commit_id.clone())
+        .collect();
+    let commits = mark_reachability(parse_log(&readings.log?), &tip_ids, &stash_ids);
 
     Ok(RepoSnapshot {
-        commits: parse_log(&readings.log?),
+        commits,
         branches: refs.branches,
         tags: refs.tags,
         head: status.head,
@@ -71,32 +49,55 @@ pub fn read_snapshot(folder: &PracticeFolder) -> Result<RepoSnapshot, String> {
         modified_files: status.modified_files,
         untracked_files: status.untracked_files,
         committed_files,
+        conflicted_files: status.conflicted_files,
+        operation: find_operation(folder.path()),
+        stashes: stash_entries
+            .into_iter()
+            .map(|entry| entry.message)
+            .collect(),
+        remotes: remotes_with_tags(folder, remotes_from_config(&local_config)),
+        local_config,
+        answer: read_answer(folder.path()),
     })
 }
 
-/// Runs the four read-only Git commands in parallel and waits for all of them.
+/// Lists the commits that count as "the end of a line of work": where each branch and tag
+/// points, and where HEAD is. Every commit reachable from these is normal history.
 ///
-/// Input: the practice folder. Output: each command's output or error.
-fn run_reads_at_once(folder: &PracticeFolder) -> GitReadings {
-    thread::scope(|scope| {
-        let status = scope.spawn(|| run_read_only_git(folder, &STATUS_ARGUMENTS));
-        let log = scope.spawn(|| run_read_only_git(folder, &LOG_ARGUMENTS));
-        let refs = scope.spawn(|| run_read_only_git(folder, &REFS_ARGUMENTS));
-        let tree = scope.spawn(|| run_read_only_git(folder, &TREE_ARGUMENTS));
-        GitReadings {
-            status: finish_thread(status.join()),
-            log: finish_thread(log.join()),
-            refs: finish_thread(refs.join()),
-            tree: finish_thread(tree.join()),
-        }
-    })
+/// Inputs: the branches, the tags and HEAD. Output: the commit IDs.
+fn find_tip_ids(branches: &[Branch], tags: &[Tag], head: &HeadState) -> Vec<String> {
+    let branch_tips = branches.iter().map(|branch| branch.commit_id.clone());
+    let tag_tips = tags.iter().map(|tag| tag.commit_id.clone());
+    let head_tip = head.commit_id().map(str::to_string);
+    branch_tips.chain(tag_tips).chain(head_tip).collect()
 }
 
-/// Turns a finished reader thread into its result; a thread that panicked becomes an error.
+/// Reads the stash list.
 ///
-/// Input: what `join` returned. Output: the command's output or an error text.
-fn finish_thread(joined: thread::Result<Result<String, String>>) -> Result<String, String> {
-    joined.unwrap_or_else(|_| Err("A Git reader thread stopped unexpectedly".to_string()))
+/// Input: the output of `git stash list` in our format, one entry per line.
+/// Output: the entries, newest first.
+fn parse_stash_list(stash_output: &str) -> Vec<StashEntry> {
+    stash_output
+        .lines()
+        .filter_map(|line| line.split_once('\u{1f}'))
+        .map(|(commit_id, message)| StashEntry {
+            commit_id: commit_id.to_string(),
+            message: message.to_string(),
+        })
+        .collect()
+}
+
+/// Fills in each remote's tags, for remotes that are folders on this computer.
+///
+/// Inputs: the practice folder and the remotes. Output: the remotes with their tag names.
+fn remotes_with_tags(folder: &PracticeFolder, remotes: Vec<Remote>) -> Vec<Remote> {
+    remotes
+        .into_iter()
+        .map(|remote| Remote {
+            tag_names: read_remote_tag_names(folder.path(), &remote.url),
+            ..remote
+        })
+        .collect()
 }
 
 /// Lists every file saved in the latest commit (sorted by path, as `git ls-tree` prints them).
@@ -107,11 +108,7 @@ fn committed_files_from(
     tree_listing: Result<String, String>,
     head: &HeadState,
 ) -> Result<Vec<String>, String> {
-    let has_head_commit = match head {
-        HeadState::Branch { commit_id, .. } => commit_id.is_some(),
-        HeadState::Detached { .. } => true,
-    };
-    if !has_head_commit {
+    if head.commit_id().is_none() {
         return Ok(Vec::new());
     }
     let tree_output = tree_listing?;
@@ -120,22 +117,4 @@ fn committed_files_from(
         .filter(|path| !path.is_empty())
         .map(str::to_string)
         .collect())
-}
-
-/// Runs one Git command that only reads, inside the practice folder.
-///
-/// Inputs: the folder and Git's arguments. Output: the command's output, or its error text.
-fn run_read_only_git(folder: &PracticeFolder, arguments: &[&str]) -> Result<String, String> {
-    let output = hidden_command("git")
-        .args(arguments)
-        .current_dir(folder.path())
-        .env("GIT_OPTIONAL_LOCKS", "0")
-        .env("GIT_TERMINAL_PROMPT", "0")
-        .output()
-        .map_err(|error| format!("Could not run Git ({error})"))?;
-    if !output.status.success() {
-        let error_text = String::from_utf8_lossy(&output.stderr).trim().to_string();
-        return Err(format!("git {} failed: {error_text}", arguments[0]));
-    }
-    Ok(String::from_utf8_lossy(&output.stdout).into_owned())
 }

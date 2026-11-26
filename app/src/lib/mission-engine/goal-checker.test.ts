@@ -22,6 +22,12 @@ function snapshotWith(changes: Partial<RepoSnapshot>): RepoSnapshot {
 		modifiedFiles: [],
 		untrackedFiles: [],
 		committedFiles: [],
+		conflictedFiles: [],
+		operation: null,
+		stashes: [],
+		remotes: [],
+		localConfig: [],
+		answer: null,
 		...changes
 	};
 }
@@ -32,7 +38,8 @@ const oneCommit: RepoSnapshot['commits'] = [
 		message: 'Add README',
 		parentIds: [],
 		authorName: 'Student',
-		authoredAt: '2026-11-25T10:00:00+00:00'
+		authoredAt: '2026-11-25T10:00:00+00:00',
+		isReachable: true
 	}
 ];
 
@@ -81,8 +88,34 @@ describe('isGoalMet', () => {
 
 	it('commit-count-at-least', () => {
 		const goal = { check: 'commit-count-at-least' as const, count: 1 };
-		expect(isGoalMet(goal, snapshotWith({ commits: oneCommit }))).toBe(true);
+		// Commits are counted from HEAD back, so HEAD has to be on the commit.
+		const head = { kind: 'branch' as const, branchName: 'main', commitId: oneCommit[0].id };
+		expect(isGoalMet(goal, snapshotWith({ commits: oneCommit, head }))).toBe(true);
 		expect(isGoalMet(goal, snapshotWith({}))).toBe(false);
+	});
+
+	it('file-exists and file-is-missing follow the working tree', () => {
+		const exists = { check: 'file-exists' as const, file: 'notes.txt' };
+		const missing = { check: 'file-is-missing' as const, file: 'notes.txt' };
+		const committed = { commits: oneCommit, committedFiles: ['notes.txt'] };
+		const deleted = { path: 'notes.txt', changeKind: 'deleted' as const, oldPath: null };
+
+		expect(isGoalMet(exists, snapshotWith({ untrackedFiles: ['notes.txt'] }))).toBe(true);
+		expect(isGoalMet(exists, snapshotWith({ stagedFiles: [notesChange] }))).toBe(true);
+		expect(isGoalMet(exists, snapshotWith(committed))).toBe(true);
+		expect(isGoalMet(missing, snapshotWith({}))).toBe(true);
+		// Deleted with rm (not staged) or with git rm (staged): gone from the folder either way.
+		expect(isGoalMet(missing, snapshotWith({ ...committed, modifiedFiles: [deleted] }))).toBe(true);
+		expect(isGoalMet(missing, snapshotWith({ ...committed, stagedFiles: [deleted] }))).toBe(true);
+		// git rm --cached: the deletion is staged, but the file is still in the folder, untracked.
+		const keptOnDisk = { ...committed, stagedFiles: [deleted], untrackedFiles: ['notes.txt'] };
+		expect(isGoalMet(exists, snapshotWith(keptOnDisk))).toBe(true);
+	});
+
+	it('sends each kind of goal to the file that checks it', () => {
+		expect(isGoalMet({ check: 'head-is-on-branch', branch: 'main' }, snapshotWith({}))).toBe(true);
+		expect(isGoalMet({ check: 'stash-count-is', count: 0 }, snapshotWith({}))).toBe(true);
+		expect(isGoalMet({ check: 'tag-is-missing', tag: 'v1.0' }, snapshotWith({}))).toBe(true);
 	});
 
 	it('working-folder-clean', () => {

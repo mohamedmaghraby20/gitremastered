@@ -25,19 +25,28 @@ function snapshotWithCommits(commitCount: number): RepoSnapshot {
 			message: `Commit ${index + 1}`,
 			parentIds: index === 0 ? [] : [String(index - 1).padStart(40, '0')],
 			authorName: 'Student',
-			authoredAt: '2026-11-26T10:00:00+00:00'
+			authoredAt: '2026-11-26T10:00:00+00:00',
+			isReachable: true
 		});
 	}
 	const headId = commits[0].id;
 	return {
 		commits,
-		branches: [{ name: 'main', commitId: headId, isRemote: false }],
+		branches: [
+			{ name: 'main', commitId: headId, isRemote: false, upstream: null, ahead: 0, behind: 0 }
+		],
 		tags: [],
 		head: { kind: 'branch', branchName: 'main', commitId: headId },
 		stagedFiles: [],
 		modifiedFiles: [],
 		untrackedFiles: [],
-		committedFiles: []
+		committedFiles: [],
+		conflictedFiles: [],
+		operation: null,
+		stashes: [],
+		remotes: [],
+		localConfig: [],
+		answer: null
 	};
 }
 

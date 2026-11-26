@@ -41,6 +41,8 @@ fn parse_commit_record(record: &str) -> Option<Commit> {
         parent_ids,
         author_name,
         authored_at,
+        // Every commit starts as reachable; `reachability` marks the lost ones afterwards.
+        is_reachable: true,
     })
 }
 

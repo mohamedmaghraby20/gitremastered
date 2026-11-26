@@ -2,31 +2,114 @@
  * mission.ts
  * The shape of a lesson's challenges, read from challenges.yaml (SPEC.md section 4): each
  * challenge is a mission (brief, setup, goals, hints, solution) with an ID, a title and a level.
+ * docs/writing-lessons.md explains every goal check to lesson authors.
  */
 
-/**
- * One goal the student must reach, checked against the repo snapshot.
- * "check" names the kind of test; the other fields depend on it.
- */
-export type GoalCheck =
+/** Goals about one file in the working tree, the staging area or the latest commit. */
+export type FileGoalCheck =
 	| { check: 'file-is-untracked'; file: string }
 	| { check: 'file-is-modified'; file: string }
 	| { check: 'file-is-staged'; file: string }
 	| { check: 'file-is-committed'; file: string }
 	| { check: 'file-is-not-committed'; file: string }
-	| { check: 'commit-count-at-least'; count: number }
+	| { check: 'file-exists'; file: string }
+	| { check: 'file-is-missing'; file: string }
 	| { check: 'working-folder-clean' };
 
+/** Goals about the history HEAD is on, settings, and written answers. */
+export type HistoryGoalCheck =
+	| { check: 'commit-count-at-least'; count: number }
+	| { check: 'commit-count-is'; count: number }
+	| { check: 'latest-commit-message-contains'; text: string }
+	| { check: 'commit-exists'; message: string }
+	| { check: 'commit-is-gone'; message: string }
+	| { check: 'head-commit-is-merge' }
+	| { check: 'no-operation-in-progress' }
+	| { check: 'stash-count-is'; count: number }
+	| { check: 'config-is'; key: string; value: string }
+	| { check: 'answer-is'; answer: string }
+	| { check: 'answer-is-commit'; message: string };
+
+/** Goals about branches and where HEAD is. */
+export type BranchGoalCheck =
+	| { check: 'branch-exists'; branch: string }
+	| { check: 'branch-is-missing'; branch: string }
+	| { check: 'head-is-on-branch'; branch: string }
+	| { check: 'head-is-detached' }
+	| { check: 'branch-is-merged-into'; branch: string; into: string }
+	| { check: 'branch-contains-commit'; branch: string; message: string }
+	| { check: 'branch-lacks-commit'; branch: string; message: string }
+	| { check: 'branch-is-at-commit'; branch: string; message: string };
+
+/** Goals about remotes, remote-tracking branches and tags. */
+export type RemoteGoalCheck =
+	| { check: 'remote-exists'; remote: string }
+	| { check: 'branch-tracks'; branch: string; upstream: string }
+	| { check: 'branch-is-in-sync'; branch: string }
+	| { check: 'remote-branch-exists'; branch: string }
+	| { check: 'remote-branch-is-missing'; branch: string }
+	| { check: 'tag-exists'; tag: string }
+	| { check: 'tag-is-missing'; tag: string }
+	| { check: 'tag-is-annotated'; tag: string }
+	| { check: 'tag-is-on-commit'; tag: string; message: string }
+	| { check: 'remote-has-tag'; tag: string };
+
+/**
+ * One goal the student must reach, checked against the repo snapshot.
+ * "check" names the kind of test; the other fields depend on it.
+ */
+export type GoalCheck = FileGoalCheck | HistoryGoalCheck | BranchGoalCheck | RemoteGoalCheck;
+
+/** The name of a goal check, like "file-is-committed". */
+export type GoalCheckKind = GoalCheck['check'];
+
+/**
+ * The extra fields each kind of goal check needs in challenges.yaml. "count" is a whole
+ * number; every other field is text. The challenge parser reads goals from this table, so a
+ * new check is added here and in the union above.
+ */
+export const goalCheckFields: Record<GoalCheckKind, readonly string[]> = {
+	'file-is-untracked': ['file'],
+	'file-is-modified': ['file'],
+	'file-is-staged': ['file'],
+	'file-is-committed': ['file'],
+	'file-is-not-committed': ['file'],
+	'file-exists': ['file'],
+	'file-is-missing': ['file'],
+	'working-folder-clean': [],
+	'commit-count-at-least': ['count'],
+	'commit-count-is': ['count'],
+	'latest-commit-message-contains': ['text'],
+	'commit-exists': ['message'],
+	'commit-is-gone': ['message'],
+	'head-commit-is-merge': [],
+	'no-operation-in-progress': [],
+	'stash-count-is': ['count'],
+	'config-is': ['key', 'value'],
+	'answer-is': ['answer'],
+	'answer-is-commit': ['message'],
+	'branch-exists': ['branch'],
+	'branch-is-missing': ['branch'],
+	'head-is-on-branch': ['branch'],
+	'head-is-detached': [],
+	'branch-is-merged-into': ['branch', 'into'],
+	'branch-contains-commit': ['branch', 'message'],
+	'branch-lacks-commit': ['branch', 'message'],
+	'branch-is-at-commit': ['branch', 'message'],
+	'remote-exists': ['remote'],
+	'branch-tracks': ['branch', 'upstream'],
+	'branch-is-in-sync': ['branch'],
+	'remote-branch-exists': ['branch'],
+	'remote-branch-is-missing': ['branch'],
+	'tag-exists': ['tag'],
+	'tag-is-missing': ['tag'],
+	'tag-is-annotated': ['tag'],
+	'tag-is-on-commit': ['tag', 'message'],
+	'remote-has-tag': ['tag']
+};
+
 /** The names of every kind of goal check, used to reject unknown ones. */
-export const goalCheckKinds = [
-	'file-is-untracked',
-	'file-is-modified',
-	'file-is-staged',
-	'file-is-committed',
-	'file-is-not-committed',
-	'commit-count-at-least',
-	'working-folder-clean'
-] as const;
+export const goalCheckKinds = Object.keys(goalCheckFields) as GoalCheckKind[];
 
 /** A goal check plus the sentence shown in the mission checklist. */
 export type MissionGoal = GoalCheck & { label: string };

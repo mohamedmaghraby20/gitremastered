@@ -6,7 +6,7 @@
 
 /** The state of the practice repository at one moment. */
 export type RepoSnapshot = {
-	commits: Commit[]; // every reachable commit, newest first
+	commits: Commit[]; // every commit Git still remembers, newest first (see Commit.isReachable)
 	branches: Branch[]; // local and remote-tracking branches
 	tags: Tag[];
 	head: HeadState; // which branch or commit HEAD points to
@@ -14,6 +14,12 @@ export type RepoSnapshot = {
 	modifiedFiles: FileChange[]; // changed in the working tree, not staged
 	untrackedFiles: string[]; // new files Git does not track yet
 	committedFiles: string[]; // every file saved in the latest commit (HEAD); empty before the first
+	conflictedFiles: string[]; // files with an unresolved merge conflict (also in modifiedFiles)
+	operation: Operation | null; // a merge, rebase, revert… waiting to be finished
+	stashes: string[]; // the message of each stash entry, newest first
+	remotes: Remote[];
+	localConfig: ConfigEntry[]; // the repository's own settings (git config --local)
+	answer: string | null; // the first line of answer.txt, for "find out and write it down" challenges
 };
 
 /** One commit. */
@@ -23,6 +29,7 @@ export type Commit = {
 	parentIds: string[]; // none for the first commit, two for a merge
 	authorName: string;
 	authoredAt: string; // ISO 8601 date and time
+	isReachable: boolean; // false for a commit only the reflog remembers (after amend or reset)
 };
 
 /** One branch, local ("main") or remote-tracking ("origin/main"). */
@@ -30,12 +37,16 @@ export type Branch = {
 	name: string;
 	commitId: string;
 	isRemote: boolean;
+	upstream: string | null; // the remote-tracking branch it follows, like "origin/main"
+	ahead: number; // commits this branch has that its upstream does not
+	behind: number; // commits the upstream has that this branch does not
 };
 
 /** One tag. */
 export type Tag = {
 	name: string;
 	commitId: string;
+	isAnnotated: boolean; // true for a tag with its own message, author and date
 };
 
 /**
@@ -54,4 +65,20 @@ export type FileChange = {
 	path: string;
 	changeKind: ChangeKind;
 	oldPath: string | null; // the old path for renamed files, otherwise null
+};
+
+/** A multi-step Git command that started and is waiting for the student to finish it. */
+export type Operation = 'merge' | 'rebase' | 'revert' | 'cherry-pick' | 'bisect';
+
+/** One remote: a short name for another copy of the repository. */
+export type Remote = {
+	name: string; // like "origin"
+	url: string; // a URL or a folder path
+	tagNames: string[]; // the remote's tags; only known for a remote that is a local folder
+};
+
+/** One setting from the repository's own config file. */
+export type ConfigEntry = {
+	key: string; // lower case, like "user.name"
+	value: string;
 };

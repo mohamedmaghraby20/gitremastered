@@ -23,7 +23,8 @@ function snapshotWith(changes: Partial<RepoSnapshot>): RepoSnapshot {
 				message: 'Add README',
 				parentIds: [],
 				authorName: 'Student',
-				authoredAt: '2026-11-25T10:00:00+00:00'
+				authoredAt: '2026-11-25T10:00:00+00:00',
+				isReachable: true
 			}
 		],
 		branches: [],
@@ -33,6 +34,12 @@ function snapshotWith(changes: Partial<RepoSnapshot>): RepoSnapshot {
 		modifiedFiles: [],
 		untrackedFiles: [],
 		committedFiles: [],
+		conflictedFiles: [],
+		operation: null,
+		stashes: [],
+		remotes: [],
+		localConfig: [],
+		answer: null,
 		...changes
 	};
 }

@@ -21,6 +21,8 @@ pub struct StatusSummary {
     pub staged_files: Vec<FileChange>,
     pub modified_files: Vec<FileChange>,
     pub untracked_files: Vec<String>,
+    /// Files with an unresolved merge conflict; each one is in `modified_files` too.
+    pub conflicted_files: Vec<String>,
 }
 
 /// Reads the whole status output.
@@ -37,6 +39,7 @@ pub fn parse_status(status_output: &str) -> StatusSummary {
         staged_files: Vec::new(),
         modified_files: Vec::new(),
         untracked_files: Vec::new(),
+        conflicted_files: Vec::new(),
     };
 
     let mut entries = status_output.split('\0').filter(|entry| !entry.is_empty());
@@ -88,6 +91,9 @@ fn add_changed_file(summary: &mut StatusSummary, entry: &str, old_path: Option<S
     let working_letter = status_letters.next().unwrap_or('.');
     let path = read_entry_path(entry);
     let is_conflict = entry.starts_with("u ");
+    if is_conflict {
+        summary.conflicted_files.push(path.clone());
+    }
 
     if let Some(change_kind) = change_kind_for(staging_letter).filter(|_| !is_conflict) {
         summary.staged_files.push(FileChange {
@@ -213,6 +219,20 @@ mod tests {
                 old_path: Some("old.txt".to_string()),
             }]
         );
+    }
+
+    /// A file with a merge conflict is listed as conflicted, and as modified (not staged).
+    #[test]
+    fn reads_a_conflicted_file() {
+        let output =
+            "# branch.head main\0u UU N... 100644 100644 100644 100644 1111 2222 3333 app.js\0";
+        let summary = parse_status(output);
+        assert_eq!(summary.conflicted_files, vec!["app.js".to_string()]);
+        assert_eq!(
+            summary.modified_files,
+            vec![change("app.js", ChangeKind::Modified)]
+        );
+        assert!(summary.staged_files.is_empty());
     }
 
     /// A detached HEAD points straight at a commit.

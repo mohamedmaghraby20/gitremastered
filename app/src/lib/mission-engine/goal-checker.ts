@@ -1,15 +1,25 @@
 /**
  * goal-checker.ts
  * Decides whether a mission's goals are reached, by reading the current repo snapshot.
- * Pure functions: no screen code, no Git, so every goal kind is tested with sample snapshots.
+ * This file only sorts each goal to the file that knows its topic:
+ *   file-goals.ts     one file's place among the three areas
+ *   history-goals.ts  commits on HEAD's history, work in progress, settings, answers
+ *   branch-goals.ts   branches and where HEAD is
+ *   remote-goals.ts   remotes, upstreams and tags
+ * Everything is a pure function: no screen code, no Git, so every goal kind is tested with
+ * sample snapshots.
  */
 
 import type { GoalCheck } from '$lib/types/mission';
 import type { RepoSnapshot } from '$lib/types/repo-snapshot';
+import { isBranchGoalMet } from './branch-goals';
+import { isFileGoalMet } from './file-goals';
+import { isHistoryGoalMet } from './history-goals';
+import { isRemoteGoalMet } from './remote-goals';
 
 /**
  * Checks one goal against the repo snapshot.
- * @param goalCheck - the goal from mission.yaml, e.g. { check: "file-is-committed", file: "notes.txt" }
+ * @param goalCheck - the goal from challenges.yaml, e.g. { check: "file-is-committed", file: "notes.txt" }
  * @param repoSnapshot - the repo state right now (null before the first snapshot arrives)
  * @returns true if the goal is met
  */
@@ -19,23 +29,46 @@ export function isGoalMet(goalCheck: GoalCheck, repoSnapshot: RepoSnapshot | nul
 	}
 	switch (goalCheck.check) {
 		case 'file-is-untracked':
-			return repoSnapshot.untrackedFiles.includes(goalCheck.file);
 		case 'file-is-modified':
-			return isInChanges(repoSnapshot.modifiedFiles, goalCheck.file);
 		case 'file-is-staged':
-			return isInChanges(repoSnapshot.stagedFiles, goalCheck.file);
 		case 'file-is-committed':
-			return isFileCommitted(goalCheck.file, repoSnapshot);
 		case 'file-is-not-committed':
-			return !repoSnapshot.committedFiles.includes(goalCheck.file);
-		case 'commit-count-at-least':
-			return repoSnapshot.commits.length >= goalCheck.count;
+		case 'file-exists':
+		case 'file-is-missing':
 		case 'working-folder-clean':
-			return (
-				repoSnapshot.stagedFiles.length === 0 &&
-				repoSnapshot.modifiedFiles.length === 0 &&
-				repoSnapshot.untrackedFiles.length === 0
-			);
+			return isFileGoalMet(goalCheck, repoSnapshot);
+		case 'commit-count-at-least':
+		case 'commit-count-is':
+		case 'latest-commit-message-contains':
+		case 'commit-exists':
+		case 'commit-is-gone':
+		case 'head-commit-is-merge':
+		case 'no-operation-in-progress':
+		case 'stash-count-is':
+		case 'config-is':
+		case 'answer-is':
+		case 'answer-is-commit':
+			return isHistoryGoalMet(goalCheck, repoSnapshot);
+		case 'branch-exists':
+		case 'branch-is-missing':
+		case 'head-is-on-branch':
+		case 'head-is-detached':
+		case 'branch-is-merged-into':
+		case 'branch-contains-commit':
+		case 'branch-lacks-commit':
+		case 'branch-is-at-commit':
+			return isBranchGoalMet(goalCheck, repoSnapshot);
+		case 'remote-exists':
+		case 'branch-tracks':
+		case 'branch-is-in-sync':
+		case 'remote-branch-exists':
+		case 'remote-branch-is-missing':
+		case 'tag-exists':
+		case 'tag-is-missing':
+		case 'tag-is-annotated':
+		case 'tag-is-on-commit':
+		case 'remote-has-tag':
+			return isRemoteGoalMet(goalCheck, repoSnapshot);
 	}
 }
 
@@ -47,29 +80,4 @@ export function isGoalMet(goalCheck: GoalCheck, repoSnapshot: RepoSnapshot | nul
  */
 export function checkGoals(goalChecks: GoalCheck[], repoSnapshot: RepoSnapshot | null): boolean[] {
 	return goalChecks.map((goalCheck) => isGoalMet(goalCheck, repoSnapshot));
-}
-
-/**
- * Tells whether a file is saved in the latest commit with nothing left to save: it is in
- * HEAD's files, and not staged or changed since. (Checking only "no pending change" was not
- * enough: a deleted or never-created file has no pending change either.)
- * @param file - the file's path
- * @param repoSnapshot - the repo state
- * @returns true if the file is committed
- */
-function isFileCommitted(file: string, repoSnapshot: RepoSnapshot): boolean {
-	const fileIsInLatestCommit = repoSnapshot.committedFiles.includes(file);
-	const fileIsStaged = isInChanges(repoSnapshot.stagedFiles, file);
-	const fileIsModified = isInChanges(repoSnapshot.modifiedFiles, file);
-	return fileIsInLatestCommit && !fileIsStaged && !fileIsModified;
-}
-
-/**
- * Looks for a file in a list of changes.
- * @param changes - staged or modified files
- * @param file - the file's path
- * @returns true if the file is in the list
- */
-function isInChanges(changes: RepoSnapshot['stagedFiles'], file: string): boolean {
-	return changes.some((change) => change.path === file);
 }

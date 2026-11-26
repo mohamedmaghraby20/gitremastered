@@ -687,13 +687,15 @@ Goal: modules 0–4 of the Pro path written and playable: Orientation, Your dail
 
 **Verification:** unit tests (parsing, layout), component tests · **Files:** `content/render-blocks.ts`, `visualizer/`, `components/lesson-reader/` · **Scope:** M
 
-### Task 47: Goal checks for the first three modules
-**Description:** New lessons need goals the snapshot cannot answer yet. Snapshot gains `localConfig` (the repo's own settings) and `answer` (the first line of `answer.txt`, for "find out and write it down" challenges). New checks: `commit-count-is`, `latest-commit-message-contains`, `config-is`, `answer-is`, `answer-is-commit`, `file-exists`, `file-is-missing`.
+### Task 47: Snapshot version 2 and the goal checks for all of phase 5
+**Description:** New lessons need goals the snapshot cannot answer yet. Built in one step instead of four (it touches the same files each time, and lessons can then be written in any order): the snapshot gains lost commits (`isReachable`), `conflictedFiles`, `operation`, `stashes`, branch `upstream` / `ahead` / `behind`, `remotes` (with the tags of a local remote), `localConfig` and `answer` (the first line of `answer.txt`, for "find out and write it down" challenges). 30 new goal checks, sorted into four small files (files, history, branches, remotes). Tasks 55, 61 and 67 keep the parts the student sees.
 
 **Acceptance criteria:**
-- [ ] Rust and TypeScript shapes match (the JSON-name test covers the new fields)
-- [ ] Every new check has a passing and a failing test
-- [ ] `docs/writing-lessons.md` lists the new checks; SPEC 3.4 shows the new fields
+- [x] Rust and TypeScript shapes match (the JSON-name test covers the new fields)
+- [x] Every new check has a passing and a failing test
+- [x] `docs/writing-lessons.md` lists the new checks; SPEC 3.4 shows the new fields
+
+**Result (2026-11-26):** 37 goal checks in all. Commit counts now follow HEAD's history, so a lost commit or another branch is never counted. Stash commits stay out of the history. Real-Git tests cover an amend, a stash, a conflict and a local remote.
 
 **Verification:** Rust tests, goal-checker tests · **Files:** `models/`, `repo_inspector/`, `mission-engine/`, `types/`, `content/parse-mission.ts` · **Scope:** M
 
@@ -717,7 +719,7 @@ Goal: modules 0–4 of the Pro path written and playable: Orientation, Your dail
 ### Module 2: Undo and fix
 
 ### Task 55: The map shows commits that lost their branch
-**Description:** After `git commit --amend` or `git reset`, the old commit vanishes from the map, which hides what really happened. Read the reflog too: a commit no branch or tag reaches shows as a faded station marked "no branch". Stash commits stay off the map.
+**Description:** After `git commit --amend` or `git reset`, the old commit vanishes from the map, which hides what really happened. The snapshot already marks such commits (task 47); the map now draws them as faded stations marked "no branch".
 
 **Acceptance criteria:**
 - [ ] After an amend, the old commit is still on the map, faded
@@ -744,7 +746,7 @@ Goal: modules 0–4 of the Pro path written and playable: Orientation, Your dail
 **Verification:** layout unit tests, component tests · **Files:** `visualizer/`, `components/visualizer/` · **Scope:** M
 
 ### Task 61: Merge, conflict and stash state
-**Description:** Snapshot gains `conflictedFiles`, `operation` (a merge, rebase, revert or cherry-pick in progress) and `stashes`. The desk marks conflicted files; the caption says when a merge is waiting. New checks: `branch-exists`, `branch-is-missing`, `head-is-on-branch`, `head-is-detached`, `branch-is-merged-into`, `head-commit-is-merge`, `no-operation-in-progress`, `stash-count-is`.
+**Description:** The snapshot already carries `conflictedFiles`, `operation` and `stashes` (task 47). Show them: the desk marks conflicted files, a banner says when a merge is waiting to be finished, and a small "stash" shelf shows stashed work.
 
 **Verification:** Rust tests against real Git, goal-checker tests, component tests · **Files:** `models/`, `repo_inspector/`, `mission-engine/`, `components/visualizer/` · **Scope:** L
 
@@ -759,7 +761,7 @@ Goal: modules 0–4 of the Pro path written and playable: Orientation, Your dail
 ### Module 4: Remotes
 
 ### Task 67: A local "origin" and a teammate
-**Description:** Practice setup can build a bare repository beside the practice folder and use it as `origin`, and can push "a teammate's" commits to it, so fetch, pull and push work offline. Snapshot branches gain `upstream`, `ahead` and `behind`; snapshot gains `remotes`. New checks: `remote-exists`, `branch-tracks`, `branch-is-in-sync`, `remote-branch-exists`, `remote-branch-is-missing`, `tag-exists`, `tag-is-missing`.
+**Description:** Practice setup can build a bare repository beside the practice folder and use it as `origin`, and can push "a teammate's" commits to it, so fetch, pull and push work offline. The snapshot and goal checks are already there (task 47); this task makes the practice folder own its remote (built and removed with it) and shows ahead/behind on the map.
 
 **Acceptance criteria:**
 - [ ] Reset rebuilds the remote too; nothing is left behind in the practice root

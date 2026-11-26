@@ -18,23 +18,33 @@
 				message: 'Add app.js',
 				parentIds: [firstId],
 				authorName: 'Student',
-				authoredAt: '2026-11-25T10:05:00+00:00'
+				authoredAt: '2026-11-25T10:05:00+00:00',
+				isReachable: true
 			},
 			{
 				id: firstId,
 				message: 'First commit',
 				parentIds: [],
 				authorName: 'Student',
-				authoredAt: '2026-11-25T10:00:00+00:00'
+				authoredAt: '2026-11-25T10:00:00+00:00',
+				isReachable: true
 			}
 		],
-		branches: [{ name: 'main', commitId: secondId, isRemote: false }],
+		branches: [
+			{ name: 'main', commitId: secondId, isRemote: false, upstream: null, ahead: 0, behind: 0 }
+		],
 		tags: [],
 		head: { kind: 'branch', branchName: 'main', commitId: secondId },
 		stagedFiles: [{ path: 'notes.txt', changeKind: 'added', oldPath: null }],
 		modifiedFiles: [{ path: 'README.md', changeKind: 'modified', oldPath: null }],
 		untrackedFiles: ['draft.txt'],
-		committedFiles: []
+		committedFiles: [],
+		conflictedFiles: [],
+		operation: null,
+		stashes: [],
+		remotes: [],
+		localConfig: [],
+		answer: null
 	};
 
 	const sampleCaption = {

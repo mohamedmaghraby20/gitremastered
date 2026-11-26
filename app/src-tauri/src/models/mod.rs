@@ -4,3 +4,4 @@
 //! (camelCase field names), so the screens and the core always agree.
 
 pub mod repo_snapshot;
+pub mod working_state;

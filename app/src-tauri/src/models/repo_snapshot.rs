@@ -1,15 +1,18 @@
 //! `RepoSnapshot`: the state of a practice repository at one moment.
 //!
-//! Mirrors `app/src/lib/types/repo-snapshot.ts`. Built by repo-inspector (task 15)
-//! and sent to the screens with the `repo_changed` event.
+//! Mirrors `app/src/lib/types/repo-snapshot.ts`. Built by repo-inspector and sent to the
+//! screens with the `repo_changed` event. The smaller parts live in `working_state`.
 
 use serde::{Deserialize, Serialize};
+
+pub use super::working_state::{ChangeKind, ConfigEntry, FileChange, Operation, Remote};
 
 /// The state of the practice repository at one moment.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct RepoSnapshot {
-    /// Every reachable commit, newest first.
+    /// Every commit Git still remembers, newest first: the ones a branch, tag or HEAD reaches,
+    /// and (marked `is_reachable: false`) the ones only the reflog still knows.
     pub commits: Vec<Commit>,
     /// Local and remote-tracking branches.
     pub branches: Vec<Branch>,
@@ -25,6 +28,19 @@ pub struct RepoSnapshot {
     pub untracked_files: Vec<String>,
     /// Every file saved in the latest commit (HEAD), sorted; empty before the first commit.
     pub committed_files: Vec<String>,
+    /// Files with a merge conflict that is not resolved yet (they are in `modified_files` too).
+    pub conflicted_files: Vec<String>,
+    /// A merge, rebase, revert, cherry-pick or bisect that is waiting to be finished.
+    pub operation: Option<Operation>,
+    /// The message of each stash entry, newest first.
+    pub stashes: Vec<String>,
+    /// The remotes this repository knows.
+    pub remotes: Vec<Remote>,
+    /// The repository's own settings (`git config --local`).
+    pub local_config: Vec<ConfigEntry>,
+    /// The first line of `answer.txt` in the working folder, for challenges that ask the
+    /// student to find something out and write it down. `None` without the file.
+    pub answer: Option<String>,
 }
 
 /// One commit.
@@ -41,6 +57,9 @@ pub struct Commit {
     pub author_name: String,
     /// When it was written, as an ISO 8601 date and time.
     pub authored_at: String,
+    /// True when a branch, a tag or HEAD reaches this commit. False for a commit that lost
+    /// its branch (after an amend or a reset) and lives on only in the reflog.
+    pub is_reachable: bool,
 }
 
 /// One branch, local (`main`) or remote-tracking (`origin/main`).
@@ -53,6 +72,12 @@ pub struct Branch {
     pub commit_id: String,
     /// True for remote-tracking branches like `origin/main`.
     pub is_remote: bool,
+    /// The remote-tracking branch this branch follows, like `origin/main`; `None` without one.
+    pub upstream: Option<String>,
+    /// How many commits this branch has that its upstream does not.
+    pub ahead: u32,
+    /// How many commits the upstream has that this branch does not.
+    pub behind: u32,
 }
 
 /// One tag.
@@ -63,12 +88,11 @@ pub struct Tag {
     pub name: String,
     /// The commit the tag points to.
     pub commit_id: String,
+    /// True for an annotated tag (a tag with its own message, author and date).
+    pub is_annotated: bool,
 }
 
 /// Where HEAD points: at a branch (the usual case) or straight at a commit ("detached").
-///
-/// In JSON: `{"kind": "branch", "branchName": "main", "commitId": "…" or null}`
-/// or `{"kind": "detached", "commitId": "…"}`.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(
     tag = "kind",
@@ -76,7 +100,7 @@ pub struct Tag {
     rename_all_fields = "camelCase"
 )]
 pub enum HeadState {
-    /// HEAD follows a branch. `commit_id` is `None` before the first commit.
+    /// HEAD follows a branch. `commit_id` is `None` on a new branch with no commits yet.
     Branch {
         branch_name: String,
         commit_id: Option<String>,
@@ -85,26 +109,14 @@ pub enum HeadState {
     Detached { commit_id: String },
 }
 
-/// What happened to a file.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub enum ChangeKind {
-    Added,
-    Modified,
-    Deleted,
-    Renamed,
-}
-
-/// One changed file, staged or not.
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct FileChange {
-    /// The file's path inside the repository.
-    pub path: String,
-    /// What happened to it.
-    pub change_kind: ChangeKind,
-    /// The old path, for renamed files; otherwise `None`.
-    pub old_path: Option<String>,
+impl HeadState {
+    /// The commit HEAD is on. Input: none. Output: its ID, or `None` before the first commit.
+    pub fn commit_id(&self) -> Option<&str> {
+        match self {
+            Self::Branch { commit_id, .. } => commit_id.as_deref(),
+            Self::Detached { commit_id } => Some(commit_id),
+        }
+    }
 }
 
 #[cfg(test)]
@@ -112,9 +124,7 @@ mod tests {
     use super::*;
     use serde_json::json;
 
-    /// Builds a small snapshot: one commit on `main`, one staged file, one untracked file.
-    ///
-    /// Inputs: none. Output: the snapshot.
+    /// A small snapshot with one commit, one staged file and one untracked file.
     fn sample_snapshot() -> RepoSnapshot {
         RepoSnapshot {
             commits: vec![Commit {
@@ -123,13 +133,21 @@ mod tests {
                 parent_ids: vec![],
                 author_name: "Student".to_string(),
                 authored_at: "2026-11-25T10:00:00+00:00".to_string(),
+                is_reachable: true,
             }],
             branches: vec![Branch {
                 name: "main".to_string(),
                 commit_id: "a1b2c3".to_string(),
                 is_remote: false,
+                upstream: Some("origin/main".to_string()),
+                ahead: 1,
+                behind: 0,
             }],
-            tags: vec![],
+            tags: vec![Tag {
+                name: "v1.0".to_string(),
+                commit_id: "a1b2c3".to_string(),
+                is_annotated: true,
+            }],
             head: HeadState::Branch {
                 branch_name: "main".to_string(),
                 commit_id: Some("a1b2c3".to_string()),
@@ -142,6 +160,15 @@ mod tests {
             modified_files: vec![],
             untracked_files: vec!["draft.md".to_string()],
             committed_files: vec!["notes.txt".to_string()],
+            conflicted_files: vec!["app.js".to_string()],
+            operation: Some(Operation::Merge),
+            stashes: vec!["WIP on main: a1b2c3 Add notes".to_string()],
+            remotes: vec![],
+            local_config: vec![ConfigEntry {
+                key: "user.name".to_string(),
+                value: "Student".to_string(),
+            }],
+            answer: Some("42".to_string()),
         }
     }
 
@@ -155,7 +182,16 @@ mod tests {
         assert_eq!(snapshot_json["untrackedFiles"][0], "draft.md");
         assert_eq!(snapshot_json["committedFiles"][0], "notes.txt");
         assert_eq!(snapshot_json["commits"][0]["parentIds"], json!([]));
+        assert_eq!(snapshot_json["commits"][0]["isReachable"], true);
         assert_eq!(snapshot_json["branches"][0]["isRemote"], false);
+        assert_eq!(snapshot_json["branches"][0]["upstream"], "origin/main");
+        assert_eq!(snapshot_json["branches"][0]["ahead"], 1);
+        assert_eq!(snapshot_json["tags"][0]["isAnnotated"], true);
+        assert_eq!(snapshot_json["conflictedFiles"][0], "app.js");
+        assert_eq!(snapshot_json["operation"], "merge");
+        assert_eq!(snapshot_json["stashes"][0], "WIP on main: a1b2c3 Add notes");
+        assert_eq!(snapshot_json["localConfig"][0]["key"], "user.name");
+        assert_eq!(snapshot_json["answer"], "42");
     }
 
     /// HEAD carries a "kind" tag, so the screens can tell a branch from a detached HEAD.
