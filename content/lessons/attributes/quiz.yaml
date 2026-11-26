@@ -1,0 +1,40 @@
+questions:
+  - question: "A teammate on Windows fixed one typo in menu.txt. After you pull, the diff of their commit marks every line of the file as changed. What is the most likely cause?"
+    answers:
+      - text: "Their editor saved the file with CRLF line endings, and the repository had LF"
+        correct: true
+        explanation: "Every line got an extra invisible character at its end, so Git sees every line as different. A * text=auto rule makes Git store LF whatever the editor writes."
+      - text: "They forgot to mark menu.txt as binary"
+        explanation: "binary would hide the diff, not fix it. menu.txt is text that people read and merge; it needs text rules."
+      - text: "Their .gitattributes was not committed, so Git could not compare the files"
+        explanation: "Git compares files with or without a .gitattributes. The file only adds rules for how to treat them."
+
+  - question: "Your repository has files committed with CRLF. You add * text=auto to .gitattributes and commit only that file. What does the repository hold now?"
+    answers:
+      - text: "Every text file with LF: the rule converts all of them at once"
+        explanation: "A rule changes nothing by being there. Git converts a file when it is added again, and with text=auto it leaves files already committed with CRLF alone."
+      - text: "The old files still with CRLF, until you run git add --renormalize . and commit"
+        correct: true
+        explanation: "git add --renormalize . stages every tracked file again under the new rules. git ls-files --eol shows i/crlf before and i/lf after."
+      - text: "Nothing usable: Git refuses to work until the endings match the rule"
+        explanation: "Git keeps working. The old files simply stay as they were until you renormalize them."
+
+  - question: ".gitattributes says build-info.txt merge=ours, and merge.ours.driver is true. You merge a branch that changed build-info.txt, while your branch did not touch it. What is in the file after the merge?"
+    answers:
+      - text: "Your version: the driver always keeps your side"
+        explanation: "The driver only runs when both sides changed the file. Here only one side changed it, so Git needs no driver."
+      - text: "A conflict, because the two versions differ"
+        explanation: "A conflict needs changes on both sides. When one side changed a file and the other did not, Git takes the changed version."
+      - text: "The other branch's version"
+        correct: true
+        explanation: "Git calls a merge driver only for files both branches changed. A change on one side alone is taken as it is, before any driver is asked."
+
+  - question: "You add tests/ export-ignore to .gitattributes and run git archive HEAD right away, without committing. The tests folder is still in the archive. Why?"
+    answers:
+      - text: "export-ignore only works on single files, never on folders"
+        explanation: "It works on folders: Pro Git's own example is test/ export-ignore."
+      - text: "git archive reads .gitattributes from the commit it packs, and the new line is not committed yet"
+        correct: true
+        explanation: "The archive is made from a commit, rules included. Commit .gitattributes, and the next archive of HEAD leaves the folder out."
+      - text: "git archive needs an extra option to apply the rule"
+        explanation: "No option is needed. The attribute is applied by itself once it is in the commit being packed."

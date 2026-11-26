@@ -1,0 +1,115 @@
+challenges:
+  - id: editor-for-this-repo
+    title: Out of Vim, into VS Code
+    level: easy
+    brief: "A teammate set this repository's editor to Vim, and every commit without -m traps you in it. Make VS Code the editor for this repository only, with the command that keeps Git waiting until you close the message. Leave the settings of your computer as they are."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Shop app" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - echo "Open every day" >> README.md
+      - git commit -q -am "Add opening hours"
+      - git config core.editor vim
+    goal:
+      - check: config-is
+        key: core.editor
+        value: code --wait
+        label: "This repository's core.editor is exactly: code --wait"
+    hints:
+      - "Run git var GIT_EDITOR to see the editor Git would open here, and git config --show-origin core.editor to see which file sets it."
+      - "The setting is core.editor. Without --global it is written to this repository only. The value has a space in it, so it needs quotes, and VS Code needs one option so that Git waits."
+      - "Run: git config core.editor \"code --wait\", then check it with git var GIT_EDITOR"
+    solution:
+      - git config core.editor "code --wait"
+
+  - id: vscode-diff-and-merge
+    title: Diffs and conflicts open in VS Code
+    level: medium
+    brief: "Your team reads diffs and fixes conflicts in VS Code. In this repository git difftool still opens Vim, and a teammate's try at a VS Code command lost its file names. Set VS Code up as this repository's diff tool and merge tool, under the tool name vscode, with both commands written out in full: code --wait --diff $LOCAL $REMOTE for diffs, and code --wait --merge $REMOTE $LOCAL $BASE $MERGED for merges."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Shop app" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - echo "Open every day" >> README.md
+      - git config diff.tool vimdiff
+      - git config difftool.vscode.cmd "code --wait --diff"
+    goal:
+      - check: config-is
+        key: diff.tool
+        value: vscode
+        label: "This repository's diff.tool is vscode"
+      - check: config-is
+        key: difftool.vscode.cmd
+        value: code --wait --diff $LOCAL $REMOTE
+        label: "difftool.vscode.cmd is: code --wait --diff $LOCAL $REMOTE"
+      - check: config-is
+        key: merge.tool
+        value: vscode
+        label: "This repository's merge.tool is vscode"
+      - check: config-is
+        key: mergetool.vscode.cmd
+        value: code --wait --merge $REMOTE $LOCAL $BASE $MERGED
+        label: "mergetool.vscode.cmd is: code --wait --merge $REMOTE $LOCAL $BASE $MERGED"
+      - check: file-is-modified
+        file: README.md
+        label: "README.md is still changed, not committed"
+    hints:
+      - "Run git config --local --list. Two lines are about diffs: which tool does diff.tool name, and what is missing at the end of difftool.vscode.cmd?"
+      - "Four settings: diff.tool and merge.tool hold the tool's name, difftool.vscode.cmd and mergetool.vscode.cmd hold the commands. Think about the quotes: in double quotes, your shell replaces $LOCAL with nothing before Git sees it."
+      - "Run: git config diff.tool vscode, git config merge.tool vscode, git config difftool.vscode.cmd 'code --wait --diff $LOCAL $REMOTE', git config mergetool.vscode.cmd 'code --wait --merge $REMOTE $LOCAL $BASE $MERGED'. Read each value back with git config <key>."
+    solution:
+      - git config diff.tool vscode
+      - git config merge.tool vscode
+      - git config difftool.vscode.cmd 'code --wait --diff $LOCAL $REMOTE'
+      - git config mergetool.vscode.cmd 'code --wait --merge $REMOTE $LOCAL $BASE $MERGED'
+
+  - id: read-the-prompt
+    title: Be the prompt
+    level: hard
+    brief: "A teammate's Bash prompt uses git-prompt.sh with the marks for changes, the stash and untracked files all switched on. Work out, with Git commands only, which marks that prompt shows after the branch name in this repository right now. Write only the marks into answer.txt, with no spaces, in the order the prompt prints them. Then switch the untracked-files mark off for this repository only, because this project will soon hold thousands of generated files. Change nothing else."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo answer.txt >> .git/info/exclude
+      - echo "# Shop app" > README.md
+      - echo "Total 0" > cart.txt
+      - git add README.md cart.txt
+      - git commit -q -m "Add README and cart"
+      - git switch -q -c checkout-page
+      - echo "Free delivery over 50" >> README.md
+      - git stash -q
+      - echo "Total 10" > cart.txt
+      - git add cart.txt
+      - echo "Coupon none" >> cart.txt
+      - echo "Ask about gift cards" > notes.txt
+    goal:
+      - check: answer-is
+        answer: "*+$%"
+        label: "answer.txt holds the marks the prompt shows after the branch name"
+      - check: config-is
+        key: bash.showUntrackedFiles
+        value: "false"
+        label: "This repository's bash.showUntrackedFiles is false"
+      - check: stash-count-is
+        count: 1
+        label: "The stash still holds its one entry"
+      - check: file-is-untracked
+        file: notes.txt
+        label: "notes.txt is still untracked"
+    hints:
+      - "The table \"The marks after the branch name\" in Under the hood lists four marks and what each one means. Two Git commands tell you which apply here: git status -sb and git stash list."
+      - "In git status -sb, a letter in the right column means unstaged changes (*), a letter in the left column means staged (+), and ?? means untracked (%). An entry in git stash list gives $. Keep the table's order. The setting that turns one mark off for one repository is at the end of the same part."
+      - "Run: echo '*+$%' > answer.txt (single quotes, so the shell leaves the marks alone), then git config bash.showUntrackedFiles false"
+    solution:
+      - echo '*+$%' > answer.txt
+      - git config bash.showUntrackedFiles false

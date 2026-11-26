@@ -1,0 +1,137 @@
+challenges:
+  - id: images-and-scripts
+    title: Rules for images and scripts
+    level: easy
+    brief: "The bakery site has a logo and a deploy script. Tell Git that every .png file is binary, and that every .sh file is text that always gets LF line endings. Write the two rules as *.png binary and *.sh text eol=lf, and commit the .gitattributes file."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Bakery site" > README.md
+      - printf '\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR' > logo.png
+      - printf '#!/bin/sh\necho "Deploying the bakery site"\n' > deploy.sh
+      - git add README.md logo.png deploy.sh
+      - git commit -q -m "Add site files"
+    goal:
+      - check: committed-file-contains
+        file: .gitattributes
+        text: "*.png binary"
+        label: "The committed .gitattributes has the rule *.png binary"
+      - check: committed-file-contains
+        file: .gitattributes
+        text: "*.sh text eol=lf"
+        label: "The committed .gitattributes has the rule *.sh text eol=lf"
+      - check: file-is-committed
+        file: .gitattributes
+        label: ".gitattributes is committed, with no change left over"
+      - check: working-folder-clean
+        label: "git status shows nothing left to do"
+    hints:
+      - "A rule is one line: a pattern, a space, then the attributes. Which pattern matches every .png file?"
+      - "Put two lines in .gitattributes: *.png binary and *.sh text eol=lf. Check them with git check-attr -a logo.png deploy.sh before you commit."
+      - "Run: printf '*.png binary\\n*.sh text eol=lf\\n' >> .gitattributes, then git add .gitattributes and git commit -m \"Add attributes for images and scripts\""
+    solution:
+      - printf '*.png binary\n*.sh text eol=lf\n' >> .gitattributes
+      - git add .gitattributes
+      - git commit -q -m "Add attributes for images and scripts"
+
+  - id: normalize-line-endings
+    title: Clean up Windows line endings
+    level: medium
+    brief: "menu.txt and hours.txt were committed with Windows line endings (CRLF). Add the rule * text=auto in a .gitattributes file, make Git store both files again with LF, and commit everything together. Then prove it: run git ls-files --eol menu.txt and write the first column Git prints (it looks like i/crlf) into answer.txt."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - printf 'Bread\r\nCake\r\nCoffee\r\n' > menu.txt
+      - printf 'Open Monday to Friday\r\nClosed on Sunday\r\n' > hours.txt
+      - git add menu.txt hours.txt
+      - git commit -q -m "Add menu and hours"
+      - echo answer.txt >> .git/info/exclude
+    goal:
+      - check: committed-file-contains
+        file: .gitattributes
+        text: "* text=auto"
+        label: "The committed .gitattributes has the rule * text=auto"
+      - check: commit-count-at-least
+        count: 2
+        label: "The history has your new commit"
+      - check: working-folder-clean
+        label: "git status shows nothing left to do"
+      - check: answer-is
+        answer: "i/lf"
+        label: "answer.txt holds what the repository now stores for menu.txt: the first column of git ls-files --eol menu.txt"
+    hints:
+      - "Run git ls-files --eol. The first column (i/) shows what the repository holds. Does writing the rule alone change that column?"
+      - "Git leaves files that are already committed with CRLF alone. After you write the rule, git add --renormalize . stages them again with LF. Commit them together with .gitattributes."
+      - "After the commit, run git ls-files --eol menu.txt again. If the first column still says i/crlf, the renormalize step did not happen. The w/ column may still say crlf: that is the file on your disk, and it is fine."
+      - "Run: echo '* text=auto' > .gitattributes, git add --renormalize ., git add .gitattributes, git commit -m \"Normalize line endings\". Then run git ls-files --eol menu.txt and put its first column into the answer file with echo <first column> > answer.txt"
+    solution:
+      - echo '* text=auto' > .gitattributes
+      - git add --renormalize .
+      - git add .gitattributes
+      - git commit -q -m "Normalize line endings"
+      - git ls-files --eol menu.txt | cut -d' ' -f1 > answer.txt
+
+  - id: keep-our-build-info
+    title: Keep our generated file on every merge
+    level: hard
+    brief: "build-info.txt is written by the build, and both main and feature changed it, so merging feature stops on a conflict. You are on main. Set things up so Git keeps main's build-info.txt by itself: a merge=ours rule in a committed .gitattributes, and a merge driver named ours in this repository's settings. Then merge feature."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Bakery site" > README.md
+      - echo "Built on main, Monday" > build-info.txt
+      - git add README.md build-info.txt
+      - git commit -q -m "Add README and build info"
+      - git switch -q -c feature
+      - echo "Built on feature, Tuesday" > build-info.txt
+      - echo "Order cakes online." >> README.md
+      - git commit -q -a -m "Add online orders"
+      - git switch -q main
+      - echo "Built on main, Wednesday" > build-info.txt
+      - git commit -q -a -m "Rebuild main"
+    goal:
+      - check: config-is
+        key: merge.ours.driver
+        value: "true"
+        label: "This repository's settings define the merge driver: merge.ours.driver is true"
+      - check: committed-file-contains
+        file: .gitattributes
+        text: "build-info.txt merge=ours"
+        label: "The committed .gitattributes has the rule build-info.txt merge=ours"
+      - check: head-commit-is-merge
+        label: "The latest commit on main is a merge commit"
+      - check: branch-is-merged-into
+        branch: feature
+        into: main
+        label: "feature is merged into main"
+      - check: file-contains
+        file: build-info.txt
+        text: "Built on main, Wednesday"
+        label: "build-info.txt still holds main's line"
+      - check: file-lacks
+        file: build-info.txt
+        text: "feature"
+        label: "build-info.txt has nothing from feature, and no conflict markers"
+      - check: file-contains
+        file: README.md
+        text: "Order cakes online."
+        label: "README.md has the line from feature"
+      - check: no-operation-in-progress
+        label: "No merge is waiting"
+    hints:
+      - "Try git merge feature first, look at the conflict, then git merge --abort. The Advanced layer has a part called \"Keep your version of a file on every merge\"."
+      - "Two pieces are needed. The rule build-info.txt merge=ours only names a driver. The driver itself is a setting: git config merge.ours.driver true. Without it, the merge still stops on the conflict."
+      - "Commit .gitattributes before you merge, so the rule is part of the project."
+      - "Run: echo \"build-info.txt merge=ours\" > .gitattributes, git add .gitattributes, git commit -m \"Keep our build info on merges\", git config merge.ours.driver true, then git merge feature --no-edit"
+    solution:
+      - echo "build-info.txt merge=ours" > .gitattributes
+      - git add .gitattributes
+      - git commit -q -m "Keep our build info on merges"
+      - git config merge.ours.driver true
+      - git merge -q feature --no-edit

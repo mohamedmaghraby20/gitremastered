@@ -1,0 +1,40 @@
+questions:
+  - question: "You wrote a pre-commit hook in .git/hooks and it works well. A teammate clones the project. What do they get?"
+    answers:
+      - text: "The hook, because .git/hooks is part of the repository"
+        explanation: "The .git/hooks folder is never sent with a clone. Git does not want a clone to bring a stranger's program onto your computer."
+      - text: "No hook: a clone starts with only the sample hooks"
+        correct: true
+        explanation: "Hooks are not cloned. To share one, commit it in a tracked folder such as .githooks, and have each person set core.hooksPath to that folder."
+      - text: "The hook, but switched off until they run chmod +x"
+        explanation: "Nothing arrives at all. chmod +x only matters for a hook file that is already there."
+
+  - question: "Your team's rule: no commit may reach main without a ticket number in its message. You add a commit-msg hook in .githooks and everyone sets core.hooksPath. Is the rule now guaranteed?"
+    answers:
+      - text: "Yes, the hook refuses every commit without a ticket number"
+        explanation: "It refuses only when it runs. Anyone can commit with --no-verify, or simply never set core.hooksPath."
+      - text: "Yes, as long as the hook file is committed with the executable mark"
+        explanation: "The mark makes the hook run on macOS and Linux. It does not stop anyone from skipping the hook."
+      - text: "No, a client-side hook can be skipped; a guarantee needs a check on the server"
+        correct: true
+        explanation: "Client-side hooks catch honest mistakes early. A rule that must hold needs a server-side hook such as pre-receive or update, or the hosting site's own protection rules."
+
+  - question: "A pre-commit hook searches for the word DEBUG with plain grep on the files in the folder. You stage app.js with a DEBUG line, then delete the line in your editor without staging again, and commit. What happens?"
+    answers:
+      - text: "The hook lets the commit through, and the commit contains the DEBUG line"
+        correct: true
+        explanation: "The hook read the files on disk, which are clean, but the commit records the staging area, which still holds the DEBUG line. A hook must check the staged version, for example with git grep --cached."
+      - text: "The hook refuses, because the staged file still has the DEBUG line"
+        explanation: "It would, if it looked at the staging area. This hook reads the files on disk, where the line is already gone."
+      - text: "The commit goes through without the DEBUG line, because the file on disk is clean"
+        explanation: "A commit never records the file on disk. It records what was staged, and the staged version still has the line."
+
+  - question: "You save a new hook as .git/hooks/pre-commit.sh and run chmod +x on it. Your next commit goes through and the hook prints nothing. Why?"
+    answers:
+      - text: "The hook needs exit 0 at the end before Git shows its output"
+        explanation: "A script that reaches its end already hands back 0, and its output always shows. This hook never started."
+      - text: "Git only runs a file whose name is exactly the hook's name, with no ending"
+        correct: true
+        explanation: "The name tells Git when to run the file. pre-commit.sh is not a hook name, so Git ignores it without a word. Rename it to pre-commit."
+      - text: "Hooks must be switched on first with git config core.hooksPath"
+        explanation: "core.hooksPath only changes the folder. With no setting, Git looks in .git/hooks, where this file is; the name is the problem."

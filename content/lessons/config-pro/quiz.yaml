@@ -1,0 +1,40 @@
+questions:
+  - question: "git config --list --show-scope prints these two lines, in this order: \"global pull.rebase=true\" and, further down, \"local pull.rebase=false\". What does git pull do in this repository?"
+    answers:
+      - text: "It merges, because the local line is read later and wins"
+        correct: true
+        explanation: "Git lists the scopes in the order it reads them, and a line further down replaces the same setting further up. Local is read after global."
+      - text: "It rebases, because the first value Git finds is the one it keeps"
+        explanation: "It is the other way round: the value read last wins. That is why local, which is read last, beats global."
+      - text: "It stops with an error, because the two values disagree"
+        explanation: "The same setting in two scopes is normal. Git uses the closest scope and reports nothing."
+
+  - question: "You run git config alias.commit 'commit -v', so that every commit shows its changes in the editor. The next day you run git commit. What happens?"
+    answers:
+      - text: "Git runs commit -v, because your alias has the same name"
+        explanation: "Git looks for a real command first and only tries aliases when there is none. A built-in command can never be replaced."
+      - text: "Git runs the plain git commit and ignores the alias"
+        correct: true
+        explanation: "Real commands come first, so an alias with the name of a built-in command is never used. Give it a name of its own, such as ci."
+      - text: "Git reports that the alias is not a valid command"
+        explanation: "Git only complains about an alias when it uses one and the value does not work. This alias is never used at all."
+
+  - question: "Your ~/.gitconfig ends with [includeIf \"gitdir:~/work\"] and path = ~/.gitconfig-work. In ~/work/shop-api, git config user.email still prints your private address. What is the most likely reason?"
+    answers:
+      - text: "A conditional include only works in a repository's .git/config"
+        explanation: "It works in any config file, and the global file is the usual place for it."
+      - text: "The folder has no / at the end, so the rule only matches a repository whose .git folder is exactly ~/work"
+        correct: true
+        explanation: "With the slash, gitdir:~/work/ means everything under that folder. Without it, the rule matches one exact path, which is almost never what you want."
+      - text: "Included files can add new settings but cannot replace user.email"
+        explanation: "An included file is read as if its lines were written in place. Any setting in it replaces an earlier value of the same setting."
+
+  - question: "A repository's .git/config sets core.pager to cat, and you want your usual pager back in this repository. Your own choice is in your global file. What is the cleanest fix?"
+    answers:
+      - text: "git config core.pager less"
+        explanation: "That works today, but it keeps a local value. If you later change your global pager, this repository will not follow."
+      - text: "git config --global core.pager less"
+        explanation: "The local value is still there and still wins, so nothing changes in this repository."
+      - text: "git config --unset core.pager"
+        correct: true
+        explanation: "Removing the local value lets your global one show through again, now and after any later change to it."

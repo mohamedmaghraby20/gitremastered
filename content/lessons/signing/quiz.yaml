@@ -1,0 +1,40 @@
+questions:
+  - question: "A commit in your project says \"Author: Dana Kim <dana@example.com>\", and Dana says she never wrote it. `git log --format=\"%h %G?\"` shows N for it. What do you know?"
+    answers:
+      - text: "Dana wrote it: Git checks the author's email when a commit is made"
+        explanation: "Git checks nothing. The name and email are settings that anyone can type, so the author line proves nothing."
+      - text: "Nothing about who wrote it: the commit is unsigned, and the author line is free text"
+        correct: true
+        explanation: "N means no signature. Without one, the only claim about the author is text that anyone could have set."
+      - text: "It was changed after Dana signed it"
+        explanation: "That would be B, a bad signature. N means there never was a signature to check."
+
+  - question: "A teammate signs with a new SSH key and pushes. On your computer, `git log --show-signature` prints \"Good \"git\" signature with ED25519 key SHA256:…\" and then \"No principal matched.\" What is the fix?"
+    answers:
+      - text: "Add a line with their email and public key to your allowed signers file, after checking with them that the key is theirs"
+        correct: true
+        explanation: "The signature is valid, but your file has no entry for this key. The allowed signers file is what ties a key to a person."
+      - text: "Ask them to commit again with -S: the signature is broken"
+        explanation: "The report says the signature is good. What is missing is on your side: a line that says whose key this is."
+      - text: "Set gpg.format to ssh in your repository"
+        explanation: "Git already read the SSH signature. gpg.format chooses how you sign; it does not decide whose keys you trust."
+
+  - question: "You tagged your newest commit as v1.0, and then noticed the commit is unsigned. You run `git commit --amend --no-edit -S`. Where is v1.0 now?"
+    answers:
+      - text: "On the new, signed commit: tags follow an amend"
+        explanation: "A tag never moves. Only the branch moved to the new commit."
+      - text: "Gone: Git deletes tags of replaced commits"
+        explanation: "Git does not delete tags by itself. The tag still exists and still names the old commit."
+      - text: "On the old, unsigned commit, which the branch no longer contains"
+        correct: true
+        explanation: "The signature is stored inside the commit, so the amend made a new commit with a new ID. The tag still names the old one. Delete the tag and create it again on the new commit."
+
+  - question: "You sign every commit with your SSH key and push to GitHub, but your commits show \"Unverified\". The key works for pushing. What is the most likely cause?"
+    answers:
+      - text: "GitHub only verifies GPG signatures"
+        explanation: "GitHub verifies GPG, SSH and S/MIME signatures."
+      - text: "The key is on your account for logging in, but was never added as a signing key"
+        correct: true
+        explanation: "GitHub keeps login keys and signing keys in separate lists. Add the same public key again with the key type \"Signing Key\"."
+      - text: "Vigilant mode is turned off"
+        explanation: "Vigilant mode only changes how unsigned commits are shown. A signed commit is verified or not regardless of it."

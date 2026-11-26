@@ -1,0 +1,147 @@
+challenges:
+  - id: sign-the-changelog
+    title: Make one signed commit
+    level: easy
+    brief: "The notes app has a new CHANGELOG.md that nobody committed yet. Signing is already set up in this repository with a practice key, but it is not turned on. Commit CHANGELOG.md, and sign that commit."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      # Signing stays off until the student asks for it, whatever their global settings say.
+      - git config commit.gpgsign false
+      - git config tag.gpgsign false
+      - echo "# Notes app" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - echo "function search() {}" > search.js
+      - git add search.js
+      - git commit -q -m "Add search page"
+      # A throwaway key pair, beside the project: never the student's own keys.
+      - mkdir ../keys
+      - ssh-keygen -q -t ed25519 -N "" -C "practice signing key" -f ../keys/practice
+      - echo "$(git config user.email) $(cat ../keys/practice.pub)" > ../keys/allowed_signers
+      - git config gpg.format ssh
+      - git config user.signingkey ../keys/practice.pub
+      - git config gpg.ssh.allowedSignersFile ../keys/allowed_signers
+      - printf '%s\n' "# Changelog" "" "## 1.0" "- Search page" > CHANGELOG.md
+    goal:
+      - check: file-is-committed
+        file: CHANGELOG.md
+        label: "CHANGELOG.md is in the latest commit"
+      - check: latest-commit-is-signed
+        label: "The latest commit has a signature that Git can verify"
+    hints:
+      - "A commit is signed at the moment it is made. Which option of git commit asks for a signature?"
+      - "Stage the file as always. Then commit with -S (a capital S) next to your -m. Check the result with git log --show-signature -1."
+      - "Run: git add CHANGELOG.md, then git commit -S -m \"Add changelog\""
+    solution:
+      - git add CHANGELOG.md
+      - git commit -q -S -m "Add changelog"
+
+  - id: set-up-signing
+    title: Set up signing from a key
+    level: medium
+    brief: "This repository has never been told how to sign. A practice key pair waits in ../keys (practice and practice.pub). In this repository's own settings, choose SSH signing and name ../keys/practice.pub as your signing key. Write an allowed signers file at ../keys/allowed_signers that lists your email with that public key, and point Git to it. Then commit LICENSE.txt with a signature. Type the paths exactly as written here, and do not use --global."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - git config commit.gpgsign false
+      - git config tag.gpgsign false
+      - echo "# Notes app" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - echo "function search() {}" > search.js
+      - git add search.js
+      - git commit -q -m "Add search page"
+      - mkdir ../keys
+      - ssh-keygen -q -t ed25519 -N "" -C "practice signing key" -f ../keys/practice
+      - echo "MIT License" > LICENSE.txt
+    goal:
+      - check: config-is
+        key: gpg.format
+        value: ssh
+        label: "This repository's own settings sign with SSH (gpg.format is ssh)"
+      - check: config-is
+        key: user.signingkey
+        value: ../keys/practice.pub
+        label: "user.signingkey is ../keys/practice.pub"
+      - check: config-is
+        key: gpg.ssh.allowedsignersfile
+        value: ../keys/allowed_signers
+        label: "gpg.ssh.allowedSignersFile is ../keys/allowed_signers"
+      - check: file-is-committed
+        file: LICENSE.txt
+        label: "LICENSE.txt is in the latest commit"
+      - check: latest-commit-is-signed
+        label: "The latest commit has a signature that Git can verify"
+    hints:
+      - "Signing needs two settings: the kind of signature and your key. Verifying needs a third: the file that lists whose key is whose. The table in \"Set it up\" has all three."
+      - "Set gpg.format, user.signingkey and gpg.ssh.allowedSignersFile with git config --local. The allowed signers file is one line: an email, then the whole content of practice.pub. Build it with echo and cat."
+      - "Run: git config --local gpg.format ssh, then git config --local user.signingkey ../keys/practice.pub, then echo \"$(git config user.email) $(cat ../keys/practice.pub)\" > ../keys/allowed_signers, then git config --local gpg.ssh.allowedSignersFile ../keys/allowed_signers, then git add LICENSE.txt, then git commit -S -m \"Add license\""
+    solution:
+      - git config --local gpg.format ssh
+      - git config --local user.signingkey ../keys/practice.pub
+      - echo "$(git config user.email) $(cat ../keys/practice.pub)" > ../keys/allowed_signers
+      - git config --local gpg.ssh.allowedSignersFile ../keys/allowed_signers
+      - git add LICENSE.txt
+      - git commit -q -S -m "Add license"
+
+  - id: sign-the-release
+    title: Sign a commit that already exists, and its tag
+    level: hard
+    brief: "Your team now accepts signed work only. Signing is set up here with the practice key, but your newest commit, \"Set version to 1.0\", was made without a signature. Turn on signing for every new commit in this repository, replace that commit with a signed one (same message, still three commits in the history), and then mark it as release v1.0 with a signed tag."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - git config commit.gpgsign false
+      - git config tag.gpgsign false
+      - mkdir ../keys
+      - ssh-keygen -q -t ed25519 -N "" -C "practice signing key" -f ../keys/practice
+      - echo "$(git config user.email) $(cat ../keys/practice.pub)" > ../keys/allowed_signers
+      - git config gpg.format ssh
+      - git config user.signingkey ../keys/practice.pub
+      - git config gpg.ssh.allowedSignersFile ../keys/allowed_signers
+      - echo "# Notes app" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - echo "function search() {}" > search.js
+      - git add search.js
+      - git commit -q -m "Add search page"
+      - echo "1.0" > VERSION
+      - git add VERSION
+      - git commit -q -m "Set version to 1.0"
+    goal:
+      - check: config-is
+        key: commit.gpgsign
+        value: "true"
+        label: "commit.gpgSign is true in this repository's own settings"
+      - check: latest-commit-is-signed
+        label: "The latest commit has a signature that Git can verify"
+      - check: latest-commit-message-contains
+        text: "Set version to 1.0"
+        label: "The latest commit is still \"Set version to 1.0\""
+      - check: commit-count-is
+        count: 3
+        label: "The history still has exactly three commits"
+      - check: tag-is-annotated
+        tag: v1.0
+        label: "v1.0 is a tag with its own record (a signed tag is one)"
+      - check: tag-is-on-commit
+        tag: v1.0
+        message: "Set version to 1.0"
+        label: "v1.0 sits on \"Set version to 1.0\""
+      - check: working-folder-clean
+        label: "Nothing is left uncommitted"
+    hints:
+      - "A signature is stored inside the commit, so an existing commit cannot gain one. Read \"Where the signature lives\" in Under the hood: which command replaces the newest commit with a new one?"
+      - "Turn on commit.gpgSign first; from then on every commit Git makes is signed, and that includes the one git commit --amend makes. Tag only after the amend: the tag must sit on the new commit, not on the one it replaced. git tag takes -s where you used to type -a."
+      - "Run: git config --local commit.gpgSign true, then git commit --amend --no-edit, then git tag -s v1.0 -m \"Version 1.0\". Check with git log --format=\"%h %G? %s\" and git tag -v v1.0."
+    solution:
+      - git config --local commit.gpgSign true
+      - git commit -q --amend --no-edit
+      - git tag -s v1.0 -m "Version 1.0"

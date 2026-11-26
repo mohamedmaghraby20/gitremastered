@@ -1,0 +1,149 @@
+challenges:
+  - id: switch-on-team-hook
+    title: Switch on the team's hook
+    level: easy
+    brief: "You just joined the shop project. The team keeps a commit-msg hook in the tracked folder .githooks, but your copy does not run it yet: nothing tells Git to look there. Point Git at .githooks for this repository, then commit the new file hours.txt with the message \"Add opening hours\". Try the message \"hours\" first if you want to see the hook refuse."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Shop app" > README.md
+      - mkdir .githooks
+      - |-
+        printf '%s\n' '#!/bin/sh' 'subject=$(head -n 1 "$1")' 'if [ ${#subject} -lt 10 ]' 'then' '  echo "commit-msg: \"$subject\" is too short. Say what the commit does."' '  exit 1' 'fi' > .githooks/commit-msg
+      - chmod +x .githooks/commit-msg
+      - git add README.md
+      - git add --chmod=+x .githooks/commit-msg
+      - git commit -q -m "Add README and the team's commit-msg hook"
+      - echo "Open Monday to Friday, 9 to 5" > hours.txt
+    goal:
+      - check: config-is
+        key: core.hooksPath
+        value: .githooks
+        label: "This repository's core.hooksPath is .githooks"
+      - check: commit-exists
+        message: "Add opening hours"
+        label: "A commit named \"Add opening hours\" exists"
+      - check: file-is-committed
+        file: hours.txt
+        label: "hours.txt is committed"
+    hints:
+      - "Run cat .githooks/commit-msg to read the team's rule. Then ask yourself: which folder does Git look in for hooks right now?"
+      - "The setting core.hooksPath names the hooks folder. Set it for this repository only, with git config --local. Then stage hours.txt and commit it with a message the hook accepts."
+      - "Run: git config --local core.hooksPath .githooks, then git add hours.txt, then git commit -m \"Add opening hours\"."
+    solution:
+      - git config --local core.hooksPath .githooks
+      - git add hours.txt
+      - git commit -q -m "Add opening hours"
+
+  - id: refuse-debug-lines
+    title: Keep DEBUG lines out of the shop
+    level: medium
+    brief: "A line with the word DEBUG reached main in app.js last week. Make sure it cannot happen again: write a pre-commit hook in .githooks/pre-commit that refuses a commit while any staged .js file contains DEBUG, and switch it on with core.hooksPath. Then remove the DEBUG line from app.js and commit the hook and the fix. The hook file contains the word DEBUG itself, so it must search .js files only."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Shop app" > README.md
+      - |-
+        printf '%s\n' 'function addToCart(cart, item) {' '  console.log("DEBUG cart")' '  cart.push(item)' '}' > app.js
+      - git add README.md app.js
+      - git commit -q -m "Add README and the cart"
+    goal:
+      - check: config-is
+        key: core.hooksPath
+        value: .githooks
+        label: "This repository's core.hooksPath is .githooks"
+      - check: file-contains
+        file: .githooks/pre-commit
+        text: "#!/bin/sh"
+        label: ".githooks/pre-commit starts with the #!/bin/sh line"
+      - check: file-contains
+        file: .githooks/pre-commit
+        text: "DEBUG"
+        label: ".githooks/pre-commit searches for DEBUG"
+      - check: file-is-committed
+        file: .githooks/pre-commit
+        label: ".githooks/pre-commit is committed"
+      - check: committed-file-lacks
+        file: app.js
+        text: "DEBUG"
+        label: "app.js in the latest commit has no DEBUG line"
+      - check: working-folder-clean
+        label: "git status shows nothing left to do"
+    hints:
+      - "Three jobs: tell Git where the hooks are, write the hook, then clean app.js. The lesson's FIXME hook under \"A hook that checks your files\" is the model to copy."
+      - "The hook needs the shebang line, an if around git grep --cached -q \"DEBUG\" -- \"*.js\", a message and exit 1. Create the folder with mkdir .githooks, write the file with printf or nano, and run chmod +x on it. To clean app.js, delete its DEBUG line in an editor (nano app.js)."
+      - |-
+        Run: git config --local core.hooksPath .githooks, then mkdir .githooks, then: printf '%s\n' '#!/bin/sh' 'if git grep --cached -q "DEBUG" -- "*.js"' 'then' '  echo "pre-commit: remove DEBUG lines before you commit."' '  exit 1' 'fi' > .githooks/pre-commit
+      - "Then run chmod +x .githooks/pre-commit, delete the DEBUG line from app.js (nano app.js, or sed -i '/DEBUG/d' app.js), and finish with git add --chmod=+x .githooks/pre-commit, git add app.js, git commit -m \"Refuse DEBUG lines with a pre-commit hook\"."
+    solution:
+      - git config --local core.hooksPath .githooks
+      - mkdir .githooks
+      - |-
+        printf '%s\n' '#!/bin/sh' 'if git grep --cached -q "DEBUG" -- "*.js"' 'then' '  echo "pre-commit: remove DEBUG lines before you commit:"' '  git grep --cached -n "DEBUG" -- "*.js"' '  exit 1' 'fi' > .githooks/pre-commit
+      - chmod +x .githooks/pre-commit
+      - sed -i '/DEBUG/d' app.js
+      - git add --chmod=+x .githooks/pre-commit
+      - git add app.js
+      - git commit -q -m "Refuse DEBUG lines with a pre-commit hook"
+
+  - id: require-ticket-number
+    title: No commit without a ticket number
+    level: hard
+    brief: "The team decided that every commit message must name its ticket in square brackets, like [SHOP-12]. Write a commit-msg hook in .githooks/commit-msg that refuses any message without such a number (the letters SHOP, a dash, then digits), and switch it on. Commit the hook itself first; its ticket is SHOP-11. Then commit the waiting file checkout.js for ticket SHOP-12, so that the latest commit's message contains [SHOP-12]."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Shop app" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - echo "function checkOut(cart) {}" > checkout.js
+    goal:
+      - check: config-is
+        key: core.hooksPath
+        value: .githooks
+        label: "This repository's core.hooksPath is .githooks"
+      - check: committed-file-contains
+        file: .githooks/commit-msg
+        text: "#!/bin/sh"
+        label: "The committed commit-msg hook starts with the #!/bin/sh line"
+      - check: committed-file-contains
+        file: .githooks/commit-msg
+        text: "SHOP-"
+        label: "The committed hook looks for a SHOP- ticket number"
+      - check: committed-file-contains
+        file: .githooks/commit-msg
+        text: "$1"
+        label: "The committed hook reads the message file, $1"
+      - check: commit-exists
+        message: "[SHOP-11]"
+        label: "A commit with [SHOP-11] in its message exists (the hook)"
+      - check: latest-commit-message-contains
+        text: "[SHOP-12]"
+        label: "The latest commit's message contains [SHOP-12]"
+      - check: file-is-committed
+        file: checkout.js
+        label: "checkout.js is committed"
+      - check: working-folder-clean
+        label: "git status shows nothing left to do"
+    hints:
+      - "A commit-msg hook is handed the message as a file. Under the hood, \"What each hook is given\", says how the script reaches it. Once the hook is on, it also judges the commit that adds the hook."
+      - "Inside the hook, \"$1\" is the message file. grep -qE with a pattern searches it: \\[SHOP-[0-9]+\\] means a square bracket, SHOP-, one or more digits, a square bracket. Put ! in front of grep to refuse when the pattern is missing. The Advanced part \"A server-side policy\" uses the same pattern."
+      - |-
+        Run: git config --local core.hooksPath .githooks, then mkdir .githooks, then: printf '%s\n' '#!/bin/sh' 'if ! grep -qE "\[SHOP-[0-9]+\]" "$1"' 'then' '  echo "commit-msg: add a ticket number like [SHOP-12] to the message."' '  exit 1' 'fi' > .githooks/commit-msg
+      - "Then run chmod +x .githooks/commit-msg, git add --chmod=+x .githooks/commit-msg, git commit -m \"Require a ticket number in commit messages [SHOP-11]\", and last git add checkout.js, git commit -m \"Add the checkout page [SHOP-12]\"."
+    solution:
+      - git config --local core.hooksPath .githooks
+      - mkdir .githooks
+      - |-
+        printf '%s\n' '#!/bin/sh' 'if ! grep -qE "\[SHOP-[0-9]+\]" "$1"' 'then' '  echo "commit-msg: add a ticket number like [SHOP-12] to the message."' '  exit 1' 'fi' > .githooks/commit-msg
+      - chmod +x .githooks/commit-msg
+      - git add --chmod=+x .githooks/commit-msg
+      - git commit -q -m "Require a ticket number in commit messages [SHOP-11]"
+      - git add checkout.js
+      - git commit -q -m "Add the checkout page [SHOP-12]"

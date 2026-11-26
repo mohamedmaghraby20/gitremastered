@@ -1,0 +1,40 @@
+questions:
+  - question: "You stage login.js with the + button in VS Code, then switch to a terminal in the same folder and run git commit -m \"Add login\". What does the commit contain?"
+    answers:
+      - text: "login.js, because VS Code and the terminal share one staging area"
+        correct: true
+        explanation: "The + button runs git add on the repository on your disk. The terminal's git commit reads that same staging area."
+      - text: "Nothing, because the file was staged in VS Code and not in the terminal"
+        explanation: "No tool keeps a staging area of its own. There is one, in the .git folder, and every tool reads it."
+      - text: "Every changed file, because the terminal does not see what VS Code staged"
+        explanation: "git commit takes only what is staged, and the terminal sees exactly what VS Code staged."
+
+  - question: "core.editor is set to code. You run git commit without -m. A tab opens in VS Code, and the terminal already shows \"Aborting commit due to empty commit message.\" Why?"
+    answers:
+      - text: "VS Code cannot be used as Git's editor"
+        explanation: "It can. The command only needs one more option."
+      - text: "The code command ended at once, so Git read the message file while it was still empty"
+        correct: true
+        explanation: "Git waits for the editor's program to end. code --wait keeps it running until you close the tab."
+      - text: "Nothing was staged, so there was nothing to commit"
+        explanation: "Then Git would say there is nothing to commit and would not open an editor at all."
+
+  - question: "You run git config difftool.vscode.cmd \"code --wait --diff $LOCAL $REMOTE\" with double quotes. Git reports no error. What is stored?"
+    answers:
+      - text: "The full command, with $LOCAL and $REMOTE in it"
+        explanation: "That needs single quotes. In double quotes the shell replaces both names before Git sees the command."
+      - text: "Nothing: Git refuses a value with a $ in it"
+        explanation: "Git accepts any text as a value. The shell changed the text before Git got it."
+      - text: "code --wait --diff, with the two file names missing"
+        correct: true
+        explanation: "The shell replaced $LOCAL and $REMOTE with their values in your shell, which are empty. Read a setting back after you write it."
+
+  - question: "Your Bash prompt shows (main *). You run git commit -m \"Fix typo\". What happens?"
+    answers:
+      - text: "Git commits the change the * stands for"
+        explanation: "The * means a change that is not staged. A commit takes only what is staged, and there is no + in the prompt."
+      - text: "Git makes no commit: nothing is staged"
+        correct: true
+        explanation: "A * without a + means changes in the working tree and an empty staging area. Run git add first, and the prompt shows +."
+      - text: "Git commits to a branch named *"
+        explanation: "The branch is main. The * is a mark the prompt adds after the branch name."

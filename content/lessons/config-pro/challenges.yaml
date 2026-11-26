@@ -1,0 +1,133 @@
+challenges:
+  - id: two-aliases
+    title: Two short commands for this project
+    level: easy
+    brief: "You are tired of typing the same two commands. In this repository only, make git st run status, and make git last show the newest commit by running log -1 HEAD. Leave the settings of your computer as they are."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Shop app" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - echo "Opening hours and prices" > shop.txt
+      - git add shop.txt
+      - git commit -q -m "Add shop details"
+    goal:
+      - check: config-is
+        key: alias.st
+        value: status
+        label: "This repository's alias st runs: status"
+      - check: config-is
+        key: alias.last
+        value: log -1 HEAD
+        label: "This repository's alias last runs: log -1 HEAD"
+    hints:
+      - "An alias is a setting named alias.<name>. Its value is the Git command without the word git."
+      - "Run git config alias.st status, without --global. The second alias has spaces in its value: what must go around it so the shell keeps it in one piece?"
+      - "Run: git config alias.st status, then git config alias.last 'log -1 HEAD'. Try them: git st, then git last."
+    solution:
+      - git config alias.st status
+      - git config alias.last 'log -1 HEAD'
+
+  - id: undo-a-setup-script
+    title: Clean up after a setup script
+    level: medium
+    brief: "A teammate's setup script changed two settings of this repository. A mistyped command now runs Git's guess at once, and all colors are gone. Make Git ask before it runs a guess (help.autocorrect prompt). For the colors, do not choose a value: remove the script's line, so your own default comes back."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Shop app" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - git config help.autocorrect immediate
+      - git config color.ui false
+    goal:
+      - check: config-is
+        key: help.autocorrect
+        value: prompt
+        label: "This repository's help.autocorrect is prompt"
+      - check: config-is-unset
+        key: color.ui
+        label: "This repository no longer sets color.ui"
+    hints:
+      - "Run git config --list --show-scope and read the lines that start with local. Which two did the script add?"
+      - "Setting a value again replaces it. Taking a value away, so the next scope shows through, is a different option of git config."
+      - "Run: git config help.autocorrect prompt, then git config --unset color.ui. Check with git config --show-scope color.ui: the answer no longer starts with local."
+    solution:
+      - git config help.autocorrect prompt
+      - git config --unset color.ui
+
+  - id: team-settings-file
+    title: Plug in the team's settings file
+    level: hard
+    brief: "Your team keeps its shared Git settings in team.gitconfig, a file at the top of this project. Make this repository read that file, with a path that works for every teammate (no folder names of your own computer). Then remove your own old lg alias from this repository, so that git lg has one definition: the team's."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Shop app" > README.md
+      - printf '[alias]\n\tlg = log --oneline --graph\n\tunstage = restore --staged\n[pull]\n\trebase = false\n' > team.gitconfig
+      - git add README.md team.gitconfig
+      - git commit -q -m "Add README and team settings"
+      - git config alias.lg log
+    goal:
+      - check: config-is
+        key: include.path
+        value: ../team.gitconfig
+        label: "This repository includes ../team.gitconfig"
+      - check: config-is-unset
+        key: alias.lg
+        label: "This repository's own settings no longer define lg"
+      - check: file-is-committed
+        file: team.gitconfig
+        label: "team.gitconfig is still committed and unchanged"
+    hints:
+      - "Read \"An include is read in place\" in the Under the hood layer. The setting you need is called include.path."
+      - "The path counts from the file that holds the line, and that file is .git/config, inside the .git folder. How do you write \"one folder up\"? Your old alias is a local setting like any other: one option of git config removes it."
+      - "Run: git config --local include.path ../team.gitconfig, then git config --unset alias.lg. Check with git config --show-origin alias.lg: the value now comes from team.gitconfig."
+    solution:
+      - git config --local include.path ../team.gitconfig
+      - git config --unset alias.lg
+
+  - id: who-sets-rebase
+    title: Who told git pull to rebase?
+    level: hard
+    brief: "In this project, git pull is set to rebase, and you never chose that. Find the file that sets pull.rebase and write its name, without any folder, into answer.txt (for example: echo config > answer.txt). Do not edit that file: others rely on it. Instead, make this repository use pull.rebase false, in a way that wins over it."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo answer.txt >> .git/info/exclude
+      - echo "# Shop app" > README.md
+      - printf '[alias]\n\tlg = log --oneline --graph\n[pull]\n\trebase = true\n' > team.gitconfig
+      - git add README.md team.gitconfig
+      - git commit -q -m "Add README and team settings"
+      - git config include.path ../team.gitconfig
+    goal:
+      - check: answer-is
+        answer: team.gitconfig
+        label: "answer.txt names the file that sets pull.rebase to true"
+      - check: config-is
+        key: pull.rebase
+        value: "false"
+        label: "This repository's own pull.rebase is false"
+      - check: config-is
+        key: include.path
+        value: ../team.gitconfig
+        label: "The team's file is still included"
+      - check: file-is-committed
+        file: team.gitconfig
+        label: "team.gitconfig is still committed and unchanged"
+    hints:
+      - "The scope alone will not answer this one. Which option of git config prints the file a value comes from?"
+      - "Run git config --show-origin pull.rebase. The file name is the last part of the path Git prints. Then read \"Position decides who wins\" in the Under the hood layer: where does git config write a new section?"
+      - "Run: echo team.gitconfig > answer.txt, then git config pull.rebase false. Check with git config --show-origin --get-all pull.rebase: your false is the last line, so it wins."
+    solution:
+      - echo team.gitconfig > answer.txt
+      - git config pull.rebase false
