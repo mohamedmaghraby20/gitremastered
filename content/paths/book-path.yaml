@@ -1,0 +1,9 @@
+id: book-path
+title: Book path
+chapters:
+  - number: 2
+    title: Git Basics
+    sections:
+      - number: "2.2"
+        title: Recording Changes to the Repository
+        lessons: [three-areas, ignoring-files]

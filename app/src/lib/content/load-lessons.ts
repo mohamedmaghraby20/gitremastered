@@ -1,15 +1,17 @@
 /**
  * load-lessons.ts
  * Turns the raw files of content/ into the course: every lesson (with its mission and quiz),
- * looked up by ID, and every learning path. It only works on texts it is given, so tests can
+ * looked up by ID, every learning path, and the Book path. It only works on texts it is given, so tests can
  * pass in sample files; course-content.ts passes in the real ones.
  */
 
+import type { BookPath } from '../types/book-path.ts';
 import type { LearningPath } from '../types/learning-path.ts';
 import type { Lesson } from '../types/lesson.ts';
 import { ContentError } from './content-error.ts';
 import { parseLessonText } from './parse-lesson.ts';
 import { parseMissionText } from './parse-mission.ts';
+import { parseBookPathText } from './parse-book-path.ts';
 import { parseLearningPathText } from './parse-path.ts';
 import { parseQuizText } from './parse-quiz.ts';
 import { splitIntoBlocks } from './render-blocks.ts';
@@ -20,8 +22,12 @@ export type ContentFiles = Record<string, string>;
 /** The whole course after loading. */
 export type CourseContent = {
 	lessons: Map<string, Lesson>; // keyed by lesson ID
-	paths: Map<string, LearningPath>; // keyed by path ID
+	paths: Map<string, LearningPath>; // keyed by path ID, e.g. "pro-path"
+	bookPath: BookPath | null; // the course in Pro Git order; null until the file exists
 };
+
+/** The Book path's file. It has its own shape (chapters and sections, not modules). */
+const bookPathFile = 'paths/book-path.yaml';
 
 /**
  * Loads every lesson and path, and checks that paths only name lessons that exist.
@@ -36,17 +42,57 @@ export function buildCourseContent(contentFiles: ContentFiles): CourseContent {
 		lessons.set(lesson.id, lesson);
 	}
 
+	return {
+		lessons,
+		paths: loadLearningPaths(contentFiles, lessons),
+		bookPath: loadBookPath(contentFiles, lessons)
+	};
+}
+
+/**
+ * Loads every learning path file except the Book path, and checks their lesson IDs.
+ * @param contentFiles - the files of content/
+ * @param lessons - the loaded lessons
+ * @returns the paths, keyed by path ID
+ */
+function loadLearningPaths(
+	contentFiles: ContentFiles,
+	lessons: Map<string, Lesson>
+): Map<string, LearningPath> {
 	const paths = new Map<string, LearningPath>();
 	for (const [relativePath, fileText] of Object.entries(contentFiles)) {
-		if (!/^paths\/[^/]+\.yaml$/.test(relativePath)) {
+		if (!/^paths\/[^/]+\.yaml$/.test(relativePath) || relativePath === bookPathFile) {
 			continue;
 		}
 		const fileName = `content/${relativePath}`;
 		const learningPath = parseLearningPathText(fileText, fileName);
-		checkPathLessonsExist(learningPath, lessons, fileName);
+		for (const pathModule of learningPath.modules) {
+			checkLessonsExist(pathModule.lessonIds, lessons, fileName, `module "${pathModule.id}"`);
+		}
 		paths.set(learningPath.id, learningPath);
 	}
-	return { lessons, paths };
+	return paths;
+}
+
+/**
+ * Loads the Book path, if its file exists, and checks its lesson IDs.
+ * @param contentFiles - the files of content/
+ * @param lessons - the loaded lessons
+ * @returns the Book path, or null when there is no file
+ */
+function loadBookPath(contentFiles: ContentFiles, lessons: Map<string, Lesson>): BookPath | null {
+	const fileText = contentFiles[bookPathFile];
+	if (fileText === undefined) {
+		return null;
+	}
+	const fileName = `content/${bookPathFile}`;
+	const bookPath = parseBookPathText(fileText, fileName);
+	for (const chapter of bookPath.chapters) {
+		for (const section of chapter.sections) {
+			checkLessonsExist(section.lessonIds, lessons, fileName, `section "${section.number}"`);
+		}
+	}
+	return bookPath;
 }
 
 /**
@@ -127,24 +173,21 @@ function requireFile(contentFiles: ContentFiles, relativePath: string): string {
 }
 
 /**
- * Checks that every lesson a path lists exists.
- * @param learningPath - the path to check
+ * Checks that every lesson ID a path names belongs to a loaded lesson.
+ * @param lessonIds - the IDs to check
  * @param lessons - the loaded lessons
  * @param fileName - the path's file, for error messages
+ * @param place - where the IDs sit, like 'module "daily-loop"' or 'section "2.2"'
  */
-function checkPathLessonsExist(
-	learningPath: LearningPath,
+function checkLessonsExist(
+	lessonIds: string[],
 	lessons: Map<string, Lesson>,
-	fileName: string
+	fileName: string,
+	place: string
 ): void {
-	for (const pathModule of learningPath.modules) {
-		for (const lessonId of pathModule.lessonIds) {
-			if (!lessons.has(lessonId)) {
-				throw new ContentError(
-					fileName,
-					`unknown lesson "${lessonId}" in module "${pathModule.id}"`
-				);
-			}
+	for (const lessonId of lessonIds) {
+		if (!lessons.has(lessonId)) {
+			throw new ContentError(fileName, `unknown lesson "${lessonId}" in ${place}`);
 		}
 	}
 }

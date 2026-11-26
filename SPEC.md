@@ -215,6 +215,22 @@ modules:
     lessons: [three-areas, ignoring-files]
 ```
 
+The Book path (`paths/book-path.yaml`) follows Pro Git: chapters, then sections, then the lessons that teach each section. A section number must belong to its chapter ("2.2" in chapter 2).
+
+```yaml
+id: book-path
+title: Book path
+chapters:
+  - number: 2
+    title: Git Basics
+    sections:
+      - number: "2.2"
+        title: Recording Changes to the Repository
+        lessons: [three-areas, ignoring-files]
+```
+
+Lists show two facts per lesson, computed by `app/src/lib/content/lesson-facts.ts`, never written by hand: reading time (words of "Must know" plus the mission brief, at 200 words a minute, rounded, at least 1) and source label ("Pro Git 2.2" from `bookSection`, or "Beyond the book" when `bookUrl` is not a Pro Git link).
+
 The loader (`app/src/lib/content/`) rejects a broken file with `<file>: <problem>`. `pnpm build` runs `pnpm content:check` first, so a broken lesson stops the build.
 
 ## 5. Project structure

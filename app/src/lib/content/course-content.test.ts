@@ -6,6 +6,7 @@
 
 import { describe, expect, it } from 'vitest';
 import { courseContent, getLesson } from './course-content.ts';
+import { findReadingMinutes, findSourceLabel } from './lesson-facts.ts';
 
 /**
  * Counts the words in a piece of Markdown.
@@ -28,6 +29,22 @@ describe('courseContent', () => {
 		const mustKnowWordCount = countWords(getLesson('three-areas')?.sections.mustKnow ?? '');
 		expect(mustKnowWordCount).toBeGreaterThan(600);
 		expect(mustKnowWordCount).toBeLessThan(2600);
+	});
+
+	it('lists the pilot in the Book path under Pro Git 2.2', () => {
+		const sectionTwoTwo = courseContent.bookPath?.chapters[0].sections[0];
+		expect(sectionTwoTwo?.number).toBe('2.2');
+		expect(sectionTwoTwo?.lessonIds).toContain('three-areas');
+	});
+
+	it('gives the pilot a reading time of 5 to 15 minutes and a Pro Git source label', () => {
+		const pilotLesson = getLesson('three-areas');
+		if (pilotLesson === undefined) {
+			throw new Error('the pilot lesson is missing');
+		}
+		expect(findReadingMinutes(pilotLesson)).toBeGreaterThanOrEqual(5);
+		expect(findReadingMinutes(pilotLesson)).toBeLessThanOrEqual(15);
+		expect(findSourceLabel(pilotLesson)).toBe('Pro Git 2.2');
 	});
 
 	it('lists the pilot in the pro path', () => {

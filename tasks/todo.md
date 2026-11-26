@@ -517,8 +517,8 @@ Goal: home, course map (both paths), search, command index and settings work for
 **Description:** `content/paths/book-path.yaml` (Pro Git chapters → sections → the lesson that teaches each) with a loader check that every lesson ID exists. Two facts per lesson for lists: reading time (from word count of "Use it" plus the mission, rounded to minutes) and source label ("Pro Git 2.2", or "Beyond the book" for GitHub Docs links).
 
 **Acceptance criteria:**
-- [ ] A broken or unknown lesson ID in the book path fails the content check
-- [ ] Reading time and source label computed, not written by hand
+- [x] A broken or unknown lesson ID in the book path fails the content check
+- [x] Reading time and source label computed, not written by hand
 
 **Verification:** unit tests (parser, check, time, label) · **Files:** `content/paths/book-path.yaml`, `content/parse-path.ts`, `content/lesson-facts.ts` · **Scope:** M
 

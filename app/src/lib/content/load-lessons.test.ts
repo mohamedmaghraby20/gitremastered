@@ -15,6 +15,17 @@ modules:
     lessons: [sample-lesson]
 `;
 
+const bookPathText = `id: book-path
+title: Book path
+chapters:
+  - number: 2
+    title: Git Basics
+    sections:
+      - number: "2.2"
+        title: Recording Changes to the Repository
+        lessons: [sample-lesson]
+`;
+
 /**
  * Builds a set of content files holding the sample lesson and one path.
  * @returns content files keyed by their path inside content/
@@ -73,6 +84,22 @@ describe('buildCourseContent', () => {
 		delete contentFiles['lessons/sample-lesson/quiz.yaml'];
 		expect(() => buildCourseContent(contentFiles)).toThrow(
 			'content/lessons/sample-lesson/quiz.yaml: the file is missing'
+		);
+	});
+
+	it('loads the book path when there is one', () => {
+		const contentFiles = sampleContentFiles();
+		contentFiles['paths/book-path.yaml'] = bookPathText;
+		const courseContent = buildCourseContent(contentFiles);
+		expect(courseContent.bookPath?.chapters[0].sections[0].lessonIds).toEqual(['sample-lesson']);
+		expect(courseContent.paths.has('book-path')).toBe(false);
+	});
+
+	it('rejects a book path that lists an unknown lesson', () => {
+		const contentFiles = sampleContentFiles();
+		contentFiles['paths/book-path.yaml'] = bookPathText.replace('sample-lesson', 'ghost-lesson');
+		expect(() => buildCourseContent(contentFiles)).toThrow(
+			'content/paths/book-path.yaml: unknown lesson "ghost-lesson" in section "2.2"'
 		);
 	});
 
