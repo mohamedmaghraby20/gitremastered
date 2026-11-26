@@ -18,13 +18,23 @@ export function getGitVersion(): Promise<string> {
 }
 
 /**
- * Creates a fresh practice folder for a mission and runs its setup steps inside it.
+ * Opens a mission's practice folder as the student left it, or builds it from its setup steps
+ * when there is none yet (or the steps changed since it was built).
  * @param missionId - the mission's ID, which names the folder
  * @param setupSteps - shell commands from mission.yaml, run in order
  * @returns the practice folder's path
  */
-export function createPracticeRepo(missionId: string, setupSteps: string[]): Promise<string> {
-	return invoke<string>('create_practice_repo', { missionId, setupSteps });
+export function openPracticeRepo(missionId: string, setupSteps: string[]): Promise<string> {
+	return invoke<string>('open_practice_repo', { missionId, setupSteps });
+}
+
+/**
+ * Finds a mission's practice folder without creating or changing it.
+ * @param missionId - the mission's ID
+ * @returns the folder's path, or null if it was never built
+ */
+export function findPracticeRepo(missionId: string): Promise<string | null> {
+	return invoke<string | null>('find_practice_repo', { missionId });
 }
 
 /**

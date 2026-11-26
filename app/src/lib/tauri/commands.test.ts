@@ -8,7 +8,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { invoke } from '@tauri-apps/api/core';
 import {
 	closeTerminalSession,
-	createPracticeRepo,
+	openPracticeRepo,
 	getGitVersion,
 	resizeTerminal,
 	sendTerminalInput
@@ -44,12 +44,12 @@ describe('contract commands', () => {
 	it('send camelCase argument names, which Tauri maps to Rust snake_case', async () => {
 		mockedInvoke.mockResolvedValue(undefined);
 
-		await createPracticeRepo('three-areas', ['git init']);
+		await openPracticeRepo('three-areas', ['git init']);
 		await sendTerminalInput('session-1', 'git status\r');
 		await resizeTerminal('session-1', 80, 24);
 		await closeTerminalSession('session-1');
 
-		expect(mockedInvoke).toHaveBeenCalledWith('create_practice_repo', {
+		expect(mockedInvoke).toHaveBeenCalledWith('open_practice_repo', {
 			missionId: 'three-areas',
 			setupSteps: ['git init']
 		});

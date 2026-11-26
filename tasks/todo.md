@@ -535,8 +535,8 @@ Goal: home, course map (both paths), search, command index and settings work for
 **Description:** As in the prototype: "Pick up where you left off" card (eyebrow, title, lede, layer ticks, Continue lesson as the one primary button, Open course map), the practice repo's three areas in small, "Your path" with the Pro / Book switch and progress bars, "Up next", and one "Quick review" question from a finished lesson's quiz. A first-time student sees "Start the course" instead.
 
 **Acceptance criteria:**
-- [ ] Every card works from real progress; the empty state is clear
-- [ ] Keyboard: Enter on the focused card continues the lesson
+- [x] Every card works from real progress; the empty state is clear
+- [x] Keyboard: Enter continues the lesson (when nothing else has focus)
 
 **Verification:** component tests (first visit, returning student) · **Files:** `routes/+page.svelte`, `components/home/` · **Scope:** M
 

@@ -5,7 +5,7 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { courseContent, getLesson } from './course-content.ts';
+import { courseContent, getLesson, getLessonCard } from './course-content.ts';
 import { findReadingMinutes, findSourceLabel } from './lesson-facts.ts';
 
 /**
@@ -45,6 +45,14 @@ describe('courseContent', () => {
 		expect(findReadingMinutes(pilotLesson)).toBeGreaterThanOrEqual(5);
 		expect(findReadingMinutes(pilotLesson)).toBeLessThanOrEqual(15);
 		expect(findSourceLabel(pilotLesson)).toBe('Pro Git 2.2');
+	});
+
+	it('builds a list card for the pilot from the lesson and the pro path', () => {
+		const pilotCard = getLessonCard('three-areas');
+		expect(pilotCard?.title).toBe('Status, stage, commit: the three areas');
+		expect(pilotCard?.numberLabel).toBe('01');
+		expect(pilotCard?.sourceLabel).toBe('Pro Git 2.2');
+		expect(getLessonCard('no-such-lesson')).toBeUndefined();
 	});
 
 	it('lists the pilot in the pro path', () => {

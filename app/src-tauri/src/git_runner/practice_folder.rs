@@ -123,17 +123,57 @@ impl PracticeRoot {
         Ok(folder)
     }
 
+    /// Opens a mission's practice folder as the student left it, or builds it if there is none.
+    /// It is built again when the mission's setup steps changed since it was built (for
+    /// example after a course update), because the old folder no longer fits the mission.
+    ///
+    /// Inputs: the mission ID and its setup steps. Output: the folder, or the first error.
+    pub fn open_or_create(
+        &self,
+        mission_id: &str,
+        setup_steps: &[String],
+    ) -> Result<PracticeFolder, PracticeError> {
+        let existing_folder = self.find(mission_id)?;
+        let saved_steps = self.read_saved_steps(mission_id);
+        match existing_folder {
+            Some(folder) if saved_steps.as_deref() == Some(setup_steps) => Ok(folder),
+            _ => self.create(mission_id, setup_steps),
+        }
+    }
+
+    /// Finds a mission's practice folder without creating it: only a folder that holds a Git
+    /// repository counts (a half-built folder does not).
+    ///
+    /// Input: the mission ID. Output: the folder, `None` if it was never built, or an error
+    /// for a bad ID.
+    pub fn find(&self, mission_id: &str) -> Result<Option<PracticeFolder>, PracticeError> {
+        let folder = self.folder_for(mission_id)?;
+        if folder.path().join(".git").is_dir() {
+            Ok(Some(folder))
+        } else {
+            Ok(None)
+        }
+    }
+
     /// Deletes a mission's practice folder and builds it again from its saved setup steps.
     ///
     /// Input: the mission ID. Output: the rebuilt folder, or an error if it was never created.
     pub fn reset(&self, mission_id: &str) -> Result<PracticeFolder, PracticeError> {
         let folder = self.folder_for(mission_id)?;
-        let saved_text = fs::read_to_string(self.saved_setup_path(mission_id))
-            .map_err(|_| PracticeError::NoSavedSetup(mission_id.to_string()))?;
-        let setup_steps: Vec<String> = serde_json::from_str(&saved_text)
-            .map_err(|_| PracticeError::NoSavedSetup(mission_id.to_string()))?;
+        let setup_steps = self
+            .read_saved_steps(mission_id)
+            .ok_or_else(|| PracticeError::NoSavedSetup(mission_id.to_string()))?;
         self.rebuild(&folder, &setup_steps)?;
         Ok(folder)
+    }
+
+    /// Reads the setup steps saved when the folder was last built.
+    ///
+    /// Input: a mission ID that was already checked. Output: the steps, or `None` if there are
+    /// none or the saved file is unreadable.
+    fn read_saved_steps(&self, mission_id: &str) -> Option<Vec<String>> {
+        let saved_text = fs::read_to_string(self.saved_setup_path(mission_id)).ok()?;
+        serde_json::from_str(&saved_text).ok()
     }
 
     /// Deletes the folder if it exists, creates it empty, and runs the steps inside.

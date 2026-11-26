@@ -2,7 +2,7 @@
  * progress.ts
  * The one module that saves and loads the student's progress: finished missions, quiz
  * results, the last opened lesson and the furthest layer read in each, plus screen choices
- * (theme, terminal text size, folded files desk). In the desktop app it uses the Tauri store
+ * (theme, terminal text size, folded files desk, chosen path). In the desktop app it uses the Tauri store
  * plugin (a small JSON file in the app's data folder); in a plain browser it keeps progress in
  * memory only.
  * Screens read the `progress` store and call the functions below; nothing else touches storage.
@@ -17,6 +17,9 @@ import { isFurtherLayer } from '$lib/progress/learning-summary';
 /** One saved quiz result. */
 export type QuizResult = { correctCount: number; questionCount: number };
 
+/** The two orders of the course: by what you need at work, or by Pro Git chapter. */
+export type CoursePathId = 'pro-path' | 'book-path';
+
 /** Everything the app remembers between sessions. */
 export type ProgressData = {
 	finishedMissions: string[]; // lesson IDs whose mission was completed
@@ -26,6 +29,7 @@ export type ProgressData = {
 	isFilesDeskFolded: boolean; // the student folded the visualizer's files desk away
 	lastOpenedLessonId: string | null; // for "Pick up where you left off"; null before the first lesson
 	furthestLayers: Record<string, LessonLayerId>; // by lesson ID, the deepest layer opened
+	chosenPathId: CoursePathId; // the path picked on home and the course map
 };
 
 /** The few storage actions this module needs (the Tauri store has them; tests pass a fake). */
@@ -49,7 +53,8 @@ export const emptyProgress: ProgressData = {
 	terminalFontSize: null,
 	isFilesDeskFolded: false,
 	lastOpenedLessonId: null,
-	furthestLayers: {}
+	furthestLayers: {},
+	chosenPathId: 'pro-path'
 };
 
 const progressStore = writable<ProgressData>(emptyProgress);
@@ -119,6 +124,14 @@ export async function saveFilesDeskFolded(isFolded: boolean): Promise<void> {
 }
 
 /**
+ * Remembers which path the student follows.
+ * @param pathId - "pro-path" or "book-path"
+ */
+export async function saveChosenPath(pathId: CoursePathId): Promise<void> {
+	await saveProgress({ ...get(progressStore), chosenPathId: pathId });
+}
+
+/**
  * Remembers the lesson the student opened last, for "Pick up where you left off".
  * @param lessonId - the lesson on screen
  */
@@ -153,7 +166,8 @@ export async function resetProgress(): Promise<void> {
 		...emptyProgress,
 		theme: current.theme,
 		terminalFontSize: current.terminalFontSize,
-		isFilesDeskFolded: current.isFilesDeskFolded
+		isFilesDeskFolded: current.isFilesDeskFolded,
+		chosenPathId: current.chosenPathId
 	});
 }
 

@@ -11,6 +11,7 @@ import {
 	markMissionFinished,
 	progress,
 	resetProgress,
+	saveChosenPath,
 	saveLayerRead,
 	saveLessonOpened,
 	saveQuizResult,
@@ -28,7 +29,8 @@ describe('progress', () => {
 			terminalFontSize: null,
 			isFilesDeskFolded: false,
 			lastOpenedLessonId: null,
-			furthestLayers: {}
+			furthestLayers: {},
+			chosenPathId: 'pro-path'
 		});
 	});
 
@@ -51,7 +53,8 @@ describe('progress', () => {
 			terminalFontSize: 16,
 			isFilesDeskFolded: false,
 			lastOpenedLessonId: null,
-			furthestLayers: {}
+			furthestLayers: {},
+			chosenPathId: 'pro-path'
 		});
 	});
 
@@ -96,7 +99,19 @@ describe('progress', () => {
 			terminalFontSize: 16,
 			isFilesDeskFolded: false,
 			lastOpenedLessonId: null,
-			furthestLayers: {}
+			furthestLayers: {},
+			chosenPathId: 'pro-path'
 		});
+	});
+
+	it('remembers the chosen path, and keeps it on reset like the theme', async () => {
+		const storage = createMemoryStorage();
+		await loadProgress(storage);
+
+		await saveChosenPath('book-path');
+		await resetProgress();
+
+		const reloaded = await loadProgress(storage);
+		expect(reloaded.chosenPathId).toBe('book-path');
 	});
 });

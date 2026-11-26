@@ -6,18 +6,18 @@
  */
 
 import { isTauri } from '@tauri-apps/api/core';
-import { createPracticeRepo, resetPracticeRepo } from '$lib/tauri/commands';
+import { openPracticeRepo, resetPracticeRepo } from '$lib/tauri/commands';
 import { explainCommand, type CommandCaption } from '$lib/visualizer/explain-command';
 
 /** The two core commands the session uses; tests pass fakes. */
 export type PracticeCommands = {
-	createPracticeRepo: (missionId: string, setupSteps: string[]) => Promise<string>;
+	openPracticeRepo: (missionId: string, setupSteps: string[]) => Promise<string>;
 	resetPracticeRepo: (missionId: string) => Promise<string>;
 	isDesktopApp: () => boolean;
 };
 
 const realCommands: PracticeCommands = {
-	createPracticeRepo,
+	openPracticeRepo,
 	resetPracticeRepo,
 	isDesktopApp: isTauri
 };
@@ -27,7 +27,7 @@ export class PracticeSession {
 	/** The practice folder's path, or null while it is being built (or outside the app). */
 	practiceFolderPath: string | null = $state(null);
 	/** A short status line shown while there is no folder. */
-	statusMessage = $state('Setting up the practice folder…');
+	statusMessage = $state('Opening your practice folder…');
 	/** The caption for the last Git command typed, or null before the first one. */
 	lastCaption: CommandCaption | null = $state(null);
 
@@ -60,8 +60,8 @@ export class PracticeSession {
 			this.statusMessage = 'The terminal runs in the desktop app (pnpm tauri dev).';
 			return;
 		}
-		await this.buildFolder('Setting up the practice folder…', () =>
-			this.commands.createPracticeRepo(this.missionId, this.setupSteps)
+		await this.buildFolder('Opening your practice folder…', () =>
+			this.commands.openPracticeRepo(this.missionId, this.setupSteps)
 		);
 	}
 

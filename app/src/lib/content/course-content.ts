@@ -7,7 +7,10 @@
 
 import { buildCourseContent, findLessonById, type ContentFiles } from './load-lessons.ts';
 import type { Lesson } from '../types/lesson.ts';
-import { findLessonPlace, type LessonPlace } from './lesson-navigation.ts';
+import { findLessonPlace, formatLessonNumber, type LessonPlace } from './lesson-navigation.ts';
+import { findReadingMinutes, findSourceLabel } from './lesson-facts.ts';
+import type { BookPath } from '../types/book-path.ts';
+import type { LearningPath } from '../types/learning-path.ts';
 
 /**
  * Every lesson file and path file, as text, keyed by Vite's relative path
@@ -66,6 +69,55 @@ export function getLessonPlace(lessonId: string): LessonPlace | undefined {
 		[...courseContent.lessons.values()].map((lesson) => [lesson.id, lesson.title])
 	);
 	return findLessonPlace(mainPath, lessonTitles, lessonId);
+}
+
+/** What a list row or card shows about one lesson (home, course map, search). */
+export type LessonCard = {
+	id: string;
+	numberLabel: string | null; // "05", its place in the pro path; null if the path lacks it
+	title: string;
+	lede: string; // Markdown, one or two sentences
+	moduleTitle: string;
+	sourceLabel: string; // "Pro Git 2.2" or "Beyond the book"
+	readingMinutes: number;
+};
+
+/**
+ * Gathers what lists show about a lesson.
+ * @param lessonId - e.g. "three-areas"
+ * @returns the card, or undefined for an unknown lesson
+ */
+export function getLessonCard(lessonId: string): LessonCard | undefined {
+	const lesson = getLesson(lessonId);
+	if (lesson === undefined) {
+		return undefined;
+	}
+	const place = getLessonPlace(lessonId);
+	return {
+		id: lesson.id,
+		numberLabel: place === undefined ? null : formatLessonNumber(place.lessonNumber),
+		title: lesson.title,
+		lede: lesson.lede,
+		moduleTitle: place?.moduleTitle ?? lesson.module,
+		sourceLabel: findSourceLabel(lesson),
+		readingMinutes: findReadingMinutes(lesson)
+	};
+}
+
+/**
+ * The pro path: modules ordered by what a working developer needs.
+ * @returns the path, or undefined if its file is missing
+ */
+export function getProPath(): LearningPath | undefined {
+	return courseContent.paths.get(mainPathId);
+}
+
+/**
+ * The Book path: the course in Pro Git's chapter order.
+ * @returns the path, or null if its file is missing
+ */
+export function getBookPath(): BookPath | null {
+	return courseContent.bookPath;
 }
 
 /**

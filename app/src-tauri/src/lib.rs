@@ -23,7 +23,8 @@ pub fn run() {
         .manage(repo_inspector::watcher::ActiveRepoWatcher::new())
         .invoke_handler(tauri::generate_handler![
             commands::git_info::get_git_version,
-            commands::practice::create_practice_repo,
+            commands::practice::open_practice_repo,
+            commands::practice::find_practice_repo,
             commands::practice::reset_practice_repo,
             commands::terminal::start_terminal_session,
             commands::terminal::send_terminal_input,

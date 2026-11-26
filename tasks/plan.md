@@ -123,7 +123,7 @@ Full details for each task (acceptance criteria, verification, files) are in `ta
 - [x] Task 30: A segmented switch component
 - [x] Task 31: The Book path file and lesson facts
 - [x] Task 32: Remember where the student is
-- [ ] Task 33: Home screen
+- [x] Task 33: Home screen
 - [ ] Task 34: Course map screen
 - [ ] Task 35: Command and glossary content
 - [ ] Task 36: Command index screen

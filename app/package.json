@@ -19,6 +19,7 @@
 		"review:measure": "node scripts/student-driver/measure.ts",
 		"review:play": "node scripts/student-driver/play-pilot.ts",
 		"review:fixes": "node scripts/student-driver/check-review-fixes.ts",
+		"review:home": "node scripts/student-driver/check-home.ts",
 		"lint": "svelte-kit sync && prettier --check . && eslint .",
 		"format": "prettier --write .",
 		"tauri": "tauri",

@@ -1,5 +1,5 @@
-//! `create_practice_repo` and `reset_practice_repo`: build a mission's practice folder
-//! under the app's local data folder, `<app data>/practice/<missionId>/`.
+//! `open_practice_repo`, `reset_practice_repo` and `find_practice_repo`: open, rebuild or find
+//! a mission's practice folder under the app's local data folder, `<app data>/practice/<missionId>/`.
 //!
 //! After building it, the folder is watched: every change sends a `repo_changed` event with
 //! the new snapshot (the first one right away), so the visualizer and mission stay live.
@@ -25,11 +25,12 @@ pub fn open_practice_root<R: Runtime>(app: &AppHandle<R>) -> Result<PracticeRoot
     PracticeRoot::open(data_folder.join("practice")).map_err(|error| error.to_string())
 }
 
-/// Creates a fresh practice folder for a mission and runs its setup steps inside it.
+/// Opens a mission's practice folder as the student left it, or builds it from its setup
+/// steps if there is none yet (or the steps changed).
 ///
 /// Inputs: the mission ID and setup steps (from mission.yaml). Output: the folder's path.
 #[tauri::command]
-pub async fn create_practice_repo<R: Runtime>(
+pub async fn open_practice_repo<R: Runtime>(
     app: AppHandle<R>,
     active_watcher: State<'_, ActiveRepoWatcher>,
     terminal_sessions: State<'_, TerminalSessions>,
@@ -37,11 +38,11 @@ pub async fn create_practice_repo<R: Runtime>(
     setup_steps: Vec<String>,
 ) -> Result<String, String> {
     let practice_root = open_practice_root(&app)?;
-    // Stop watching and stop the shells first: the old folder is about to be deleted.
+    // Stop watching and stop the shells first: the folder may be deleted and built again.
     active_watcher.replace(None);
     terminal_sessions.close_all()?;
     let folder = practice_root
-        .create(&mission_id, &setup_steps)
+        .open_or_create(&mission_id, &setup_steps)
         .map_err(|error| error.to_string())?;
     watch_and_announce(&app, &active_watcher, &folder)?;
     Ok(folder.path().display().to_string())
@@ -65,6 +66,22 @@ pub async fn reset_practice_repo<R: Runtime>(
         .map_err(|error| error.to_string())?;
     watch_and_announce(&app, &active_watcher, &folder)?;
     Ok(folder.path().display().to_string())
+}
+
+/// Finds a mission's practice folder without creating or changing it, so a screen like home
+/// can show where the student left the repository.
+///
+/// Input: the mission ID. Output: the folder's path, or `None` if it was never built.
+#[tauri::command]
+pub async fn find_practice_repo<R: Runtime>(
+    app: AppHandle<R>,
+    mission_id: String,
+) -> Result<Option<String>, String> {
+    let practice_root = open_practice_root(&app)?;
+    let folder = practice_root
+        .find(&mission_id)
+        .map_err(|error| error.to_string())?;
+    Ok(folder.map(|found| found.path().display().to_string()))
 }
 
 /// Starts watching a folder, sends its first snapshot, and keeps the watcher as the active one.

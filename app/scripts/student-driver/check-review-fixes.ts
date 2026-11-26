@@ -155,7 +155,7 @@ async function checkZoomOut(student: StudentActions): Promise<string> {
  * @returns the message Git saved
  */
 async function checkVimCommit(student: StudentActions): Promise<string> {
-	await student.typeCommand('echo check > vim-check.txt && git add vim-check.txt');
+	await student.typeCommand('echo "check $RANDOM" > vim-check.txt && git add vim-check.txt');
 	await student.typeCommand('git commit');
 	await student.waitUntil(
 		`[...document.querySelectorAll('.xterm-rows > div')].some((row) => row.textContent.includes('Please enter the commit message'))`

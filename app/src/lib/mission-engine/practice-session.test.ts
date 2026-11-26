@@ -13,7 +13,7 @@ import { PracticeSession, type PracticeCommands } from './practice-session.svelt
  */
 function fakeCommands(isDesktopApp = true) {
 	return {
-		createPracticeRepo: vi.fn<PracticeCommands['createPracticeRepo']>(() =>
+		openPracticeRepo: vi.fn<PracticeCommands['openPracticeRepo']>(() =>
 			Promise.resolve('/practice/three-areas')
 		),
 		resetPracticeRepo: vi.fn<PracticeCommands['resetPracticeRepo']>(() =>
@@ -30,7 +30,7 @@ describe('PracticeSession', () => {
 
 		await session.start();
 
-		expect(commands.createPracticeRepo).toHaveBeenCalledWith('three-areas', ['git init']);
+		expect(commands.openPracticeRepo).toHaveBeenCalledWith('three-areas', ['git init']);
 		expect(session.practiceFolderPath).toBe('/practice/three-areas');
 	});
 
@@ -40,13 +40,13 @@ describe('PracticeSession', () => {
 
 		await session.start();
 
-		expect(commands.createPracticeRepo).not.toHaveBeenCalled();
+		expect(commands.openPracticeRepo).not.toHaveBeenCalled();
 		expect(session.statusMessage).toMatch(/desktop app/);
 	});
 
 	it('shows a readable message when setup fails', async () => {
 		const commands = fakeCommands();
-		commands.createPracticeRepo.mockRejectedValue('Git is not installed');
+		commands.openPracticeRepo.mockRejectedValue('Git is not installed');
 		const session = new PracticeSession('three-areas', [], commands);
 
 		await session.start();

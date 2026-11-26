@@ -153,3 +153,65 @@ fn bad_mission_ids_are_refused() {
     );
     assert!(!temporary_folder.path().join("escape").exists());
 }
+
+/// Opening a mission again keeps the student's work, so "Continue lesson" picks up where they were.
+#[test]
+fn open_or_create_keeps_the_students_work() {
+    let temporary_folder = tempfile::tempdir().expect("temporary folder");
+    let practice_root = PracticeRoot::open(temporary_folder.path().join("practice")).expect("root");
+    let folder = practice_root
+        .open_or_create("three-areas", &sample_setup_steps())
+        .expect("first open builds the folder");
+    git_output(folder.path(), &["add", "notes.txt"]);
+
+    let reopened = practice_root
+        .open_or_create("three-areas", &sample_setup_steps())
+        .expect("second open reuses the folder");
+
+    assert_eq!(
+        git_output(reopened.path(), &["status", "--porcelain"]),
+        "A  notes.txt"
+    );
+}
+
+/// When the mission's setup steps changed (a content update), the folder is built again.
+#[test]
+fn open_or_create_rebuilds_when_the_setup_changed() {
+    let temporary_folder = tempfile::tempdir().expect("temporary folder");
+    let practice_root = PracticeRoot::open(temporary_folder.path().join("practice")).expect("root");
+    let folder = practice_root
+        .open_or_create("three-areas", &sample_setup_steps())
+        .expect("first open");
+    git_output(folder.path(), &["add", "notes.txt"]);
+    let mut changed_steps = sample_setup_steps();
+    changed_steps.push("echo 'more' > extra.txt".to_string());
+
+    let rebuilt = practice_root
+        .open_or_create("three-areas", &changed_steps)
+        .expect("rebuild");
+
+    assert_eq!(
+        git_output(rebuilt.path(), &["status", "--porcelain"]),
+        "?? extra.txt\n?? notes.txt"
+    );
+}
+
+/// `find` gives the folder only once it has been built.
+#[test]
+fn find_gives_a_folder_only_after_it_was_built() {
+    let temporary_folder = tempfile::tempdir().expect("temporary folder");
+    let practice_root = PracticeRoot::open(temporary_folder.path().join("practice")).expect("root");
+    assert!(
+        practice_root
+            .find("three-areas")
+            .expect("valid id")
+            .is_none()
+    );
+
+    practice_root
+        .create("three-areas", &sample_setup_steps())
+        .expect("setup works");
+
+    let found = practice_root.find("three-areas").expect("valid id");
+    assert!(found.is_some_and(|folder| folder.path().ends_with("three-areas")));
+}
