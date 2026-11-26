@@ -14,17 +14,17 @@ Run your build or install your packages, and `git status` suddenly lists files y
 
 ## Must know
 
-In [the last lesson](lesson:three-areas) you saw that Git lists every new file as [untracked](term:untracked-file) and waits for you to decide. That is safe, but noisy: every project makes files nobody should save.
+In [the last lesson](lesson:three-areas) you saw that Git lists every new file as [untracked](term:untracked-file) and waits for you to decide. That is safe, but noisy: every project makes files nobody should commit.
 
 ### Files that do not belong in Git
 
 Three kinds of files show up in almost every project:
 
-- **Build output and installed packages.** What your tools make from your code: `node_modules/` in JavaScript, `__pycache__/` in Python, `build/` or `dist/` folders, compiled `.o` and `.exe` files. Anyone can make them again from your code and a short list of packages (`package.json`, `requirements.txt`), so saving them only bloats the project.
+- **Build output and installed packages.** What your tools make from your code: `node_modules/` in JavaScript, `__pycache__/` in Python, `build/` or `dist/` folders, compiled `.o` and `.exe` files. Anyone can make them again from your code and a short list of packages (`package.json`, `requirements.txt`), so committing them only bloats the project.
 - **Logs and temporary files.** `app.log`, `debug.txt`, editor backups like `notes.txt~`. Your tools write them while running; they mean nothing to anyone else.
 - **Secrets and personal settings.** `.env` files with passwords or API keys, your editor's settings folder. These must never reach a shared repository: once pushed, a password is public.
 
-The problem: Git lists all of them as untracked, and one careless `git add .` saves them forever.
+The problem: Git lists all of them as untracked, and one careless `git add .` followed by a commit keeps them in your history for good.
 
 ### Write a `.gitignore`
 
@@ -47,9 +47,9 @@ Read it line by line:
 Practise with a file of your own, so the practice project's files stay as they are for the challenges at the end (short real jobs on its build folder and log file).
 
 :::try-it
-1. Make a scratch file: `echo "draft" > ideas.tmp`. Run `git status`: Git lists `ideas.tmp` as untracked.
+1. Make a scratch file: `echo "draft" > ideas.tmp`. Run `git status`: Git lists `ideas.tmp` as untracked. In the picture, an `ideas.tmp` sheet marked "new" appears in the working tree.
 2. Create a `.gitignore` that ignores it: `echo "*.tmp" > .gitignore`.
-3. Run `git status` again. The file `ideas.tmp` is gone from the list: Git now skips it. The new file `.gitignore` appears instead, as untracked.
+3. Run `git status` again. The file `ideas.tmp` is gone from the list: Git now skips it. The new file `.gitignore` appears instead, as untracked. In the picture, the `ideas.tmp` sheet disappears from the working tree and a `.gitignore` sheet takes its place.
 4. Don't commit yet: the first challenge at the end of the lesson finishes this `.gitignore`.
 :::
 
@@ -74,12 +74,32 @@ Two rules explain most surprises:
 - When several lines match one file, the **last one wins**. That is how `!lib.a` after `*.a` brings `lib.a` back.
 
 :::careful
-`.gitignore` only affects files Git does not track yet. If a file is already committed, adding it to `.gitignore` changes nothing: Git keeps saving its changes. The Advanced layer shows how to stop tracking it.
+`.gitignore` only affects files Git does not track yet. If a file is already committed, adding it to `.gitignore` changes nothing: Git keeps tracking its changes. The Advanced layer shows how to stop tracking it.
 :::
 
 ### Start from a template
 
-You don't have to write a `.gitignore` from nothing. GitHub keeps ready-made ones for most languages and tools at github.com/github/gitignore. Pro Git advises setting one up before your first commit, so unwanted files never get saved by accident.
+You don't have to write a `.gitignore` from nothing. GitHub keeps ready-made ones for most languages and tools at github.com/github/gitignore. Pro Git advises setting one up before your first commit, so unwanted files never get committed by accident.
+
+### When it goes wrong
+
+```console
+$ git add app.log
+The following paths are ignored by one of your .gitignore files:
+app.log
+hint: Use -f if you really want to add them.
+```
+
+A rule in `.gitignore` matches the file, so Git refuses to stage it. That is usually what you want. If you really need the file, `git add -f app.log` stages it anyway.
+
+```console
+$ git status --short
+ M app.log
+```
+
+You added `*.log` to `.gitignore`, but `app.log` still shows as modified. The file was committed before the rule existed, and Git keeps tracking files it already tracks. The Advanced layer shows how to stop tracking it (`git rm --cached`).
+
+A file you expected to disappear still shows as untracked, with no message at all: the pattern does not match it. Check the spelling and the slashes, or ask Git with `git check-ignore -v <file>` (Advanced layer); it prints nothing when no rule matches.
 
 ## Under the hood
 

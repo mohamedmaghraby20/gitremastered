@@ -66,6 +66,8 @@ Open with `:::name` on its own line and close with `:::`.
 | `sidenote` | Markdown | A margin note, e.g. what Pro Git advises |
 | `definitions` | YAML list of `term`, `text`, optional `area` (`working`, `staging`, `repository`) | New words; `area` adds that area's color |
 | `compare` | YAML `today` and `book` | When the book's command is older than today's |
+| `predict` | YAML `question` and `answer` | A "think first" question before a key Try-it; the answer shows on click (teaching rule 16) |
+| `graph` | YAML `caption`, `commits` (`id`, `message`, `parents`), `branches`, `head` | A small static commit diagram (teaching rule 17) |
 
 ```markdown
 :::compare
@@ -248,6 +250,75 @@ Try-its use files the student creates in the lesson (`todo.txt`), so the challen
 - **Quiz:** questions about situations, to check the student understood why things work.
 - Challenges come before the quiz.
 
+### 12. Point at the picture
+
+The live visualizer is the app's strongest teacher. In every Try-it step that changes the repository, also say what moves in the picture, by name:
+
+> "Run `git add todo.txt`. In the picture, the `todo.txt` sheet slides from the working tree into the staging area."
+
+In lessons about history, name the change on the map too ("a new station appears, and the `main` label moves onto it").
+
+### 13. "When it goes wrong"
+
+Must know ends with a short part called **When it goes wrong**: the one to three errors students really hit with this lesson's commands. For each one, show the real message, say what it means in one plain sentence, and give the fix.
+
+> ```console
+> $ git commit -m "Add notes"
+> nothing added to commit but untracked files present (use "git add" to track)
+> ```
+> Nothing was staged, so there was nothing to commit. Stage the file with `git add notes.txt` first.
+
+### 14. Words for Git's actions
+
+Use the same words every time, so the student never wonders whether two words mean two things:
+
+| Say | For | Never say |
+|---|---|---|
+| **commit** (introduce it once as "a save in Git") | Recording the staging area as a snapshot | "save" for a Git action, after the lede |
+| **stage**, **add** | Putting a change in the staging area | "mark", "select" |
+| **track**, **tracked** | Files Git follows | "saves", "knows" |
+| **save** | Saving a file in your editor | — |
+
+The lede may say "save" once, to hook a reader who does not know "commit" yet.
+
+### 15. Keep each lesson to one sitting
+
+"Must know" takes 10 to 15 minutes of reading and trying; "Under the hood" about 5. If "Must know" grows past 15 minutes, split the lesson in two, each with its own challenges and quiz. Never squeeze: a split lesson is better than a long one.
+
+### 16. Think first, then look
+
+Before the key Try-it of a lesson, ask the student to predict what will happen, with a `:::predict` block. Its answer stays hidden behind a "Show answer" button. Once or twice per lesson, only where the answer teaches something.
+
+```markdown
+:::predict
+question: "You staged todo.txt, then added a second line. What will git status show?"
+answer: "todo.txt in two lists: staged (the photo with one line) and not staged (your newer line)."
+:::
+```
+
+### 17. Draw the history
+
+When a lesson changes history (commits, branches, merges, reset, rebase), show it with a `:::graph` block: a small static commit diagram in the history map's style. Show before and after when the change is the point.
+
+```markdown
+:::graph
+caption: "After git commit, main moves to the new commit"
+commits:
+  - id: A
+    message: Add README
+  - id: B
+    message: Add notes
+    parents: [A]
+branches:
+  main: B
+head: main
+:::
+```
+
+### 18. Links to lessons not written yet
+
+While a lesson it points to is not written yet, name it in plain text ("the Branching module"). When phase 5 ends, a link pass turns every such mention into a real `[…](lesson:id)` link.
+
 ## Auditing a lesson
 
 Run this list on every lesson before it ships:
@@ -260,3 +331,8 @@ Run this list on every lesson before it ships:
 6. Every hard word explained or linked (rule 5); nothing used before it is explained (rule 6).
 7. Every Try-it step says what you will see (rule 7).
 8. Real terminal output from current Git; the book's names for things.
+9. Try-its name what moves in the picture (rule 12).
+10. "When it goes wrong" closes Must know (rule 13).
+11. The action words are consistent: commit, stage, track; "save" only for the editor (rule 14).
+12. Must know fits 10 to 15 minutes, or the lesson is split (rule 15).
+13. One or two `predict` blocks before key Try-its (rule 16); a `graph` block wherever history changes (rule 17).
