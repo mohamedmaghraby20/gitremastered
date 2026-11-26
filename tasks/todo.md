@@ -620,6 +620,33 @@ Ctrl K from any screen opens a **quick search panel** over the current screen, l
 
 **Verification:** component tests, driver check with 20+ commits · **Files:** `components/visualizer/` · **Scope:** M
 
+### Task 43: Links between lessons, with hover cards
+**Description:** Your idea (2026-11-26). A lesson can link a word to the lesson or glossary term that teaches it, for curious students who want to look ahead without leaving the course.
+- Writing it: `[branch](term:branch)` for a glossary term, `[.gitignore](lesson:ignoring-files)` for a lesson; the content check fails on an unknown ID.
+- Hover or keyboard focus shows a small card: the term's one-line meaning and "Open the lesson →".
+- Opening the lesson remembers where you were. A "← Back to *Status, stage, commit*" bar on the new lesson returns you to the same layer and scroll position.
+- Links to lessons not written yet show the card but say "Coming later" instead of a dead link.
+
+**Acceptance criteria:**
+- [ ] The card opens on hover and on focus, closes on Esc, and is read by screen readers
+- [ ] "Back" returns to the same lesson, layer and scroll position
+- [ ] Unknown IDs fail `pnpm content:check`
+
+**Dependencies:** 35 (glossary content) · **Verification:** unit tests (link parsing), component tests (card, back) · **Files:** `content/`, `components/lesson-reader/` · **Scope:** M
+
+### Task 44: Challenges instead of one mission
+**Description:** Decided 2026-11-26. The single "mission" becomes at least three **challenges** per lesson, from easy to hard. The student picks any of them. Challenges test the skill in a realistic situation; the quiz tests understanding. In the lesson, "Challenges" comes after the text and before the quiz.
+- Content: `challenges.yaml` replaces `mission.yaml`: a list of 3 or more, each with a level (easy, medium, hard), a brief, its own setup, goals, hints and solution.
+- Choosing one rebuilds the practice project in that challenge's starting state ("Start this challenge"), so Try-its and challenges never mix.
+- Where the goals show while you work: to be decided with you (see the walkthrough notes).
+
+**Acceptance criteria:**
+- [ ] Both lessons have 3 challenges, easy to hard; `pnpm test:missions` runs every one
+- [ ] Starting a challenge rebuilds the practice project; finishing one is remembered
+- [ ] The content check fails with fewer than 3 challenges
+
+**Verification:** unit tests (parsing, progress), mission tests, driver play-through · **Files:** `content/`, `mission-engine/`, `components/mission-panel/` · **Scope:** L
+
 ## Checkpoint E: The other screens
 - [ ] Every screen in the prototype works with real content and progress
 - [ ] Search finds lessons by title and by command (SPEC §10 item 9)

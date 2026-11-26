@@ -47,8 +47,8 @@ One sentence: what this lesson gives the student.
 
 | Section | Job | Length |
 |---|---|---|
-| Lede | The first paragraph before `## Must know`. One sentence | 1 sentence |
-| `## Must know` | Everything a working developer needs for this job: the commands, their common options, the output to read and the usual traps, with Try-its. Complete, not minimal | About 10 minutes of reading and trying |
+| Lede | The first paragraph before `## Must know`: a real problem and the skill that solves it (teaching rule 1) | 1–2 sentences |
+| `## Must know` | Everything a working developer needs for this job: the commands, their common options, the output to read and the usual traps, with Try-its. Complete, not minimal | 10–15 minutes of reading and trying |
 | `## Under the hood` | How Git does it inside: index, objects, refs | Short |
 | `## Advanced` | Advanced commands and options for mastering the tool; rare cases | Short `###` topics |
 | `## Recap` | Bullets; shown as the recap card | 3–5 bullets |
@@ -146,3 +146,83 @@ questions:
 - Follow `CLAUDE.md`: short, plain words, one idea per paragraph.
 - Cite Pro Git (or the official Git docs) for every claim, in your own words. Never copy long passages.
 - When the book shows an older command, teach today's and add a `compare` block.
+- Use the book's names: **working tree** (also called the working directory), **staging area** (also called the index), **repository** (the `.git` directory). Say the other name once, where it first matters.
+
+## Teaching rules
+
+Write like a senior engineer who is also a trained teacher, for a smart student who may be in their first year of college. Every rule below comes from a real review of the pilot.
+
+### 1. The opening makes them want to read on
+
+The lede names a real problem the student has, or will have, and promises the skill that solves it. It never assumes they already know the words it uses.
+
+> Weak: "Every change goes through three places, and three commands move it along."
+> Better: "You changed five files, but only two are ready. Git lets you choose exactly what goes into each save, and this lesson shows how."
+
+### 2. Every section opens with a bridge
+
+One or two sentences before the content that (a) say what we just learned, (b) name the new question, and (c) say why it matters. Never stack sections with no link between them.
+
+> "That was a clean folder. Real work is rarely clean: you edit files and make new ones. Here is what `git status` shows then."
+
+### 3. Explain a command as: what it does, in one plain sentence, then an example
+
+First the job in everyday words ("`git add` tells Git: put this file, as it looks now, into my next save"). Then a small concrete example with real output. Then the details. Never open with the details.
+
+### 4. Core concepts get extra care
+
+Some ideas are the heart of Git: the three areas, what staging saves, what a commit is, branches, merging. For these:
+
+- Explain the idea twice: once in words, once with a tiny worked example (line numbers, file contents, before and after).
+- Say what stays the same as well as what changes ("your earlier commits are already safe").
+- Show it in the terminal with a Try-it, then explain what the student just saw.
+- Expect the common wrong idea and correct it out loud.
+
+### 5. Every new word gets two lines, and a link when one exists
+
+If a first-year student might not know a word (build output, checksum, branch, editor), add a short plain explanation with an everyday example, right there. If another lesson teaches it properly, link to that lesson (see "Links to other lessons", task 43). Never leave a word that could make a student feel stupid.
+
+> "Build output is what your tools make from your code, like `node_modules` in JavaScript or `__pycache__` in Python. Anyone can make it again from a short list of packages (`package.json`, `requirements.txt`), so it does not belong in Git."
+
+### 6. Never mention something before it is explained
+
+No "the mission's files", "the index", "HEAD" or "the challenge" until the student has met them. If you must point ahead, say what it is in a few words first.
+
+### 7. Try-it steps say what to do and what you will see
+
+Each step is one action, followed by what appears and why, in a full sentence:
+
+> "Run `git status`. Git lists `todo.txt` under "Untracked files": it sees the file but has never saved it."
+
+Name the thing that changed ("the file `todo.txt` moved to..."), never a bare "it".
+
+### 8. Codes, flags and outputs: what, when, why
+
+When you show a code or flag (`??`, `-s`, `-a`), also say when people use it and whether it is worth using. A table of codes alone is not an explanation.
+
+### 9. Split dense paragraphs
+
+A paragraph that holds a fact, a warning and a how-to becomes three short pieces: the idea, a Try-it or example, and a `careful` block for the trap.
+
+### 10. Practise on the student's own files
+
+Try-its use files the student creates in the lesson (`todo.txt`), so the challenges keep their starting state. Say so in plain words when it matters ("make a file of your own for this, so the practice files stay as they are").
+
+### 11. Challenges test skill, the quiz tests understanding
+
+- **Challenges** (at least three per lesson, easy to hard, the student picks): a realistic situation to solve alone in the terminal.
+- **Quiz:** questions about situations, to check the student understood why things work.
+- Challenges come before the quiz.
+
+## Auditing a lesson
+
+Run this list on every lesson before it ships:
+
+1. Coverage: every important point of its book section is in "Must know" or "Under the hood", or listed in `coverage.md` with the lesson that teaches it.
+2. Lede: a real problem and a promise (rule 1).
+3. Bridges between all sections (rule 2).
+4. Each command: plain job, example, details (rule 3).
+5. Core concepts: two explanations, a worked example, the common wrong idea (rule 4).
+6. Every hard word explained or linked (rule 5); nothing used before it is explained (rule 6).
+7. Every Try-it step says what you will see (rule 7).
+8. Real terminal output from current Git; the book's names for things.

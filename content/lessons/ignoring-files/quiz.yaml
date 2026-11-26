@@ -22,7 +22,7 @@ questions:
   - question: "Why commit the .gitignore file itself?"
     answers:
       - text: "Git only reads it once it is committed"
-        explanation: "Git reads .gitignore from your working folder right away, committed or not."
+        explanation: "Git reads .gitignore from your working tree right away, committed or not."
       - text: "It stops Git from tracking the file"
         explanation: "Committing .gitignore makes Git track it, which is what you want."
       - text: "So everyone on the team ignores the same files"

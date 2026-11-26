@@ -1,4 +1,4 @@
-brief: "The build just made a build folder and a log file, and git status is full of noise. Ignore them with a .gitignore and commit it, so the working folder is clean."
+brief: "The build just made a build folder and a log file, and git status is full of noise. Ignore them with a .gitignore and commit it, so the working tree is clean."
 setup:
   - git init -q -b main
   - git config core.autocrlf false
@@ -21,9 +21,9 @@ goal:
     label: "The history has your new commit"
 hints:
   - "Run git status. Which two things should never be committed?"
-  - "Create a file named .gitignore with one line for the build folder and one for log files."
-  - "Run: printf 'build/\\n*.log\\n' > .gitignore, then git add .gitignore and git commit -m \"Ignore build output and logs\""
+  - "Add two lines to .gitignore: one for the build folder, one for log files. Keep any line you already wrote."
+  - "Run: printf 'build/\\n*.log\\n' >> .gitignore, then git add .gitignore and git commit -m \"Ignore build output and logs\""
 solution:
-  - printf 'build/\n*.log\n' > .gitignore
+  - printf 'build/\n*.log\n' >> .gitignore
   - git add .gitignore
   - git commit -q -m "Ignore build output and logs"

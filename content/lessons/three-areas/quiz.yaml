@@ -7,7 +7,7 @@ questions:
         correct: true
         explanation: "git add copies the file as it is at that moment. Run git add again to include later edits."
       - text: "Nothing, because the file changed after staging"
-        explanation: "The commit still happens. It just uses the staged version and leaves the newer edit in the working folder."
+        explanation: "The commit still happens. It just uses the staged version and leaves the newer edit in the working tree."
 
   - question: "git status -s prints \"MM app.js\". What does that tell you?"
     answers:
@@ -17,13 +17,13 @@ questions:
         explanation: "That would be \" M app.js\", with a space in the left column."
       - text: "app.js has staged changes and newer unstaged ones"
         correct: true
-        explanation: "The left M is the staging area, the right M is the working folder: staged once, then edited again."
+        explanation: "The left M is the staging area, the right M is the working tree: staged once, then edited again."
 
   - question: "You changed login.js and styles.css, but only the login.js change is ready. What do you run?"
     answers:
       - text: "git add login.js, then git commit"
         correct: true
-        explanation: "Stage only what belongs in this commit. styles.css stays changed in your working folder."
+        explanation: "Stage only what belongs in this commit. styles.css stays changed in your working tree."
       - text: "git commit -a, then undo styles.css"
         explanation: "git commit -a stages every tracked change, so styles.css would go into the commit too."
       - text: "git add ., then git commit"
