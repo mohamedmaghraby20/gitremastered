@@ -8,9 +8,21 @@
            like the mission and the quiz), onLayerChange (optional: called with the layer the
            student switches to, so it can be saved), widthShare (optional: the column's share
            of the screen in percent, set by dragging the resize handle; null = the default).
+  A lesson opened through a link in another lesson shows "← Back to …" at the top (BackBar),
+  which returns to that lesson's layer and scroll position.
 -->
 <script lang="ts">
-	import type { Snippet } from 'svelte';
+	import { tick, type Snippet } from 'svelte';
+	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
+	import { provideLessonPlace } from '$lib/navigation/lesson-place-context';
+	import {
+		findReturnPoint,
+		forgetReturnPoint,
+		startGoingBack,
+		takePlaceToRestore
+	} from '$lib/navigation/return-point.svelte';
+	import BackBar from './BackBar.svelte';
 	import type { Lesson, LessonLayerId } from '$lib/types/lesson';
 	import { formatLessonNumber, type LessonPlace } from '$lib/content/lesson-navigation';
 	import { renderInlineMarkdown } from '$lib/content/render-markdown';
@@ -53,6 +65,41 @@
 		onLayerChange(layerId);
 	}
 
+	let scrollArea: HTMLDivElement | undefined = $state();
+
+	// Links in the text ask where the student is, to remember the way back.
+	provideLessonPlace(() => ({
+		lessonId: lesson.id,
+		title: lesson.title,
+		layerId: activeLayerId,
+		scrollTop: scrollArea?.scrollTop ?? 0
+	}));
+
+	/** The way back, when a link in another lesson opened this one. */
+	const returnPoint = $derived(findReturnPoint(lesson.id));
+
+	// Coming back through "← Back to": open the same layer and scroll to the same place.
+	$effect(() => {
+		const placeToRestore = takePlaceToRestore(lesson.id);
+		if (placeToRestore === null) {
+			return;
+		}
+		showLayer(placeToRestore.layerId);
+		void tick().then(() => {
+			if (scrollArea !== undefined) {
+				scrollArea.scrollTop = placeToRestore.scrollTop;
+			}
+		});
+	});
+
+	/** Goes back to the lesson the link was followed from. */
+	function goBack(): void {
+		const fromLessonId = startGoingBack();
+		if (fromLessonId !== null) {
+			void goto(resolve('/lessons/[lessonId]', { lessonId: fromLessonId }));
+		}
+	}
+
 	const lessonNumber = $derived(place === null ? null : formatLessonNumber(place.lessonNumber));
 	const moduleTitle = $derived(place?.moduleTitle ?? lesson.module);
 </script>
@@ -69,7 +116,13 @@
 >
 	<!-- relative: screen-reader-only text (absolutely positioned) stays inside this scroll area
 	     instead of stretching the whole page. -->
-	<div class="relative flex min-h-0 flex-1 flex-col gap-4.5 overflow-y-auto px-9 pt-7 pb-8">
+	<div
+		bind:this={scrollArea}
+		class="relative flex min-h-0 flex-1 flex-col gap-4.5 overflow-y-auto px-9 pt-7 pb-8"
+	>
+		{#if returnPoint !== null}
+			<BackBar fromTitle={returnPoint.fromTitle} onback={goBack} ondismiss={forgetReturnPoint} />
+		{/if}
 		<LessonHeader
 			title={lesson.title}
 			{lessonNumber}

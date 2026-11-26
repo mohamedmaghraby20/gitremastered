@@ -21,3 +21,20 @@ describe('renderInlineMarkdown', () => {
 		expect(renderInlineMarkdown('Run `git add`')).toBe('Run <code>git add</code>');
 	});
 });
+
+describe('course links', () => {
+	it('turn into app links with their kind and ID', () => {
+		expect(renderInlineMarkdown('On [**branch**](term:branch) main')).toBe(
+			'On <a href="/commands/terms#branch" class="course-link" data-link-kind="term" data-link-id="branch"><strong>branch</strong></a> main'
+		);
+		expect(renderMarkdown('See [.gitignore](lesson:ignoring-files).')).toContain(
+			'<a href="/lessons/ignoring-files" class="course-link" data-link-kind="lesson" data-link-id="ignoring-files">.gitignore</a>'
+		);
+	});
+
+	it('leave ordinary links as they are', () => {
+		expect(renderInlineMarkdown('[Pro Git](https://git-scm.com)')).toBe(
+			'<a href="https://git-scm.com">Pro Git</a>'
+		);
+	});
+});

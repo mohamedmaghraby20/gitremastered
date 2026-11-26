@@ -141,6 +141,20 @@ questions:
         explanation: ".gitignore never removes anything."
 ```
 
+## Links between lessons
+
+Link a word to the glossary term or the lesson that teaches it, with an ordinary Markdown link and a special address:
+
+| You write | It links to | Hover card shows | A click opens |
+|---|---|---|---|
+| `[branch](term:branch)` | A glossary term | The term's meaning | The first lesson in the term's `lessons`; the glossary entry ("Coming later") when no written lesson teaches it yet |
+| `[.gitignore](lesson:ignoring-files)` | A lesson | The lesson's title and lede | That lesson |
+
+- `pnpm content:check` fails on an unknown term or lesson ID.
+- The lesson the link opens shows "← Back to …", which returns to the same layer and scroll position.
+- Link a word once, where it first appears in a lesson; more links make the text harder to read.
+- Do not list a lesson in a term's `lessons` if it only mentions the word: list the lesson that teaches it.
+
 ## Command pages and the glossary
 
 The command index reads `content/commands/<command-id>.md` (one page per command) and `content/glossary.yaml` (terms). SPEC §4 has the exact format.
@@ -189,7 +203,7 @@ Some ideas are the heart of Git: the three areas, what staging saves, what a com
 
 ### 5. Every new word gets two lines, and a link when one exists
 
-If a first-year student might not know a word (build output, checksum, branch, editor), add a short plain explanation with an everyday example, right there. If another lesson teaches it properly, link to that lesson (see "Links to other lessons", task 43). Never leave a word that could make a student feel stupid.
+If a first-year student might not know a word (build output, checksum, branch, editor), add a short plain explanation with an everyday example, right there. If another lesson teaches it properly, link to it (see "Links between lessons" below). Never leave a word that could make a student feel stupid.
 
 > "Build output is what your tools make from your code, like `node_modules` in JavaScript or `__pycache__` in Python. Anyone can make it again from a short list of packages (`package.json`, `requirements.txt`), so it does not belong in Git."
 

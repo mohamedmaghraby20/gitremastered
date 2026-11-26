@@ -28,11 +28,11 @@ terms:
   - id: head
     term: HEAD
     meaning: "Git's pointer to where you are: normally the branch you are on, and so its latest commit."
-    lessons: [three-areas]
+    lessons: []
   - id: branch
     term: branch
     meaning: "A named line of commits, like `main`. Each new commit moves the branch you are on forward."
-    lessons: [three-areas]
+    lessons: []
   - id: gitignore
     term: .gitignore
     meaning: "A file of patterns that tells Git which untracked files to leave alone, like build output, logs and secrets."

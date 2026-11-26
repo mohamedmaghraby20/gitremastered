@@ -14,7 +14,7 @@ Run your build or install your packages, and `git status` suddenly lists files y
 
 ## Must know
 
-In the last lesson you saw that Git lists every new file as untracked and waits for you to decide. That is safe, but noisy: every project makes files nobody should save.
+In [the last lesson](lesson:three-areas) you saw that Git lists every new file as [untracked](term:untracked-file) and waits for you to decide. That is safe, but noisy: every project makes files nobody should save.
 
 ### Files that do not belong in Git
 
@@ -28,7 +28,7 @@ The problem: Git lists all of them as untracked, and one careless `git add .` sa
 
 ### Write a `.gitignore`
 
-A `.gitignore` is a plain text file in the top folder of your project. Each line is a **pattern**: a short rule that matches file names, like `*.log` for "every file ending in .log". Git skips every untracked file that matches.
+A `.gitignore` is a plain text file in the top folder of your project. Each line is a **pattern** (a [glob pattern](term:glob-pattern)): a short rule that matches file names, like `*.log` for "every file ending in .log". Git skips every untracked file that matches.
 
 ```text
 # Build output

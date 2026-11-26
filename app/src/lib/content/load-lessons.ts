@@ -12,6 +12,7 @@ import type { Lesson } from '../types/lesson.ts';
 import type { CommandPage, GlossaryTerm } from '../types/reference.ts';
 import { checkLessonsExist } from './check-lesson-ids.ts';
 import { loadCommandPages, loadGlossary } from './load-reference.ts';
+import { checkCourseLinks } from './check-course-links.ts';
 import { ContentError } from './content-error.ts';
 import { parseLessonText } from './parse-lesson.ts';
 import { parseMissionText } from './parse-mission.ts';
@@ -48,12 +49,15 @@ export function buildCourseContent(contentFiles: ContentFiles): CourseContent {
 		lessons.set(lesson.id, lesson);
 	}
 
+	const commands = loadCommandPages(contentFiles, lessons);
+	const glossary = loadGlossary(contentFiles, lessons);
+	checkCourseLinks(lessons, commands, glossary);
 	return {
 		lessons,
 		paths: loadLearningPaths(contentFiles, lessons),
 		bookPath: loadBookPath(contentFiles, lessons),
-		commands: loadCommandPages(contentFiles, lessons),
-		glossary: loadGlossary(contentFiles, lessons)
+		commands,
+		glossary
 	};
 }
 

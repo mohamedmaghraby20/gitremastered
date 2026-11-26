@@ -256,6 +256,8 @@ terms:
     lessons: [three-areas]
 ```
 
+Lessons and command pages can link to a glossary term or a lesson with `[text](term:<term-id>)` or `[text](lesson:<lesson-id>)`; the content check rejects unknown IDs (`docs/writing-lessons.md`, "Links between lessons").
+
 The loader (`app/src/lib/content/`) rejects a broken file with `<file>: <problem>`. `pnpm build` runs `pnpm content:check` first, so a broken lesson stops the build.
 
 ## 5. Project structure

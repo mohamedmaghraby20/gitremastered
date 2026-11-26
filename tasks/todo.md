@@ -625,12 +625,12 @@ Ctrl K from any screen opens a **quick search panel** over the current screen, l
 - Writing it: `[branch](term:branch)` for a glossary term, `[.gitignore](lesson:ignoring-files)` for a lesson; the content check fails on an unknown ID.
 - Hover or keyboard focus shows a small card: the term's one-line meaning and "Open the lesson →".
 - Opening the lesson remembers where you were. A "← Back to *Status, stage, commit*" bar on the new lesson returns you to the same layer and scroll position.
-- Links to lessons not written yet show the card but say "Coming later" instead of a dead link.
+- Links to lessons not written yet show the card but say "Coming later" instead of a dead link. (Built as: a term whose lessons are not written yet says "Coming later" and opens the glossary; a lesson link must name a written lesson, so the content check catches typos.)
 
 **Acceptance criteria:**
-- [ ] The card opens on hover and on focus, closes on Esc, and is read by screen readers
-- [ ] "Back" returns to the same lesson, layer and scroll position
-- [ ] Unknown IDs fail `pnpm content:check`
+- [x] The card opens on hover and on focus, closes on Esc, and is read by screen readers
+- [x] "Back" returns to the same lesson, layer and scroll position
+- [x] Unknown IDs fail `pnpm content:check`
 
 **Dependencies:** 35 (glossary content) · **Verification:** unit tests (link parsing), component tests (card, back) · **Files:** `content/`, `components/lesson-reader/` · **Scope:** M
 

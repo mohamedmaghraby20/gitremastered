@@ -47,7 +47,7 @@ nothing to commit, working tree clean
 
 **working tree clean** means every file in your working tree matches the last commit: nothing new, nothing edited. Everything you have is saved.
 
-The first line, **On branch main**, says which line of work you are on. Git can keep several lines of work side by side, called branches; this project has one, named `main`. The "Branching" module explains them. For now you can skip this line.
+The first line, **On branch main**, says which line of work you are on. Git can keep several lines of work side by side, called [branches](term:branch); this project has one, named `main`. The "Branching" module explains them. For now you can skip this line.
 
 ### When files change
 
@@ -81,7 +81,7 @@ Git waits for you on new files on purpose, so files you never meant to keep don'
 - **Build output** is what your tools make from your code, like `node_modules` in JavaScript or `__pycache__` in Python. Anyone can make it again from a short list of packages (`package.json`, `requirements.txt`), so it does not belong in Git.
 - **Stray files** are leftovers, like a log file or your editor's backup copy.
 
-The next lesson, "Ignore files with .gitignore", shows how to tell Git to skip such files for good.
+The next lesson, [Ignore files with .gitignore](lesson:ignoring-files), shows how to tell Git to skip such files for good.
 
 The lines in brackets are hints: Git names the command for the next step. When you are unsure what to do, `git status` usually tells you.
 
