@@ -41,7 +41,9 @@ describe('progress', () => {
 			lessonTextSize: null,
 			isMotionReduced: false,
 			lessonColumnShare: null,
-			terminalShare: null
+			terminalShare: null,
+			hasGitHubConsent: false,
+			challengeStartedAt: {}
 		});
 	});
 
@@ -71,7 +73,9 @@ describe('progress', () => {
 			lessonTextSize: null,
 			isMotionReduced: false,
 			lessonColumnShare: null,
-			terminalShare: null
+			terminalShare: null,
+			hasGitHubConsent: false,
+			challengeStartedAt: {}
 		});
 	});
 
@@ -123,7 +127,9 @@ describe('progress', () => {
 			lessonTextSize: null,
 			isMotionReduced: false,
 			lessonColumnShare: null,
-			terminalShare: null
+			terminalShare: null,
+			hasGitHubConsent: false,
+			challengeStartedAt: {}
 		});
 	});
 

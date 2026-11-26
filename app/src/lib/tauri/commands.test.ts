@@ -51,7 +51,9 @@ describe('contract commands', () => {
 
 		expect(mockedInvoke).toHaveBeenCalledWith('open_practice_repo', {
 			missionId: 'three-areas',
-			setupSteps: ['git init']
+			setupSteps: ['git init'],
+			github: null,
+			githubConsent: false
 		});
 		expect(mockedInvoke).toHaveBeenCalledWith('send_terminal_input', {
 			sessionId: 'session-1',

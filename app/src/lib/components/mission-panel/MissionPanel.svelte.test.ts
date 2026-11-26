@@ -19,7 +19,8 @@ const mission: Mission = {
 		{ check: 'commit-count-at-least', count: 1, label: 'The repo has a commit' }
 	],
 	hints: ['First hint', 'Second hint', 'Third hint'],
-	solution: []
+	solution: [],
+	github: null
 };
 
 /**

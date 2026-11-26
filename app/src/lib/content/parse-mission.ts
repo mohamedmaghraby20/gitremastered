@@ -13,6 +13,7 @@ import {
 	type MissionGoal
 } from '../types/mission.ts';
 import { FieldReader } from './field-reader.ts';
+import { checkGitHubLines, readGitHubChallenge } from './parse-github.ts';
 
 /**
  * Reads the mission fields of one challenge.
@@ -22,13 +23,17 @@ import { FieldReader } from './field-reader.ts';
  */
 export function readMissionFields(reader: FieldReader): Mission {
 	const goalReaders = reader.recordList('goal', 'goal');
+	const setup = reader.textList('setup');
+	const solution = reader.textList('solution');
+	checkGitHubLines(reader, setup, solution);
 	return {
 		brief: reader.text('brief'),
-		setup: reader.textList('setup'),
+		setup,
 		goals: goalReaders.map(readGoal),
 		// A checkpoint's challenges have no hints; load-lessons.ts checks that only they do.
 		hints: reader.optionalTextList('hints'),
-		solution: reader.textList('solution')
+		solution,
+		github: readGitHubChallenge(reader.optionalRecord('github'))
 	};
 }
 

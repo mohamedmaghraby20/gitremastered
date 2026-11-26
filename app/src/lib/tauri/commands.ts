@@ -6,6 +6,7 @@
  */
 
 import { invoke } from '@tauri-apps/api/core';
+import type { GitHubChallenge, GitHubConnection, GitHubState } from '$lib/types/github';
 import type { RepoSnapshot } from '$lib/types/repo-snapshot';
 
 /**
@@ -21,11 +22,20 @@ export function getGitVersion(): Promise<string> {
  * Opens a mission's practice folder as the student left it, or builds it from its setup steps
  * when there is none yet (or the steps changed since it was built).
  * @param missionId - the mission's ID, which names the folder
- * @param setupSteps - shell commands from mission.yaml, run in order
+ * A GitHub challenge also prepares its practice repository on GitHub, only with consent.
+ * @param missionId - the mission's ID, which names the folder
+ * @param setupSteps - shell commands from challenges.yaml, run in order
+ * @param github - the challenge's GitHub field, or null for a local challenge
+ * @param githubConsent - true when the student agreed to the GitHub consent screen
  * @returns the practice folder's path
  */
-export function openPracticeRepo(missionId: string, setupSteps: string[]): Promise<string> {
-	return invoke<string>('open_practice_repo', { missionId, setupSteps });
+export function openPracticeRepo(
+	missionId: string,
+	setupSteps: string[],
+	github: GitHubChallenge | null = null,
+	githubConsent = false
+): Promise<string> {
+	return invoke<string>('open_practice_repo', { missionId, setupSteps, github, githubConsent });
 }
 
 /**
@@ -40,10 +50,16 @@ export function findPracticeRepo(missionId: string): Promise<string | null> {
 /**
  * Deletes a mission's practice folder and builds it again from its setup steps.
  * @param missionId - the mission's ID
+ * @param github - the challenge's GitHub field, or null for a local challenge
+ * @param githubConsent - true when the student agreed to the GitHub consent screen
  * @returns the practice folder's path
  */
-export function resetPracticeRepo(missionId: string): Promise<string> {
-	return invoke<string>('reset_practice_repo', { missionId });
+export function resetPracticeRepo(
+	missionId: string,
+	github: GitHubChallenge | null = null,
+	githubConsent = false
+): Promise<string> {
+	return invoke<string>('reset_practice_repo', { missionId, github, githubConsent });
 }
 
 /**
@@ -89,4 +105,38 @@ export function closeTerminalSession(sessionId: string): Promise<void> {
  */
 export function getRepoSnapshot(practiceFolderPath: string): Promise<RepoSnapshot> {
 	return invoke<RepoSnapshot>('get_repo_snapshot', { practiceFolderPath });
+}
+
+/**
+ * Asks whether the GitHub CLI is installed and signed in, and as whom. Only reads.
+ * @returns the connection
+ */
+export function getGitHubConnection(): Promise<GitHubConnection> {
+	return invoke<GitHubConnection>('get_github_connection');
+}
+
+/**
+ * Reads a practice repository's state on GitHub (time-limited; call it now and then only).
+ * @param repoName - the repository's name, like gitremastered-practice-flow
+ * @returns its state
+ */
+export function getGitHubState(repoName: string): Promise<GitHubState> {
+	return invoke<GitHubState>('get_github_state', { repoName });
+}
+
+/**
+ * Lists the practice repositories on the student's account.
+ * @returns their names
+ */
+export function listPracticeRepositories(): Promise<string[]> {
+	return invoke<string[]>('list_practice_repositories');
+}
+
+/**
+ * Deletes every practice repository on the student's account (needs the delete_repo scope).
+ * @param hasConsent - true once the student confirmed
+ * @returns the names deleted
+ */
+export function deletePracticeRepositories(hasConsent: boolean): Promise<string[]> {
+	return invoke<string[]>('delete_practice_repositories', { hasConsent });
 }

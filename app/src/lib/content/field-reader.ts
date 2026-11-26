@@ -177,6 +177,33 @@ export class FieldReader {
 	}
 
 	/**
+	 * Reads an optional nested mapping, wrapped in its own reader.
+	 * @param fieldName - the field's name
+	 * @returns a reader for it, or null when the field is absent
+	 */
+	optionalRecord(fieldName: string): FieldReader | null {
+		const value = this.record[fieldName];
+		if (value === undefined || value === null) {
+			return null;
+		}
+		return new FieldReader(value, this.fileName, this.joinPlace(fieldName));
+	}
+
+	/**
+	 * Reads an optional list of mappings; an absent field is an empty list.
+	 * @param fieldName - the field's name
+	 * @param itemName - what one item is called in error messages, like "step"
+	 * @returns one reader per item
+	 */
+	optionalRecordList(fieldName: string, itemName: string): FieldReader[] {
+		const value = this.record[fieldName];
+		if (value === undefined || value === null) {
+			return [];
+		}
+		return this.recordList(fieldName, itemName, { minimum: 0 });
+	}
+
+	/**
 	 * Throws a ContentError for this place in the file.
 	 * @param problem - what is wrong
 	 */

@@ -35,7 +35,7 @@ export type Commit = {
 	authorName: string;
 	authoredAt: string; // ISO 8601 date and time
 	isReachable: boolean; // false for a commit only the reflog remembers (after amend or reset)
-	isSigned: boolean; // true when Git verified a signature on it (git log %G? is not "N")
+	isSigned: boolean; // true when Git verified a good signature (git log %G? is G or U)
 	changedPaths: string[]; // the files this commit added, changed or deleted (none for a merge)
 };
 

@@ -5,6 +5,8 @@
  * docs/writing-lessons.md explains every goal check to lesson authors.
  */
 
+import type { GitHubChallenge } from './github.ts';
+
 /** Goals about one file in the working tree, the staging area or the latest commit. */
 export type FileGoalCheck =
 	| { check: 'file-is-untracked'; file: string }
@@ -66,6 +68,27 @@ export type RemoteGoalCheck =
 	| { check: 'tag-is-on-commit'; tag: string; message: string }
 	| { check: 'remote-has-tag'; tag: string };
 
+/**
+ * Goals about the practice repository on GitHub (wave B). Pull requests, issues and workflow
+ * runs count only when made after the challenge started. A pull request is named by its
+ * branch (head); an issue by text in its title.
+ */
+export type GitHubGoalCheck =
+	| { check: 'github-branch-exists'; branch: string }
+	| { check: 'github-branch-is-missing'; branch: string }
+	| { check: 'github-pull-request-is-open'; head: string }
+	| { check: 'github-pull-request-is-merged'; head: string }
+	| { check: 'github-pull-request-is-closed'; head: string }
+	| { check: 'github-pull-request-has-comment'; head: string }
+	| { check: 'github-pull-request-has-review'; head: string }
+	| { check: 'github-issue-exists'; title: string }
+	| { check: 'github-issue-is-closed'; title: string }
+	| { check: 'github-issue-has-label'; title: string; label: string }
+	| { check: 'github-release-exists'; tag: string }
+	| { check: 'github-default-branch-has-rule'; rule: string }
+	| { check: 'github-workflow-succeeded'; workflow: string }
+	| { check: 'github-workflow-failed'; workflow: string };
+
 /** Goals about other folders that share or hold the repository: worktrees and submodules. */
 export type WorkspaceGoalCheck =
 	{ check: 'worktree-exists'; branch: string } | { check: 'submodule-exists'; path: string };
@@ -80,7 +103,8 @@ export type GoalCheck =
 	| HistoryGoalCheck
 	| BranchGoalCheck
 	| RemoteGoalCheck
-	| WorkspaceGoalCheck;
+	| WorkspaceGoalCheck
+	| GitHubGoalCheck;
 
 /** The name of a goal check, like "file-is-committed". */
 export type GoalCheckKind = GoalCheck['check'];
@@ -138,7 +162,22 @@ export const goalCheckFields: Record<GoalCheckKind, readonly string[]> = {
 	'tag-is-on-commit': ['tag', 'message'],
 	'remote-has-tag': ['tag'],
 	'worktree-exists': ['branch'],
-	'submodule-exists': ['path']
+	'worktree-count-is': ['count'],
+	'submodule-exists': ['path'],
+	'github-branch-exists': ['branch'],
+	'github-branch-is-missing': ['branch'],
+	'github-pull-request-is-open': ['head'],
+	'github-pull-request-is-merged': ['head'],
+	'github-pull-request-is-closed': ['head'],
+	'github-pull-request-has-comment': ['head'],
+	'github-pull-request-has-review': ['head'],
+	'github-issue-exists': ['title'],
+	'github-issue-is-closed': ['title'],
+	'github-issue-has-label': ['title', 'label'],
+	'github-release-exists': ['tag'],
+	'github-default-branch-has-rule': ['rule'],
+	'github-workflow-succeeded': ['workflow'],
+	'github-workflow-failed': ['workflow']
 };
 
 /** The names of every kind of goal check, used to reject unknown ones. */
@@ -154,6 +193,7 @@ export type Mission = {
 	goals: MissionGoal[];
 	hints: string[]; // from a gentle nudge to the full answer
 	solution: string[]; // shell commands that reach every goal (used by mission tests)
+	github: GitHubChallenge | null; // a GitHub challenge's practice repository and teammate steps
 };
 
 /** The three levels, from easy to hard; a lesson lists its challenges in this order. */

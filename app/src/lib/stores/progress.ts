@@ -37,6 +37,8 @@ export type ProgressData = {
 	isMotionReduced: boolean; // the app's own "Reduce motion" switch in Settings
 	lessonColumnShare: number | null; // percent of the lesson screen's width; null = default
 	terminalShare: number | null; // percent of the practice column's height; null = default
+	hasGitHubConsent: boolean; // the student agreed to the GitHub consent screen (decision 4)
+	challengeStartedAt: Record<string, string>; // by lesson ID, when its challenge was last built (ISO)
 };
 
 /** The few storage actions this module needs (the Tauri store has them; tests pass a fake). */
@@ -67,7 +69,9 @@ export const emptyProgress: ProgressData = {
 	lessonTextSize: null,
 	isMotionReduced: false,
 	lessonColumnShare: null,
-	terminalShare: null
+	terminalShare: null,
+	hasGitHubConsent: false,
+	challengeStartedAt: {}
 };
 
 const progressStore = writable<ProgressData>(emptyProgress);
@@ -287,4 +291,24 @@ export function createMemoryStorage(): KeyValueStorage {
 		},
 		save: () => Promise.resolve()
 	};
+}
+
+/**
+ * Remembers the student's answer on the GitHub consent screen (it can be taken back in Settings).
+ * @param hasConsent - true when the student agreed
+ */
+export async function saveGitHubConsent(hasConsent: boolean): Promise<void> {
+	await saveProgress({ ...get(progressStore), hasGitHubConsent: hasConsent });
+}
+
+/**
+ * Remembers when a lesson's challenge was built, so GitHub goals count only what was made
+ * after that (assumption A6), even after the app restarts.
+ * @param lessonId - the lesson
+ * @param startedAt - the time, ISO 8601
+ */
+export async function saveChallengeStartedAt(lessonId: string, startedAt: string): Promise<void> {
+	const current = get(progressStore);
+	const challengeStartedAt = { ...current.challengeStartedAt, [lessonId]: startedAt };
+	await saveProgress({ ...current, challengeStartedAt });
 }

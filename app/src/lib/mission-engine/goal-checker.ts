@@ -8,15 +8,18 @@
  *   remote-goals.ts   remotes, upstreams and tags
  *   content-goals.ts  what a file says, now or in the latest commit, and its history
  *   workspace-goals.ts linked worktrees and submodules
+ *   github-goals.ts   the practice repository on GitHub (reads a GitHubContext, not the snapshot)
  * Everything is a pure function: no screen code, no Git, so every goal kind is tested with
  * sample snapshots.
  */
 
+import type { GitHubContext } from '$lib/types/github';
 import type { GoalCheck } from '$lib/types/mission';
 import type { RepoSnapshot } from '$lib/types/repo-snapshot';
 import { isBranchGoalMet } from './branch-goals';
 import { isContentGoalMet } from './content-goals';
 import { isFileGoalMet } from './file-goals';
+import { isGitHubGoalMet } from './github-goals';
 import { isHistoryGoalMet } from './history-goals';
 import { isRemoteGoalMet } from './remote-goals';
 import { isWorkspaceGoalMet } from './workspace-goals';
@@ -25,9 +28,17 @@ import { isWorkspaceGoalMet } from './workspace-goals';
  * Checks one goal against the repo snapshot.
  * @param goalCheck - the goal from challenges.yaml, e.g. { check: "file-is-committed", file: "notes.txt" }
  * @param repoSnapshot - the repo state right now (null before the first snapshot arrives)
+ * @param gitHubContext - the practice repository on GitHub, for GitHub goals (null when unknown)
  * @returns true if the goal is met
  */
-export function isGoalMet(goalCheck: GoalCheck, repoSnapshot: RepoSnapshot | null): boolean {
+export function isGoalMet(
+	goalCheck: GoalCheck,
+	repoSnapshot: RepoSnapshot | null,
+	gitHubContext: GitHubContext | null = null
+): boolean {
+	if (goalCheck.check.startsWith('github-')) {
+		return isGitHubGoalMet(goalCheck as Parameters<typeof isGitHubGoalMet>[0], gitHubContext);
+	}
 	if (repoSnapshot === null) {
 		return false;
 	}
@@ -84,8 +95,12 @@ export function isGoalMet(goalCheck: GoalCheck, repoSnapshot: RepoSnapshot | nul
 		case 'remote-has-tag':
 			return isRemoteGoalMet(goalCheck, repoSnapshot);
 		case 'worktree-exists':
+		case 'worktree-count-is':
 		case 'submodule-exists':
 			return isWorkspaceGoalMet(goalCheck, repoSnapshot);
+		default:
+			// Only GitHub goals are left, and they were answered above.
+			return false;
 	}
 }
 
@@ -93,8 +108,13 @@ export function isGoalMet(goalCheck: GoalCheck, repoSnapshot: RepoSnapshot | nul
  * Checks every goal of a mission.
  * @param goalChecks - the mission's goals, in order
  * @param repoSnapshot - the repo state right now
+ * @param gitHubContext - the practice repository on GitHub (null when unknown)
  * @returns one true/false per goal, in the same order
  */
-export function checkGoals(goalChecks: GoalCheck[], repoSnapshot: RepoSnapshot | null): boolean[] {
-	return goalChecks.map((goalCheck) => isGoalMet(goalCheck, repoSnapshot));
+export function checkGoals(
+	goalChecks: GoalCheck[],
+	repoSnapshot: RepoSnapshot | null,
+	gitHubContext: GitHubContext | null = null
+): boolean[] {
+	return goalChecks.map((goalCheck) => isGoalMet(goalCheck, repoSnapshot, gitHubContext));
 }

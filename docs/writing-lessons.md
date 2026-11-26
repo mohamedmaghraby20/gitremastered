@@ -168,7 +168,7 @@ Every goal has a `check`, a `label` (the sentence in the checklist) and the extr
 | `history-is-linear` | none | No commit in the history is a merge commit (after a rebase, for example) |
 | `commit-comes-before` | `message`, `later` | Both commits are in the history and the first is an ancestor of the second (for reordering) |
 | `config-is-unset` | `key` | The repository's own settings do not hold the key |
-| `latest-commit-is-signed` | none | Git verified a signature on the commit HEAD is on (`git log --format=%G?` is not `N`; SSH signatures need `gpg.ssh.allowedSignersFile`) |
+| `latest-commit-is-signed` | none | Git verified a signature on the commit HEAD is on (`git log --format=%G?` is `G` or `U`; SSH signatures need `gpg.ssh.allowedSignersFile`) |
 
 **Branches** (a `branch` may be local, like `main`, or remote-tracking, like `origin/main`, unless noted)
 
@@ -203,7 +203,47 @@ Every goal has a `check`, a `label` (the sentence in the checklist) and the extr
 | Goal check | Extra fields | Met when |
 |---|---|---|
 | `worktree-exists` | `branch` | A linked worktree (`git worktree add`) has that branch checked out |
+| `worktree-count-is` | `count` | There are exactly that many linked worktrees (0 after `git worktree remove`) |
 | `submodule-exists` | `path` | `.gitmodules` lists a submodule at that path and its files are checked out |
+
+**GitHub** (wave B; read from GitHub now and then, never on every snapshot. Pull requests, issues and workflow runs count only when made after the challenge started)
+
+| Goal check | Extra fields | Met when |
+|---|---|---|
+| `github-branch-exists` / `github-branch-is-missing` | `branch` | The branch is (or is not) on GitHub |
+| `github-pull-request-is-open` / `-is-merged` / `-is-closed` | `head` | A pull request from that branch is open, merged, or closed without merging |
+| `github-pull-request-has-comment` / `-has-review` | `head` | That pull request has a comment, or a submitted review |
+| `github-issue-exists` / `github-issue-is-closed` | `title` | An issue with that text in its title exists, or is closed |
+| `github-issue-has-label` | `title`, `label` | That issue has the label |
+| `github-release-exists` | `tag` | A published (not draft) release for that tag |
+| `github-default-branch-has-rule` | `rule` | A rule of that type protects the default branch, like `pull_request` or `deletion` |
+| `github-workflow-succeeded` / `github-workflow-failed` | `workflow` | A run of the workflow with that `name:` finished with success, or failure |
+
+**GitHub challenges.** A challenge that runs on the student's own GitHub account (see "Phase 6 decisions" in `tasks/todo.md`) adds a `github` field:
+
+```yaml
+    github:
+      repo: gitremastered-practice-flow      # must start with gitremastered-practice
+      teammate:                               # optional: what "a teammate" does once the setup pushed
+        - action: open-pull-request
+          head: add-hours
+          base: main
+          title: "Add opening hours"
+          body: "Please review"
+        - action: comment-pull-request         # also: merge-pull-request (head, method), create-issue (title, body, labels)
+          head: add-hours
+          body: "One typo on line 2"
+    setup:
+      - git init -q -b main
+      # ... the usual lines and commits ...
+      - git remote add origin "$PRACTICE_GITHUB_URL"
+      - git push -q --force --mirror origin    # replaces everything on GitHub with the starting state
+```
+
+- Starting or resetting the challenge creates the repository (public) if needed, closes open pull requests and issues, deletes releases and rules, then runs the setup with `PRACTICE_GITHUB_URL` set, makes `main` the default branch and runs the teammate steps. Only after the student accepted the consent screen.
+- Setup lines never call `gh` and never name a github.com address. Solution lines may use `gh` (the student types them) but never `--repo`, an address, or `gh repo delete`. The content check refuses both.
+- One repository per lesson family, so several lessons may share a name; the setup's mirror push always starts it clean.
+- `pnpm test:missions` skips GitHub challenges; `pnpm test:github` runs them against the account signed in to `gh` on this computer.
 
 **Answer challenges.** Some skills only read: finding a commit, reading a diff. Their challenges ask the student to write what they found into `answer.txt` (`echo 3 > answer.txt`, or `git rev-parse --short HEAD~2 > answer.txt`), and a goal checks the answer. Say exactly what form the answer takes ("the short commit ID", "a number", "the file name"). Add `echo answer.txt >> .git/info/exclude` to the setup, so the answer file stays out of `git status`.
 

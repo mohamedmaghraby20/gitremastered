@@ -32,7 +32,8 @@ export const sampleLesson: Lesson = {
 			setup: ['git init'],
 			goals: [{ check: 'file-is-committed', file: 'notes.txt', label: 'notes.txt is committed' }],
 			hints: ['First hint', 'Second hint', 'Third hint'],
-			solution: ['git add notes.txt', 'git commit -m "Add notes"']
+			solution: ['git add notes.txt', 'git commit -m "Add notes"'],
+			github: null
 		},
 		{
 			id: 'commit-two',
@@ -42,7 +43,8 @@ export const sampleLesson: Lesson = {
 			setup: ['git init'],
 			goals: [{ check: 'file-is-committed', file: 'notes.txt', label: 'notes.txt is committed' }],
 			hints: ['First hint', 'Second hint', 'Third hint'],
-			solution: ['git add notes.txt', 'git commit -m "Add notes"']
+			solution: ['git add notes.txt', 'git commit -m "Add notes"'],
+			github: null
 		},
 		{
 			id: 'keep-one-out',
@@ -52,7 +54,8 @@ export const sampleLesson: Lesson = {
 			setup: ['git init'],
 			goals: [{ check: 'file-is-committed', file: 'notes.txt', label: 'notes.txt is committed' }],
 			hints: ['First hint', 'Second hint', 'Third hint'],
-			solution: ['git add notes.txt', 'git commit -m "Add notes"']
+			solution: ['git add notes.txt', 'git commit -m "Add notes"'],
+			github: null
 		}
 	],
 	quiz: {

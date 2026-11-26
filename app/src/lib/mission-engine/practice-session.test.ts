@@ -26,17 +26,22 @@ function fakeCommands(isDesktopApp = true) {
 describe('PracticeSession', () => {
 	it('builds the practice folder from the setup steps', async () => {
 		const commands = fakeCommands();
-		const session = new PracticeSession('three-areas', ['git init'], commands);
+		const session = new PracticeSession('three-areas', ['git init'], null, undefined, commands);
 
 		await session.start();
 
-		expect(commands.openPracticeRepo).toHaveBeenCalledWith('three-areas', ['git init']);
+		expect(commands.openPracticeRepo).toHaveBeenCalledWith(
+			'three-areas',
+			['git init'],
+			null,
+			false
+		);
 		expect(session.practiceFolderPath).toBe('/practice/three-areas');
 	});
 
 	it('builds another challenge from its own setup, and starts the same one over', async () => {
 		const commands = fakeCommands();
-		const session = new PracticeSession('three-areas', ['git init'], commands);
+		const session = new PracticeSession('three-areas', ['git init'], null, undefined, commands);
 		await session.start();
 
 		await session.startChallenge(['git init', 'echo two > two.txt']);
@@ -46,12 +51,12 @@ describe('PracticeSession', () => {
 		]);
 
 		await session.startChallenge(['git init', 'echo two > two.txt']);
-		expect(commands.resetPracticeRepo).toHaveBeenCalledWith('three-areas');
+		expect(commands.resetPracticeRepo).toHaveBeenCalledWith('three-areas', null, false);
 	});
 
 	it('explains that the terminal needs the desktop app in a plain browser', async () => {
 		const commands = fakeCommands(false);
-		const session = new PracticeSession('three-areas', [], commands);
+		const session = new PracticeSession('three-areas', [], null, undefined, commands);
 
 		await session.start();
 
@@ -62,7 +67,7 @@ describe('PracticeSession', () => {
 	it('shows a readable message when setup fails', async () => {
 		const commands = fakeCommands();
 		commands.openPracticeRepo.mockRejectedValue('Git is not installed');
-		const session = new PracticeSession('three-areas', [], commands);
+		const session = new PracticeSession('three-areas', [], null, undefined, commands);
 
 		await session.start();
 
@@ -71,7 +76,7 @@ describe('PracticeSession', () => {
 	});
 
 	it('keeps the caption of the last Git command only', () => {
-		const session = new PracticeSession('three-areas', [], fakeCommands());
+		const session = new PracticeSession('three-areas', [], null, undefined, fakeCommands());
 
 		session.recordCommandLine('git add notes.txt');
 		session.recordCommandLine('ls');
@@ -81,13 +86,13 @@ describe('PracticeSession', () => {
 
 	it('resets the folder and clears the caption', async () => {
 		const commands = fakeCommands();
-		const session = new PracticeSession('three-areas', [], commands);
+		const session = new PracticeSession('three-areas', [], null, undefined, commands);
 		await session.start();
 		session.recordCommandLine('git status');
 
 		await session.reset();
 
-		expect(commands.resetPracticeRepo).toHaveBeenCalledWith('three-areas');
+		expect(commands.resetPracticeRepo).toHaveBeenCalledWith('three-areas', null, false);
 		expect(session.lastCaption).toBeNull();
 		expect(session.practiceFolderPath).toBe('/practice/three-areas');
 	});
