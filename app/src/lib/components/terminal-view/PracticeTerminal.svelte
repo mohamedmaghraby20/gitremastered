@@ -35,7 +35,7 @@
 	}
 </script>
 
-<TerminalWindow folderLabel={`~/practice/${missionId}`} bind:windowElement>
+<TerminalWindow folderLabel={`~/practice/${missionId}/project`} bind:windowElement>
 	{#if practiceFolderPath === null}
 		<p class="type-terminal m-0 text-terminal-muted">{statusMessage}</p>
 	{:else}

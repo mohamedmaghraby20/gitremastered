@@ -184,6 +184,35 @@ Every goal has a `check`, a `label` (the sentence in the checklist) and the extr
 
 **Answer challenges.** Some skills only read: finding a commit, reading a diff. Their challenges ask the student to write what they found into `answer.txt` (`echo 3 > answer.txt`, or `git rev-parse --short HEAD~2 > answer.txt`), and a goal checks the answer. Say exactly what form the answer takes ("the short commit ID", "a number", "the file name"). Add `echo answer.txt >> .git/info/exclude` to the setup, so the answer file stays out of `git status`.
 
+**Where the steps run.** Each challenge gets a small workspace, and the steps run inside its `project` folder, where the student's terminal opens too:
+
+```text
+practice/<lesson-id>/
+├── project/       the practice folder: setup, solution and the student's terminal run here
+├── origin.git/    only if the setup makes it: a local "server"
+└── teammate/      only if the setup makes it: someone else's clone
+```
+
+A lesson about remotes builds its own server beside the project, so everything works offline:
+
+```yaml
+    setup:
+      - git init -q -b main
+      # ... the usual config lines, then some commits ...
+      - git init -q --bare -b main ../origin.git      # the "server": a repository with no working tree
+      - git remote add origin ../origin.git
+      - git push -q -u origin main
+      # A teammate pushes a commit the student does not have yet:
+      - git clone -q ../origin.git ../teammate
+      - git -C ../teammate config user.name "Tariq (teammate)"
+      - git -C ../teammate config user.email "tariq@example.com"
+      - echo "Docs live in docs/" >> ../teammate/README.md
+      - git -C ../teammate commit -q -am "Point to the docs"
+      - git -C ../teammate push -q
+```
+
+"Start this challenge" and "Reset" delete and rebuild the whole workspace, so nothing is left behind. A challenge may also start with no repository at all (for `git init` and `git clone`): the picture stays empty until the `project` folder itself is a repository, so ask for `git clone ../shop.git .` (the dot clones into the current folder).
+
 Setup rules:
 - Start with the four lines above: `git init -q -b main`, no CRLF conversion (keeps Windows warnings out of the terminal), and a practice identity only when the student has none.
 - Quote any line that contains `: ` (colon and space), or YAML reads it as a field: `'echo "debug: started" > app.log'`.

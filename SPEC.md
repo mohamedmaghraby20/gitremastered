@@ -146,7 +146,7 @@ Approved 2026-11-25 as version 1. Fields are added when a lesson needs them. Ver
 
 ### 3.6 Practice folders
 
-- Location: the app's local data folder, `<app data>/practice/<missionId>/`.
+- Location: the app's local data folder, `<app data>/practice/<missionId>/project`. The folder above it is the mission's workspace: a lesson about remotes builds a local "server" (`origin.git`) and a teammate's clone there, so it works offline. Reset deletes and rebuilds the whole workspace (phase 5).
 - The app's own automatic Git commands only ever run inside a practice folder, never in the student's own projects.
 - Reset = delete the folder and run the active challenge's setup again. Starting another challenge builds the folder from that challenge's setup.
 

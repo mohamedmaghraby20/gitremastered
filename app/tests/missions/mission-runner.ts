@@ -45,8 +45,10 @@ const stepEnvironment = {
  */
 export function runMission(missionId: string, mission: Mission): MissionRunResult {
 	const practiceRoot = mkdtempSync(join(tmpdir(), 'gitremastered-missions-'));
-	const practiceFolder = join(practiceRoot, missionId);
-	mkdirSync(practiceFolder);
+	// The same layout as the app: a workspace per mission, with the practice folder inside,
+	// so a remote lesson can build "../origin.git" beside it.
+	const practiceFolder = join(practiceRoot, missionId, 'project');
+	mkdirSync(practiceFolder, { recursive: true });
 	try {
 		const bashProgram = findBashProgram();
 		for (const step of [...mission.setup, ...mission.solution]) {

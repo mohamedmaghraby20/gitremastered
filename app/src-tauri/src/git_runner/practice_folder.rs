@@ -1,4 +1,15 @@
-//! Practice folders: `<app data>/practice/<missionId>/` (SPEC.md section 3.6).
+//! Practice folders (SPEC.md section 3.6). Each mission gets a small workspace:
+//!
+//! ```text
+//! <app data>/practice/<missionId>/            the workspace, deleted and rebuilt as a whole
+//!                        ├── project/        the practice folder: the terminal opens here
+//!                        ├── origin.git/     only in remote lessons: a local "server"
+//!                        └── teammate/       only in remote lessons: someone else's clone
+//! ```
+//!
+//! Setup steps run inside `project/`, so a lesson about remotes can build its own "server"
+//! right beside it (`git init --bare ../origin.git`) and everything works offline. Because
+//! the whole workspace is rebuilt on reset, nothing is ever left behind.
 //!
 //! Safety rule: the app's own commands run only inside a practice folder. The type system
 //! enforces it: code that runs commands takes a `PracticeFolder`, and the only way to get
@@ -50,6 +61,9 @@ impl fmt::Display for PracticeError {
     }
 }
 
+/// The name of the practice folder inside a mission's workspace.
+const PROJECT_FOLDER_NAME: &str = "project";
+
 /// A folder that is known to be inside the practice root. Only `PracticeRoot` makes these.
 #[derive(Debug, Clone, PartialEq)]
 pub struct PracticeFolder {
@@ -80,7 +94,8 @@ impl PracticeRoot {
         })
     }
 
-    /// Gives the practice folder for a mission, without creating it.
+    /// Gives the practice folder for a mission (`<root>/<missionId>/project`), without
+    /// creating it.
     ///
     /// Input: the mission ID, e.g. `three-areas`. Output: the folder, or an error for a bad ID.
     pub fn folder_for(&self, mission_id: &str) -> Result<PracticeFolder, PracticeError> {
@@ -88,7 +103,7 @@ impl PracticeRoot {
             return Err(PracticeError::InvalidMissionId(mission_id.to_string()));
         }
         Ok(PracticeFolder {
-            path: self.root_path.join(mission_id),
+            path: self.workspace_path(mission_id).join(PROJECT_FOLDER_NAME),
         })
     }
 
@@ -119,7 +134,7 @@ impl PracticeRoot {
         let saved_steps = serde_json::to_string(setup_steps)
             .map_err(|error| PracticeError::FileSystem(error.to_string()))?;
         fs::write(self.saved_setup_path(mission_id), saved_steps).map_err(file_system_error)?;
-        self.rebuild(&folder, setup_steps)?;
+        self.rebuild(mission_id, &folder, setup_steps)?;
         Ok(folder)
     }
 
@@ -141,14 +156,16 @@ impl PracticeRoot {
         }
     }
 
-    /// Finds a mission's practice folder without creating it: only a folder that holds a Git
-    /// repository counts (a half-built folder does not).
+    /// Finds a mission's practice folder without creating it: only a folder whose setup ran
+    /// to the end counts (a half-built folder does not). It need not hold a Git repository:
+    /// in a lesson about `git init`, creating the repository is the student's job.
     ///
     /// Input: the mission ID. Output: the folder, `None` if it was never built, or an error
     /// for a bad ID.
     pub fn find(&self, mission_id: &str) -> Result<Option<PracticeFolder>, PracticeError> {
         let folder = self.folder_for(mission_id)?;
-        if folder.path().join(".git").is_dir() {
+        let is_fully_built = self.ready_marker_path(mission_id).is_file();
+        if folder.path().is_dir() && is_fully_built {
             Ok(Some(folder))
         } else {
             Ok(None)
@@ -163,7 +180,7 @@ impl PracticeRoot {
         let setup_steps = self
             .read_saved_steps(mission_id)
             .ok_or_else(|| PracticeError::NoSavedSetup(mission_id.to_string()))?;
-        self.rebuild(&folder, &setup_steps)?;
+        self.rebuild(mission_id, &folder, &setup_steps)?;
         Ok(folder)
     }
 
@@ -176,17 +193,42 @@ impl PracticeRoot {
         serde_json::from_str(&saved_text).ok()
     }
 
-    /// Deletes the folder if it exists, creates it empty, and runs the steps inside.
+    /// Deletes the mission's whole workspace if it exists, creates an empty practice folder,
+    /// and runs the steps inside it. The "ready" marker is written last, so a build that
+    /// stopped halfway is never mistaken for a finished one.
     ///
-    /// Inputs: the folder and the steps. Output: nothing, or the first error.
+    /// Inputs: a mission ID that was already checked, its folder and the steps.
+    /// Output: nothing, or the first error.
     fn rebuild(
         &self,
+        mission_id: &str,
         folder: &PracticeFolder,
         setup_steps: &[String],
     ) -> Result<(), PracticeError> {
-        remove_folder_with_retries(folder.path())?;
+        let ready_marker_path = self.ready_marker_path(mission_id);
+        if ready_marker_path.exists() {
+            fs::remove_file(&ready_marker_path).map_err(file_system_error)?;
+        }
+        remove_folder_with_retries(&self.workspace_path(mission_id))?;
         fs::create_dir_all(folder.path()).map_err(file_system_error)?;
-        run_setup_steps(folder, setup_steps)
+        run_setup_steps(folder, setup_steps)?;
+        fs::write(ready_marker_path, "").map_err(file_system_error)
+    }
+
+    /// A mission's workspace: the folder that holds its practice folder and, in remote
+    /// lessons, the repositories beside it.
+    ///
+    /// Input: a mission ID that was already checked. Output: `<root>/<missionId>`.
+    fn workspace_path(&self, mission_id: &str) -> PathBuf {
+        self.root_path.join(mission_id)
+    }
+
+    /// The empty file that says "this mission's setup ran to the end":
+    /// `<root>/<missionId>.ready`, outside the workspace like the saved steps.
+    ///
+    /// Input: a mission ID that was already checked. Output: the file path.
+    fn ready_marker_path(&self, mission_id: &str) -> PathBuf {
+        self.root_path.join(format!("{mission_id}.ready"))
     }
 
     /// Where a mission's setup steps are saved: `<root>/<missionId>.setup.json`, outside the

@@ -105,7 +105,7 @@ fn runs_git_version_in_the_practice_folder() {
         &sessions,
         &session_id,
         &events,
-        "terminal-test",
+        "project",
         Duration::from_secs(20),
     );
 
@@ -125,11 +125,11 @@ fn shows_a_short_prompt() {
         &sessions,
         &session_id,
         &events,
-        "terminal-test",
+        "project",
         Duration::from_secs(20),
     );
     assert!(
-        !output.contains("practice/terminal-test"),
+        !output.contains("terminal-test/project"),
         "the prompt still shows the full path: {output:?}"
     );
 

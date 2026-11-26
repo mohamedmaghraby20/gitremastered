@@ -4,7 +4,7 @@
   the practice folder's name, a "bash" badge) around a warm screen with faint scanlines.
   It is the only element besides menus that casts a shadow.
 
-  Inputs: folderLabel (shown in the title bar, e.g. "~/practice/three-areas"),
+  Inputs: folderLabel (shown in the title bar, e.g. "~/practice/three-areas/project"),
           children (what goes on the screen, normally TerminalView).
   The window itself can take focus, so F6 in the terminal can move focus here.
 -->

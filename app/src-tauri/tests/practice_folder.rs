@@ -41,7 +41,7 @@ fn create_runs_the_setup_steps_with_real_git() {
         .create("three-areas", &sample_setup_steps())
         .expect("setup works");
 
-    assert!(folder.path().ends_with("three-areas"));
+    assert!(folder.path().ends_with("three-areas/project"));
     assert_eq!(
         git_output(folder.path(), &["log", "--format=%s"]),
         "Add README"
@@ -213,5 +213,75 @@ fn find_gives_a_folder_only_after_it_was_built() {
         .expect("setup works");
 
     let found = practice_root.find("three-areas").expect("valid id");
-    assert!(found.is_some_and(|folder| folder.path().ends_with("three-areas")));
+    assert!(found.is_some_and(|folder| folder.path().ends_with("three-areas/project")));
+}
+
+/// A remote lesson builds a "server" and a teammate's clone beside the practice folder.
+/// They work offline, and a reset removes and rebuilds them with everything else.
+#[test]
+fn a_local_remote_lives_beside_the_practice_folder() {
+    let temporary_folder = tempfile::tempdir().expect("temporary folder");
+    let practice_root = PracticeRoot::open(temporary_folder.path().join("practice")).expect("root");
+    let mut steps = sample_setup_steps();
+    steps.extend(
+        [
+            "git add notes.txt",
+            "git commit -q -m 'Add notes'",
+            "git init -q --bare -b main ../origin.git",
+            "git remote add origin ../origin.git",
+            "git push -q -u origin main",
+            "git clone -q ../origin.git ../teammate",
+        ]
+        .iter()
+        .map(|step| step.to_string()),
+    );
+
+    let folder = practice_root
+        .create("remotes", &steps)
+        .expect("setup works");
+
+    let workspace = folder.path().parent().expect("the workspace folder");
+    assert!(workspace.join("origin.git").is_dir());
+    assert!(workspace.join("teammate").join("notes.txt").is_file());
+    assert_eq!(
+        git_output(folder.path(), &["remote", "get-url", "origin"]),
+        "../origin.git"
+    );
+
+    fs::write(workspace.join("teammate").join("scratch.txt"), "left over").expect("write");
+    practice_root.reset("remotes").expect("reset works");
+    assert!(!workspace.join("teammate").join("scratch.txt").exists());
+    assert!(workspace.join("origin.git").is_dir());
+}
+
+/// A lesson about `git init` starts in a folder with no repository; it still counts as built.
+#[test]
+fn a_folder_without_a_repository_is_found_once_built() {
+    let temporary_folder = tempfile::tempdir().expect("temporary folder");
+    let practice_root = PracticeRoot::open(temporary_folder.path().join("practice")).expect("root");
+    let steps = vec!["echo '# Recipes' > README.md".to_string()];
+
+    practice_root
+        .create("start-a-repo", &steps)
+        .expect("setup works");
+
+    assert!(
+        practice_root
+            .find("start-a-repo")
+            .expect("valid id")
+            .is_some()
+    );
+}
+
+/// A setup that fails halfway leaves no "built" folder behind.
+#[test]
+fn a_half_built_folder_is_not_found() {
+    let temporary_folder = tempfile::tempdir().expect("temporary folder");
+    let practice_root = PracticeRoot::open(temporary_folder.path().join("practice")).expect("root");
+    let steps = vec!["git init -q -b main".to_string(), "exit 7".to_string()];
+
+    let result = practice_root.create("broken", &steps);
+
+    assert!(result.is_err());
+    assert!(practice_root.find("broken").expect("valid id").is_none());
 }
