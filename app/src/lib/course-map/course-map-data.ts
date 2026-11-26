@@ -57,6 +57,18 @@ export function buildProModules(student: StudentPlace): ModuleGroup[] {
 }
 
 /**
+ * Finds the module the student is in: the one holding the last opened lesson, or the first.
+ * @param modules - the Pro path's modules, from buildProModules
+ * @returns that module, or undefined when there are no modules
+ */
+export function findCurrentModule(modules: ModuleGroup[]): ModuleGroup | undefined {
+	const moduleWithCurrentLesson = modules.find((group) =>
+		group.rows.some((row) => row.status === 'current')
+	);
+	return moduleWithCurrentLesson ?? modules[0];
+}
+
+/**
  * Lists the Book path's chapters, sections and lesson rows.
  * @param student - the saved progress
  * @returns the chapters in order (none if the Book path file is missing)

@@ -5,11 +5,21 @@
  */
 
 import { page } from 'vitest/browser';
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-svelte';
+import {
+	createMemoryStorage,
+	loadProgress,
+	markMissionFinished,
+	saveLessonOpened
+} from '$lib/stores/progress';
 import Sidebar from './Sidebar.svelte';
 
 describe('Sidebar (full)', () => {
+	beforeEach(async () => {
+		await loadProgress(createMemoryStorage());
+	});
+
 	it('shows every main link with its text', async () => {
 		await render(Sidebar, { currentPath: '/', variant: 'full' });
 
@@ -25,6 +35,21 @@ describe('Sidebar (full)', () => {
 		const homeLink = page.getByRole('link', { name: 'Home' });
 		await expect.element(settingsLink).toHaveAttribute('aria-current', 'page');
 		await expect.element(homeLink).not.toHaveAttribute('aria-current');
+	});
+
+	it('shows path progress and the lessons of the current module, with done marks', async () => {
+		await markMissionFinished('three-areas');
+		await saveLessonOpened('ignoring-files');
+		await render(Sidebar, { currentPath: '/lessons/ignoring-files', variant: 'full' });
+
+		const pathBar = page.getByRole('progressbar', { name: 'Pro path' });
+		await expect.element(pathBar).toHaveAttribute('aria-valuetext', '1 of 2 done');
+		await expect.element(page.getByText('00 · Your daily loop')).toBeVisible();
+		await expect
+			.element(page.getByRole('link', { name: /Status, stage, commit.*done/ }))
+			.toBeVisible();
+		const openLesson = page.getByRole('link', { name: /Ignore files/ });
+		await expect.element(openLesson).toHaveAttribute('aria-current', 'page');
 	});
 });
 

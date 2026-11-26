@@ -8,7 +8,9 @@ import {
 	buildBookChapters,
 	buildProModules,
 	countCourseLessons,
-	findLessonStatus
+	findCurrentModule,
+	findLessonStatus,
+	type LessonRow
 } from './course-map-data';
 
 const newStudent = { finishedMissions: [], lastOpenedLessonId: null };
@@ -36,6 +38,17 @@ describe('buildBookChapters', () => {
 		expect(chapters[0].title).toBe('Git Basics');
 		expect(chapters[0].sections[0].number).toBe('2.2');
 		expect(chapters[0].sections[0].rows.map((row) => row.id)).toContain('three-areas');
+	});
+});
+
+describe('findCurrentModule', () => {
+	it('picks the module with the current lesson, or the first one', () => {
+		const firstModule = { id: 'a', numberLabel: '00', title: 'A', summary: '', rows: [] };
+		const currentRow = { status: 'current' } as LessonRow;
+		const currentModule = { ...firstModule, id: 'b', rows: [currentRow] };
+		expect(findCurrentModule([firstModule, currentModule])?.id).toBe('b');
+		expect(findCurrentModule([firstModule])?.id).toBe('a');
+		expect(findCurrentModule([])).toBeUndefined();
 	});
 });
 

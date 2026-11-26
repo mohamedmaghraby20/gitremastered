@@ -1,19 +1,26 @@
 <!--
   SidebarFull.svelte
-  The full, 248px-wide sidebar: the main links with their text, the current module's lessons
-  (from content/, with a ✓ on finished ones), and the book credit.
+  The full, 248px-wide sidebar from the prototype: the main links with their text, progress
+  along the chosen path ("Pro path 1 / 2" with a bar), the lessons of the module the student
+  is in, and the book credit.
   Input: currentPath, the path of the page on screen.
 -->
 <script lang="ts">
 	import { resolve } from '$app/paths';
-	import { getFirstModuleOutline } from '$lib/content/course-content';
 	import { progress } from '$lib/stores/progress';
 	import { isLinkActive, mainLinks } from '$lib/navigation/navigation-links';
+	import { buildProModules, findCurrentModule } from '$lib/course-map/course-map-data';
+	import { countPathProgress } from '$lib/progress/learning-summary';
+	import { ProgressBar } from '$lib/components/ui/progress-bar';
+	import SidebarModuleLessons from './SidebarModuleLessons.svelte';
 
 	let { currentPath }: { currentPath: string } = $props();
 
-	// The lessons of the module the student is in (for now: the first module of the pro path).
-	const moduleOutline = getFirstModuleOutline();
+	const modules = $derived(buildProModules($progress));
+	const currentModule = $derived(findCurrentModule(modules));
+	const allLessonIds = $derived(modules.flatMap((group) => group.rows.map((row) => row.id)));
+	const pathProgress = $derived(countPathProgress($progress, allLessonIds));
+	const pathLabel = $derived($progress.chosenPathId === 'book-path' ? 'Book path' : 'Pro path');
 </script>
 
 <nav
@@ -40,27 +47,16 @@
 		{/each}
 	</ul>
 
-	{#if moduleOutline !== null}
-		<div class="flex flex-col gap-1 pl-3">
-			<span class="type-caption text-ink-muted uppercase">{moduleOutline.moduleTitle}</span>
-			<ul class="flex flex-col">
-				{#each moduleOutline.lessons as lesson (lesson.id)}
-					{@const lessonHref = resolve('/lessons/[lessonId]', { lessonId: lesson.id })}
-					<li>
-						<a
-							href={lessonHref}
-							aria-current={isLinkActive(currentPath, lessonHref) ? 'page' : undefined}
-							class="type-small flex py-1 text-ink-muted hover:text-ink aria-[current=page]:font-semibold aria-[current=page]:text-ink"
-						>
-							<span class="flex-1">{lesson.title}</span>
-							{#if $progress.finishedMissions.includes(lesson.id)}
-								<span class="text-success" aria-label="done">✓</span>
-							{/if}
-						</a>
-					</li>
-				{/each}
-			</ul>
-		</div>
+	<div class="pl-3">
+		<ProgressBar
+			label={pathLabel}
+			doneCount={pathProgress.doneCount}
+			totalCount={pathProgress.totalCount}
+		/>
+	</div>
+
+	{#if currentModule !== undefined}
+		<SidebarModuleLessons group={currentModule} {currentPath} />
 	{/if}
 
 	<p class="type-caption mt-auto pl-3 font-normal text-ink-muted normal-case">

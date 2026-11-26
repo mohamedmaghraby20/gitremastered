@@ -119,22 +119,3 @@ export function getProPath(): LearningPath | undefined {
 export function getBookPath(): BookPath | null {
 	return courseContent.bookPath;
 }
-
-/**
- * Lists the lessons of the first module of the pro path, for the sidebar.
- * @returns the module's title and its lessons (ID and title), or null if there is no path yet
- */
-export function getFirstModuleOutline(): {
-	moduleTitle: string;
-	lessons: { id: string; title: string }[];
-} | null {
-	const firstModule = courseContent.paths.get(mainPathId)?.modules[0];
-	if (firstModule === undefined) {
-		return null;
-	}
-	const lessons = firstModule.lessonIds.map((lessonId) => ({
-		id: lessonId,
-		title: getLesson(lessonId)?.title ?? lessonId
-	}));
-	return { moduleTitle: firstModule.title, lessons };
-}
