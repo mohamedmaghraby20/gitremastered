@@ -47,9 +47,17 @@ export class StudentActions {
 	 * @param commandLine - what to type, e.g. "git status"
 	 */
 	async typeCommand(commandLine: string): Promise<void> {
-		await this.connection.evaluate(`document.querySelector('.xterm-helper-textarea').focus()`);
-		await this.connection.send('Input.insertText', { text: commandLine });
+		await this.typeText(commandLine);
 		await this.pressKey('Enter', 13, '\r');
+	}
+
+	/**
+	 * Types text into the terminal without pressing Enter.
+	 * @param text - what to type, e.g. "i" to start typing in Vim
+	 */
+	async typeText(text: string): Promise<void> {
+		await this.connection.evaluate(`document.querySelector('.xterm-helper-textarea').focus()`);
+		await this.connection.send('Input.insertText', { text });
 	}
 
 	/**
@@ -144,6 +152,17 @@ export class StudentActions {
 			...keyDetails,
 			commands
 		});
+		await this.connection.send('Input.dispatchKeyEvent', { type: 'keyUp', ...keyDetails });
+	}
+
+	/**
+	 * Presses and releases a key that types no character, such as Escape or F6.
+	 * @param key - the key name, e.g. "Escape"
+	 * @param keyCode - its Windows key code, e.g. 27
+	 */
+	async pressSpecialKey(key: string, keyCode: number): Promise<void> {
+		const keyDetails = { key, code: key, windowsVirtualKeyCode: keyCode };
+		await this.connection.send('Input.dispatchKeyEvent', { type: 'rawKeyDown', ...keyDetails });
 		await this.connection.send('Input.dispatchKeyEvent', { type: 'keyUp', ...keyDetails });
 	}
 

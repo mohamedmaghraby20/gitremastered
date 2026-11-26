@@ -3,7 +3,7 @@
  * Plays the fixes from the second pilot review in the real desktop app and prints each result:
  * the terminal's share of the practice column (about 55%), even gaps around the desk's commands, paste,
  * Ctrl C still stopping a command, Ctrl + / 0 text size, the mission and quiz headings, and the
- * history map's zoom buttons. Saves a screenshot for a person to look at.
+ * history map's zoom buttons, Esc reaching Vim for a commit message, and F6 leaving the terminal. Saves a screenshot for a person to look at.
  * Run from app/:  pnpm review:fixes   (build the review copy first: pnpm review:build)
  */
 
@@ -25,7 +25,9 @@ const checks: ReviewCheck[] = [
 	{ name: 'Ctrl C with nothing selected still stops a command', run: checkInterrupt },
 	{ name: 'Ctrl + makes the text bigger, Ctrl 0 resets it', run: checkTextSize },
 	{ name: 'Mission and quiz have their own headings', run: checkHeadings },
-	{ name: 'History map zooms out with its button', run: checkZoomOut }
+	{ name: 'History map zooms out with its button', run: checkZoomOut },
+	{ name: 'Esc reaches Vim: a commit message written in the editor', run: checkVimCommit },
+	{ name: 'F6 moves focus out of the terminal', run: checkLeaveTerminal }
 ];
 
 /**
@@ -144,6 +146,41 @@ async function checkZoomOut(student: StudentActions): Promise<string> {
 	await student.waitUntil(`${mapZoom} < ${before}`);
 	const after = await student.evaluate<number>(mapZoom);
 	return `zoom ${before.toFixed(2)} → ${after.toFixed(2)}`;
+}
+
+/**
+ * Commits a scratch file through Vim, as the lesson teaches: git commit, i, the message, Esc, :wq.
+ * Uses its own file, so the mission's files stay as they are.
+ * @param student - the student actions
+ * @returns the message Git saved
+ */
+async function checkVimCommit(student: StudentActions): Promise<string> {
+	await student.typeCommand('echo check > vim-check.txt && git add vim-check.txt');
+	await student.typeCommand('git commit');
+	await student.waitUntil(
+		`[...document.querySelectorAll('.xterm-rows > div')].some((row) => row.textContent.includes('Please enter the commit message'))`
+	);
+	await student.typeText('iWritten in Vim');
+	await student.pressSpecialKey('Escape', 27);
+	await student.typeCommand(':wq');
+	await student.waitForPrompt();
+	await student.typeCommand('git log -1 --format=saved:%s');
+	await student.waitUntil(
+		`[...document.querySelectorAll('.xterm-rows > div')].some((row) => row.textContent.includes('saved:Written in Vim'))`
+	);
+	return 'Git saved the commit "Written in Vim"';
+}
+
+/**
+ * Presses F6 in the terminal and checks the keyboard focus left it.
+ * @param student - the student actions
+ * @returns where the focus went
+ */
+async function checkLeaveTerminal(student: StudentActions): Promise<string> {
+	await student.evaluate(`document.querySelector('.xterm-helper-textarea').focus()`);
+	await student.pressSpecialKey('F6', 117);
+	await student.waitUntil(`!document.querySelector('.xterm').contains(document.activeElement)`);
+	return `focus moved to the ${await student.evaluate<string>('document.activeElement.tagName.toLowerCase()')} around the terminal`;
 }
 
 /**

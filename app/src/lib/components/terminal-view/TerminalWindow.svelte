@@ -6,7 +6,7 @@
 
   Inputs: folderLabel (shown in the title bar, e.g. "~/practice/three-areas"),
           children (what goes on the screen, normally TerminalView).
-  The window itself can take focus, so Esc in the terminal can move focus here.
+  The window itself can take focus, so F6 in the terminal can move focus here.
 -->
 <script lang="ts">
 	import type { Snippet } from 'svelte';

@@ -45,7 +45,7 @@
 				{onCommand}
 				savedFontSize={$progress.terminalFontSize}
 				onFontSizeChange={rememberFontSize}
-				onEscape={() => windowElement?.focus()}
+				onLeave={() => windowElement?.focus()}
 			/>
 		{/key}
 	{/if}

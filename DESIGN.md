@@ -116,7 +116,7 @@ All three are free and open source and are bundled inside the app.
 - Text at least 4.5:1, marks and borders at least 3:1, in both themes.
 - 2px `primary` focus ring on every interactive element.
 - Status never by color alone.
-- Full keyboard use; Esc moves focus out of the terminal.
+- Full keyboard use; F6 moves focus out of the terminal. Esc goes to the shell, because programs like Vim need it.
 - Reduce motion turns off visualizer animation and the cursor blink.
 
 ## Do and don't

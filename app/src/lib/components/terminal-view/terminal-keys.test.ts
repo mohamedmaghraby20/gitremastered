@@ -22,8 +22,12 @@ function keyPress(changes: Partial<TerminalKeyPress>): TerminalKeyPress {
 }
 
 describe('findTerminalShortcut', () => {
-	it('leaves the terminal on Esc', () => {
-		expect(findTerminalShortcut(keyPress({ key: 'Escape' }), false)).toBe('leave');
+	it('leaves the terminal on F6', () => {
+		expect(findTerminalShortcut(keyPress({ key: 'F6' }), false)).toBe('leave');
+	});
+
+	it('sends Esc to the shell, because Vim needs it', () => {
+		expect(findTerminalShortcut(keyPress({ key: 'Escape' }), false)).toBeNull();
 	});
 
 	it('pastes on Ctrl V and Ctrl Shift V', () => {

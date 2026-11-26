@@ -1,7 +1,7 @@
 /**
  * terminal-keys.ts
  * The terminal's own keyboard shortcuts, as pure functions (no xterm.js, no screen code):
- *   Esc               leave the terminal
+ *   F6                leave the terminal (Esc goes to the shell: Vim and other programs need it)
  *   Ctrl V            paste (Windows and Linux; macOS already pastes with Cmd V)
  *   Ctrl C            copy, but only while text is selected; otherwise it stops the command
  *   Ctrl + / − / 0    bigger, smaller, or default text size
@@ -41,7 +41,7 @@ export function findTerminalShortcut(
 	keyPress: TerminalKeyPress,
 	hasSelection: boolean
 ): TerminalShortcut | null {
-	if (keyPress.key === 'Escape') {
+	if (keyPress.key === 'F6') {
 		return 'leave';
 	}
 	if (!keyPress.ctrlKey || keyPress.altKey || keyPress.metaKey) {

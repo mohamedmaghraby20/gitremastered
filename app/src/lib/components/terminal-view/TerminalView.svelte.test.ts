@@ -1,7 +1,7 @@
 /**
  * TerminalView.svelte.test.ts
  * Component tests for the terminal screen in a real browser, with a fake Rust bridge:
- * it starts the shell, shows output, sends typed keys, and lets Esc move focus out.
+ * it starts the shell, shows output, sends typed keys, sends Esc to the shell, and lets F6 move focus out.
  */
 
 // The terminal reads its colors and font from the design tokens, as in the app.
@@ -69,15 +69,27 @@ describe('TerminalView', () => {
 		expect(onCommand).toHaveBeenCalledWith('git status');
 	});
 
-	it('moves focus out of the terminal on Esc', async () => {
+	it('sends Esc to the shell, so Vim can use it', async () => {
 		const bridge = createFakeBridge();
-		const onEscape = vi.fn();
-		await render(TerminalView, { practiceFolderPath: '/practice/x', bridge, onEscape });
+		const onLeave = vi.fn();
+		await render(TerminalView, { practiceFolderPath: '/practice/x', bridge, onLeave });
 		await page.getByTestId('terminal-screen').click();
 
 		await userEvent.keyboard('{Escape}');
 
-		expect(onEscape).toHaveBeenCalledOnce();
+		expect(onLeave).not.toHaveBeenCalled();
+		expect(bridge.sendInput).toHaveBeenCalledWith(expect.any(String), '\u001b');
+	});
+
+	it('moves focus out of the terminal on F6', async () => {
+		const bridge = createFakeBridge();
+		const onLeave = vi.fn();
+		await render(TerminalView, { practiceFolderPath: '/practice/x', bridge, onLeave });
+		await page.getByTestId('terminal-screen').click();
+
+		await userEvent.keyboard('{F6}');
+
+		expect(onLeave).toHaveBeenCalledOnce();
 		const screen = page.getByTestId('terminal-screen').element();
 		expect(screen.contains(document.activeElement)).toBe(false);
 		expect(bridge.sendInput).not.toHaveBeenCalled();

@@ -2,7 +2,7 @@
   TerminalView.svelte
   The terminal screen: an xterm.js terminal connected to a real shell in a practice folder.
   Colors and font come from the terminal tokens; it refits when its pane changes size;
-  Esc moves keyboard focus out of the terminal (DESIGN.md accessibility rule).
+  F6 moves keyboard focus out of the terminal (DESIGN.md accessibility rule); Esc goes to the shell.
   Ctrl V pastes, Ctrl C copies selected text, Ctrl + / − / 0 change the text size
   (the shortcuts themselves are in terminal-keys.ts).
 
@@ -10,7 +10,7 @@
            bridge (the Rust core's terminal actions; tests pass a fake),
            savedFontSize (the student's text size in pixels, or null for the design's size),
            onFontSizeChange (called with the new size, or null when back at the design's size),
-           onEscape (called after Esc, to move focus somewhere useful),
+           onLeave (called after F6, to move focus somewhere useful),
            onCommand (called with each command line the student enters, for the caption).
 -->
 <script lang="ts">
@@ -34,14 +34,14 @@
 		bridge = tauriTerminalBridge,
 		savedFontSize = null,
 		onFontSizeChange = () => {},
-		onEscape = () => {},
+		onLeave = () => {},
 		onCommand = () => {}
 	}: {
 		practiceFolderPath: string;
 		bridge?: TerminalBridge;
 		savedFontSize?: number | null;
 		onFontSizeChange?: (fontSize: number | null) => void;
-		onEscape?: () => void;
+		onLeave?: () => void;
 		onCommand?: (commandLine: string) => void;
 	} = $props();
 
@@ -103,7 +103,7 @@
 	): void {
 		if (shortcut === 'leave') {
 			terminal.blur();
-			onEscape();
+			onLeave();
 		} else if (shortcut === 'copy') {
 			// The browser copies next; clearing afterwards makes the next Ctrl C stop commands again.
 			setTimeout(() => terminal.clearSelection(), 0);
