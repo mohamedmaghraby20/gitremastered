@@ -15,17 +15,17 @@ describe('parseQuizText', () => {
 		const quiz = parseQuizText(validQuizText, fileName);
 		expect(quiz.questions).toHaveLength(2);
 		expect(quiz.questions[0].answers[0]).toEqual({
-			text: 'In the working folder',
+			text: 'In the working tree',
 			isCorrect: true,
-			explanation: 'Edits stay in the working folder until you stage them.'
+			explanation: 'Edits stay in the working tree until you stage them.'
 		});
 		expect(quiz.questions[0].answers[1].isCorrect).toBe(false);
 	});
 
 	it('rejects a right-answer explanation that starts with "Right" (the screen adds it)', () => {
 		const saysRightTwice = validQuizText.replace(
-			'explanation: "Edits stay in the working folder until you stage them."',
-			'explanation: "Right. Edits stay in the working folder."'
+			'explanation: "Edits stay in the working tree until you stage them."',
+			'explanation: "Right. Edits stay in the working tree."'
 		);
 		expect(() => parseQuizText(saysRightTwice, fileName)).toThrow(
 			'should not start with "Right": the quiz already shows "✓ Right."'

@@ -15,7 +15,7 @@ const quiz: QuizData = {
 		{
 			question: 'Where does an edit go first?',
 			answers: [
-				{ text: 'The working folder', isCorrect: true, explanation: 'Edits start there.' },
+				{ text: 'The working tree', isCorrect: true, explanation: 'Edits start there.' },
 				{ text: 'The repository', isCorrect: false, explanation: 'Only commits go there.' }
 			]
 		},
@@ -34,7 +34,7 @@ describe('Quiz', () => {
 		await render(Quiz, { quiz });
 		const firstQuestion = page.getByRole('group', { name: 'Question 1' });
 
-		await firstQuestion.getByRole('button', { name: /The working folder/ }).click();
+		await firstQuestion.getByRole('button', { name: /The working tree/ }).click();
 		await firstQuestion.getByRole('button', { name: 'Check answer' }).click();
 
 		await expect.element(firstQuestion.getByText('✓ Right', { exact: true })).toBeVisible();
@@ -72,7 +72,7 @@ describe('Quiz', () => {
 		await render(Quiz, { quiz, onfinish });
 
 		for (const [questionName, answerName] of [
-			['Question 1', /The working folder/],
+			['Question 1', /The working tree/],
 			['Question 2', /Makes a commit/]
 		] as const) {
 			const question = page.getByRole('group', { name: questionName });

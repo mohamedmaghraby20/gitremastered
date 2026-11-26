@@ -1,9 +1,9 @@
 questions:
   - question: "You edited a file. Where is the change?"
     answers:
-      - text: "In the working folder"
+      - text: "In the working tree"
         correct: true
-        explanation: "Edits stay in the working folder until you stage them."
+        explanation: "Edits stay in the working tree until you stage them."
       - text: "In the repository"
         explanation: "Only commits reach the repository."
   - question: "What does git add do?"

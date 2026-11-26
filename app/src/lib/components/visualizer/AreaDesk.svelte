@@ -1,6 +1,6 @@
 <!--
   AreaDesk.svelte
-  The visualizer's desk, kept compact: the three zones side by side (working folder, staging
+  The visualizer's desk, kept compact: the three zones side by side (working tree, staging
   area, repository), each with a one-line header, and the commands that move files between
   them as small keycaps.
 
@@ -49,7 +49,7 @@
 
 <div class="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)_auto_minmax(0,1fr)] items-start">
 	<DeskZone
-		name="Working folder"
+		name="Working tree"
 		hint="What you're editing"
 		tone="working"
 		countLabel={countFiles(zones.working.length)}

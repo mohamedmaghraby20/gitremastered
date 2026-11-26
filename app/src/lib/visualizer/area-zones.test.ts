@@ -51,7 +51,7 @@ describe('sortFilesIntoZones', () => {
 		});
 	});
 
-	it('puts an untracked file in the working folder, marked new', () => {
+	it('puts an untracked file in the working tree, marked new', () => {
 		const zones = sortFilesIntoZones(snapshotWith({ untrackedFiles: ['notes.txt'] }));
 		expect(zones.working).toEqual([{ path: 'notes.txt', label: 'new' }]);
 	});

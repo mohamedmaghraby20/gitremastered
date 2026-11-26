@@ -102,7 +102,7 @@ type RepoSnapshot = {
   tags: Tag[];
   head: HeadState;          // which branch or commit HEAD points to
   stagedFiles: FileChange[];     // in the index, not yet committed
-  modifiedFiles: FileChange[];   // changed in the working folder, not staged
+  modifiedFiles: FileChange[];   // changed in the working tree, not staged
   untrackedFiles: string[];
   committedFiles: string[];    // every file in the latest commit (HEAD); added after the pilot review
 };
@@ -197,9 +197,9 @@ solution:
 questions:
   - question: "You edited a file. Where is the change?"
     answers:
-      - text: "In the working folder"
+      - text: "In the working tree"
         correct: true
-        explanation: "Edits stay in the working folder until you stage them."
+        explanation: "Edits stay in the working tree until you stage them."
       - text: "In the repository"
         explanation: "Only commits reach the repository."
 ```

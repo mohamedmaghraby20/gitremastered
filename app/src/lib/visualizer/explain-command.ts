@@ -46,7 +46,7 @@ function explainGitSubcommand(subcommand: string, options: string[], files: stri
 				: 'The staging area was saved as a new commit in the repository.';
 		case 'restore':
 			return options.includes('--staged')
-				? `${describeFiles(files)} left the staging area. The edit is still in your working folder.`
+				? `${describeFiles(files)} left the staging area. The edit is still in your working tree.`
 				: `${describeFiles(files)} went back to the last saved version. The edit is gone.`;
 		default:
 			return `Ran git ${subcommand}.`;

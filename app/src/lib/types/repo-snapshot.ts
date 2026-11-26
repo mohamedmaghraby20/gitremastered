@@ -11,7 +11,7 @@ export type RepoSnapshot = {
 	tags: Tag[];
 	head: HeadState; // which branch or commit HEAD points to
 	stagedFiles: FileChange[]; // in the index, not yet committed
-	modifiedFiles: FileChange[]; // changed in the working folder, not staged
+	modifiedFiles: FileChange[]; // changed in the working tree, not staged
 	untrackedFiles: string[]; // new files Git does not track yet
 	committedFiles: string[]; // every file saved in the latest commit (HEAD); empty before the first
 };

@@ -10,7 +10,7 @@
 	const sampleMarkdown = [
 		'Plain lesson text with a **key term** and `inline code`.',
 		':::definitions',
-		'- term: Working folder',
+		'- term: Working tree',
 		'  area: working',
 		'  text: The files you see and edit.',
 		'- term: Staging area',

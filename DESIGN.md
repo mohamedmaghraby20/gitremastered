@@ -45,7 +45,7 @@ Visual references (review copies, kept in sync with this file):
 
 | Area | Look | Tokens |
 |---|---|---|
-| Working folder (draft) | `surface` zone, dashed outline; edited files have dashed edges | `git-working` |
+| Working tree (draft) | `surface` zone, dashed outline; edited files have dashed edges | `git-working` |
 | Staging area (highlighted) | Pale yellow zone; staged files get a highlighter stripe | `git-staging`, `git-staging-wash`, `git-staging-edge` |
 | Repository (inked) | Solid ink zone; commits as snapshot cards | `git-repository`, `on-git-repository` |
 | History lines | Current branch solid; another branch dotted; remote-tracking dashed | `git-branch`, `git-branch-alt`, `git-remote` |

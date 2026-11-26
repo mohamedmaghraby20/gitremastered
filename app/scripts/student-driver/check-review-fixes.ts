@@ -52,7 +52,7 @@ async function checkTerminalShare(student: StudentActions): Promise<string> {
  */
 async function checkEvenGaps(student: StudentActions): Promise<string> {
 	const gaps = await student.evaluate<number[]>(`(() => {
-		const zones = ['Working folder', 'Staging area', 'Repository']
+		const zones = ['Working tree', 'Staging area', 'Repository']
 			.map((name) => document.querySelector('section[aria-label="' + name + '"]').getBoundingClientRect());
 		const commands = [...document.querySelectorAll('#files-desk div[aria-hidden="true"]')]
 			.map((command) => ({

@@ -1,6 +1,6 @@
 /**
  * area-zones.ts
- * Decides what the visualizer's desk shows: which file sheets sit in the working folder and
+ * Decides what the visualizer's desk shows: which file sheets sit in the working tree and
  * the staging area, and which commits sit in the repository. Pure logic, no screen code.
  */
 
@@ -93,7 +93,7 @@ export function sheetKey(zoneName: ZoneName, path: string): string {
 }
 
 /**
- * The word on a sheet in the working folder.
+ * The word on a sheet in the working tree.
  * @param changeKind - what happened to the file
  * @returns "deleted" for deleted files, otherwise "edited"
  */

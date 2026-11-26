@@ -34,7 +34,7 @@ export const sampleLesson: Lesson = {
 			{
 				question: 'Where does an edit go first?',
 				answers: [
-					{ text: 'The working folder', isCorrect: true, explanation: 'Edits start there.' },
+					{ text: 'The working tree', isCorrect: true, explanation: 'Edits start there.' },
 					{ text: 'The repository', isCorrect: false, explanation: 'Only commits go there.' }
 				]
 			},

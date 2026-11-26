@@ -46,7 +46,7 @@ describe('AreaDesk', () => {
 			})
 		});
 
-		const workingFolder = page.getByRole('region', { name: 'Working folder' });
+		const workingFolder = page.getByRole('region', { name: 'Working tree' });
 		const stagingArea = page.getByRole('region', { name: 'Staging area' });
 		const repository = page.getByRole('region', { name: 'Repository' });
 		await expect.element(workingFolder.getByText('notes.txt')).toBeVisible();
