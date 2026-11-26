@@ -7,9 +7,11 @@
 <script lang="ts">
 	import { splitIntoBlocks } from '$lib/content/render-blocks';
 	import CarefulNote from './CarefulNote.svelte';
+	import CommitGraphDiagram from './CommitGraphDiagram.svelte';
 	import CompareCells from './CompareCells.svelte';
 	import DefinitionRows from './DefinitionRows.svelte';
 	import LessonMarkdown from './LessonMarkdown.svelte';
+	import PredictQuestion from './PredictQuestion.svelte';
 	import Sidenote from './Sidenote.svelte';
 	import TryItSteps from './TryItSteps.svelte';
 
@@ -33,6 +35,10 @@
 			<Sidenote markdown={block.markdown} />
 		{:else if block.kind === 'compare'}
 			<CompareCells today={block.today} book={block.book} />
+		{:else if block.kind === 'predict'}
+			<PredictQuestion question={block.question} answer={block.answer} />
+		{:else if block.kind === 'graph'}
+			<CommitGraphDiagram graph={block.graph} />
 		{/if}
 	{/each}
 </div>

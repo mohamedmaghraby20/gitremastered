@@ -67,7 +67,7 @@ Open with `:::name` on its own line and close with `:::`.
 | `definitions` | YAML list of `term`, `text`, optional `area` (`working`, `staging`, `repository`) | New words; `area` adds that area's color |
 | `compare` | YAML `today` and `book` | When the book's command is older than today's |
 | `predict` | YAML `question` and `answer` | A "think first" question before a key Try-it; the answer shows on click (teaching rule 16) |
-| `graph` | YAML `caption`, `commits` (`id`, `message`, `parents`), `branches`, `head` | A small static commit diagram (teaching rule 17) |
+| `graph` | YAML `caption`, `commits` (`id`, `message`, `parents`, optional `faded: true`), `branches`, optional `remotes`, `tags` and `head` | A small static commit diagram (teaching rule 17) |
 
 ```markdown
 :::compare
@@ -314,6 +314,15 @@ branches:
 head: main
 :::
 ```
+
+How the diagram is drawn:
+
+- List commits oldest first. `parents` is a list; a merge commit has two (`parents: [B, C]`).
+- `branches` are local branches. The first one listed gets the top row; a branch that runs beside it gets the next row.
+- `head` names a branch (`head: main`) or a commit (`head: B`, a detached HEAD). Leave it out when HEAD is not the point.
+- `remotes` are remote-tracking branches (`origin/main: A`) and `tags` are tags (`v1.0: A`). Each has its own label shape.
+- `faded: true` on a commit draws it dashed and pale: a commit no branch reaches any more, like the old one after `git commit --amend`.
+- Keep a diagram to about six commits. `pnpm content:check` fails on an unknown parent, branch target or head.
 
 ### 18. Links to lessons not written yet
 

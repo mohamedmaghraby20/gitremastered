@@ -27,6 +27,22 @@ const everyBlock = [
 	':::compare',
 	'today: "`git restore --staged`"',
 	'book: "`git reset HEAD`"',
+	':::',
+	':::predict',
+	'question: "What will git status show?"',
+	'answer: "Two lists."',
+	':::',
+	':::graph',
+	'caption: "main moves to the new commit"',
+	'commits:',
+	'  - id: A',
+	'    message: Add README',
+	'  - id: B',
+	'    message: Add notes',
+	'    parents: [A]',
+	'branches:',
+	'  main: B',
+	'head: main',
 	':::'
 ].join('\n');
 
@@ -65,5 +81,29 @@ describe('LessonBlocks', () => {
 		await expect.element(comparison.getByText('git restore --staged')).toBeVisible();
 		await expect.element(comparison.getByText('In the book')).toBeVisible();
 		await expect.element(comparison.getByText('git reset HEAD')).toBeVisible();
+	});
+
+	it('hides the answer of a "Think first" question until asked', async () => {
+		await render(LessonBlocks, { markdown: everyBlock });
+		const question = page.getByRole('region', { name: 'Think first' });
+		await expect.element(question.getByText('What will git status show?')).toBeVisible();
+		await expect.element(question.getByText('Two lists.')).not.toBeVisible();
+
+		const showButton = question.getByRole('button', { name: 'Show answer' });
+		await expect.element(showButton).toHaveAttribute('aria-expanded', 'false');
+		await showButton.click();
+
+		await expect.element(question.getByText('Two lists.')).toBeVisible();
+		const hideButton = question.getByRole('button', { name: 'Hide answer' });
+		await expect.element(hideButton).toHaveAttribute('aria-expanded', 'true');
+	});
+
+	it('draws a commit diagram with its labels, caption and a description', async () => {
+		await render(LessonBlocks, { markdown: everyBlock });
+		const diagram = page.getByRole('img', { name: /Commits, oldest first/ });
+		await expect.element(diagram).toBeVisible();
+		await expect.element(page.getByTestId('graph-commit')).toHaveLength(2);
+		await expect.element(page.getByText('HEAD · you')).toBeVisible();
+		await expect.element(page.getByText('main moves to the new commit')).toBeVisible();
 	});
 });

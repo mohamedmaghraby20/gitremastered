@@ -681,9 +681,9 @@ Goal: modules 0–4 of the Pro path written and playable: Orientation, Your dail
 **Description:** Teaching rules 16 and 17 name two blocks that are documented but not built. `predict`: a question with the answer behind a "Show answer" button. `graph`: a small static commit diagram in the history map's style (commits, branch labels, HEAD).
 
 **Acceptance criteria:**
-- [ ] Both blocks parse, render and fail the content check when badly filled
-- [ ] The graph draws branches on their own rows and merge commits with two parents
-- [ ] Keyboard and screen-reader friendly (button with `aria-expanded`; the graph has a text description)
+- [x] Both blocks parse, render and fail the content check when badly filled
+- [x] The graph draws branches on their own rows and merge commits with two parents (new `lane-layout.ts`, which the live map will share)
+- [x] Keyboard and screen-reader friendly (button with `aria-expanded`; the graph has a text description)
 
 **Verification:** unit tests (parsing, layout), component tests · **Files:** `content/render-blocks.ts`, `visualizer/`, `components/lesson-reader/` · **Scope:** M
 

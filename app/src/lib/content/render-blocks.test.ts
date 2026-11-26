@@ -59,6 +59,63 @@ describe('splitIntoBlocks', () => {
 		]);
 	});
 
+	it('reads "predict" as a question and its hidden answer', () => {
+		const markdown =
+			':::predict\nquestion: "What will git status show?"\nanswer: "Two lists."\n:::';
+		expect(splitIntoBlocks(markdown, fileName)).toEqual([
+			{ kind: 'predict', question: 'What will git status show?', answer: 'Two lists.' }
+		]);
+	});
+
+	it('reads "graph" as a commit diagram', () => {
+		const markdown = [
+			':::graph',
+			'caption: After the commit',
+			'commits:',
+			'  - id: A',
+			'    message: Add README',
+			'  - id: B',
+			'    message: Add notes',
+			'    parents: [A]',
+			'branches:',
+			'  main: B',
+			'head: main',
+			':::'
+		].join('\n');
+		expect(splitIntoBlocks(markdown, fileName)).toEqual([
+			{
+				kind: 'graph',
+				graph: {
+					caption: 'After the commit',
+					commits: [
+						{ id: 'A', message: 'Add README', parentIds: [], isFaded: false },
+						{ id: 'B', message: 'Add notes', parentIds: ['A'], isFaded: false }
+					],
+					branches: [{ name: 'main', commitId: 'B' }],
+					remoteBranches: [],
+					tags: [],
+					head: { kind: 'branch', branchName: 'main' }
+				}
+			}
+		]);
+	});
+
+	it('rejects a graph whose branch points at a commit that is not drawn', () => {
+		const markdown =
+			':::graph\ncaption: X\ncommits:\n  - id: A\n    message: M\nbranches:\n  main: Z\n:::';
+		expect(() => splitIntoBlocks(markdown, fileName)).toThrow(
+			'"branches": "main" points at an unknown commit "Z"'
+		);
+	});
+
+	it('rejects a graph whose commit names a parent that is not drawn', () => {
+		const markdown =
+			':::graph\ncaption: X\ncommits:\n  - id: A\n    message: M\n    parents: [Q]\n:::';
+		expect(() => splitIntoBlocks(markdown, fileName)).toThrow(
+			'commit "A" names an unknown parent "Q"'
+		);
+	});
+
 	it('ignores markers inside code blocks', () => {
 		const markdown = '```\n:::careful\n```';
 		expect(splitIntoBlocks(markdown, fileName)).toEqual([{ kind: 'markdown', markdown }]);

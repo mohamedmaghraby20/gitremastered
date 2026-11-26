@@ -125,6 +125,39 @@ export class FieldReader {
 	}
 
 	/**
+	 * Reads an optional list of texts.
+	 * @param fieldName - the field's name
+	 * @returns the texts, trimmed, or an empty list when the field is absent
+	 */
+	optionalTextList(fieldName: string): string[] {
+		if (this.record[fieldName] === undefined || this.record[fieldName] === null) {
+			return [];
+		}
+		return this.textList(fieldName, 0);
+	}
+
+	/**
+	 * Reads an optional mapping of names to texts, like "main: B".
+	 * @param fieldName - the field's name
+	 * @returns the pairs in file order, or an empty list when the field is absent
+	 */
+	optionalTextMap(fieldName: string): { name: string; value: string }[] {
+		const mapping = this.record[fieldName];
+		if (mapping === undefined || mapping === null) {
+			return [];
+		}
+		if (!isFieldRecord(mapping)) {
+			this.fail(`"${fieldName}" must be a set of "name: value" fields`);
+		}
+		return Object.entries(mapping).map(([name, value]) => {
+			if (typeof value !== 'string' || value.trim() === '') {
+				this.fail(`"${fieldName}": the value of "${name}" must be non-empty text`);
+			}
+			return { name, value: value.trim() };
+		});
+	}
+
+	/**
 	 * Reads a required list of mappings, each wrapped in its own reader.
 	 * @param fieldName - the field's name
 	 * @param itemName - what one item is called in error messages, like "goal"

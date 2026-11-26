@@ -7,15 +7,17 @@
  *   git add stages the file as it is now.
  *   :::
  *
- *   :::definitions                  YAML inside: definitions (term, area, text), compare (today, book)
- *   - term: Staging area
+ *   :::definitions                  YAML inside: definitions (term, area, text), compare (today, book),
+ *   - term: Staging area            predict (question, answer), graph (see parse-graph-block.ts)
  *     area: staging
  *     text: The next commit.
  *   :::
  */
 
+import type { CommitGraph } from '../types/commit-graph.ts';
 import { ContentError } from './content-error.ts';
 import { FieldReader } from './field-reader.ts';
+import { parseGraphBlock } from './parse-graph-block.ts';
 
 /** One of Git's three areas, for the colored swatch beside a definition. */
 export type GitArea = 'working' | 'staging' | 'repository';
@@ -30,10 +32,12 @@ export type LessonBlock =
 	| { kind: 'careful'; markdown: string }
 	| { kind: 'sidenote'; markdown: string }
 	| { kind: 'definitions'; items: DefinitionItem[] }
-	| { kind: 'compare'; today: string; book: string };
+	| { kind: 'compare'; today: string; book: string }
+	| { kind: 'predict'; question: string; answer: string }
+	| { kind: 'graph'; graph: CommitGraph };
 
 const markdownBlockNames = ['try-it', 'careful', 'sidenote'] as const;
-const yamlBlockNames = ['definitions', 'compare'] as const;
+const yamlBlockNames = ['definitions', 'compare', 'predict', 'graph'] as const;
 const gitAreas: readonly GitArea[] = ['working', 'staging', 'repository'];
 
 /**
@@ -106,6 +110,13 @@ function buildBlock(blockName: string, body: string, fileName: string): LessonBl
 	if (blockName === 'compare') {
 		const reader = FieldReader.fromYaml(body, blockFileName);
 		return { kind: 'compare', today: reader.text('today'), book: reader.text('book') };
+	}
+	if (blockName === 'predict') {
+		const reader = FieldReader.fromYaml(body, blockFileName);
+		return { kind: 'predict', question: reader.text('question'), answer: reader.text('answer') };
+	}
+	if (blockName === 'graph') {
+		return { kind: 'graph', graph: parseGraphBlock(body, blockFileName) };
 	}
 	return { kind: 'definitions', items: readDefinitions(body, blockFileName) };
 }
