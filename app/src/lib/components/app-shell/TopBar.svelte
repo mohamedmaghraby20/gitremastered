@@ -1,21 +1,22 @@
 <!--
   TopBar.svelte
   The 48px bar across the top of every screen: the wordmark (goes Home), the search box
-  (goes to Search; Ctrl+K or Cmd+K from anywhere), and the Settings link.
+  (opens the quick search panel; Ctrl+K or Cmd+K from anywhere), and the Settings link.
   Input: currentPath, the path of the page on screen (to mark Settings when it is open).
 -->
 <script lang="ts">
-	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import { isLinkActive } from '$lib/navigation/navigation-links';
 	import { isSearchShortcut } from '$lib/navigation/keyboard-shortcuts';
+	import SearchPanel from '$lib/components/search/SearchPanel.svelte';
 
 	let { currentPath }: { currentPath: string } = $props();
 
 	const isSettingsOpen = $derived(isLinkActive(currentPath, '/settings'));
+	let isSearchPanelOpen = $state(false);
 
 	/**
-	 * Opens the search page when the student presses the search shortcut.
+	 * Opens the quick search panel when the student presses the search shortcut.
 	 * @param keyEvent - any key press in the window
 	 */
 	function handleWindowKeydown(keyEvent: KeyboardEvent): void {
@@ -23,7 +24,17 @@
 			return;
 		}
 		keyEvent.preventDefault();
-		void goto(resolve('/search'));
+		isSearchPanelOpen = true;
+	}
+
+	/** Opens the quick search panel from the search box. */
+	function openSearchPanel(): void {
+		isSearchPanelOpen = true;
+	}
+
+	/** Closes the quick search panel. */
+	function closeSearchPanel(): void {
+		isSearchPanelOpen = false;
 	}
 </script>
 
@@ -34,9 +45,11 @@
 		<span class="bg-highlight px-1 py-0.5 text-on-highlight">git</span>remastered
 	</a>
 
-	<a
-		href={resolve('/search')}
-		class="type-small mx-auto flex max-w-130 flex-1 items-center justify-between gap-2 rounded-medium border bg-surface-sunken px-3 py-1.5 text-ink-faint"
+	<button
+		type="button"
+		onclick={openSearchPanel}
+		aria-haspopup="dialog"
+		class="type-small mx-auto flex max-w-130 flex-1 cursor-pointer items-center justify-between gap-2 rounded-medium border bg-surface-sunken px-3 py-1.5 text-ink-faint"
 	>
 		Search lessons, commands, terms
 		<kbd
@@ -44,7 +57,7 @@
 		>
 			Ctrl K
 		</kbd>
-	</a>
+	</button>
 
 	<a
 		href={resolve('/settings')}
@@ -57,3 +70,5 @@
 		Settings
 	</a>
 </header>
+
+<SearchPanel isOpen={isSearchPanelOpen} onclose={closeSearchPanel} />

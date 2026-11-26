@@ -573,10 +573,10 @@ Goal: home, course map (both paths), search, command index and settings work for
 Ctrl K from any screen opens a **quick search panel** over the current screen, like modern docs sites: type, see the top results grouped in the panel, ↑ ↓ ⏎ opens one, Esc closes it. "See all results" (or expanding the panel) opens the full search page with the same query and the filter chips.
 
 **Acceptance criteria:**
-- [ ] SPEC §10 item 9: finds lessons by title and by command
-- [ ] Ctrl K opens the panel from any screen; focus goes to its search box and comes back on Esc
-- [ ] "See all results" opens `/search` with the query kept
-- [ ] Results update as you type, under 50 ms for the full course size
+- [x] SPEC §10 item 9: finds lessons by title and by command
+- [x] Ctrl K opens the panel from any screen; focus goes to its search box and comes back on Esc
+- [x] "See all results" opens `/search` with the query kept
+- [x] Results update as you type, under 50 ms for the full course size
 
 **Verification:** unit tests (ranking), component tests (keys, Ctrl K) · **Files:** `search/`, `routes/search/`, `components/search/` · **Scope:** M
 
