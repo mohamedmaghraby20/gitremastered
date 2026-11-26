@@ -1,0 +1,135 @@
+challenges:
+  - id: get-teammates-commit
+    title: Bring in your teammate's commit
+    level: easy
+    brief: "Your teammate Tariq pushed a packing list to the team's server this morning. Your copy of the trail map does not have it yet. Get his commit into your main branch."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - git config pull.rebase false
+      - echo "# Trail map" > README.md
+      - 'echo "Lake loop: 5 km" > trails.txt'
+      - git add README.md trails.txt
+      - git commit -q -m "Add README and trail list"
+      - 'echo "Ridge walk: 8 km" >> trails.txt'
+      - git commit -q -am "Add the ridge walk"
+      - git init -q --bare -b main ../origin.git
+      - git remote add origin ../origin.git
+      - git push -q -u origin main
+      - git clone -q -c core.autocrlf=false ../origin.git ../teammate
+      - git -C ../teammate config user.name "Tariq (teammate)"
+      - git -C ../teammate config user.email "tariq@example.com"
+      - git -C ../teammate config pull.rebase false
+      - echo "Bring water and a hat." > ../teammate/packing.txt
+      - git -C ../teammate add packing.txt
+      - git -C ../teammate commit -q -m "Add a packing list"
+      - git -C ../teammate push -q
+    goal:
+      - check: branch-contains-commit
+        branch: main
+        message: "Add a packing list"
+        label: "Your main branch has Tariq's commit \"Add a packing list\""
+      - check: file-exists
+        file: packing.txt
+        label: "packing.txt is in your working tree"
+      - check: branch-is-in-sync
+        branch: main
+        label: "main is level with origin/main"
+    hints:
+      - "Run git status. It says you are up to date, but it only knows what the last fetch saw. Ask the server what is new."
+      - "git fetch downloads the commit and moves origin/main. Your main moves only when you merge, or when you pull."
+      - "Run: git pull (or git fetch origin, then git merge origin/main)."
+    solution:
+      - git pull -q
+
+  - id: publish-first-time
+    title: Put a local project on the server
+    level: medium
+    brief: "You started the cafe guide alone, and it has never left your computer. The team made an empty repository for it at ../origin.git. Connect your project to it under the name origin, and push main so that it follows origin/main from now on."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - git config pull.rebase false
+      - echo "# Cafe guide" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - 'echo "Open 8 to 18, closed on Mondays" > hours.txt'
+      - git add hours.txt
+      - git commit -q -m "Add opening hours"
+      - git init -q --bare -b main ../origin.git
+    goal:
+      - check: remote-exists
+        remote: origin
+        label: "A remote named origin is set up"
+      - check: branch-contains-commit
+        branch: origin/main
+        message: "Add opening hours"
+        label: "The server's main has your commit \"Add opening hours\""
+      - check: branch-tracks
+        branch: main
+        upstream: origin/main
+        label: "main follows origin/main"
+      - check: branch-is-in-sync
+        branch: main
+        label: "main is level with origin/main"
+    hints:
+      - "Run git remote -v. It prints nothing: this project knows no remote yet."
+      - "git remote add gives an address a short name. The first push of a branch needs -u, so the branch remembers where it goes."
+      - "Run: git remote add origin ../origin.git, then git push -u origin main."
+    solution:
+      - git remote add origin ../origin.git
+      - git push -q -u origin main
+
+  - id: rejected-push
+    title: Your push was rejected
+    level: hard
+    brief: "You committed a to-do list and tried to push, but Tariq pushed a commit of his own a minute earlier, and the server refused yours. Finish the job: both commits must be on the server, and your main must be level with origin/main."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - git config pull.rebase false
+      - echo "# Trail map" > README.md
+      - 'echo "Lake loop: 5 km" > trails.txt'
+      - git add README.md trails.txt
+      - git commit -q -m "Add README and trail list"
+      - git init -q --bare -b main ../origin.git
+      - git remote add origin ../origin.git
+      - git push -q -u origin main
+      - git clone -q -c core.autocrlf=false ../origin.git ../teammate
+      - git -C ../teammate config user.name "Tariq (teammate)"
+      - git -C ../teammate config user.email "tariq@example.com"
+      - git -C ../teammate config pull.rebase false
+      - echo "Bring water and a hat." > ../teammate/packing.txt
+      - git -C ../teammate add packing.txt
+      - git -C ../teammate commit -q -m "Add a packing list"
+      - git -C ../teammate push -q
+      - echo "Check the weather first." > todo.txt
+      - git add todo.txt
+      - git commit -q -m "Add a to-do list"
+    goal:
+      - check: branch-contains-commit
+        branch: origin/main
+        message: "Add a packing list"
+        label: "The server's main still has Tariq's commit \"Add a packing list\""
+      - check: branch-contains-commit
+        branch: origin/main
+        message: "Add a to-do list"
+        label: "The server's main has your commit \"Add a to-do list\""
+      - check: branch-is-in-sync
+        branch: main
+        label: "main is level with origin/main"
+      - check: working-folder-clean
+        label: "git status shows nothing left to do"
+    hints:
+      - "Run git push and read the message. The server has a commit you do not have, so it will not move its branch for you."
+      - "Bring Tariq's commit in first. Your histories split, so the pull makes a merge commit; --no-edit accepts its ready-made message."
+      - "Run: git pull --no-edit, then git push."
+    solution:
+      - git pull -q --no-rebase --no-edit
+      - git push -q

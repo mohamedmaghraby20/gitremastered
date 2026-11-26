@@ -112,7 +112,7 @@ describe('buildCourseContent', () => {
 		const withoutHints = sampleContentFiles();
 		withoutHints['lessons/sample-lesson/challenges.yaml'] = readSampleLessonFile(
 			'challenges.yaml'
-		).replace(/    hints:\n(      - .*\n)+/, '');
+		).replace(/ {4}hints:\n( {6}- .*\n)+/, '');
 		expect(() => buildCourseContent(withoutHints)).toThrow(
 			'challenge "commit-notes": "hints" needs at least 1 item'
 		);
@@ -134,7 +134,7 @@ describe('buildCourseContent', () => {
 		);
 		checkpoint['lessons/sample-lesson/challenges.yaml'] = readSampleLessonFile(
 			'challenges.yaml'
-		).replace(/    hints:\n(      - .*\n)+/g, '');
+		).replace(/ {4}hints:\n( {6}- .*\n)+/g, '');
 		const lesson = findLessonById(buildCourseContent(checkpoint), 'sample-lesson');
 		expect(lesson?.isCheckpoint).toBe(true);
 		expect(lesson?.challenges.every((challenge) => challenge.hints.length === 0)).toBe(true);

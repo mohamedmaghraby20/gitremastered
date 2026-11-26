@@ -1,0 +1,183 @@
+challenges:
+  - id: shelve-and-fix
+    title: An urgent typo, with work in the way
+    level: easy
+    brief: "You are halfway through a discount function in cart.js when someone spots a typo in the README title: \"Shpo\" should be \"Shop\". Put your half-done work on the stash shelf, fix the typo and commit it. Leave your work on the shelf for now."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Shpo app" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - printf 'function total(items) {\n  return items.length * 10;\n}\n' > cart.js
+      - git add cart.js
+      - git commit -q -m "Add cart"
+      - echo "function pay() {}" > checkout.js
+      - git add checkout.js
+      - git commit -q -m "Add checkout"
+      - "printf 'function total(items) {\\n  return items.length * 10;\\n}\\n\\nfunction discount(total) {\\n  // TODO: finish this\\n}\\n' > cart.js"
+    goal:
+      - check: stash-count-is
+        count: 1
+        label: "Your half-done work is on the stash shelf"
+      - check: file-is-committed
+        file: README.md
+        label: "README.md is committed, with nothing left to save in it"
+      - check: commit-count-is
+        count: 4
+        label: "The history has one new commit: the typo fix"
+      - check: working-folder-clean
+        label: "git status shows nothing left to do"
+    hints:
+      - "Run git status. cart.js is not ready for a commit. Which command puts it away and leaves a clean working tree?"
+      - "Run git stash first. Then fix the title, for example with: sed -i 's/Shpo/Shop/' README.md. Commit only that."
+      - "Run: git stash, then sed -i 's/Shpo/Shop/' README.md, then git add README.md and git commit -m \"Fix typo in README title\". Do not pop the stash yet."
+    solution:
+      - git stash
+      - sed -i 's/Shpo/Shop/' README.md
+      - git add README.md
+      - git commit -q -m "Fix typo in README title"
+
+  - id: fix-on-release
+    title: A fix on another branch, then back to work
+    level: medium
+    brief: "On main you have half-done work: an edit to cart.js and a new file, coupon.js. The release branch has a wrong tax rate in rates.js: 0.5 should be 0.05. Git refuses to switch while your work lies around. Put all of it away, fix the rate on release in a commit whose message contains \"Fix tax\", then come back to main and get your work back as it was."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Shop app" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - printf 'function total(items) {\n  return items.length * 10;\n}\n' > cart.js
+      - git add cart.js
+      - git commit -q -m "Add cart"
+      - echo "const TAX = 0.5;" > rates.js
+      - git add rates.js
+      - git commit -q -m "Add price rules"
+      - git switch -q -c release
+      - printf 'function total(items) {\n  return items.length * 12;\n}\n' > cart.js
+      - echo "function coupon() {}" > coupon.js
+      - git add cart.js coupon.js
+      - git commit -q -m "Prepare release 1.0"
+      - git switch -q main
+      - printf 'function total(items) {\n  return items.length * 10;\n}\n\nfunction discount(total) {\n  // TODO finish this\n}\n' > cart.js
+      - echo "// draft for coupon codes" > coupon.js
+    goal:
+      - check: branch-contains-commit
+        branch: release
+        message: "Fix tax"
+        label: "release has a commit whose message contains \"Fix tax\""
+      - check: head-is-on-branch
+        branch: main
+        label: "You are back on main"
+      - check: file-is-modified
+        file: cart.js
+        label: "Your edit to cart.js is back, not committed"
+      - check: file-is-untracked
+        file: coupon.js
+        label: "Your new file coupon.js is back, still untracked"
+      - check: stash-count-is
+        count: 0
+        label: "The stash shelf is empty again"
+    hints:
+      - "Try git switch release and read both errors. One is about cart.js, the other about a file Git does not track. A plain git stash takes only one of them."
+      - "git stash -u also takes untracked files. After it, git switch release works. Fix rates.js there (sed -i 's/0.5/0.05/' rates.js) and commit."
+      - "Run: git stash -u, git switch release, sed -i 's/0.5/0.05/' rates.js, git commit -am \"Fix tax rate\", git switch main, git stash pop."
+    solution:
+      - git stash -u
+      - git switch -q release
+      - sed -i 's/0.5/0.05/' rates.js
+      - git commit -q -am "Fix tax rate"
+      - git switch -q main
+      - git stash pop -q
+
+  - id: clean-but-keep-one
+    title: Clear the leftovers, keep the new work
+    level: medium
+    brief: "A test run left junk in the project: a tmp folder, output.log and a backup file, cart.js.orig. Your new file coupon.js lies among them, and it is real work that is not ready to commit. Delete the junk with git clean, and keep coupon.js untracked. The build folder is ignored and takes ten minutes to make again: leave it alone."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Shop app" > README.md
+      - echo "build/" > .gitignore
+      - printf 'function total(items) {\n  return items.length * 10;\n}\n' > cart.js
+      - git add README.md .gitignore cart.js
+      - git commit -q -m "Add shop app"
+      - mkdir build tmp
+      - echo "compiled program" > build/app.bin
+      - echo "cached prices" > tmp/cache.txt
+      - echo "test run 1" > tmp/run.txt
+      - echo "all tests passed" > output.log
+      - echo "old copy" > cart.js.orig
+      - echo "function coupon() {}" > coupon.js
+    goal:
+      - check: file-is-missing
+        file: tmp/cache.txt
+        label: "The tmp folder is gone"
+      - check: file-is-missing
+        file: output.log
+        label: "output.log is gone"
+      - check: file-is-missing
+        file: cart.js.orig
+        label: "cart.js.orig is gone"
+      - check: file-is-untracked
+        file: coupon.js
+        label: "coupon.js is still there, untracked"
+    hints:
+      - "Run git clean -n -d first. It lists what would be removed. Is coupon.js on the list?"
+      - "git clean takes paths: it then removes only what you name. Or protect one file with -e. Do not add -x: that would delete the build folder too."
+      - "Run: git clean -n -d tmp output.log cart.js.orig to check, then git clean -f -d tmp output.log cart.js.orig."
+    solution:
+      - git clean -f -d tmp output.log cart.js.orig
+
+  - id: pop-after-the-branch-moved
+    title: The stash no longer fits
+    level: hard
+    brief: "Last week you stashed two things: a note in cart.js's discount function and a new refund function in checkout.js. Since then a teammate finished the discount: it now returns total * 0.9. Bring your stashed work back. In cart.js, keep the teammate's line and drop your note. Commit the result, and leave the shelf empty."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Shop app" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - printf 'function total(items) {\n  return items.length * 10;\n}\n\nfunction discount(total) {\n  return total;\n}\n' > cart.js
+      - echo "function pay() {}" > checkout.js
+      - git add cart.js checkout.js
+      - git commit -q -m "Add cart and checkout"
+      - printf 'function total(items) {\n  return items.length * 10;\n}\n\nfunction discount(total) {\n  // TODO members get 10 percent off\n}\n' > cart.js
+      - echo "function refund() {}" >> checkout.js
+      - git stash push -q -m "Half-done discount and refund"
+      - printf 'function total(items) {\n  return items.length * 10;\n}\n\nfunction discount(total) {\n  return total * 0.9;\n}\n' > cart.js
+      - git commit -q -am "Give members 10 percent off"
+    goal:
+      - check: no-operation-in-progress
+        label: "No file is left with a conflict"
+      - check: file-is-committed
+        file: checkout.js
+        label: "checkout.js with your refund function is committed"
+      - check: commit-count-is
+        count: 4
+        label: "The history has one new commit with the recovered work"
+      - check: stash-count-is
+        count: 0
+        label: "The stash shelf is empty"
+      - check: working-folder-clean
+        label: "git status shows nothing left to do"
+    hints:
+      - "Run git stash pop and read every line. One file conflicts, the other came back fine. What does the last line say about the entry?"
+      - "Open cart.js and remove the three marker lines and your TODO line, so the function returns total * 0.9. Then git add cart.js. A pop that hit a conflict keeps its entry: see \"When it goes wrong\"."
+      - "After fixing cart.js run: git add cart.js, git commit -m \"Add refund\", git stash drop."
+    solution:
+      - git stash pop || true
+      - printf 'function total(items) {\n  return items.length * 10;\n}\n\nfunction discount(total) {\n  return total * 0.9;\n}\n' > cart.js
+      - git add cart.js
+      - git commit -q -m "Add refund"
+      - git stash drop -q

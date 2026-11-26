@@ -1,0 +1,147 @@
+challenges:
+  - id: tag-the-release
+    title: Mark version 1.0
+    level: easy
+    brief: "The notes app is ready: its newest commit sets the version to 1.0. Mark that commit as release v1.0, with a tag that records who released it and a message."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Notes app" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - echo "function search() {}" > search.js
+      - git add search.js
+      - git commit -q -m "Add search page"
+      - echo "function search(text) { if (!text) return []; }" > search.js
+      - git commit -q -am "Fix search for empty text"
+      - echo "function exportPdf() {}" > export.js
+      - git add export.js
+      - git commit -q -m "Add export to PDF"
+      - echo "1.0" > VERSION
+      - git add VERSION
+      - git commit -q -m "Set version to 1.0"
+      - git init -q --bare -b main ../origin.git
+      - git remote add origin ../origin.git
+      - git push -q -u origin main
+    goal:
+      - check: tag-exists
+        tag: v1.0
+        label: "A tag named v1.0 exists"
+      - check: tag-is-annotated
+        tag: v1.0
+        label: "v1.0 is an annotated tag (it has a tagger and a message)"
+      - check: tag-is-on-commit
+        tag: v1.0
+        message: "Set version to 1.0"
+        label: "v1.0 sits on the commit \"Set version to 1.0\""
+    hints:
+      - "Which kind of tag records who made it and when? Look at the table \"Two kinds of tag\"."
+      - "git tag with -a makes an annotated tag on the commit you are on. Give it a message with -m."
+      - "Run: git tag -a v1.0 -m \"Version 1.0\""
+    solution:
+      - git tag -a v1.0 -m "Version 1.0"
+
+  - id: tag-later-and-share
+    title: A release nobody tagged
+    level: medium
+    brief: "Version 0.9 went out two commits ago, at the commit \"Set version to 0.9\", and nobody tagged it. Version 1.0 is tagged, but only on your computer. Tag 0.9 as v0.9 (annotated), then get both tags onto the server."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Notes app" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - echo "function search() {}" > search.js
+      - git add search.js
+      - git commit -q -m "Add search page"
+      - echo "0.9" > VERSION
+      - git add VERSION
+      - git commit -q -m "Set version to 0.9"
+      - echo "function exportPdf() {}" > export.js
+      - git add export.js
+      - git commit -q -m "Add export to PDF"
+      - echo "1.0" > VERSION
+      - git commit -q -am "Set version to 1.0"
+      - git init -q --bare -b main ../origin.git
+      - git remote add origin ../origin.git
+      - git push -q -u origin main
+      - git tag -a v1.0 -m "Version 1.0"
+    goal:
+      - check: tag-is-on-commit
+        tag: v0.9
+        message: "Set version to 0.9"
+        label: "v0.9 sits on the commit \"Set version to 0.9\""
+      - check: tag-is-annotated
+        tag: v0.9
+        label: "v0.9 is an annotated tag"
+      - check: remote-has-tag
+        tag: v0.9
+        label: "The server has the tag v0.9"
+      - check: remote-has-tag
+        tag: v1.0
+        label: "The server has the tag v1.0"
+    hints:
+      - "Run git log --oneline to find the ID of \"Set version to 0.9\". Then ask the server which tags it has: git ls-remote --tags origin."
+      - "A commit ID at the end of git tag -a puts the tag on that commit. Plain git push does not send tags."
+      - "Run: git tag -a v0.9 <id> -m \"Version 0.9\" with the ID from git log, then git push origin v0.9 v1.0 (or git push origin --tags)."
+    solution:
+      - git tag -a v0.9 -m "Version 0.9" "$(git log --format=%h --grep='Set version to 0.9')"
+      - git push -q origin v0.9 v1.0
+
+  - id: move-a-pushed-tag
+    title: The tag is on the wrong commit
+    level: hard
+    brief: "You tagged v2.0 a minute too late: it sits on \"Start work on version 2.1\" instead of \"Set version to 2.0\", and it is already on the server. Nobody has fetched it yet. Put v2.0 on the right commit, here and on the server, and push your waiting commit so main is level with origin/main."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Notes app" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - echo "function search() {}" > search.js
+      - git add search.js
+      - git commit -q -m "Add search page"
+      - echo "function exportPdf() {}" > export.js
+      - git add export.js
+      - git commit -q -m "Add export to PDF"
+      - echo "2.0" > VERSION
+      - git add VERSION
+      - git commit -q -m "Set version to 2.0"
+      - git init -q --bare -b main ../origin.git
+      - git remote add origin ../origin.git
+      - git push -q -u origin main
+      - echo "Ideas for 2.1" > PLAN.md
+      - git add PLAN.md
+      - git commit -q -m "Start work on version 2.1"
+      - git tag -a v2.0 -m "Version 2.0"
+      - git push -q origin v2.0
+    goal:
+      - check: tag-is-on-commit
+        tag: v2.0
+        message: "Set version to 2.0"
+        label: "v2.0 sits on the commit \"Set version to 2.0\""
+      - check: tag-is-annotated
+        tag: v2.0
+        label: "v2.0 is an annotated tag"
+      - check: remote-has-tag
+        tag: v2.0
+        label: "The server has a tag v2.0"
+      - check: branch-is-in-sync
+        branch: main
+        label: "main is level with origin/main"
+    hints:
+      - "A tag cannot be moved, only deleted and made again. It exists in two places. Run git show v2.0 and git ls-remote --tags origin to see both."
+      - "Delete it here (git tag -d) and on the server (git push origin --delete), then tag the right commit by its ID. If you push the new tag while the old one is still on the server, Git rejects it: \"already exists\"."
+      - "Run: git tag -d v2.0, git push origin --delete v2.0, git tag -a v2.0 <id> -m \"Version 2.0\" with the ID of \"Set version to 2.0\", then git push origin v2.0 and git push."
+    solution:
+      - git tag -d v2.0
+      - git push -q origin --delete v2.0
+      - git tag -a v2.0 -m "Version 2.0" "$(git log --format=%h --grep='Set version to 2.0')"
+      - git push -q origin v2.0
+      - git push -q

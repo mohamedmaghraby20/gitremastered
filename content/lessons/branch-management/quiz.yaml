@@ -1,0 +1,40 @@
+questions:
+  - question: "You are on the branch login-page and run git branch --merged. The list shows only login-page, although you know fix-footer was merged into main last week. Why?"
+    answers:
+      - text: "The merge of fix-footer must have failed"
+        explanation: "Nothing here says so. The list answers a different question than the one you meant to ask."
+      - text: "--merged compares against the branch you are on, and login-page does not contain fix-footer's work"
+        correct: true
+        explanation: "Without a name, the filter means \"merged into the current branch\". Run git branch --merged main to ask about main."
+      - text: "--merged only lists branches that were merged today"
+        explanation: "The filter does not look at dates. It checks whether a branch's commit is part of another branch's history."
+
+  - question: "git branch -d try-colors answers: error: the branch 'try-colors' is not fully merged. The branch holds a failed experiment you never want to see again. What do you do?"
+    answers:
+      - text: "Run git branch -D try-colors"
+        correct: true
+        explanation: "The capital D deletes a branch that still has unmerged commits. That is fine here, because you decided to abandon them."
+      - text: "Merge try-colors into main first, then delete it with -d"
+        explanation: "That would put the failed experiment into main, which is the opposite of what you want."
+      - text: "Delete the files of the experiment by hand, then run -d again"
+        explanation: "The check looks at commits, not at files in your working tree. The commits would still be unmerged."
+
+  - question: "You delete the merged branch fix-footer with git branch -d. What is gone afterwards?"
+    answers:
+      - text: "The commits made on fix-footer and the files they added"
+        explanation: "Those commits are part of main's history and stay there. Deleting a branch never deletes commits."
+      - text: "Only the name fix-footer: one small file in .git/refs/heads"
+        correct: true
+        explanation: "A branch is a pointer to a commit. Deleting it removes the pointer; main still reaches every commit."
+      - text: "The merge commit that joined fix-footer into main"
+        explanation: "The merge commit belongs to main's history. Removing a branch name does not rewrite history."
+
+  - question: "A minute ago you ran git branch -D payment-form by mistake. Git printed: Deleted branch payment-form (was 38ddc7e). How do you get the branch back?"
+    answers:
+      - text: "You cannot: -D deletes the commits for good"
+        explanation: "-D deletes the name. The commits stay in the repository for weeks before Git's cleanup removes them."
+      - text: "Run git branch -m payment-form"
+        explanation: "That would rename the branch you are on to payment-form. It would not point at the lost commit."
+      - text: "Run git branch payment-form 38ddc7e"
+        correct: true
+        explanation: "git branch with a name and a commit ID creates the branch on that commit, and its whole history is reachable again."

@@ -1,0 +1,40 @@
+questions:
+  - question: "You are on main and run git branch login-form. Then you edit a file and commit. Which branch has the new commit?"
+    answers:
+      - text: "login-form, because it is the newest branch"
+        explanation: "git branch only creates the label. It does not move you, so HEAD still points at main."
+      - text: "main, because HEAD still points at main"
+        correct: true
+        explanation: "A commit moves the branch HEAD points at. login-form stays on the commit where it was created."
+      - text: "Both, because they pointed at the same commit"
+        explanation: "They pointed at the same commit before. The new commit moves one label only: the branch you are on."
+
+  - question: "A teammate worries that making ten branches in a large project will fill the disk with ten copies of the code. What do you tell them?"
+    answers:
+      - text: "Each branch is a 41-byte file that holds one commit ID"
+        correct: true
+        explanation: "A branch is a pointer to a commit. No files are copied, however big the project is."
+      - text: "Git compresses the copies, so they stay small"
+        explanation: "There are no copies to compress. A branch stores a commit ID and nothing else."
+      - text: "They are right, so delete branches as soon as you can"
+        explanation: "Branches cost almost nothing. Tidying up is good for readability, not for disk space."
+
+  - question: "git log --oneline prints \"9f2c1ab (HEAD -> main, hotfix) Fix price\" on its first line. What does that tell you?"
+    answers:
+      - text: "You are on hotfix, and main is one commit behind"
+        explanation: "The arrow comes from HEAD and goes to main, so you are on main. Both labels are on this same commit."
+      - text: "main and hotfix were merged into one branch"
+        explanation: "Nothing was merged. Two labels can sit on one commit; they are still two branches."
+      - text: "You are on main, and hotfix points at the same commit"
+        correct: true
+        explanation: "HEAD -> main names the branch you are on. hotfix is listed beside it because it points at this commit too."
+
+  - question: "In a folder where you just ran git init, git branch draft fails with \"not a valid object name: 'main'\". Why?"
+    answers:
+      - text: "The name draft is reserved by Git"
+        explanation: "draft is a fine name. The message is about main having no commit to point at."
+      - text: "There is no commit yet, so a branch has nothing to point at"
+        correct: true
+        explanation: "A branch is a label on a commit. Make the first commit, then create the branch."
+      - text: "You must delete main before you can create another branch"
+        explanation: "Branches live side by side. Nothing needs to be deleted."

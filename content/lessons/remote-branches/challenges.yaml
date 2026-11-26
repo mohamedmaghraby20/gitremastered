@@ -1,0 +1,171 @@
+challenges:
+  - id: publish-feature
+    title: Publish your feature branch
+    level: easy
+    brief: "Your cart work is on a local branch named feature, and nobody else can see it. Publish feature to the server so that it follows the branch there, and plain git push and git pull work on it from now on."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - git config pull.rebase false
+      - echo "# Shop app" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - echo "console.log('shop is open')" > app.js
+      - git add app.js
+      - git commit -q -m "Add app"
+      - git init -q --bare -b main ../origin.git
+      - git remote add origin ../origin.git
+      - git push -q -u origin main
+      # A teammate pushes a commit to main and a branch of their own:
+      - git clone -q -c core.autocrlf=false ../origin.git ../teammate
+      - git -C ../teammate config user.name "Tariq (teammate)"
+      - git -C ../teammate config user.email "tariq@example.com"
+      - echo "Docs live in docs/" >> ../teammate/README.md
+      - git -C ../teammate commit -q -am "Point to the docs"
+      - git -C ../teammate push -q
+      - git -C ../teammate switch -q -c search
+      - echo "function search() {}" > ../teammate/search.js
+      - git -C ../teammate add search.js
+      - git -C ../teammate commit -q -m "Start search"
+      - git -C ../teammate push -q -u origin search
+      # Your own unpublished work:
+      - git switch -q -c feature
+      - echo "function cart() {}" > cart.js
+      - git add cart.js
+      - git commit -q -m "Add cart"
+      - git switch -q main
+    goal:
+      - check: remote-branch-exists
+        branch: origin/feature
+        label: "feature is on the server (origin/feature exists)"
+      - check: branch-tracks
+        branch: feature
+        upstream: origin/feature
+        label: "Your feature follows origin/feature"
+      - check: branch-is-in-sync
+        branch: feature
+        label: "feature is level with the server"
+    hints:
+      - "Run git branch -vv. Which branch has no upstream in square brackets?"
+      - "One push option uploads a branch and records its upstream in the same step."
+      - "Run: git push -u origin feature"
+    solution:
+      - git push -q -u origin feature
+
+  - id: continue-fix-login
+    title: Pick up a teammate's branch
+    level: medium
+    brief: "Tariq pushed a branch named fix-login and asked you to finish it. Get it as your own local branch that follows the server's, add one commit with the message \"Check empty password\" (add a line to login.js), and push it back."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - git config pull.rebase false
+      - echo "# Shop app" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - git init -q --bare -b main ../origin.git
+      - git remote add origin ../origin.git
+      - git push -q -u origin main
+      # The teammate starts fix-login after your last fetch:
+      - git clone -q -c core.autocrlf=false ../origin.git ../teammate
+      - git -C ../teammate config user.name "Tariq (teammate)"
+      - git -C ../teammate config user.email "tariq@example.com"
+      - git -C ../teammate switch -q -c fix-login
+      - echo "function logIn(name, password) {}" > ../teammate/login.js
+      - git -C ../teammate add login.js
+      - git -C ../teammate commit -q -m "Start login fix"
+      - git -C ../teammate push -q -u origin fix-login
+    goal:
+      - check: branch-tracks
+        branch: fix-login
+        upstream: origin/fix-login
+        label: "Your fix-login follows origin/fix-login"
+      - check: branch-contains-commit
+        branch: origin/fix-login
+        message: "Check empty password"
+        label: "\"Check empty password\" is on the server's fix-login"
+      - check: branch-is-in-sync
+        branch: fix-login
+        label: "fix-login is level with the server"
+    hints:
+      - "git branch -r shows no fix-login yet. Your repository has not asked the server since Tariq pushed."
+      - "Fetch first. Then switch to the branch by its plain name: Git creates your copy and sets its upstream."
+      - "Run: git fetch, git switch fix-login, echo \"// empty password check\" >> login.js, git commit -am \"Check empty password\", git push"
+    solution:
+      - git fetch -q
+      - git switch -q fix-login
+      - echo "// empty password check" >> login.js
+      - git commit -q -am "Check empty password"
+      - git push -q
+
+  - id: clean-up-day
+    title: Clean-up day
+    level: hard
+    brief: "The banner branch is merged into your main and finished: remove it from the server and from your repository. Tariq already deleted old-search on the server, but it still shows here as origin/old-search: make it go away. Finish with main level with the server (Tariq pushed to main too)."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - git config pull.rebase false
+      - echo "# Shop app" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - git init -q --bare -b main ../origin.git
+      - git remote add origin ../origin.git
+      - git push -q -u origin main
+      # The teammate publishes old-search, and you fetch it:
+      - git clone -q -c core.autocrlf=false ../origin.git ../teammate
+      - git -C ../teammate config user.name "Tariq (teammate)"
+      - git -C ../teammate config user.email "tariq@example.com"
+      - git -C ../teammate switch -q -c old-search
+      - echo "function oldSearch() {}" > ../teammate/old-search.js
+      - git -C ../teammate add old-search.js
+      - git -C ../teammate commit -q -m "Try a search idea"
+      - git -C ../teammate push -q -u origin old-search
+      - git fetch -q
+      # Your banner work: published, then merged into main (the merge is not pushed yet):
+      - git switch -q -c banner
+      - echo "function banner() {}" > banner.js
+      - git add banner.js
+      - git commit -q -m "Add banner"
+      - git push -q -u origin banner
+      - git switch -q main
+      - git merge -q banner
+      # Meanwhile the teammate deletes old-search on the server and pushes to main:
+      - git -C ../teammate push -q origin --delete old-search
+      - git -C ../teammate switch -q main
+      - echo "Docs live in docs/" >> ../teammate/README.md
+      - git -C ../teammate commit -q -am "Point to the docs"
+      - git -C ../teammate push -q
+    goal:
+      - check: remote-branch-is-missing
+        branch: origin/banner
+        label: "banner is gone from the server"
+      - check: branch-is-missing
+        branch: banner
+        label: "Your local banner branch is deleted"
+      - check: remote-branch-is-missing
+        branch: origin/old-search
+        label: "The stale origin/old-search is gone"
+      - check: branch-is-in-sync
+        branch: main
+        label: "main is level with the server"
+      - check: branch-contains-commit
+        branch: origin/main
+        message: "Add banner"
+        label: "The banner work is on the server's main"
+    hints:
+      - "Run git fetch, then git branch -vv and git branch -r. main has diverged from origin/main, and origin/old-search is still listed although the server no longer has it."
+      - "Bring main level first: pull, then push. A plain fetch never removes a record of a deleted branch; fetch has an option for that (see \"Delete a branch on the server\")."
+      - "Run: git pull --no-edit, git push, git push origin --delete banner, git branch -d banner, git fetch --prune"
+    solution:
+      - git pull -q --no-edit
+      - git push -q
+      - git push -q origin --delete banner
+      - git branch -q -d banner
+      - git fetch -q --prune

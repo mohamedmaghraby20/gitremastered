@@ -1,0 +1,40 @@
+questions:
+  - question: "git status says \"Your branch is up to date with 'origin/main'\". A teammate pushed to main on the server an hour ago, and you have not fetched since yesterday. Is your main really up to date?"
+    answers:
+      - text: "Yes: git status checks the server every time it runs"
+        explanation: "git status never uses the network. It compares your branch with origin/main, which is your stored record."
+      - text: "No: the message compares main with your record of the server, and the record is a day old"
+        correct: true
+        explanation: "origin/main moves only when you fetch, pull or push. Run git fetch, then look again."
+      - text: "No: main can only be up to date right after a push"
+        explanation: "A fetch or pull updates the record too. What matters is how long ago you last talked to the server."
+
+  - question: "git branch -vv shows \"main  f1ce6f4 [origin/main: ahead 2, behind 1]\". What does it tell you?"
+    answers:
+      - text: "You have 2 commits to push, and there is 1 fetched commit you have not merged yet"
+        correct: true
+        explanation: "Ahead counts commits only your branch has; behind counts commits only origin/main has. Pull, then push."
+      - text: "The server is 2 commits ahead of you and you are 1 commit behind"
+        explanation: "The numbers describe your branch: it is ahead by 2 and behind by 1, compared with origin/main."
+      - text: "Two commits were pushed and one push failed"
+        explanation: "Nothing here is about past pushes. It is a comparison of two histories in your repository."
+
+  - question: "You created a branch named report, committed twice, and ran git push origin report (without -u). The next day you run git pull on report. What happens?"
+    answers:
+      - text: "Git pulls from origin/report, because the names match"
+        explanation: "Matching names are not enough. Without an upstream, git pull has no branch to merge."
+      - text: "Git says there is no tracking information for the branch, because no upstream was recorded"
+        correct: true
+        explanation: "The push uploaded the branch but recorded nothing. git branch -u origin/report connects it, or use push -u next time."
+      - text: "Git deletes the local branch, because it is already on the server"
+        explanation: "Git never deletes a branch on its own. The branch is fine; it only lacks an upstream."
+
+  - question: "Your teammate deleted the branch demo on the server last week. Your git branch -r still lists origin/demo. Why, and what removes it?"
+    answers:
+      - text: "The server keeps deleted branches for 30 days; you have to wait"
+        explanation: "The branch is gone from the server. What you see is a leftover in your own repository."
+      - text: "It is your stale record of the branch; git fetch --prune removes it"
+        correct: true
+        explanation: "A plain fetch adds and moves remote-tracking branches but does not remove them. --prune does."
+      - text: "It is your local branch demo; git branch -d demo removes it"
+        explanation: "git branch -r lists remote-tracking branches. A local demo branch is separate and has to be deleted on its own."

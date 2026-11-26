@@ -1,0 +1,134 @@
+challenges:
+  - id: ship-the-hotfix
+    title: Ship the hotfix
+    level: easy
+    brief: "The bakery's contact page has a typo in the email address. A teammate fixed it on the hotfix branch, and the fix is tested. Bring it into main, then delete the hotfix branch."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "<h1>Corner Bakery</h1>" > index.html
+      - git add index.html
+      - git commit -q -m "Add homepage"
+      - 'echo "Email: hello@bakery.exmaple" > contact.txt'
+      - git add contact.txt
+      - git commit -q -m "Add contact page"
+      - git switch -q -c hotfix
+      - 'echo "Email: hello@bakery.example" > contact.txt'
+      - git commit -q -am "Fix broken email address"
+      - git switch -q main
+    goal:
+      - check: branch-contains-commit
+        branch: main
+        message: Fix broken email address
+        label: "main has the email fix"
+      - check: branch-is-missing
+        branch: hotfix
+        label: "The hotfix branch is deleted"
+      - check: head-is-on-branch
+        branch: main
+        label: "You are on main"
+    hints:
+      - "Which branch should receive the fix? Check that you are on it with git status."
+      - "git merge names the branch to bring in. Once main has the fix, the hotfix label is no longer needed: git branch -d removes it."
+      - "Run: git merge hotfix, then git branch -d hotfix"
+    solution:
+      - git merge hotfix
+      - git branch -d hotfix
+
+  - id: merge-the-menu
+    title: Bring the menu into main
+    level: medium
+    brief: "The menu is finished on the menu branch, and you are still standing on that branch. Meanwhile main got a new tagline. Merge menu into main. Leave the menu branch itself as it is: main must not be merged into it."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "<h1>Corner Bakery</h1>" > index.html
+      - git add index.html
+      - git commit -q -m "Add homepage"
+      - 'echo "Email: hello@bakery.example" > contact.txt'
+      - git add contact.txt
+      - git commit -q -m "Add contact page"
+      - git switch -q -c menu
+      - echo "Bread, cake, coffee" > menu.txt
+      - git add menu.txt
+      - git commit -q -m "Add menu"
+      - echo "Bread 3, cake 4, coffee 2" > menu.txt
+      - git commit -q -am "Add prices to menu"
+      - git switch -q main
+      - echo "<p>Fresh every morning</p>" >> index.html
+      - git commit -q -am "Add tagline to homepage"
+      - git switch -q menu
+    goal:
+      - check: head-is-on-branch
+        branch: main
+        label: "You are on main"
+      - check: head-commit-is-merge
+        label: "main's newest commit is a merge commit"
+      - check: branch-is-merged-into
+        branch: menu
+        into: main
+        label: "main contains the work of menu"
+      - check: branch-lacks-commit
+        branch: menu
+        message: Add tagline to homepage
+        label: "menu was left as it was (main was not merged into it)"
+      - check: working-folder-clean
+        label: "git status shows nothing left to do"
+    hints:
+      - "The branch you are on receives the merge. Which branch are you on right now, and which one should receive the menu?"
+      - "Switch to main first. Both branches have commits of their own, so Git will make a merge commit and want a message: --no-edit keeps the one it wrote."
+      - "Run: git switch main, then git merge menu --no-edit"
+    solution:
+      - git switch -q main
+      - git merge -q menu --no-edit
+
+  - id: opening-hours-clash
+    title: Two branches, one line
+    level: hard
+    brief: "main moved the opening time to 10, and the late-hours branch moved the closing time to 8 and rewrote the contact page. Merge late-hours into main. The owner wants hours.txt to read \"Open 10 to 8\", and wants the contact page exactly as late-hours wrote it."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "<h1>Corner Bakery</h1>" > index.html
+      - echo "Open 9 to 5" > hours.txt
+      - 'echo "Email: hello@bakery.example" > contact.txt'
+      - git add index.html hours.txt contact.txt
+      - git commit -q -m "Add homepage, hours and contact page"
+      - git switch -q -c late-hours
+      - echo "Open 9 to 8" > hours.txt
+      - 'echo "Write to us: hello@bakery.example" > contact.txt'
+      - git commit -q -am "Stay open until 8 and reword contact page"
+      - git switch -q main
+      - echo "Open 10 to 5" > hours.txt
+      - 'echo "Email us: hello@bakery.example" > contact.txt'
+      - git commit -q -am "Open at 10 and tweak contact page"
+    goal:
+      - check: head-is-on-branch
+        branch: main
+        label: "You are on main"
+      - check: head-commit-is-merge
+        label: "main's newest commit is a merge commit"
+      - check: branch-is-merged-into
+        branch: late-hours
+        into: main
+        label: "main contains the work of late-hours"
+      - check: no-operation-in-progress
+        label: "The merge is finished: no conflict is left open"
+      - check: working-folder-clean
+        label: "git status shows nothing left to do"
+    hints:
+      - "Start the merge and run git status. How many files are listed under \"Unmerged paths\"?"
+      - "hours.txt needs a line that uses both changes, so edit it and remove the markers. For contact.txt you want one whole side: the Advanced part \"Take one whole side of a file\" has a command for that. Stage both files, then commit."
+      - "Run: git merge late-hours, then echo \"Open 10 to 8\" > hours.txt, git restore --theirs contact.txt, git add hours.txt contact.txt, git commit --no-edit"
+    solution:
+      - git merge late-hours || true
+      - echo "Open 10 to 8" > hours.txt
+      - git restore --theirs contact.txt
+      - git add hours.txt contact.txt
+      - git commit -q --no-edit

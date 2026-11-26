@@ -1,0 +1,152 @@
+challenges:
+  - id: delete-merged-branches
+    title: Clear out the finished branches
+    level: easy
+    brief: "The shop app has three side branches. Two are already merged into main, one still holds unfinished work. Delete exactly the two finished ones, keep the unfinished one, and stay on main."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Shop app" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - git switch -q -c fix-footer
+      - echo "<footer>Contact us</footer>" > footer.html
+      - git add footer.html
+      - git commit -q -m "Fix footer link"
+      - git switch -q main
+      - git merge -q fix-footer
+      - git switch -q -c add-search
+      - echo "<input type=search>" > search.html
+      - git add search.html
+      - git commit -q -m "Add search box"
+      - git switch -q main
+      - echo "Run the tests before you push." >> README.md
+      - git commit -q -am "Update README"
+      - git merge -q --no-edit add-search
+      - git switch -q -c new-checkout
+      - echo "<form>Pay</form>" > checkout.html
+      - git add checkout.html
+      - git commit -q -m "Start new checkout"
+      - git switch -q main
+    goal:
+      - check: branch-is-missing
+        branch: fix-footer
+        label: "fix-footer is deleted"
+      - check: branch-is-missing
+        branch: add-search
+        label: "add-search is deleted"
+      - check: branch-exists
+        branch: new-checkout
+        label: "new-checkout, with its unfinished work, is still there"
+      - check: branch-contains-commit
+        branch: main
+        message: "Add search box"
+        label: "main still has the merged work"
+      - check: head-is-on-branch
+        branch: main
+        label: "You are on main"
+    hints:
+      - "Ask Git which branches are finished before you delete anything. Which option of git branch lists them?"
+      - "git branch --merged main lists the finished branches. Delete each one with the safe, small-letter option."
+      - "Run: git branch -d fix-footer, then git branch -d add-search. Leave new-checkout alone."
+    solution:
+      - git branch -d fix-footer
+      - git branch -d add-search
+
+  - id: rename-to-main
+    title: Two names to fix
+    level: medium
+    brief: "This repository is yours alone, and two names bother you. The default branch is still called master: your team uses main. And the branch with the new contact page is called stuff. Rename master to main and stuff to contact-page, and end on main."
+    setup:
+      - git init -q -b master
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Shop app" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - git switch -q -c stuff
+      - echo "<h1>Contact</h1>" > contact.html
+      - git add contact.html
+      - git commit -q -m "Add contact page"
+      - git switch -q master
+    goal:
+      - check: branch-exists
+        branch: main
+        label: "The default branch is called main"
+      - check: branch-is-missing
+        branch: master
+        label: "No branch is called master any more"
+      - check: branch-exists
+        branch: contact-page
+        label: "The contact page's branch is called contact-page"
+      - check: branch-is-missing
+        branch: stuff
+        label: "No branch is called stuff any more"
+      - check: branch-is-at-commit
+        branch: contact-page
+        message: "Add contact page"
+        label: "contact-page still holds the commit \"Add contact page\""
+      - check: head-is-on-branch
+        branch: main
+        label: "You are on main"
+    hints:
+      - "A rename keeps the commits and changes only the label. Which option of git branch moves a name?"
+      - "git branch -m <new> renames the branch you are on. git branch -m <old> <new> renames any other branch."
+      - "Run: git branch -m master main, then git branch -m stuff contact-page."
+    solution:
+      - git branch -m master main
+      - git branch -m stuff contact-page
+
+  - id: drop-one-restore-one
+    title: Drop the experiment, bring back the payment form
+    level: hard
+    brief: "Two jobs. The branch dark-theme was an experiment the team gave up: delete it, although it was never merged. And yesterday someone deleted the branch payment-form by mistake. Its last commit had the message \"Add payment form\". Bring the branch back under the same name, pointing at that commit. Stay on main."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Shop app" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - git switch -q -c payment-form
+      - echo "<form>Card number</form>" > payment.html
+      - git add payment.html
+      - git commit -q -m "Start payment page"
+      - echo "<button>Pay now</button>" >> payment.html
+      - git commit -q -am "Add payment form"
+      - git switch -q main
+      - git switch -q -c dark-theme
+      - 'echo "body { background: black }" > theme.css'
+      - git add theme.css
+      - git commit -q -m "Try dark theme"
+      - git switch -q main
+      - git branch -q -D payment-form
+    goal:
+      - check: branch-is-missing
+        branch: dark-theme
+        label: "dark-theme is deleted"
+      - check: branch-exists
+        branch: payment-form
+        label: "payment-form exists again"
+      - check: branch-is-at-commit
+        branch: payment-form
+        message: "Add payment form"
+        label: "payment-form points at the commit \"Add payment form\""
+      - check: branch-lacks-commit
+        branch: main
+        message: "Add payment form"
+        label: "main is unchanged: the payment form is not merged into it"
+      - check: head-is-on-branch
+        branch: main
+        label: "You are on main"
+    hints:
+      - "The safe delete will refuse dark-theme. And a deleted branch's commits still exist: the picture shows them faded, marked \"no branch\". You need the ID of one of them."
+      - "git branch -D deletes an unmerged branch. git reflog lists every commit HEAD has been on, with its ID and message: find \"Add payment form\" there. Under the hood explains why this works."
+      - "Run: git branch -D dark-theme, then git reflog, copy the ID in front of \"commit: Add payment form\", and run git branch payment-form <that-id>."
+    solution:
+      - git branch -D dark-theme
+      - git branch payment-form $(git log -g --format=%h --grep="Add payment form" -1)

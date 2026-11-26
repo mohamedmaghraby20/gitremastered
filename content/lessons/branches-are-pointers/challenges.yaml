@@ -1,0 +1,112 @@
+challenges:
+  - id: start-an-experiment
+    title: A branch for an experiment
+    level: easy
+    brief: "You want to try a new layout for your travel blog without touching the working version. Create a branch named experiment on the current commit. Stay on main."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Travel blog" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - echo "<h1>Welcome</h1>" > index.html
+      - git add index.html
+      - git commit -q -m "Add home page"
+      - echo "<h1>About me</h1>" > about.html
+      - git add about.html
+      - git commit -q -m "Add about page"
+    goal:
+      - check: branch-exists
+        branch: experiment
+        label: "A branch named experiment exists"
+      - check: head-is-on-branch
+        branch: main
+        label: "You are still on main"
+    hints:
+      - "Which command creates a branch without moving you to it?"
+      - "git branch followed by a name puts a new label on the commit you are on."
+      - "Run: git branch experiment. Then git branch shows both, with * on main."
+    solution:
+      - git branch experiment
+
+  - id: mark-the-release
+    title: Mark the release, then keep working
+    level: medium
+    brief: "Version 1.0 of the blog is the project as it is now. Create a branch named release-1.0 to remember it. Then commit the new file contact.html on main with the message \"Add contact page\". At the end, release-1.0 must still point at the old commit."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Travel blog" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - echo "<h1>Welcome</h1>" > index.html
+      - git add index.html
+      - git commit -q -m "Add home page"
+      - echo "<h1>About me</h1>" > about.html
+      - git add about.html
+      - git commit -q -m "Add about page"
+      - echo "<h1>Write to me</h1>" > contact.html
+    goal:
+      - check: branch-is-at-commit
+        branch: release-1.0
+        message: "Add about page"
+        label: "release-1.0 points at \"Add about page\""
+      - check: branch-is-at-commit
+        branch: main
+        message: "Add contact page"
+        label: "main points at your new commit, \"Add contact page\""
+      - check: head-is-on-branch
+        branch: main
+        label: "You are still on main"
+    hints:
+      - "The order matters. A new branch is put on the commit you are on at that moment."
+      - "Create release-1.0 first. Then stage and commit contact.html: only main moves, because HEAD points at main."
+      - "Run: git branch release-1.0, then git add contact.html, then git commit -m \"Add contact page\". Check with git branch -v."
+    solution:
+      - git branch release-1.0
+      - git add contact.html
+      - git commit -q -m "Add contact page"
+
+  - id: branch-from-the-past
+    title: A branch that should have started earlier
+    level: hard
+    brief: "Two commits ago the blog still had its light theme. A reader wants that version kept. Create a branch named light-theme that points at the commit \"Add home page\", without leaving main and without changing main."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Travel blog" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - echo "<h1>Welcome</h1>" > index.html
+      - git add index.html
+      - git commit -q -m "Add home page"
+      - 'echo "body { background: black; color: white; }" > theme.css'
+      - git add theme.css
+      - git commit -q -m "Switch to dark theme"
+      - echo "<h1>Photos</h1>" > gallery.html
+      - git add gallery.html
+      - git commit -q -m "Add gallery"
+    goal:
+      - check: branch-is-at-commit
+        branch: light-theme
+        message: "Add home page"
+        label: "light-theme points at \"Add home page\""
+      - check: branch-is-at-commit
+        branch: main
+        message: "Add gallery"
+        label: "main still points at \"Add gallery\""
+      - check: head-is-on-branch
+        branch: main
+        label: "You are still on main"
+    hints:
+      - "git branch with only a name uses the commit you are on. The Advanced layer shows how to name another commit."
+      - "Run git log --oneline and find the short ID of \"Add home page\". git branch takes it as a second word."
+      - "Run: git branch light-theme <the ID of Add home page>, or git branch light-theme HEAD~2. Check with git branch -v."
+    solution:
+      - git branch light-theme HEAD~2

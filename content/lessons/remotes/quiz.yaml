@@ -1,0 +1,40 @@
+questions:
+  - question: "A teammate pushed two commits an hour ago. You run git fetch origin and nothing else. What is true now?"
+    answers:
+      - text: "Their commits are in your repository and origin/main points at them, but your main and your files are unchanged"
+        correct: true
+        explanation: "A fetch only downloads and moves the remote-tracking branch. Your branch moves when you merge origin/main, or when you pull."
+      - text: "Their changes are in your files, ready to use"
+        explanation: "That is what git pull does. A fetch never touches your working tree or your branch."
+      - text: "Nothing changed, because fetch only checks whether something is new"
+        explanation: "The commits were really downloaded and origin/main moved. You can read them with git log origin/main."
+
+  - question: "git status says \"Your branch is up to date with 'origin/main'\". A teammate says they pushed ten minutes ago, and you have not run any Git command since yesterday. Who is right?"
+    answers:
+      - text: "git status: if there were new commits, it would list them"
+        explanation: "git status never contacts the server. It compares main with origin/main, your record from the last fetch."
+      - text: "Both: your record origin/main is from yesterday, so status cannot know about the push"
+        correct: true
+        explanation: "origin/main moves only when you fetch, pull or push. Run git fetch, then git status again."
+      - text: "The teammate cannot have pushed, or your push access would be broken"
+        explanation: "Their push has nothing to do with your access. Your repository simply has not asked the server yet."
+
+  - question: "You commit and run git push. Git answers \"! [rejected] main -> main (fetch first)\". What happened, and what do you do?"
+    answers:
+      - text: "The server is broken or you have no permission; ask an admin"
+        explanation: "A permission problem gives a different message. \"fetch first\" means the server has commits you do not have."
+      - text: "Someone pushed before you; run git push --force to put your commit on top"
+        explanation: "A force push would move the server's branch to your commit and drop your teammate's commit from it."
+      - text: "Someone pushed before you; run git pull to merge their commit, then git push again"
+        correct: true
+        explanation: "After the pull, your main contains their commit and yours, so the server can move its branch forward without losing anything."
+
+  - question: "You started a project with git init, made three commits, and ran git remote add origin with the team's address. You run git push and get \"The current branch main has no upstream branch\". Why?"
+    answers:
+      - text: "git remote add failed, so there is no remote"
+        explanation: "The remote exists; git remote -v would list it. Adding a remote does not link any branch to it."
+      - text: "main does not follow any branch on origin yet; push once with git push -u origin main"
+        correct: true
+        explanation: "-u uploads the branch and records origin/main as its upstream. After that, plain git push and git pull work."
+      - text: "You must fetch before your first push"
+        explanation: "The server's repository is empty here, so there is nothing to fetch. The branch only lacks an upstream."

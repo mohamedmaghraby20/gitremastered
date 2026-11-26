@@ -1,0 +1,120 @@
+challenges:
+  - id: count-server-branches
+    title: How many branches does the server have?
+    level: easy
+    brief: "Your teammate says the server has more branches than your repository shows. Ask the server itself, and write the number of branches it has into answer.txt (for example: echo 2 > answer.txt)."
+    setup: &trail-server
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Trail map" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - 'echo "North loop: 4 km" > trails.txt'
+      - git add trails.txt
+      - git commit -q -m "Add trail list"
+      - git tag v1.0
+      - git init -q --bare -b main ../origin.git
+      - git remote add origin ../origin.git
+      - git push -q -u origin main v1.0
+      - echo "Photos go in img/" >> README.md
+      - git commit -q -am "Say where photos go"
+      - 'git push -q origin main:photos'
+      - git reset -q --hard HEAD~1
+      - git clone -q -c core.autocrlf=false ../origin.git ../teammate
+      - git -C ../teammate config user.name "Tariq (teammate)"
+      - git -C ../teammate config user.email "tariq@example.com"
+      - 'echo "River path: 7 km" >> ../teammate/trails.txt'
+      - git -C ../teammate commit -q -am "Add river path"
+      - git -C ../teammate push -q
+      - git -C ../teammate switch -q -c river-signs
+      - echo "Signs needed at the ford" > ../teammate/signs.txt
+      - git -C ../teammate add signs.txt
+      - git -C ../teammate commit -q -m "List signs for the river path"
+      - git -C ../teammate push -q origin river-signs
+      - git -C ../teammate switch -q main
+      - echo answer.txt >> .git/info/exclude
+    goal:
+      - check: answer-is
+        answer: "3"
+        label: "answer.txt holds the number of branches on the server"
+    hints:
+      - "git branch -r only shows what your repository remembers from the last time it talked to the server. Which command asks the server right now?"
+      - "git ls-remote lists the server's refs. Branches are the lines with refs/heads/; the option --heads shows only those."
+      - "Run: git ls-remote --heads origin, count the lines, then echo 3 > answer.txt"
+    solution:
+      - git ls-remote --heads origin
+      - echo 3 > answer.txt
+
+  - id: fetch-and-name-the-commit
+    title: Get the commit you are missing
+    level: medium
+    brief: "The server's main branch points at a commit your repository does not have. Download it without changing your own branch or files, then write its short ID into answer.txt."
+    setup: *trail-server
+    goal:
+      - check: branch-contains-commit
+        branch: origin/main
+        message: "Add river path"
+        label: "Your record origin/main has the teammate's commit"
+      - check: branch-is-at-commit
+        branch: main
+        message: "Add trail list"
+        label: "Your own main has not moved"
+      - check: answer-is-commit
+        message: "Add river path"
+        label: "answer.txt holds the ID of the commit that was on the server"
+    hints:
+      - "git ls-remote origin shows the ID the server's main points at. Which command downloads commits and moves only origin/main?"
+      - "git fetch origin downloads the missing commits. Its output line for main ends in the new short ID, and git log --oneline origin/main shows it too."
+      - "Run: git fetch origin, then git rev-parse --short origin/main > answer.txt"
+    solution:
+      - git fetch -q origin
+      - git rev-parse --short origin/main > answer.txt
+
+  - id: move-to-the-new-server
+    title: The project moved to a new server
+    level: hard
+    brief: "The team moved the project to a new server at ../mirror.git. Make origin point to the new server, keep the old one reachable under the name old, and fetch, so your record of origin/main comes from the new server."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Trail map" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - 'echo "North loop: 4 km" > trails.txt'
+      - git add trails.txt
+      - git commit -q -m "Add trail list"
+      - git init -q --bare -b main ../origin.git
+      - git remote add origin ../origin.git
+      - git push -q -u origin main
+      - git clone -q --bare ../origin.git ../mirror.git
+      - git clone -q -c core.autocrlf=false ../origin.git ../teammate
+      - git -C ../teammate config user.name "Tariq (teammate)"
+      - git -C ../teammate config user.email "tariq@example.com"
+      - 'echo "Ridge trail: 12 km" >> ../teammate/trails.txt'
+      - git -C ../teammate commit -q -am "Add ridge trail"
+      - git -C ../teammate push -q ../mirror.git main
+    goal:
+      - check: config-is
+        key: remote.origin.url
+        value: ../mirror.git
+        label: "origin points to the new server, ../mirror.git"
+      - check: config-is
+        key: remote.old.url
+        value: ../origin.git
+        label: "The old server is still reachable as the remote old"
+      - check: branch-contains-commit
+        branch: origin/main
+        message: "Add ridge trail"
+        label: "origin/main has the commit that exists only on the new server"
+    hints:
+      - "Run git remote -v. A repository can know several servers, each under its own name. The Advanced layer shows how to change an address and how to keep the old one."
+      - "Rename the present remote to old, then add the new server under the name origin. Your record of the new server stays empty until you fetch from it."
+      - "Run: git remote rename origin old, then git remote add origin ../mirror.git, then git fetch origin"
+    solution:
+      - git remote rename origin old
+      - git remote add origin ../mirror.git
+      - git fetch -q origin

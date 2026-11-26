@@ -1,0 +1,40 @@
+questions:
+  - question: "You are on the branch feature and run git merge main. What happens?"
+    answers:
+      - text: "main receives the commits of feature"
+        explanation: "The branch you name is the one being brought in. It never moves. To bring feature into main, switch to main first."
+      - text: "feature receives the commits of main; main stays as it is"
+        correct: true
+        explanation: "The branch you are on receives the merge. main is only read."
+      - text: "Both branches end up pointing at the same commit"
+        explanation: "Only the branch you are on moves. main keeps pointing where it did."
+
+  - question: "You made a branch from main, committed twice on it, and nobody committed to main since. You switch to main and merge the branch. What does the history look like?"
+    answers:
+      - text: "A straight line: main now points at your second commit, and no new commit was made"
+        correct: true
+        explanation: "main had nothing of its own since the split, so Git only moved its label forward: a fast-forward."
+      - text: "Your two commits plus a merge commit with two parents"
+        explanation: "A merge commit is made only when both branches have commits the other lacks, or when you ask for one with --no-ff."
+      - text: "Your two commits are copied onto main with new IDs"
+        explanation: "A merge never copies or changes commits. The same two commits are simply reachable from main now."
+
+  - question: "After git merge late-hours, the file hours.txt contains a block between <<<<<<< HEAD and =======, and another between ======= and >>>>>>> late-hours. What is in the first block?"
+    answers:
+      - text: "The lines as they were before either branch changed them"
+        explanation: "That is the merge base. It is not shown by default; the zdiff3 conflict style adds it as a third part in the middle."
+      - text: "The lines from late-hours, the branch being merged in"
+        explanation: "Those are in the second block, above the line that names late-hours."
+      - text: "The lines from the branch you are on"
+        correct: true
+        explanation: "HEAD is where you are. The first block is your side, the second block is the side being merged in."
+
+  - question: "A merge stopped on a conflict in three files. You fixed one of them and now want to give up and try again tomorrow. What do you run, and what happens to your fix?"
+    answers:
+      - text: "git merge --abort; the files go back to how they were before the merge, so the fix is gone too"
+        correct: true
+        explanation: "Aborting puts your working tree and staging area back to the state before git merge. The work of resolving is redone when you merge again."
+      - text: "git commit; Git finishes the merge with the one file you fixed and leaves the rest for later"
+        explanation: "Git refuses to commit while any file is still unmerged. A merge is finished whole or not at all."
+      - text: "git branch -d on the other branch; deleting it cancels the merge"
+        explanation: "The merge stays open, because Git remembers the commit being merged in MERGE_HEAD, not the branch name. And -d refuses to delete a branch that is not merged."

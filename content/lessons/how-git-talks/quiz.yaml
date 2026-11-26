@@ -1,0 +1,40 @@
+questions:
+  - question: "You fixed a bug and committed it, and you have a half-written second fix that is not committed. You run git push origin main. What reaches the server?"
+    answers:
+      - text: "The commit only"
+        correct: true
+        explanation: "A push sends commits and moves the server's branch. Uncommitted edits are in no commit, so they stay on your computer."
+      - text: "The commit and the half-written fix"
+        explanation: "Git does not upload files from your working tree. Only objects that belong to the pushed commits travel."
+      - text: "Every file of the project, so the server matches your folder"
+        explanation: "The server already has most objects. Your Git sends only the ones it lacks, and never the working tree."
+
+  - question: "git remote -v prints git@github.com:team/shop.git. Your push fails with \"Permission denied (publickey)\". What is wrong?"
+    answers:
+      - text: "The repository does not exist on the server"
+        explanation: "A missing repository gives \"not found\" or \"does not appear to be a git repository\". This message is about signing in."
+      - text: "The server does not know an SSH key from this computer"
+        correct: true
+        explanation: "The address starts with git@, so Git uses SSH, which signs in with a key pair. The key is missing, not loaded, or not added to your account."
+      - text: "Your token for HTTPS has expired"
+        explanation: "Tokens belong to HTTPS addresses, which start with https://. This address uses SSH."
+
+  - question: "A project has 4,000 commits. You fetched yesterday, and one teammate pushed two small commits since. What does git fetch download today?"
+    answers:
+      - text: "The whole history again, to be sure nothing is missed"
+        explanation: "Your Git tells the server a commit it already has, and the server then knows you have everything behind it."
+      - text: "Only the files those two commits changed, as plain files"
+        explanation: "Git transfers objects, not loose files: the two commits with the trees and blobs you lack, packed into one file."
+      - text: "The two commits and the objects they need that you lack"
+        correct: true
+        explanation: "The want-and-have exchange finds exactly what is missing, so the transfer stays small however long the history is."
+
+  - question: "git branch -r shows origin/main and origin/photos. A teammate says the server also has a branch river-signs. How do you check without changing anything in your repository?"
+    answers:
+      - text: "Run git branch -r again"
+        explanation: "That list is your repository's memory of the last conversation with the server. It does not ask the server."
+      - text: "Run git ls-remote --heads origin"
+        correct: true
+        explanation: "It connects to the server and prints its branches as they are right now, and downloads nothing."
+      - text: "Run git fetch origin"
+        explanation: "A fetch would show the branch, but it also downloads commits and adds a new record to your repository."

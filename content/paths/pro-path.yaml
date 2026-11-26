@@ -10,3 +10,9 @@ modules:
   - id: undo-and-fix
     title: Undo and fix
     lessons: [undo-basics, fix-last-commit, revert-a-commit, reset-demystified]
+  - id: branching
+    title: Branching
+    lessons: [branches-are-pointers, switch-and-detached-head, branch-and-merge, branch-management, stash-and-clean]
+  - id: remotes
+    title: Remotes
+    lessons: [how-git-talks, remotes, remote-branches, refspecs, tags-and-releases]

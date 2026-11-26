@@ -1,0 +1,173 @@
+challenges:
+  - id: push-under-review-name
+    title: Push a branch under another name
+    level: easy
+    brief: "Your team reviews work under review/ on the server. Push your local branch feature to the server as review/feature. Do not create a branch called feature on the server."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Shop app" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - echo "console.log('shop is open')" > app.js
+      - git add app.js
+      - git commit -q -m "Add app"
+      - git init -q --bare -b main ../origin.git
+      - git remote add origin ../origin.git
+      - git push -q -u origin main
+      - git tag v1.0
+      - git push -q origin v1.0
+      - git switch -q -c qa/smoke
+      - echo "check the shop opens" > smoke-test.txt
+      - git add smoke-test.txt
+      - git commit -q -m "Add smoke test"
+      - git push -q origin qa/smoke
+      - git switch -q main
+      - git branch -q -D qa/smoke
+      - git switch -q -c feature
+      - echo "function search() {}" > search.js
+      - git add search.js
+      - git commit -q -m "Add search"
+      - git switch -q main
+    goal:
+      - check: remote-branch-exists
+        branch: origin/review/feature
+        label: "The server has review/feature (your record shows origin/review/feature)"
+      - check: branch-contains-commit
+        branch: origin/review/feature
+        message: Add search
+        label: "origin/review/feature holds your commit \"Add search\""
+      - check: remote-branch-is-missing
+        branch: origin/feature
+        label: "No branch called feature was created on the server"
+      - check: branch-exists
+        branch: feature
+        label: "Your local branch is still called feature"
+    hints:
+      - "A push refspec has two sides, source:destination. Which side is your branch, and which is the name on the server?"
+      - "The source is feature. The destination is review/feature. Put a colon between them after git push origin."
+      - "Run: git push origin feature:review/feature"
+    solution:
+      - git push -q origin feature:review/feature
+
+  - id: delete-old-idea
+    title: Delete a server branch with a refspec
+    level: medium
+    brief: "The branch old-idea on the server is dead. Delete it there with a refspec that has an empty source. Then answer: with the default fetch line, which ref in YOUR repository does the server's qa/smoke become? Write its full name (it starts with refs/) into answer.txt."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo answer.txt >> .git/info/exclude
+      - echo "# Shop app" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - echo "console.log('shop is open')" > app.js
+      - git add app.js
+      - git commit -q -m "Add app"
+      - git init -q --bare -b main ../origin.git
+      - git remote add origin ../origin.git
+      - git push -q -u origin main
+      - git switch -q -c qa/smoke
+      - echo "check the shop opens" > smoke-test.txt
+      - git add smoke-test.txt
+      - git commit -q -m "Add smoke test"
+      - git push -q origin qa/smoke
+      - git switch -q main
+      - git branch -q -D qa/smoke
+      - git switch -q -c old-idea
+      - echo "sell socks too?" > idea.txt
+      - git add idea.txt
+      - git commit -q -m "Try selling socks"
+      - git push -q origin old-idea
+      - git switch -q main
+      - git branch -q -D old-idea
+    goal:
+      - check: remote-branch-is-missing
+        branch: origin/old-idea
+        label: "old-idea is gone from the server (origin/old-idea is gone from your record)"
+      - check: remote-branch-exists
+        branch: origin/qa/smoke
+        label: "qa/smoke is still on the server"
+      - check: answer-is
+        answer: refs/remotes/origin/qa/smoke
+        label: "answer.txt holds the full name of the ref that follows the server's qa/smoke"
+    hints:
+      - "Pushing \"nothing\" to a name on the server deletes that name. What does a refspec look like when its source is empty?"
+      - "Run git push origin :old-idea. For the answer, read the fetch line in .git/config: refs/heads/* on the server becomes refs/remotes/origin/* here."
+      - "Run: git push origin :old-idea, then echo refs/remotes/origin/qa/smoke > answer.txt"
+    solution:
+      - git push -q origin :old-idea
+      - echo refs/remotes/origin/qa/smoke > answer.txt
+
+  - id: fetch-only-main-and-qa
+    title: Fetch only main and the qa branches
+    level: hard
+    brief: "The server is full of other people's branches, and you only care about main and everything under qa/. Change this repository's fetch settings so git fetch brings only those from now on. Then tidy your record: origin/feature and origin/old-idea must be gone, origin/main and origin/qa/smoke must stay."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Shop app" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - echo "console.log('shop is open')" > app.js
+      - git add app.js
+      - git commit -q -m "Add app"
+      - git init -q --bare -b main ../origin.git
+      - git remote add origin ../origin.git
+      - git push -q -u origin main
+      - git clone -q -c core.autocrlf=false ../origin.git ../teammate
+      - git -C ../teammate config core.autocrlf false
+      - git -C ../teammate config user.name "Tariq (teammate)"
+      - git -C ../teammate config user.email "tariq@example.com"
+      - git -C ../teammate switch -q -c qa/smoke
+      - echo "check the shop opens" > ../teammate/smoke-test.txt
+      - git -C ../teammate add smoke-test.txt
+      - git -C ../teammate commit -q -m "Add smoke test"
+      - git -C ../teammate push -q origin qa/smoke
+      - git -C ../teammate switch -q -c feature main
+      - echo "function search() {}" > ../teammate/search.js
+      - git -C ../teammate add search.js
+      - git -C ../teammate commit -q -m "Add search"
+      - git -C ../teammate push -q origin feature
+      - git -C ../teammate switch -q -c old-idea main
+      - echo "sell socks too?" > ../teammate/idea.txt
+      - git -C ../teammate add idea.txt
+      - git -C ../teammate commit -q -m "Try selling socks"
+      - git -C ../teammate push -q origin old-idea
+      - git fetch -q origin
+    goal:
+      - check: config-is
+        key: remote.origin.fetch
+        value: "+refs/heads/main:refs/remotes/origin/main"
+        label: "A fetch line maps the server's main to origin/main"
+      - check: config-is
+        key: remote.origin.fetch
+        value: "+refs/heads/qa/*:refs/remotes/origin/qa/*"
+        label: "A fetch line maps the server's qa/ branches to origin/qa/"
+      - check: remote-branch-is-missing
+        branch: origin/feature
+        label: "origin/feature is gone from your record"
+      - check: remote-branch-is-missing
+        branch: origin/old-idea
+        label: "origin/old-idea is gone from your record"
+      - check: remote-branch-exists
+        branch: origin/qa/smoke
+        label: "origin/qa/smoke is still there"
+      - check: remote-branch-exists
+        branch: origin/main
+        label: "origin/main is still there"
+    hints:
+      - "The Advanced layer shows two fetch lines for one remote. git config sets the first; git config --add adds the second. Put the values in quotes: they contain a star."
+      - "After changing the lines, git fetch --prune does not remove origin/feature: it no longer falls under any of your fetch lines, so fetch leaves it alone. Delete a remote-tracking branch yourself with git branch -dr."
+      - "Run: git config remote.origin.fetch \"+refs/heads/main:refs/remotes/origin/main\", then git config --add remote.origin.fetch \"+refs/heads/qa/*:refs/remotes/origin/qa/*\", then git branch -dr origin/feature origin/old-idea, then git fetch"
+    solution:
+      - git config remote.origin.fetch "+refs/heads/main:refs/remotes/origin/main"
+      - git config --add remote.origin.fetch "+refs/heads/qa/*:refs/remotes/origin/qa/*"
+      - git branch -q -dr origin/feature origin/old-idea
+      - git fetch -q origin

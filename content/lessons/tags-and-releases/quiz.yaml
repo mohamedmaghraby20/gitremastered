@@ -1,0 +1,40 @@
+questions:
+  - question: "You run git tag -a v1.0 -m \"Version 1.0\", make three more commits on main, and run git show v1.0. Which commit does it show?"
+    answers:
+      - text: "The newest commit on main, because the tag follows the branch"
+        explanation: "A branch moves with each commit. A tag is written once and stays on its commit."
+      - text: "The commit you were on when you created the tag"
+        correct: true
+        explanation: "A tag never moves. That is why it can mark a release: v1.0 still names the commit that was shipped."
+      - text: "Nothing, because a tag expires when its commit is no longer the newest"
+        explanation: "Tags do not expire. They stay until someone deletes them."
+
+  - question: "You tagged v2.0 and ran git push. Git said \"Everything up-to-date\", but a teammate cannot find v2.0 after git fetch. Why?"
+    answers:
+      - text: "The teammate has to run git pull, because fetch never brings tags"
+        explanation: "fetch does bring tags, when the server has them. Here the server never got the tag."
+      - text: "Annotated tags cannot be shared; only lightweight tags can"
+        explanation: "Both kinds can be pushed. Annotated tags are the ones meant for sharing."
+      - text: "Plain git push sends commits, not tags; the tag is still only on your computer"
+        correct: true
+        explanation: "Send it with git push origin v2.0, or use git push --follow-tags so annotated tags go out with your commits."
+
+  - question: "Your team is about to ship version 3.0, and people will ask later who released it and when. Which command do you use?"
+    answers:
+      - text: "git tag v3.0"
+        explanation: "That makes a lightweight tag: a name on a commit, with no tagger, date or message."
+      - text: "git tag -a v3.0 -m \"Version 3.0\""
+        correct: true
+        explanation: "An annotated tag stores the tagger, the date and a message in its own object, and git push --follow-tags will send it."
+      - text: "git branch v3.0"
+        explanation: "A branch moves when someone commits on it, so it cannot mark a fixed release."
+
+  - question: "You run git switch --detach v1.0 to look at the old release, fix a bug there and commit. What happens to the new commit?"
+    answers:
+      - text: "It belongs to no branch, and v1.0 does not move to it"
+        correct: true
+        explanation: "You were in detached HEAD. To keep such work, start a branch at the tag first: git switch -c hotfix-1.0 v1.0."
+      - text: "The tag v1.0 moves forward to the new commit"
+        explanation: "A tag never moves by itself, whatever you commit."
+      - text: "It is added to main, right after the tagged commit"
+        explanation: "You are not on main, so main does not change."

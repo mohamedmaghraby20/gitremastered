@@ -1,0 +1,40 @@
+questions:
+  - question: "report.md exists only on the branch draft. You are on draft and run git switch main. What happens to report.md in your folder?"
+    answers:
+      - text: "It stays in the folder, as an untracked file"
+        explanation: "A committed file belongs to its branch. Git removes it from the folder when you switch to a branch that does not have it."
+      - text: "It disappears from the folder and comes back when you switch to draft again"
+        correct: true
+        explanation: "A switch makes the working tree match the other branch's commit. The file is safe in draft's commit."
+      - text: "Git deletes it for good, so you should copy it somewhere first"
+        explanation: "Nothing committed is deleted by a switch. The file returns with git switch draft."
+
+  - question: "You edited styles.css and did not commit. styles.css is different on main and on the branch redesign. You run git switch redesign. What does Git do?"
+    answers:
+      - text: "It refuses, and leaves you on main with your edit untouched"
+        correct: true
+        explanation: "The switch would have to replace a file you changed, and Git never overwrites uncommitted work without being asked. Commit, discard or stash first."
+      - text: "It switches and merges your edit into redesign's version of the file"
+        explanation: "That only happens if you ask for it with git switch -m. By default Git stops."
+      - text: "It switches and throws your edit away"
+        explanation: "Git only does that with --discard-changes. Without it, your edit is protected."
+
+  - question: "You ran git switch --detach on an old commit to test something, made two commits there, and now want to return to main. What should you do first?"
+    answers:
+      - text: "Nothing special: the two commits will stay in git log on main"
+        explanation: "They were never on main. Once you leave, no branch points at them and they drop out of the history you see."
+      - text: "Run git switch -c test-fix, so a branch holds the two commits"
+        correct: true
+        explanation: "A new branch created here points at your newest commit, and a branch keeps its commits alive. Then switch to main."
+      - text: "Run git restore . to copy the commits to main"
+        explanation: "git restore works on files, not commits. It would only discard uncommitted edits."
+
+  - question: "git status starts with \"HEAD detached at 3f2a9c1\". You only wanted to look at that old version. How do you get back to normal?"
+    answers:
+      - text: "git switch - (or git switch main)"
+        correct: true
+        explanation: "Switching to a branch points HEAD at a branch again. You made no commits, so nothing is left behind."
+      - text: "Delete the .git folder and clone again, because the repository is damaged"
+        explanation: "Nothing is damaged. A detached HEAD only means HEAD points at a commit and not at a branch."
+      - text: "git switch -c main"
+        explanation: "main already exists, so -c fails with \"a branch named 'main' already exists\"."

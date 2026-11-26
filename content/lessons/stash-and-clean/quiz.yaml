@@ -1,0 +1,40 @@
+questions:
+  - question: "You edited app.js and created a new file, plan.txt. You run git stash, then git status. What do you see?"
+    answers:
+      - text: "A clean working tree: both files are on the shelf"
+        explanation: "A plain git stash takes changes to tracked files only. plan.txt is new, so Git does not track it yet and leaves it where it is."
+      - text: "plan.txt is still listed as untracked"
+        correct: true
+        explanation: "The edit to app.js went to the shelf; the untracked file stayed. git stash -u would have taken both."
+      - text: "Both files are still listed, because stash only makes a copy"
+        explanation: "Stash does not copy: it takes the changes out of your working tree and puts the tracked files back to the last commit."
+
+  - question: "You want the same half-done change on two branches, to try it in both places. Which command brings it back on the first branch?"
+    answers:
+      - text: "git stash pop"
+        explanation: "pop removes the entry from the shelf after applying it, so there would be nothing left for the second branch."
+      - text: "git stash apply"
+        correct: true
+        explanation: "apply puts the changes into your working tree and keeps the entry, so you can apply it again on the other branch and drop it afterwards."
+      - text: "git stash drop"
+        explanation: "drop deletes the entry without applying it. The work would be gone."
+
+  - question: "git stash pop stops with \"CONFLICT (content): Merge conflict in cart.js\". You fix the file and run git add cart.js. What is left to do?"
+    answers:
+      - text: "Nothing: pop already removed the entry"
+        explanation: "pop removes the entry only when everything applied cleanly. After a conflict Git prints \"The stash entry is kept in case you need it again\"."
+      - text: "Run git stash pop again to finish it"
+        explanation: "A second pop would try to apply the same changes on top of your fixed file. The work is already in your working tree."
+      - text: "Run git stash drop, because the entry is still on the shelf"
+        correct: true
+        explanation: "The entry stays after a conflict, as a safety copy. Once your files are right, you remove it yourself."
+
+  - question: "Your project folder holds scratch.txt (untracked) and a .env file with passwords that .gitignore covers. You run git clean -f -x. What happens?"
+    answers:
+      - text: "Only scratch.txt is deleted; ignored files are always safe"
+        explanation: "That is true without -x. The -x option tells git clean to delete ignored files as well."
+      - text: "Both files are deleted, and Git cannot bring them back"
+        correct: true
+        explanation: "-x includes ignored files, and neither file was ever committed, so Git has no copy. Run git clean -n -x first to see the list."
+      - text: "Both files move to the stash shelf"
+        explanation: "git clean deletes; it never stores anything. git stash --all is the command that shelves untracked and ignored files."

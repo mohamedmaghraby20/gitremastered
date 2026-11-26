@@ -1,0 +1,40 @@
+questions:
+  - question: "A remote's config holds `fetch = +refs/heads/*:refs/remotes/origin/*`. The server has a branch `qa/smoke`. After `git fetch`, where is it in your repository?"
+    answers:
+      - text: "refs/heads/qa/smoke, as a new local branch"
+        explanation: "refs/heads/ is the source side here, on the server. The destination of the line is refs/remotes/origin/, so no local branch is made."
+      - text: "refs/remotes/origin/qa/smoke, shown as origin/qa/smoke"
+        correct: true
+        explanation: "The star matched qa/smoke on the left, and the same text replaces the star on the right."
+      - text: "Nowhere: the star does not match names with a slash"
+        explanation: "In a refspec the star matches the rest of the name, slashes included. That is how branches under qa/ are fetched."
+
+  - question: "A teammate amended a commit on the server's `feature` branch and force-pushed it. You run plain `git fetch`. What happens to your `origin/feature`?"
+    answers:
+      - text: "It moves to the rewritten commit, marked as a forced update"
+        correct: true
+        explanation: "The default fetch line starts with +, which allows a move that is not a fast-forward. origin/feature is only your record of the server."
+      - text: "The fetch is rejected as non-fast-forward"
+        explanation: "That happens only for a refspec without the +. The default line has one."
+      - text: "It stays, and a second branch origin/feature-2 appears"
+        explanation: "Git never invents names. A refspec maps one source name to one destination name."
+
+  - question: "You run `git push origin :hotfix`. What does it do?"
+    answers:
+      - text: "Pushes your local hotfix branch to the server"
+        explanation: "That would be `git push origin hotfix`. Here the source, left of the colon, is empty."
+      - text: "Deletes your local hotfix branch"
+        explanation: "A push never changes your local branches. The only name in this refspec is the destination, on the server."
+      - text: "Deletes the branch hotfix on the server"
+        correct: true
+        explanation: "An empty source means \"nothing becomes hotfix\". It is the older spelling of `git push origin --delete hotfix`."
+
+  - question: "Your branch is called `login`, and the team wants work for review under `review/` on the server. Which command pushes it there?"
+    answers:
+      - text: "git push origin review/login"
+        explanation: "With one name, Git uses it for both sides, and you have no local branch called review/login. Git answers \"src refspec review/login does not match any\"."
+      - text: "git push origin login:review/login"
+        correct: true
+        explanation: "Source first (your branch), then the destination (the name on the server)."
+      - text: "git push origin review/login:login"
+        explanation: "The sides are swapped: this looks for a local branch review/login and would push it to login on the server."

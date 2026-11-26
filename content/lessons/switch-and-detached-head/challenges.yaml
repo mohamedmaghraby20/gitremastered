@@ -1,0 +1,119 @@
+challenges:
+  - id: login-on-its-own-branch
+    title: Give the login work its own branch
+    level: easy
+    brief: "You started writing login.js while on main, and it is not ready for main. Create a branch named login, switch to it, and commit login.js there. main must stay where it is."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Shop app" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - echo "console.log('shop is open')" > app.js
+      - git add app.js
+      - git commit -q -m "Add app"
+      - echo "function logIn() {}" > login.js
+    goal:
+      - check: head-is-on-branch
+        branch: login
+        label: "You are on the branch login"
+      - check: file-is-committed
+        file: login.js
+        label: "login.js is committed on login"
+      - check: branch-is-at-commit
+        branch: main
+        message: "Add app"
+        label: "main still ends at \"Add app\""
+    hints:
+      - "login.js is untracked, so it travels with you when you switch. Which option of git switch creates a branch?"
+      - "git switch -c login creates the branch and moves you onto it. Then stage and commit as usual."
+      - "Run: git switch -c login, then git add login.js, then git commit -m \"Add login\""
+    solution:
+      - git switch -q -c login
+      - git add login.js
+      - git commit -q -m "Add login"
+
+  - id: blocked-switch
+    title: Git refuses to switch
+    level: medium
+    brief: "You raised the tea price in prices.txt on main and have not committed it. A teammate needs you on the branch sale right now, but git switch sale is refused. Keep your change: commit it on main with the message \"Raise the tea price\", then switch to sale."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - printf 'tea 3\ncoffee 4\n' > prices.txt
+      - git add prices.txt
+      - git commit -q -m "Add price list"
+      - git switch -q -c sale
+      - printf 'tea 2\ncoffee 3\n' > prices.txt
+      - git commit -q -am "Lower prices for the sale"
+      - git switch -q main
+      - printf 'tea 4\ncoffee 4\n' > prices.txt
+    goal:
+      - check: branch-is-at-commit
+        branch: main
+        message: "Raise the tea price"
+        label: "main ends with your commit \"Raise the tea price\""
+      - check: head-is-on-branch
+        branch: sale
+        label: "You are on the branch sale"
+      - check: working-folder-clean
+        label: "git status shows nothing left to do"
+    hints:
+      - "Run git switch sale and read the error. Which file is in the way, and what does Git suggest?"
+      - "The change must stay on main, so commit it there first. After that, nothing blocks the switch."
+      - "Run: git commit -am \"Raise the tea price\", then git switch sale"
+    solution:
+      - git commit -q -am "Raise the tea price"
+      - git switch -q sale
+
+  - id: rescue-detached-commits
+    title: Two commits that no branch holds
+    level: hard
+    brief: "Yesterday you looked at an old commit, built a search feature there in two commits, and then switched back to main. The two commits are on no branch, and Git will delete them in time. Put a branch named rescue on the newest of them (\"Show search results\"), and stay on main."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Shop app" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - echo "console.log('shop is open')" > app.js
+      - git add app.js
+      - git commit -q -m "Add app"
+      - git switch -q --detach
+      - echo "function search() {}" > search.js
+      - git add search.js
+      - git commit -q -m "Add search box"
+      - echo "function showResults() {}" >> search.js
+      - git commit -q -am "Show search results"
+      - git switch -q main
+    goal:
+      - check: branch-exists
+        branch: rescue
+        label: "The branch rescue exists"
+      - check: branch-is-at-commit
+        branch: rescue
+        message: "Show search results"
+        label: "rescue points at \"Show search results\""
+      - check: branch-contains-commit
+        branch: rescue
+        message: "Add search box"
+        label: "rescue also holds \"Add search box\""
+      - check: head-is-on-branch
+        branch: main
+        label: "You are still on main"
+      - check: branch-lacks-commit
+        branch: main
+        message: "search"
+        label: "main has none of the search commits"
+    hints:
+      - "The commits still exist. In the picture they are the faded stations marked \"no branch\", each with its short ID."
+      - "git reflog (Advanced) lists where HEAD has been, with the ID of \"Show search results\". git branch <name> <id> puts a branch on a commit without moving you."
+      - "Run git reflog, copy the ID on the line \"commit: Show search results\", then run: git branch rescue <that-id>"
+    solution:
+      - git branch rescue "HEAD@{1}"
