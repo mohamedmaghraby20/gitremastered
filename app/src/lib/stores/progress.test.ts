@@ -12,6 +12,8 @@ import {
 	progress,
 	resetProgress,
 	saveChosenPath,
+	saveLessonTextSize,
+	saveMotionReduced,
 	saveLayerRead,
 	saveLessonOpened,
 	saveQuizResult,
@@ -30,7 +32,9 @@ describe('progress', () => {
 			isFilesDeskFolded: false,
 			lastOpenedLessonId: null,
 			furthestLayers: {},
-			chosenPathId: 'pro-path'
+			chosenPathId: 'pro-path',
+			lessonTextSize: null,
+			isMotionReduced: false
 		});
 	});
 
@@ -54,7 +58,9 @@ describe('progress', () => {
 			isFilesDeskFolded: false,
 			lastOpenedLessonId: null,
 			furthestLayers: {},
-			chosenPathId: 'pro-path'
+			chosenPathId: 'pro-path',
+			lessonTextSize: null,
+			isMotionReduced: false
 		});
 	});
 
@@ -100,18 +106,24 @@ describe('progress', () => {
 			isFilesDeskFolded: false,
 			lastOpenedLessonId: null,
 			furthestLayers: {},
-			chosenPathId: 'pro-path'
+			chosenPathId: 'pro-path',
+			lessonTextSize: null,
+			isMotionReduced: false
 		});
 	});
 
-	it('remembers the chosen path, and keeps it on reset like the theme', async () => {
+	it('remembers the chosen path, text size and reduce motion, and keeps them on reset like the theme', async () => {
 		const storage = createMemoryStorage();
 		await loadProgress(storage);
 
 		await saveChosenPath('book-path');
+		await saveLessonTextSize(20);
+		await saveMotionReduced(true);
 		await resetProgress();
 
 		const reloaded = await loadProgress(storage);
 		expect(reloaded.chosenPathId).toBe('book-path');
+		expect(reloaded.lessonTextSize).toBe(20);
+		expect(reloaded.isMotionReduced).toBe(true);
 	});
 });

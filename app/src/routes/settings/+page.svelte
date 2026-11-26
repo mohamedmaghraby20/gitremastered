@@ -1,14 +1,20 @@
 <!--
   +page.svelte (settings, "/settings")
-  Settings, as in the prototype: Appearance → Theme (light, dark or the computer's setting,
-  saved between sessions), Progress → reset, and Terminal → the installed Git version.
+  Settings, as in the prototype. Appearance: theme, lesson text size, reduce motion.
+  Terminal: the installed Git version. Progress: reset. About: version, credits and licenses.
+  Every setting applies at once and is saved between sessions.
+  (The shell choice, Git Bash or PowerShell, waits for phase 5: the lessons use bash.)
 -->
 <script lang="ts">
 	import { buildPageTitle } from '$lib/app-info/page-title';
 	import { applyTheme, readAppliedTheme, type ThemeChoice } from '$lib/theme/theme';
 	import { SegmentedSwitch, type SegmentedSwitchOption } from '$lib/components/ui/segmented-switch';
+	import SettingRow from '$lib/components/settings/SettingRow.svelte';
+	import LessonTextSizeRow from '$lib/components/settings/LessonTextSizeRow.svelte';
+	import ReduceMotionRow from '$lib/components/settings/ReduceMotionRow.svelte';
 	import GitVersionStatus from '$lib/components/settings/GitVersionStatus.svelte';
 	import ResetProgress from '$lib/components/settings/ResetProgress.svelte';
+	import AboutSection from '$lib/components/settings/AboutSection.svelte';
 	import { saveThemeChoice } from '$lib/stores/progress';
 
 	const themeOptions: SegmentedSwitchOption<ThemeChoice>[] = [
@@ -39,18 +45,21 @@
 
 	<section aria-labelledby="appearance-heading" class="rounded-medium border bg-surface">
 		<h2 id="appearance-heading" class="type-h3 m-0 border-b px-5 py-3.5">Appearance</h2>
-		<div class="flex flex-wrap items-center justify-between gap-3 px-5 py-4">
-			<div>
-				<div class="font-semibold">Theme</div>
-				<div class="type-small text-ink-muted">The terminal stays dark in every theme.</div>
-			</div>
+		<SettingRow name="Theme" explanation="The terminal stays dark in every theme.">
 			<SegmentedSwitch
 				groupLabel="Theme"
 				options={themeOptions}
 				value={chosenTheme}
 				onchange={chooseTheme}
 			/>
-		</div>
+		</SettingRow>
+		<LessonTextSizeRow />
+		<ReduceMotionRow />
+	</section>
+
+	<section aria-labelledby="terminal-heading" class="rounded-medium border bg-surface">
+		<h2 id="terminal-heading" class="type-h3 m-0 border-b px-5 py-3.5">Terminal</h2>
+		<GitVersionStatus />
 	</section>
 
 	<section aria-labelledby="progress-heading" class="rounded-medium border bg-surface">
@@ -58,8 +67,5 @@
 		<ResetProgress />
 	</section>
 
-	<section aria-labelledby="terminal-heading" class="rounded-medium border bg-surface">
-		<h2 id="terminal-heading" class="type-h3 m-0 border-b px-5 py-3.5">Terminal</h2>
-		<GitVersionStatus />
-	</section>
+	<AboutSection />
 </div>

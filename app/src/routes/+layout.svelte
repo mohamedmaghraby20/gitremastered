@@ -2,7 +2,7 @@
   +layout.svelte (root layout)
   Wraps every page in the app shell: the top bar across the top, the sidebar on the left,
   and the page itself on the right. Lesson pages fold the sidebar into the 64px icon rail.
-  It also loads the saved progress (and theme) when the app opens.
+  It also loads the saved progress (and theme, text size, reduce motion) when the app opens.
 -->
 <script lang="ts">
 	import '../app.css';
@@ -12,15 +12,20 @@
 	import Sidebar from '$lib/components/app-shell/Sidebar.svelte';
 	import { loadProgress } from '$lib/stores/progress';
 	import { applyTheme } from '$lib/theme/theme';
+	import { applyLessonTextSize, applyReducedMotion } from '$lib/settings/display-settings';
 
 	let { children }: { children: Snippet } = $props();
 
 	const currentPath = $derived(page.url.pathname);
 	const isLessonPage = $derived(currentPath.startsWith('/lessons/'));
 
-	// Loads saved progress once when the app opens, and applies the saved theme.
+	// Loads saved progress once when the app opens, and applies the saved display settings.
 	$effect(() => {
-		void loadProgress().then((savedProgress) => applyTheme(savedProgress.theme));
+		void loadProgress().then((savedProgress) => {
+			applyTheme(savedProgress.theme);
+			applyLessonTextSize(savedProgress.lessonTextSize);
+			applyReducedMotion(savedProgress.isMotionReduced);
+		});
 	});
 </script>
 

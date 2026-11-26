@@ -2,7 +2,7 @@
  * progress.ts
  * The one module that saves and loads the student's progress: finished missions, quiz
  * results, the last opened lesson and the furthest layer read in each, plus screen choices
- * (theme, terminal text size, folded files desk, chosen path). In the desktop app it uses the Tauri store
+ * (theme, terminal and lesson text size, reduce motion, folded files desk, chosen path). In the desktop app it uses the Tauri store
  * plugin (a small JSON file in the app's data folder); in a plain browser it keeps progress in
  * memory only.
  * Screens read the `progress` store and call the functions below; nothing else touches storage.
@@ -30,6 +30,8 @@ export type ProgressData = {
 	lastOpenedLessonId: string | null; // for "Pick up where you left off"; null before the first lesson
 	furthestLayers: Record<string, LessonLayerId>; // by lesson ID, the deepest layer opened
 	chosenPathId: CoursePathId; // the path picked on home and the course map
+	lessonTextSize: number | null; // pixels, from Settings; null = the design's size
+	isMotionReduced: boolean; // the app's own "Reduce motion" switch in Settings
 };
 
 /** The few storage actions this module needs (the Tauri store has them; tests pass a fake). */
@@ -54,7 +56,9 @@ export const emptyProgress: ProgressData = {
 	isFilesDeskFolded: false,
 	lastOpenedLessonId: null,
 	furthestLayers: {},
-	chosenPathId: 'pro-path'
+	chosenPathId: 'pro-path',
+	lessonTextSize: null,
+	isMotionReduced: false
 };
 
 const progressStore = writable<ProgressData>(emptyProgress);
@@ -124,6 +128,22 @@ export async function saveFilesDeskFolded(isFolded: boolean): Promise<void> {
 }
 
 /**
+ * Remembers the lesson text size from Settings.
+ * @param textSize - the size in pixels, or null for the design's size
+ */
+export async function saveLessonTextSize(textSize: number | null): Promise<void> {
+	await saveProgress({ ...get(progressStore), lessonTextSize: textSize });
+}
+
+/**
+ * Remembers the app's own "Reduce motion" switch.
+ * @param isReduced - true when the student turned motion off
+ */
+export async function saveMotionReduced(isReduced: boolean): Promise<void> {
+	await saveProgress({ ...get(progressStore), isMotionReduced: isReduced });
+}
+
+/**
  * Remembers which path the student follows.
  * @param pathId - "pro-path" or "book-path"
  */
@@ -167,7 +187,9 @@ export async function resetProgress(): Promise<void> {
 		theme: current.theme,
 		terminalFontSize: current.terminalFontSize,
 		isFilesDeskFolded: current.isFilesDeskFolded,
-		chosenPathId: current.chosenPathId
+		chosenPathId: current.chosenPathId,
+		lessonTextSize: current.lessonTextSize,
+		isMotionReduced: current.isMotionReduced
 	});
 }
 

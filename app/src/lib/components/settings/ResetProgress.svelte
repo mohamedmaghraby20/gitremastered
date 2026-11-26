@@ -22,7 +22,7 @@
 	<div>
 		<div class="font-semibold">Reset progress</div>
 		<div class="type-small text-ink-muted">
-			Forgets finished missions and quiz results. Your theme stays.
+			Forgets finished missions, quiz results and where you are in each lesson. Your settings stay.
 		</div>
 	</div>
 	{#if isConfirming}

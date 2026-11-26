@@ -19,6 +19,26 @@
 @custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
 
 /**
+ * Tailwind's motion-reduce: variant follows the computer's setting and also the app's own
+ * "Reduce motion" switch in Settings (data-motion="reduced" on <html>, display-settings.ts).
+ */
+@custom-variant motion-reduce {
+	@media (prefers-reduced-motion: reduce) {
+		@slot;
+	}
+	&:where([data-motion='reduced'], [data-motion='reduced'] *) {
+		@slot;
+	}
+}
+
+/* The app's "Reduce motion" switch does what tokens.css does for the computer's setting. */
+:root[data-motion='reduced'] {
+	--duration-fast: 0ms;
+	--duration-base: 0ms;
+	--duration-visual: 0ms;
+}
+
+/**
  * Layer 2: shadcn-svelte's names, pointed at our tokens.
  * Same in both themes, because our tokens already switch with the theme.
  */

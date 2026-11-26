@@ -28,6 +28,7 @@
 		type TextSizeShortcut
 	} from './terminal-keys';
 	import { CommandLineTracker } from '$lib/visualizer/command-line-tracker';
+	import { isMotionReduced } from '$lib/settings/display-settings';
 
 	let {
 		practiceFolderPath,
@@ -54,12 +55,11 @@
 	 */
 	function createTerminal(fontSize: number): Terminal {
 		const readToken = readTokensFrom(screenElement);
-		const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 		return new Terminal({
 			theme: buildTerminalTheme(readToken),
 			...buildTerminalFont(readToken),
 			fontSize,
-			cursorBlink: !prefersReducedMotion,
+			cursorBlink: !isMotionReduced(),
 			cursorStyle: 'block',
 			scrollback: 2000
 		});

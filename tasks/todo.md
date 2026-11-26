@@ -584,7 +584,7 @@ Ctrl K from any screen opens a **quick search panel** over the current screen, l
 **Description:** Theme Light / Dark / System (switch), lesson text size, reduce motion (also on when the system asks for it), Git found on this computer (with version), reset progress (exists), About (version, Pro Git credit and licenses). The shell choice (Git Bash / PowerShell) waits for phase 5: lessons use bash.
 
 **Acceptance criteria:**
-- [ ] Every setting applies at once and survives a restart
+- [x] Every setting applies at once and survives a restart
 
 **Verification:** component tests · **Files:** `routes/settings/`, `components/settings/` · **Scope:** M
 
