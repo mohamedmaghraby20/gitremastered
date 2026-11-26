@@ -9,7 +9,7 @@
 
 use crate::github::connection::{read_connection, require_login};
 use crate::github::practice_repo::{PracticeRepo, is_practice_name};
-use crate::github::repo_writes::{call_api, delete_repository};
+use crate::github::repo_writes::{delete_repository, read_api};
 use crate::github::state::read_state;
 use crate::models::github::{GitHubConnection, GitHubState};
 
@@ -68,7 +68,7 @@ pub async fn delete_practice_repositories(has_consent: bool) -> Result<Vec<Strin
 ///
 /// Inputs: none. Output: the names, sorted.
 fn list_practice_names() -> Result<Vec<String>, String> {
-    let listing = call_api("GET", "user/repos?affiliation=owner&per_page=100", None)?;
+    let listing = read_api("user/repos?affiliation=owner&per_page=100")?;
     let mut names: Vec<String> = listing
         .as_array()
         .cloned()

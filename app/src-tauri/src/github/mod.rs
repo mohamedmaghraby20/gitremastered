@@ -15,6 +15,7 @@
 //! - `teammate`: scripted teammate steps.
 //! - `challenge_setup`: the steps around a GitHub challenge's setup.
 //! - `state`: reads a practice repository for the goal checks.
+//! - `url_text`: puts names safely into API addresses.
 
 pub mod challenge_setup;
 pub mod connection;
@@ -23,3 +24,4 @@ pub mod practice_repo;
 pub mod repo_writes;
 pub mod state;
 pub mod teammate;
+pub mod url_text;

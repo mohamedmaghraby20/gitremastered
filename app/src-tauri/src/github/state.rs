@@ -9,7 +9,8 @@ use crate::models::github::{GitHubState, Issue, PullRequest, Release, WorkflowRu
 
 use super::gh_command::run_gh;
 use super::practice_repo::PracticeRepo;
-use super::repo_writes::call_api;
+use super::repo_writes::read_api;
+use super::url_text::encode_for_url;
 
 /// The GraphQL query: everything except rules and workflow runs, in one round trip.
 const STATE_QUERY: &str = "query($owner: String!, $name: String!) {
@@ -39,9 +40,9 @@ pub fn read_state(repo: &PracticeRepo) -> Result<GitHubState, String> {
             "graphql",
             "-f",
             &query_argument,
-            "-F",
+            "-f",
             &owner_argument,
-            "-F",
+            "-f",
             &name_argument,
         ],
         None,
@@ -51,13 +52,14 @@ pub fn read_state(repo: &PracticeRepo) -> Result<GitHubState, String> {
         .map_err(|error| format!("GitHub sent unreadable data ({error})"))?;
     let mut state = parse_repository(&full_name, &response["data"]["repository"]);
     if !state.default_branch.is_empty() {
-        let rules_path = format!("repos/{full_name}/rules/branches/{}", state.default_branch);
-        state.default_branch_rules = call_api("GET", &rules_path, None)
+        let branch = encode_for_url(&state.default_branch, true);
+        let rules_path = format!("repos/{full_name}/rules/branches/{branch}");
+        state.default_branch_rules = read_api(&rules_path)
             .map(|rules| parse_rule_types(&rules))
             .unwrap_or_default();
     }
     let runs_path = format!("repos/{full_name}/actions/runs?per_page=20");
-    state.workflow_runs = call_api("GET", &runs_path, None)
+    state.workflow_runs = read_api(&runs_path)
         .map(|runs| parse_workflow_runs(&runs))
         .unwrap_or_default();
     Ok(state)

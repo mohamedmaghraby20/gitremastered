@@ -7,6 +7,7 @@ use serde_json::json;
 
 use super::practice_repo::PracticeRepo;
 use super::repo_writes::call_api;
+use super::url_text::encode_for_url;
 
 /// One step a teammate takes on the practice repository.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -92,11 +93,17 @@ fn run_one_step(repo: &PracticeRepo, step: &TeammateStep) -> Result<(), String> 
 fn find_open_pull_request(repo: &PracticeRepo, head: &str) -> Result<u64, String> {
     let full_name = repo.full_name();
     let owner = full_name.split('/').next().unwrap_or_default();
-    let listing_path = format!("repos/{full_name}/pulls?state=open&head={owner}:{head}");
+    let head_filter = encode_for_url(&format!("{owner}:{head}"), false);
+    let listing_path = format!("repos/{full_name}/pulls?state=open&head={head_filter}");
     let listing = call_api("GET", &listing_path, None)?;
+    // Only a pull request whose branch really is `head` counts, never just the first one.
     listing
         .as_array()
-        .and_then(|pulls| pulls.first())
+        .and_then(|pulls| {
+            pulls
+                .iter()
+                .find(|pull| pull["head"]["ref"].as_str() == Some(head))
+        })
         .and_then(|pull| pull["number"].as_u64())
         .ok_or_else(|| format!("There is no open pull request for the branch {head}"))
 }

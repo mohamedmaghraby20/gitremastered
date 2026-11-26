@@ -16,16 +16,87 @@ use super::practice_repo::PracticeRepo;
 /// What the app writes in the description of each practice repository it creates.
 const REPO_DESCRIPTION: &str = "Practice repository made by the GitRemastered app. Safe to delete.";
 
-/// Creates the practice repository (public, empty) unless it is there already.
+/// What GitHub says about a practice repository's name.
+#[derive(Debug, PartialEq, Eq)]
+enum Lookup {
+    /// No repository has this name.
+    Missing,
+    /// The name answers with a repository the app made: same name, the app's description.
+    MadeByApp,
+    /// The name redirects to a repository with another name or owner: the practice repository
+    /// was renamed or transferred. Writing through the old name would reach that repository.
+    Redirected,
+    /// A repository with exactly this name exists, but the app did not make it.
+    NotMadeByApp,
+}
+
+/// Looks a practice repository's name up on GitHub and says what it reaches (security audit
+/// H1: GitHub redirects an old name after a rename or transfer, even for writes and pushes).
+///
+/// Input: the practice repository. Output: what the name reaches, or an error.
+fn look_up(repo: &PracticeRepo) -> Result<Lookup, String> {
+    let lookup_path = format!("repos/{}", repo.full_name());
+    let answer = match run_gh(&["api", &lookup_path], None) {
+        Ok(answer) => answer,
+        Err(GhError::Failed(message))
+            if message.contains("404") || message.contains("Not Found") =>
+        {
+            return Ok(Lookup::Missing);
+        }
+        Err(error) => return Err(error.to_string()),
+    };
+    let found: Value = serde_json::from_str(&answer)
+        .map_err(|error| format!("GitHub sent unreadable data ({error})"))?;
+    Ok(classify_lookup(&found, &repo.full_name()))
+}
+
+/// Decides what a looked-up repository is, from GitHub's answer.
+///
+/// Inputs: the answer's JSON and the name that was asked for. Output: the kind of answer.
+fn classify_lookup(found: &Value, asked_full_name: &str) -> Lookup {
+    let found_full_name = found["full_name"].as_str().unwrap_or_default();
+    if !found_full_name.eq_ignore_ascii_case(asked_full_name) {
+        return Lookup::Redirected;
+    }
+    let is_fork = found["fork"].as_bool().unwrap_or(false);
+    let has_app_description = found["description"].as_str() == Some(REPO_DESCRIPTION);
+    if is_fork || !has_app_description {
+        return Lookup::NotMadeByApp;
+    }
+    Lookup::MadeByApp
+}
+
+/// Refuses to go on unless the name reaches a repository the app made.
+///
+/// Input: the practice repository. Output: nothing, or a sentence saying why not.
+fn require_made_by_app(repo: &PracticeRepo) -> Result<(), String> {
+    match look_up(repo)? {
+        Lookup::MadeByApp => Ok(()),
+        Lookup::Missing => Err(format!("{} does not exist on GitHub", repo.full_name())),
+        Lookup::Redirected | Lookup::NotMadeByApp => Err(not_ours_message(repo)),
+    }
+}
+
+/// The sentence shown when a name does not reach one of the app's own repositories.
+///
+/// Input: the practice repository. Output: the sentence.
+fn not_ours_message(repo: &PracticeRepo) -> String {
+    format!(
+        "{} is not a repository the app made (it was renamed, moved, or made by hand), so the app will not change it",
+        repo.full_name()
+    )
+}
+
+/// Creates the practice repository (public, empty) unless the app's own one is there already.
+/// A renamed or moved practice repository leaves a redirect behind; creating a new repository
+/// under the old name ends that redirect, so writes never reach the moved one.
 ///
 /// Input: the practice repository. Output: true when it was created now, or an error.
 pub fn create_if_missing(repo: &PracticeRepo) -> Result<bool, String> {
-    let lookup_path = format!("repos/{}", repo.full_name());
-    match run_gh(&["api", &lookup_path], None) {
-        Ok(_) => return Ok(false),
-        Err(GhError::Failed(message))
-            if message.contains("404") || message.contains("Not Found") => {}
-        Err(error) => return Err(error.to_string()),
+    match look_up(repo)? {
+        Lookup::MadeByApp => return Ok(false),
+        Lookup::NotMadeByApp => return Err(not_ours_message(repo)),
+        Lookup::Missing | Lookup::Redirected => {}
     }
     let body = json!({
         "name": repo.name(),
@@ -42,6 +113,7 @@ pub fn create_if_missing(repo: &PracticeRepo) -> Result<bool, String> {
 ///
 /// Input: the practice repository. Output: nothing, or the first error.
 pub fn reset_to_clean(repo: &PracticeRepo) -> Result<(), String> {
+    require_made_by_app(repo)?;
     let full_name = repo.full_name();
     for number in list_numbers(
         &format!("repos/{full_name}/pulls?state=open&per_page=100"),
@@ -100,6 +172,7 @@ pub fn reset_to_clean(repo: &PracticeRepo) -> Result<(), String> {
 ///
 /// Input: the practice repository. Output: nothing, or an error.
 pub fn use_main_as_default(repo: &PracticeRepo) -> Result<(), String> {
+    require_made_by_app(repo)?;
     let body = json!({ "default_branch": "main" });
     call_api("PATCH", &format!("repos/{}", repo.full_name()), Some(&body)).map(|_| ())
 }
@@ -111,14 +184,28 @@ pub fn delete_repository(repo: &PracticeRepo, has_consent: bool) -> Result<(), S
     if !has_consent {
         return Err("Deleting needs your consent first".to_string());
     }
+    require_made_by_app(repo)?;
     call_api("DELETE", &format!("repos/{}", repo.full_name()), None).map(|_| ())
 }
 
+/// Reads from the GitHub API (GET only). The only API access outside this module, so no
+/// other code can write to GitHub (security audit, hardening 1).
+///
+/// Input: the API path. Output: the response's JSON, or a readable error.
+pub fn read_api(api_path: &str) -> Result<Value, String> {
+    call_api("GET", api_path, None)
+}
+
 /// Calls the GitHub API through `gh api`, sending the body (if any) on standard input.
+/// Only this module and the teammate steps (which build paths from a `PracticeRepo`) use it.
 ///
 /// Inputs: the HTTP method, the API path and the JSON body. Output: the response's JSON
 /// (`Null` when there is no body), or a readable error.
-pub fn call_api(method: &str, api_path: &str, body: Option<&Value>) -> Result<Value, String> {
+pub(super) fn call_api(
+    method: &str,
+    api_path: &str,
+    body: Option<&Value>,
+) -> Result<Value, String> {
     let body_text = body.map(Value::to_string);
     let mut arguments = vec!["api", "-X", method, api_path];
     if body_text.is_some() {
