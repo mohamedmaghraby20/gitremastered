@@ -366,3 +366,28 @@ fn worktrees_and_submodules_are_listed() {
     assert_eq!(snapshot.submodules[0].path, "vendor/library");
     assert!(snapshot.submodules[0].is_initialized);
 }
+
+/// With line-end conversion, the committed text comes from Git, not from the disk: after a
+/// renormalize, the commit holds LF while the file on disk still has CRLF.
+#[test]
+fn committed_texts_follow_git_when_line_ends_are_converted() {
+    let (_temporary, folder) = practice_repo(&[
+        "git config core.autocrlf false",
+        "printf 'Tea\r\nCoffee\r\n' > menu.txt",
+        "git add menu.txt",
+        "git commit -q -m 'Add menu'",
+        "echo '* text=auto' > .gitattributes",
+        "git add .gitattributes",
+        "git add --renormalize .",
+        "git commit -q -m 'Normalize line ends'",
+    ]);
+
+    let snapshot = read_snapshot(&folder).expect("snapshot");
+
+    let committed_menu = snapshot
+        .committed_file_texts
+        .iter()
+        .find(|file| file.path == "menu.txt")
+        .expect("menu.txt in the commit");
+    assert_eq!(committed_menu.text, "Tea\nCoffee\n");
+}

@@ -3,9 +3,14 @@
 //! Most files have no pending change, so their committed text is the same as the text on
 //! disk, which is already read. Git is started only for the few files that changed, and then
 //! once for all of them (`git cat-file --batch`), so a snapshot stays fast.
+//!
+//! One exception: when Git converts line ends (a `.gitattributes` file, or `core.autocrlf`
+//! on), the disk and the commit can differ without a pending change, so every committed text
+//! is then read from Git.
 
 use std::collections::HashSet;
 use std::io::Write;
+use std::path::Path;
 use std::process::Stdio;
 
 use crate::git_runner::hidden_command::hidden_command;
@@ -25,14 +30,16 @@ pub fn read_committed_texts(
     working_texts: &[FileText],
     changed_paths: &HashSet<String>,
 ) -> Vec<FileText> {
+    let may_convert = may_convert_line_ends(folder.path());
+    let needs_git = |path: &String| may_convert || changed_paths.contains(path);
     let changed_committed: Vec<&String> = committed_files
         .iter()
-        .filter(|path| changed_paths.contains(*path))
+        .filter(|path| needs_git(path))
         .collect();
     let mut texts: Vec<FileText> = working_texts
         .iter()
         .filter(|file_text| committed_files.contains(&file_text.path))
-        .filter(|file_text| !changed_paths.contains(&file_text.path))
+        .filter(|file_text| !needs_git(&file_text.path))
         .cloned()
         .collect();
     if !changed_committed.is_empty() {
@@ -41,6 +48,28 @@ pub fn read_committed_texts(
     texts.sort_by(|first, second| first.path.cmp(&second.path));
     texts.truncate(MOST_TEXT_FILES);
     texts
+}
+
+/// Tells whether Git may convert line ends in this repository, so a file on disk can differ
+/// from the commit with nothing pending: a `.gitattributes` file at the top, or a local
+/// `core.autocrlf` other than `false` in `.git/config`. (A global setting is not looked at:
+/// practice setups set `core.autocrlf false` locally.)
+///
+/// Input: the repository's top folder. Output: true when the disk cannot be trusted.
+fn may_convert_line_ends(repo_folder: &Path) -> bool {
+    if repo_folder.join(".gitattributes").is_file() {
+        return true;
+    }
+    let config_text =
+        std::fs::read_to_string(repo_folder.join(".git").join("config")).unwrap_or_default();
+    config_text.lines().map(str::trim).any(|line| {
+        let compact: String = line
+            .chars()
+            .filter(|character| !character.is_whitespace())
+            .collect();
+        let lower = compact.to_lowercase();
+        lower.starts_with("autocrlf=") && lower != "autocrlf=false"
+    })
 }
 
 /// Reads files from the latest commit with one `git cat-file --batch`.
