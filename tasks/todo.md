@@ -508,8 +508,8 @@ Goal: home, course map (both paths), search, command index and settings work for
 **Description:** The outlined group with a 3px bottom edge from DESIGN.md (selected option filled `primary`), as a real radio group with arrow keys. Used by the course map (Pro / Book), home, settings (theme) and the small-window lesson (Visualizer / Terminal).
 
 **Acceptance criteria:**
-- [ ] Keyboard: arrows move and select, Tab leaves the group; focus ring on the selected option
-- [ ] Tokens only; shown in the dev gallery in both themes
+- [x] Keyboard: arrows move and select, Tab leaves the group; focus ring on the selected option
+- [x] Tokens only; shown in the dev gallery in both themes
 
 **Verification:** component test (click, arrows, `aria-checked`) · **Files:** `components/ui/segmented-switch/` · **Scope:** S
 

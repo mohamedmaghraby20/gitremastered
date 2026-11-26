@@ -120,7 +120,7 @@ Full details for each task (acceptance criteria, verification, files) are in `ta
 - [ ] You review phases 2 and 3 together and take the pilot yourself
 
 ### Phase 4: The other screens
-- [ ] Task 30: A segmented switch component
+- [x] Task 30: A segmented switch component
 - [ ] Task 31: The Book path file and lesson facts
 - [ ] Task 32: Remember where the student is
 - [ ] Task 33: Home screen
