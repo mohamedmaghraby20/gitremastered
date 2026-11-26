@@ -1,0 +1,40 @@
+questions:
+  - question: "Your last commit has the ID 78dda6e. You run git commit --amend -m \"Better message\". What is true afterwards?"
+    answers:
+      - text: "Commit 78dda6e now has the new message"
+        explanation: "Git never changes a commit. The message is part of what the ID is computed from, so a new message means a new commit."
+      - text: "A new commit with a new ID took its place on the branch"
+        correct: true
+        explanation: "Amend writes a new commit with the same parent and moves the branch to it. 78dda6e still exists, but no branch leads to it."
+      - text: "The history has one more commit than before"
+        explanation: "The new commit replaces the old one on the branch, so the count stays the same."
+
+  - question: "You pushed a commit an hour ago, and a teammate has already built on it. Now you notice a typo in its message. What do you do?"
+    answers:
+      - text: "Amend it; a message change is harmless"
+        explanation: "Even a message change makes a new commit with a new ID. Your history would no longer match the server's and your teammate's."
+      - text: "Amend it, then push again so everyone gets the fix"
+        explanation: "Git refuses that push, because the server has a commit your branch no longer contains. Forcing it would break your teammate's work."
+      - text: "Leave the commit alone; fix real problems with a new commit"
+        correct: true
+        explanation: "Only amend commits that only you have. A typo in a pushed message is not worth breaking the shared history."
+
+  - question: "You run git add styles.css and then git commit --amend --no-edit. What does --no-edit do here?"
+    answers:
+      - text: "It keeps the old commit message, so no editor opens"
+        correct: true
+        explanation: "The new commit gets styles.css added and reuses the message as it was."
+      - text: "It keeps the old commit ID"
+        explanation: "The content changed, so the ID changes. No option can keep it."
+      - text: "It stops the amend from changing any file in the commit"
+        explanation: "The staged styles.css still goes into the new commit. --no-edit is only about the message."
+
+  - question: "You forgot a file, ran git commit --amend --no-edit, and git status still lists the file as untracked. Why?"
+    answers:
+      - text: "Amend cannot add new files, only change the message"
+        explanation: "Amend can add files. It builds the new commit from the staging area."
+      - text: "The file was never staged, so the amend had nothing new to take"
+        correct: true
+        explanation: "Run git add on the file first, then amend again."
+      - text: "The commit is locked after the first amend"
+        explanation: "You can amend the last commit as often as you like, as long as it has not been pushed."

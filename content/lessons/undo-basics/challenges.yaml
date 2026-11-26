@@ -1,0 +1,103 @@
+challenges:
+  - id: discard-debug-line
+    title: Throw away a debugging edit
+    level: easy
+    brief: "While hunting a bug you added a debug line to app.js, and you also improved README.md. The debug line must go. Put app.js back as it was in the last commit, keep your README.md edit, and do not commit anything."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Shop app" > README.md
+      - echo "console.log('shop is open')" > app.js
+      - git add README.md app.js
+      - git commit -q -m "Add README and app"
+      - 'echo "console.log(''DEBUG: cart ='', cart)" >> app.js'
+      - echo "Run npm start to open the shop." >> README.md
+    goal:
+      - check: file-is-committed
+        file: app.js
+        label: "app.js matches the last commit again"
+      - check: file-is-modified
+        file: README.md
+        label: "README.md still has your edit, not staged"
+      - check: commit-count-is
+        count: 1
+        label: "No new commit was made"
+    hints:
+      - "Run git status. Both files are under \"Changes not staged for commit\". Read the second hint line Git prints there."
+      - "git restore with a file name discards the edits to that one file. Name only the file you want back."
+      - "Run: git restore app.js"
+    solution:
+      - git restore app.js
+
+  - id: unstage-unfinished
+    title: One file was staged too early
+    level: medium
+    brief: "You ran git add . and both files went in. login.js is ready, but styles.css is half done. Commit login.js alone. Your work on styles.css must stay in the file, out of the commit."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Shop app" > README.md
+      - 'echo "body { margin: 0; }" > styles.css'
+      - git add README.md styles.css
+      - git commit -q -m "Add README and styles"
+      - echo "function logIn() {}" > login.js
+      - 'echo ".button { color: red; /* TODO pick a color */ }" >> styles.css'
+      - git add .
+    goal:
+      - check: file-is-committed
+        file: login.js
+        label: "login.js is saved in a new commit"
+      - check: file-is-modified
+        file: styles.css
+        label: "styles.css still has your edit, not staged and not committed"
+      - check: commit-count-is
+        count: 2
+        label: "The history has exactly one new commit"
+    hints:
+      - "Run git status. Both files are under \"Changes to be committed\". Which one must leave that list?"
+      - "git restore --staged takes a file out of the staging area and keeps your edits. Do not run git restore without --staged here: that would throw the edits away."
+      - "Run: git restore --staged styles.css, then git commit -m \"Add login\""
+    solution:
+      - git restore --staged styles.css
+      - git commit -q -m "Add login"
+
+  - id: rescue-two-files
+    title: Two files vanished before the commit
+    level: hard
+    brief: "A cleanup went wrong. report.md is new: you staged it, then deleted it from the folder by mistake. And git rm LICENSE was run, though the license must stay. Bring both files back, then commit report.md. LICENSE must still be in the project after your commit."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Sales reports" > README.md
+      - echo "MIT License" > LICENSE
+      - git add README.md LICENSE
+      - git commit -q -m "Add README and license"
+      - echo "# Q3 report" > report.md
+      - git add report.md
+      - rm report.md
+      - git rm -q LICENSE
+    goal:
+      - check: file-is-committed
+        file: report.md
+        label: "report.md is back and saved in a new commit"
+      - check: file-is-committed
+        file: LICENSE
+        label: "LICENSE is back in the folder and still in the latest commit"
+      - check: commit-count-is
+        count: 2
+        label: "The history has exactly one new commit"
+    hints:
+      - "Run git status -s. report.md shows AD: staged as new, deleted in the working tree. LICENSE shows D in the left column: its deletion is staged. The two files need different fixes (see Under the hood)."
+      - "Plain git restore copies a file from the staging area into the working tree, and report.md is still in the staging area. For LICENSE the staging area no longer has the file, so unstage the deletion first. Do not unstage report.md: it was never committed, so its only copy is the staged one."
+      - "Run: git restore report.md, then git restore --staged LICENSE, then git restore LICENSE, then git commit -m \"Add Q3 report\""
+    solution:
+      - git restore report.md
+      - git restore --staged LICENSE
+      - git restore LICENSE
+      - git commit -q -m "Add Q3 report"

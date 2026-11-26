@@ -1,0 +1,120 @@
+challenges:
+  - id: first-repository
+    title: Put your recipes under Git
+    level: easy
+    brief: "This folder holds your recipe notes, and Git does not know it yet. Turn it into a repository whose first branch is named main, then commit README.md and pancakes.txt."
+    setup:
+      - echo "# Recipes" > README.md
+      - 'echo "Pancakes: flour, milk, eggs" > pancakes.txt'
+      # The team's repository beside the project, for the lesson's clone Try-it.
+      - git init -q -b main ../seed
+      - git -C ../seed config core.autocrlf false
+      - git -C ../seed config user.name "Mona (teammate)"
+      - git -C ../seed config user.email "mona@example.com"
+      - echo "# Team recipes" > ../seed/README.md
+      - git -C ../seed add README.md
+      - git -C ../seed commit -q -m "Add README"
+      - 'echo "Lentil soup: lentils, onion, cumin" > ../seed/soup.txt'
+      - git -C ../seed add soup.txt
+      - git -C ../seed commit -q -m "Add lentil soup"
+      - 'echo "Flatbread: flour, water, salt" > ../seed/bread.txt'
+      - git -C ../seed add bread.txt
+      - git -C ../seed commit -q -m "Add flatbread"
+      - git clone -q --bare ../seed ../recipes.git
+      - rm -rf ../seed
+    goal:
+      - check: head-is-on-branch
+        branch: main
+        label: "This folder is a repository on a branch named main"
+      - check: file-is-committed
+        file: README.md
+        label: "README.md is in a commit"
+      - check: file-is-committed
+        file: pancakes.txt
+        label: "pancakes.txt is in a commit"
+    hints:
+      - "Run git status first. What does Git say about this folder? Which command creates a repository in the folder you are in?"
+      - "git init -b main creates the repository and names its first branch. If you already ran a plain git init and the prompt says (master), git branch -m main renames the branch."
+      - "Run: git init -b main, then git add README.md pancakes.txt, then git commit -m \"Start the recipes project\". If Git asks who you are, set your name and email first (the lesson \"Install, configure and get help\")."
+    solution:
+      - git init -q -b main
+      - git add README.md pancakes.txt
+      - git commit -q -m "Start the recipes project"
+
+  - id: clone-team-recipes
+    title: Join the team's project
+    level: medium
+    brief: "Your team keeps its recipes in a repository at ../recipes.git. Clone it so that this folder itself becomes the repository, with all three of the team's commits."
+    setup:
+      - git init -q -b main ../seed
+      - git -C ../seed config core.autocrlf false
+      - git -C ../seed config user.name "Mona (teammate)"
+      - git -C ../seed config user.email "mona@example.com"
+      - echo "# Team recipes" > ../seed/README.md
+      - git -C ../seed add README.md
+      - git -C ../seed commit -q -m "Add README"
+      - 'echo "Lentil soup: lentils, onion, cumin" > ../seed/soup.txt'
+      - git -C ../seed add soup.txt
+      - git -C ../seed commit -q -m "Add lentil soup"
+      - 'echo "Flatbread: flour, water, salt" > ../seed/bread.txt'
+      - git -C ../seed add bread.txt
+      - git -C ../seed commit -q -m "Add flatbread"
+      - git clone -q --bare ../seed ../recipes.git
+      - rm -rf ../seed
+    goal:
+      - check: remote-exists
+        remote: origin
+        label: "This folder is a clone that remembers its source as origin"
+      - check: commit-count-at-least
+        count: 3
+        label: "The team's three commits are here"
+      - check: branch-tracks
+        branch: main
+        upstream: origin/main
+        label: "Your main follows origin/main"
+    hints:
+      - "git clone needs the address. Where will a plain git clone ../recipes.git put the files: in this folder, or in a new folder inside it?"
+      - "A second word after the address names the destination. A single dot means the folder you are in, and it works because this folder is empty."
+      - "Run: git clone ../recipes.git . (with the dot at the end). If you already cloned into a subfolder, remove it first with rm -rf recipes."
+    solution:
+      - git clone -q ../recipes.git .
+
+  - id: clone-release-branch
+    title: Start on the release branch
+    level: hard
+    brief: "The shop team asks you to test their release. Clone ../shop.git into this folder so that you start on the branch release-1.0, and name the remote team, because you will add other copies of this project later."
+    setup:
+      - git init -q -b main ../seed
+      - git -C ../seed config core.autocrlf false
+      - git -C ../seed config user.name "Mona (teammate)"
+      - git -C ../seed config user.email "mona@example.com"
+      - echo "# Shop app" > ../seed/README.md
+      - git -C ../seed add README.md
+      - git -C ../seed commit -q -m "Add README"
+      - git -C ../seed switch -q -c release-1.0
+      - echo "version 1.0" > ../seed/VERSION
+      - git -C ../seed add VERSION
+      - git -C ../seed commit -q -m "Prepare release 1.0"
+      - git -C ../seed switch -q main
+      - echo "function checkout() {}" > ../seed/checkout.js
+      - git -C ../seed add checkout.js
+      - git -C ../seed commit -q -m "Start the checkout page"
+      - git clone -q --bare ../seed ../shop.git
+      - rm -rf ../seed
+    goal:
+      - check: head-is-on-branch
+        branch: release-1.0
+        label: "You are on the branch release-1.0"
+      - check: remote-exists
+        remote: team
+        label: "The remote is named team"
+      - check: branch-tracks
+        branch: release-1.0
+        upstream: team/release-1.0
+        label: "Your release-1.0 follows team/release-1.0"
+    hints:
+      - "A plain clone starts on the server's default branch and calls the remote origin. The Advanced layer shows one option for each of those."
+      - "-b <branch> picks the branch to start on, and -o <name> names the remote. Both go in the same git clone command, and the dot still sends the files into this folder."
+      - "Run: git clone -b release-1.0 -o team ../shop.git ."
+    solution:
+      - git clone -q -b release-1.0 -o team ../shop.git .

@@ -1,0 +1,40 @@
+questions:
+  - question: "You open .git/refs/heads/main in a text editor. What do you see?"
+    answers:
+      - text: "A list of every commit on the branch, newest first"
+        explanation: "The file holds a single ID. Git finds the older commits by following each commit's parent line."
+      - text: "One line: the ID of the newest commit on main"
+        correct: true
+        explanation: "A branch is a small file with one commit ID. A new commit simply puts its own ID there."
+      - text: "A copy of the project's files as they are on main"
+        explanation: "Files are stored once, as blobs in .git/objects. A branch only points at a commit."
+
+  - question: "Two projects on two computers each have a file with exactly the same content, but different file names. What is true about the blobs Git stores for them?"
+    answers:
+      - text: "They have different IDs, because the file names differ"
+        explanation: "A blob holds only content. The name is kept in the tree that points at the blob."
+      - text: "They have different IDs, because the computers differ"
+        explanation: "The ID is computed from the content alone, so the computer does not matter."
+      - text: "They have the same ID"
+        correct: true
+        explanation: "The ID is a checksum of the content, and the content is identical. Names live in trees."
+
+  - question: "You fix one typo in recipes/pasta.txt and commit. Which objects does the new commit need that did not exist before?"
+    answers:
+      - text: "Only a new blob for pasta.txt"
+        explanation: "The new blob has a new ID, so the recipes tree that lists it changes too, and so does the top tree."
+      - text: "A new blob for pasta.txt, new trees for recipes and the top folder, and the commit itself"
+        correct: true
+        explanation: "The change travels upward: new blob ID, so a new recipes tree, so a new top tree, and a commit that points at it. README.md and toast.txt keep their old blobs."
+      - text: "New blobs for every file in the project, because a commit is a full snapshot"
+        explanation: "The snapshot is full, but unchanged files are not stored again. The new trees point at the blobs that already exist."
+
+  - question: "A script must print the ID of the commit you are on. Which command fits best?"
+    answers:
+      - text: "git rev-parse HEAD"
+        correct: true
+        explanation: "It follows HEAD to the branch and the branch to the commit, and prints the ID. It also works when refs are packed into one file."
+      - text: "cat .git/HEAD"
+        explanation: "That prints \"ref: refs/heads/main\": the name of the branch, with no ID in it."
+      - text: "git cat-file -t HEAD"
+        explanation: "That prints the object's type, the word \"commit\"."

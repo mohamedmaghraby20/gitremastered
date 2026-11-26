@@ -1,0 +1,40 @@
+questions:
+  - question: "You delete report.txt in your file explorer and run git commit -m \"Clean up\" right away, without any other command. What happens to report.txt?"
+    answers:
+      - text: "The commit removes it from the project"
+        explanation: "The deletion was never staged, so the commit cannot contain it. Stage it first with git rm report.txt or git add report.txt."
+      - text: "Nothing is committed for it: the deletion is not staged yet"
+        correct: true
+        explanation: "A deletion is a change like an edit. It sits in the working tree until you stage it with git rm or git add."
+      - text: "Git puts the file back in your folder"
+        explanation: "Git never restores a file on its own. The file stays deleted on disk, and the last commit still contains it."
+
+  - question: "settings.json was committed by mistake and holds your personal settings. You want Git to stop tracking it, but you still need the file. What do you run?"
+    answers:
+      - text: "git rm settings.json"
+        explanation: "That also deletes the file from your disk, and you still need it."
+      - text: "rm settings.json"
+        explanation: "Plain rm deletes the file from your disk and stages nothing. Git would still track it."
+      - text: "git rm --cached settings.json"
+        correct: true
+        explanation: "--cached removes the file from the staging area only. It stays on your disk and becomes untracked after the commit."
+
+  - question: "A teammate renamed utils.js to helpers.js with git mv. You renamed config.js to settings.js in your editor, then ran git rm config.js and git add settings.js. How do the two commits differ?"
+    answers:
+      - text: "Only the git mv commit keeps the file's history"
+        explanation: "Git stores no rename information in either commit. It detects both renames afterwards, by comparing content."
+      - text: "They do not differ: both record an old name gone and a new name added"
+        correct: true
+        explanation: "git mv is a shortcut for mv, git rm and git add. Git works out that it was a rename when it shows the change."
+      - text: "Your commit shows a deleted file and a new file forever"
+        explanation: "Once both halves are staged, Git sees the same content under a new name and shows a rename, exactly as with git mv."
+
+  - question: "You rename guide.md to manual.md and rewrite almost every line in the same commit. Git shows guide.md as deleted and manual.md as a new file. Why?"
+    answers:
+      - text: "The two files are too different for Git to see them as one renamed file"
+        correct: true
+        explanation: "Git detects a rename by comparing content. Below about half the same, it shows a delete and a create. Rename in one commit and edit in the next to keep the link."
+      - text: "You should have used git mv to rename it"
+        explanation: "git mv would give the same result. The command does not matter; the content does."
+      - text: "Git only detects renames of files that end in .txt"
+        explanation: "Rename detection works on content and does not depend on the file's ending."

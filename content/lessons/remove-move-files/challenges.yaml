@@ -1,0 +1,137 @@
+challenges:
+  - id: delete-old-plan
+    title: Remove a file nobody needs
+    level: easy
+    brief: "old-plan.txt is out of date and only confuses new teammates. Remove it from the project and commit the removal, so git status is clean again."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Team project" > README.md
+      - echo "console.log('hi')" > app.js
+      - printf 'Call the printer\nOrder flour\n' > old-plan.txt
+      - git add .
+      - git commit -q -m "Add project files"
+    goal:
+      - check: file-is-missing
+        file: old-plan.txt
+        label: "old-plan.txt is gone from your folder"
+      - check: file-is-not-committed
+        file: old-plan.txt
+        label: "The latest commit no longer contains old-plan.txt"
+      - check: working-folder-clean
+        label: "git status shows nothing left to do"
+    hints:
+      - "Deleting the file is only half of it. What does git status say after a plain rm?"
+      - "git rm deletes the file and stages the deletion in one step. A staged deletion still needs a commit."
+      - "Run: git rm old-plan.txt, then git commit -m \"Remove old plan\""
+    solution:
+      - git rm -q old-plan.txt
+      - git commit -q -m "Remove old plan"
+
+  - id: rename-changelog
+    title: Give a file its proper name
+    level: medium
+    brief: "The list of changes lives in notes.txt, but the team agreed to call it CHANGELOG.md. Rename it and commit, so Git records one rename and nothing else."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Shop app" > README.md
+      - printf 'Version 1.1\nFaster search\nVersion 1.0\nFirst release\n' > notes.txt
+      - git add .
+      - git commit -q -m "Add README and notes"
+    goal:
+      - check: file-is-committed
+        file: CHANGELOG.md
+        label: "CHANGELOG.md is in the latest commit"
+      - check: file-is-not-committed
+        file: notes.txt
+        label: "notes.txt is no longer in the latest commit"
+      - check: working-folder-clean
+        label: "git status shows nothing left to do"
+    hints:
+      - "One Git command renames a file and stages the rename."
+      - "After git mv, run git status: it should show one line, renamed: notes.txt -> CHANGELOG.md. Then commit."
+      - "Run: git mv notes.txt CHANGELOG.md, then git commit -m \"Rename notes to CHANGELOG\""
+    solution:
+      - git mv notes.txt CHANGELOG.md
+      - git commit -q -m "Rename notes to CHANGELOG"
+
+  - id: finish-the-move
+    title: Finish a move made outside Git
+    level: medium
+    brief: "You dragged helpers.js into the src folder in your editor, and git status now shows a deleted file and an untracked one. Commit the move as one rename. Your unfinished README.md edit must stay out of this commit."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Shop app" > README.md
+      - printf 'function formatPrice(price) {\n  return price.toFixed(2);\n}\n' > helpers.js
+      - mkdir src
+      - echo "console.log('shop is open')" > src/app.js
+      - git add .
+      - git commit -q -m "Add shop app"
+      - mv helpers.js src/helpers.js
+      - echo "Run the tests before you push." >> README.md
+    goal:
+      - check: file-is-committed
+        file: src/helpers.js
+        label: "src/helpers.js is in the latest commit"
+      - check: file-is-not-committed
+        file: helpers.js
+        label: "The old helpers.js is no longer in the latest commit"
+      - check: file-is-modified
+        file: README.md
+        label: "README.md is still changed, not committed"
+    hints:
+      - "Run git status. A move made outside Git shows as two changes: which two?"
+      - "Stage both halves: the deletion of the old path and the new file. git add -A would also stage README.md, so name the files."
+      - "Run: git rm helpers.js, then git add src/helpers.js, then git commit -m \"Move helpers into src\""
+    solution:
+      - git rm -q helpers.js
+      - git add src/helpers.js
+      - git commit -q -m "Move helpers into src"
+
+  - id: remove-all-logs
+    title: Clear out log files in every folder
+    level: hard
+    brief: "Log files were committed all over the project: at the top, in logs, and in logs/old. Remove every .log file from Git and from your disk in one commit. logs/README.md must stay, and nothing else may change."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Shop app" > README.md
+      - 'echo "debug: started" > debug.log'
+      - mkdir -p logs/old
+      - echo "Logs are written here while the app runs." > logs/README.md
+      - 'echo "info: 3 orders" > logs/app.log'
+      - 'echo "info: 1 order" > logs/old/january.log'
+      - git add .
+      - git commit -q -m "Add shop app"
+    goal:
+      - check: file-is-not-committed
+        file: debug.log
+        label: "debug.log is no longer in the latest commit"
+      - check: file-is-not-committed
+        file: logs/app.log
+        label: "logs/app.log is no longer in the latest commit"
+      - check: file-is-not-committed
+        file: logs/old/january.log
+        label: "logs/old/january.log is no longer in the latest commit"
+      - check: file-is-committed
+        file: logs/README.md
+        label: "logs/README.md is still committed"
+      - check: working-folder-clean
+        label: "git status shows nothing left to do"
+    hints:
+      - "Three files in three folders. git rm takes a pattern, so you do not have to name each one."
+      - "The shell expands *.log in the current folder only. Put a backslash before the * so Git matches the pattern in every folder. Try it with -n first: git rm -n \\*.log"
+      - "Run: git rm \\*.log, then git commit -m \"Remove log files\""
+    solution:
+      - git rm -q \*.log
+      - git commit -q -m "Remove log files"

@@ -12,7 +12,7 @@ terms:
   - id: repository
     term: repository
     meaning: "The `.git` folder: every commit you saved, plus what Git needs to track your project."
-    lessons: [three-areas]
+    lessons: [three-areas, start-a-repo]
   - id: commit
     term: commit
     meaning: "A saved snapshot of your project, with a message, an author and a date. Made from the staging area by `git commit`."
@@ -20,7 +20,7 @@ terms:
   - id: tracked-file
     term: tracked file
     meaning: "A file Git already follows, because it was in the last commit or is staged. Tracked files are unmodified, modified or staged."
-    lessons: [three-areas]
+    lessons: [three-areas, remove-move-files]
   - id: untracked-file
     term: untracked file
     meaning: "A file Git has never saved and does not follow yet. `git add` starts tracking it."
@@ -28,7 +28,7 @@ terms:
   - id: head
     term: HEAD
     meaning: "Git's pointer to where you are: normally the branch you are on, and so its latest commit."
-    lessons: []
+    lessons: [first-look-inside]
   - id: branch
     term: branch
     meaning: "A named line of commits, like `main`. Each new commit moves the branch you are on forward."
@@ -44,67 +44,67 @@ terms:
   - id: version-control
     term: version control
     meaning: "A system that records how files change over time, so you can go back to any earlier version and see who changed what. Git is a version control system."
-    lessons: []
+    lessons: [what-is-git]
   - id: snapshot
     term: snapshot
     meaning: "A picture of all your project's files at one moment. Every commit holds one; Git stores snapshots, not lists of changes."
-    lessons: []
+    lessons: [what-is-git]
   - id: checksum
     term: checksum
     meaning: "A code Git computes from content, like a fingerprint: the same content always gives the same code. Git's checksums are 40-character SHA-1 hashes, and they are the IDs of commits and files."
-    lessons: []
+    lessons: [what-is-git, first-look-inside]
   - id: commit-id
     term: commit ID
     meaning: "The unique name of a commit: a 40-character checksum like `ca82a6d…`. The first 7 characters are usually enough to name it. Also called a hash or SHA."
-    lessons: []
+    lessons: [what-is-git, first-look-inside, reading-history]
   - id: object
     term: object
     meaning: "One item in Git's storage, named by the checksum of its content. There are four kinds: blob, tree, commit and annotated tag."
-    lessons: []
+    lessons: [first-look-inside]
   - id: blob
     term: blob
     meaning: "The object that holds one file's content, with no name attached. Two files with the same content share one blob."
-    lessons: []
+    lessons: [first-look-inside]
   - id: tree
     term: tree
     meaning: "The object that holds one folder's listing: file names, each pointing at a blob or at another tree."
-    lessons: []
+    lessons: [first-look-inside]
   - id: ref
     term: ref
     meaning: "A name that points at a commit, kept as a small file under `.git/refs`. Branches and tags are refs. Short for reference."
-    lessons: []
+    lessons: [first-look-inside]
   - id: plumbing
     term: plumbing
     meaning: "Git's low-level commands, made for scripts and for looking inside, like `git cat-file`. The everyday commands (`git add`, `git commit`) are called porcelain."
-    lessons: []
+    lessons: [first-look-inside]
   - id: config
     term: configuration
     meaning: "Git's settings, such as your name and your editor. They live at three levels: the whole computer (system), your user account (global) and one repository (local). The closest level wins."
-    lessons: []
+    lessons: [setup]
   - id: clone
     term: clone
     meaning: "A full copy of a repository, with its whole history, made by `git clone`. It remembers where it came from as the remote `origin`."
-    lessons: []
+    lessons: [start-a-repo]
   - id: diff
     term: diff
     meaning: "The line-by-line difference between two versions of your files: lines removed start with `-`, lines added start with `+`."
-    lessons: []
+    lessons: [diffs-in-depth]
   - id: hunk
     term: hunk
     meaning: "One block of changed lines in a diff, with a few unchanged lines around it. It starts with a header like `@@ -1,3 +1,4 @@`."
-    lessons: []
+    lessons: [diffs-in-depth]
   - id: amend
     term: amend
     meaning: "To replace your last commit with a corrected one, using `git commit --amend`. The old commit is not edited: a new one takes its place."
-    lessons: []
+    lessons: [fix-last-commit]
   - id: revert
     term: revert
     meaning: "To undo an earlier commit by adding a new commit that makes the opposite change. History stays intact, so it is safe for shared branches."
-    lessons: []
+    lessons: [revert-a-commit]
   - id: reset
     term: reset
     meaning: "To move the current branch to another commit with `git reset`. Depending on the option, the staging area and the working tree follow or stay as they are."
-    lessons: []
+    lessons: [reset-demystified]
   - id: reflog
     term: reflog
     meaning: "Git's private diary of where HEAD and each branch pointed before. It keeps commits findable for a while after no branch reaches them."
@@ -144,7 +144,7 @@ terms:
   - id: origin
     term: origin
     meaning: "The default name Git gives the remote you cloned from. It is only a name; you can have other remotes beside it."
-    lessons: []
+    lessons: [start-a-repo]
   - id: bare-repository
     term: bare repository
     meaning: "A repository with no working tree, only Git's stored data. Servers keep repositories this way, in a folder ending in `.git`."
@@ -181,3 +181,31 @@ terms:
     term: annotated tag
     meaning: "A tag stored as its own object, with a message, the tagger's name and a date. Use it for releases. A tag without these is called lightweight."
     lessons: []
+  - id: command-line
+    term: command line
+    meaning: "Using a program by typing commands in a terminal, instead of clicking in a graphical program (a GUI). On Windows, Git Bash is the terminal that comes with Git."
+    lessons: [setup]
+  - id: porcelain
+    term: porcelain
+    meaning: "Git's everyday, friendly commands, like `git add` and `git commit`. The low-level commands underneath are called plumbing."
+    lessons: [first-look-inside]
+  - id: parent-commit
+    term: parent commit
+    meaning: "The commit that came directly before another one. Every commit except the first stores its parent's ID; a merge commit has two parents."
+    lessons: [first-look-inside, reading-history]
+  - id: pager
+    term: pager
+    meaning: "The small viewer Git opens for long output, such as `git log`, one screen at a time. Space shows the next screen; `q` quits."
+    lessons: [reading-history]
+  - id: unstage
+    term: unstage
+    meaning: "To take a change back out of the staging area with `git restore --staged`. Your edits stay in the working tree."
+    lessons: [undo-basics]
+  - id: discard
+    term: discard
+    meaning: "To throw away edits in the working tree that were never committed, with `git restore`. Git cannot bring them back."
+    lessons: [undo-basics]
+  - id: squash
+    term: squash
+    meaning: "To turn several commits into one, for example with `git reset --soft` followed by one new commit."
+    lessons: [reset-demystified]

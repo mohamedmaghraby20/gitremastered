@@ -1,0 +1,40 @@
+questions:
+  - question: "A teammate sends you the address of the team's project, which has two years of history. You want to work on it. What do you run?"
+    answers:
+      - text: "git init, then copy the newest files into the folder"
+        explanation: "That gives you a new, empty repository with none of the team's history, and no link to their copy."
+      - text: "git clone with the address"
+        correct: true
+        explanation: "git clone copies the whole repository, history included, and remembers the address as origin."
+      - text: "git init with the address"
+        explanation: "git init takes a folder name, not an address. It only creates an empty repository."
+
+  - question: "You run git init in a folder that holds ten files, then git status. What does Git report?"
+    answers:
+      - text: "Ten files in the first commit"
+        explanation: "git init makes no commit. It only creates the .git folder."
+      - text: "No commits yet, and ten untracked files"
+        correct: true
+        explanation: "The repository is empty. Git sees the files but tracks none of them until you add and commit them."
+      - text: "Ten tracked files with nothing to commit"
+        explanation: "Git tracks a file only after you add it. A new repository tracks nothing."
+
+  - question: "Right after git clone, git remote -v lists two lines that start with origin. What is origin?"
+    answers:
+      - text: "The first commit of the project"
+        explanation: "The first commit is called the root commit. origin is not a commit."
+      - text: "The branch you start on"
+        explanation: "The branch is usually main. origin names a place, not a line of work."
+      - text: "A short name for the address you cloned from"
+        correct: true
+        explanation: "git clone saves the source under the name origin, so later commands can reach it without the full address."
+
+  - question: "You are in an empty folder named shop and run git clone ../shop.git (no dot). Where do the project's files end up?"
+    answers:
+      - text: "In shop/shop, a new folder inside the one you are in"
+        correct: true
+        explanation: "Without a destination, git clone creates a folder named after the repository. To fill the current folder, add a dot."
+      - text: "Directly in shop, the folder you are in"
+        explanation: "That needs a dot at the end: git clone ../shop.git ."
+      - text: "Nowhere: Git refuses because a folder named shop exists"
+        explanation: "Git only refuses when the destination itself exists and is not empty. Here the destination is a new folder inside shop."

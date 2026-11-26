@@ -1,0 +1,40 @@
+questions:
+  - question: "Your global user.email is ada@home.example. In one repository you run git config user.email ada@work.example. Which email do commits in your other repositories carry?"
+    answers:
+      - text: "ada@work.example, because the newest setting replaces the old one"
+        explanation: "Without --global, git config writes to the local level. That value exists in one repository only."
+      - text: "ada@home.example, because the local value only applies inside that one repository"
+        correct: true
+        explanation: "A local setting hides the global one in its own repository. Everywhere else, the global value is still the closest one."
+      - text: "None, because two values for one setting make Git refuse to commit"
+        explanation: "Having the same setting at two levels is normal. Git picks the closest level and carries on."
+
+  - question: "On a brand-new computer you install Git and commit right away, without any setup. What happens?"
+    answers:
+      - text: "Git stops with \"Please tell me who you are\" and makes no commit"
+        correct: true
+        explanation: "Every commit must carry an author. With no user.name and user.email at any level, Git refuses and prints the two commands to run."
+      - text: "Git makes the commit with the author \"unknown\""
+        explanation: "Git does not invent an author. It stops before making the commit, and your changes stay as they were."
+      - text: "Git asks for your name in the terminal and then commits"
+        explanation: "Git never asks for it while committing. You set the identity yourself with git config, then commit again."
+
+  - question: "You are on a train with no internet and forgot which option of git commit skips the editor. What is the quickest way to find it?"
+    answers:
+      - text: "Wait until you are online; Git's manual lives on git-scm.com"
+        explanation: "The manual is installed with Git on your computer, so help works offline."
+      - text: "Run git commit -h and read the short option list"
+        correct: true
+        explanation: "-h prints a compact list of options in the terminal. For the full manual page, git help commit also works offline."
+      - text: "Run git config --list and look for the option there"
+        explanation: "That lists your settings and where they come from. It does not describe a command's options."
+
+  - question: "You ran git config user.nmae \"Ada Lovelace\" (with a typo) and got no error. What is true now?"
+    answers:
+      - text: "Git corrected the typo, so user.name is set"
+        explanation: "Git never guesses at keys. It stored the key exactly as you typed it."
+      - text: "Nothing was stored, because the key does not exist"
+        explanation: "Git accepts any key that has a section and a name, so the value was stored."
+      - text: "A useless setting user.nmae is stored, and user.name is unchanged"
+        correct: true
+        explanation: "Git stores any section.name key without checking it. Nothing reads user.nmae, so set user.name properly and remove the typo with git config --unset user.nmae."

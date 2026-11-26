@@ -1,0 +1,108 @@
+challenges:
+  - id: fix-the-typo
+    title: Fix the typo in the last message
+    level: easy
+    brief: "The last commit of the bakery site says \"Add hompage\". Correct its message to \"Add homepage\", without making an extra commit."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Bakery site" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - echo "<h1>Fresh bread daily</h1>" > index.html
+      - git add index.html
+      - git commit -q -m "Add hompage"
+    goal:
+      - check: latest-commit-message-contains
+        text: "Add homepage"
+        label: "The last commit's message says \"Add homepage\""
+      - check: commit-is-gone
+        message: "hompage"
+        label: "No commit with the typo is left on main"
+      - check: commit-count-is
+        count: 2
+        label: "The history still has two commits, not three"
+    hints:
+      - "Run git log --oneline. Which commit has the typo, and is it the last one?"
+      - "git commit --amend replaces the last commit. With -m you give the new message right away."
+      - "Run: git commit --amend -m \"Add homepage\""
+    solution:
+      - git commit --amend -q -m "Add homepage"
+
+  - id: forgotten-stylesheet
+    title: The commit forgot a file
+    level: medium
+    brief: "You committed \"Add opening hours page\" with hours.html, but its stylesheet hours.css was never staged. Put hours.css into that same commit. Keep the message, and do not add a new commit."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Bakery site" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - echo "<h1>Open 7 to 5</h1>" > hours.html
+      - 'echo "h1 { color: brown; }" > hours.css'
+      - git add hours.html
+      - git commit -q -m "Add opening hours page"
+    goal:
+      - check: file-is-committed
+        file: hours.css
+        label: "hours.css is in the last commit"
+      - check: latest-commit-message-contains
+        text: "Add opening hours page"
+        label: "The message is still \"Add opening hours page\""
+      - check: commit-count-is
+        count: 2
+        label: "The history still has two commits, not three"
+      - check: working-folder-clean
+        label: "git status shows nothing left to do"
+    hints:
+      - "Run git status. Which file did the last commit leave behind?"
+      - "Amend builds the new commit from the staging area. Stage the missing file first; --no-edit keeps the message."
+      - "Run: git add hours.css, then git commit --amend --no-edit"
+    solution:
+      - git add hours.css
+      - git commit --amend -q --no-edit
+
+  - id: secret-in-the-commit
+    title: A password file went into the commit
+    level: hard
+    brief: "The last commit, \"Add stuff\", holds contact.html and also secrets.env, a file with a password. Nothing was pushed yet. Take secrets.env out of that commit but keep the file on your disk, and change the message to \"Add contact page\". The history must still have two commits."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Bakery site" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - echo "<h1>Contact us</h1>" > contact.html
+      - echo "PASSWORD=hunter2" > secrets.env
+      - git add contact.html secrets.env
+      - git commit -q -m "Add stuff"
+    goal:
+      - check: file-is-not-committed
+        file: secrets.env
+        label: "secrets.env is not in the last commit"
+      - check: file-exists
+        file: secrets.env
+        label: "secrets.env is still on your disk"
+      - check: file-is-committed
+        file: contact.html
+        label: "contact.html is still in the last commit"
+      - check: latest-commit-message-contains
+        text: "Add contact page"
+        label: "The message says \"Add contact page\""
+      - check: commit-count-is
+        count: 2
+        label: "The history still has two commits, not three"
+    hints:
+      - "Amend commits what is in the staging area. So first make the staging area hold what the commit should hold. See \"Take a file out of the last commit\"."
+      - "git rm --cached takes a file out of the staging area and keeps it on disk. Then amend, with -m for the new message."
+      - "Run: git rm --cached secrets.env, then git commit --amend -m \"Add contact page\""
+    solution:
+      - git rm -q --cached secrets.env
+      - git commit --amend -q -m "Add contact page"

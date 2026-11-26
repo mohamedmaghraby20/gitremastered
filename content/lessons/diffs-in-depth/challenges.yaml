@@ -1,0 +1,96 @@
+challenges:
+  - id: commit-only-the-fix
+    title: Commit the bug fix, leave the note
+    level: easy
+    brief: "Two files of the corner shop are modified. One change fixes a bug in how the total is calculated; the other is an unfinished note. Read both diffs, then commit only the file with the bug fix."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Corner shop" > README.md
+      - printf 'function total(price, count) {\n  return price - count;\n}\n' > cart.js
+      - git add README.md cart.js
+      - git commit -q -m "Add README and cart"
+      - printf 'function total(price, count) {\n  return price * count;\n}\n' > cart.js
+      - 'echo "TODO: write the install steps" >> README.md'
+    goal:
+      - check: file-is-committed
+        file: cart.js
+        label: "The file with the bug fix is in a new commit"
+      - check: file-is-modified
+        file: README.md
+        label: "The unfinished note is still changed, not committed"
+      - check: commit-count-at-least
+        count: 2
+        label: "The history has your new commit"
+    hints:
+      - "Run git diff. It shows the unstaged changes of both files, one after the other. Which one changes a calculation?"
+      - "Stage only that file, then check with git diff --staged that the next commit holds the fix and nothing else."
+      - "Run: git add cart.js, then git diff --staged, then git commit -m \"Fix the total\". Leave README.md as it is."
+    solution:
+      - git add cart.js
+      - git commit -q -m "Fix the total"
+
+  - id: what-is-staged
+    title: What will the next commit change?
+    level: medium
+    brief: "Three files hold the opening hours of three stores. Some edits are staged and some are not. The next commit will change the closing time of exactly one store. Find out which file that is and write its name into answer.txt, for example: echo north.txt > answer.txt"
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo answer.txt >> .git/info/exclude
+      - printf 'North store\nOpens 09:00\nCloses 18:00\nPhone 555-0101\n' > north.txt
+      - printf 'South store\nOpens 09:00\nCloses 18:00\nPhone 555-0102\n' > south.txt
+      - printf 'East store\nOpens 09:00\nCloses 18:00\nPhone 555-0103\n' > east.txt
+      - git add north.txt south.txt east.txt
+      - git commit -q -m "Add store hours"
+      - printf 'North store\nOpens 09:00\nCloses 20:00\nPhone 555-0101\n' > north.txt
+      - printf 'South store\nOpens 09:00\nCloses 18:00\nPhone 555-0199\n' > south.txt
+      - git add north.txt south.txt
+      - printf 'East store\nOpens 09:00\nCloses 22:00\nPhone 555-0103\n' > east.txt
+      - printf 'South store\nOpens 08:00\nCloses 18:00\nPhone 555-0199\n' > south.txt
+    goal:
+      - check: answer-is
+        answer: north.txt
+        label: "answer.txt names the file whose staged change moves a closing time"
+    hints:
+      - "A commit takes what is in the staging area. Which form of git diff compares the staging area with the last commit?"
+      - "Plain git diff shows a closing time too, but that change is not staged, so the next commit will not contain it. Run git diff --staged and read the - and + lines."
+      - "git diff --staged shows \"Closes 20:00\" in north.txt. Run: echo north.txt > answer.txt"
+    solution:
+      - echo north.txt > answer.txt
+
+  - id: net-change
+    title: What really changed since the first commit?
+    level: hard
+    brief: "The cafe's prices.txt was edited in several commits: lines were added, and some were taken out again. Compare the first commit, \"Open the cafe\", with the latest one. How many lines does prices.txt have now that it did not have then? Write the number into answer.txt, for example: echo 7 > answer.txt"
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo answer.txt >> .git/info/exclude
+      - printf 'coffee 3\ntea 2\n' > prices.txt
+      - echo "# Corner cafe" > README.md
+      - git add prices.txt README.md
+      - git commit -q -m "Open the cafe"
+      - printf 'coffee 3\ntea 2\ncake 4\njuice 3\nsoup 5\n' > prices.txt
+      - git commit -q -am "Add cake, juice and soup"
+      - printf 'coffee 3\ntea 2\ncake 4\n' > prices.txt
+      - echo "Open every day." >> README.md
+      - git commit -q -am "Drop juice and soup, say when we open"
+      - printf 'coffee 3\ntea 2\ncake 4\ntoast 2\n' > prices.txt
+      - git commit -q -am "Add toast"
+    goal:
+      - check: answer-is
+        answer: "2"
+        label: "answer.txt holds the number of lines added to prices.txt between the two commits"
+    hints:
+      - "Adding up what each commit did gives the wrong number: lines that were added and removed again are not in the file any more. Compare the two ends directly (see \"Two snapshots, nothing in between\" in Under the hood)."
+      - "The first commit is three commits before the one you are on: HEAD~3. Compare it with HEAD, and limit the diff to prices.txt with -- prices.txt. README.md changed too and must not be counted."
+      - "Run: git diff HEAD~3 HEAD --stat -- prices.txt. It reports 2 insertions (cake and toast). Then: echo 2 > answer.txt"
+    solution:
+      - echo 2 > answer.txt

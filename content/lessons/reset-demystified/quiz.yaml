@@ -1,0 +1,40 @@
+questions:
+  - question: "Your last commit mixed a bug fix and a new feature. You want the changes back in your working tree, unstaged, so you can commit them as two commits. What do you run?"
+    answers:
+      - text: "git reset --soft HEAD~1"
+        explanation: "That takes the commit back but leaves everything staged. You would still have to unstage before splitting the work."
+      - text: "git reset HEAD~1"
+        correct: true
+        explanation: "The default (--mixed) moves your branch back and unstages everything. Your edits stay in the files, ready to be staged in two pieces."
+      - text: "git reset --hard HEAD~1"
+        explanation: "That also overwrites your files, so the bug fix and the feature would be gone from your working tree."
+
+  - question: "You edited cart.js for an hour without committing, then ran git reset --hard HEAD~1 to drop the last commit. What happened to the hour of edits?"
+    answers:
+      - text: "They are lost: Git never had a copy of them"
+        correct: true
+        explanation: "--hard overwrites every tracked file. Only committed work can be found again through the reflog."
+      - text: "They are staged, waiting to be committed"
+        explanation: "That is what --soft leaves behind for changes that were in the commit. --hard overwrites the index and the files."
+      - text: "They can be brought back with git reflog"
+        explanation: "The reflog records where HEAD pointed, so it finds commits. Edits that were never committed are not in it."
+
+  - question: "After git reset --hard HEAD~2 you see that the two commits were needed after all. Nothing else was run since. What gets them back?"
+    answers:
+      - text: "Nothing; a hard reset deletes the commits"
+        explanation: "Reset only moves your branch. The commits stay in Git for weeks, reachable through the reflog."
+      - text: "git revert HEAD"
+        explanation: "Revert adds a commit that undoes the newest commit of your branch. It would undo more work, not bring the two commits back."
+      - text: "git reset --hard ORIG_HEAD, or the ID from git reflog"
+        correct: true
+        explanation: "ORIG_HEAD holds where your branch was before the reset, and the reflog lists every earlier position. Resetting to that ID moves the branch forward again."
+
+  - question: "A commit you made yesterday is already on the team's shared server, and it breaks the build. Why is git revert the right tool and git reset the wrong one?"
+    answers:
+      - text: "Reset cannot go back more than one commit"
+        explanation: "Reset can go back any number of commits, for example git reset HEAD~5."
+      - text: "Reset takes the commit off your branch, so your history no longer matches what teammates already have"
+        correct: true
+        explanation: "Revert adds a new commit that undoes the change, so everyone's history stays the same and simply grows by one commit."
+      - text: "Revert is faster on large projects"
+        explanation: "Speed is not the issue. The issue is rewriting history that other people have built on."

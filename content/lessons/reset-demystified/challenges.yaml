@@ -1,0 +1,125 @@
+challenges:
+  - id: committed-too-early
+    title: Committed too early
+    level: easy
+    brief: "You committed \"Add checkout\" before checkout.js was finished. Take that commit back, but keep checkout.js staged, so you can finish it and commit again later."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Shop app" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - echo "function addToCart() {}" > cart.js
+      - git add cart.js
+      - git commit -q -m "Add cart"
+      - echo "function checkout() { /* TODO */ }" > checkout.js
+      - git add checkout.js
+      - git commit -q -m "Add checkout"
+    goal:
+      - check: commit-is-gone
+        message: "Add checkout"
+        label: "The commit \"Add checkout\" is no longer in the history"
+      - check: commit-count-is
+        count: 2
+        label: "The two earlier commits are still there"
+      - check: file-is-staged
+        file: checkout.js
+        label: "checkout.js is staged, ready to commit again"
+    hints:
+      - "Three options take the last commit back. Which one leaves the staging area as it is?"
+      - "--soft moves only your branch. HEAD~1 names the commit before the one you are on."
+      - "Run: git reset --soft HEAD~1, then git status to check."
+    solution:
+      - git reset --soft HEAD~1
+
+  - id: two-halves-one-commit
+    title: Two halves of one job
+    level: medium
+    brief: "The search box was committed in two halves: \"Add search box\" and \"Finish search box\". Turn them into one commit whose message contains \"search\". Both files must end up committed, with nothing left over."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Shop app" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - echo "function search() {}" > search.js
+      - git add search.js
+      - git commit -q -m "Add search box"
+      - echo "function search(words) { return find(words); }" > search.js
+      - echo ".search { width 200px; }" > search.css
+      - git add search.js search.css
+      - git commit -q -m "Finish search box"
+    goal:
+      - check: commit-count-is
+        count: 2
+        label: "The history has two commits: the README and one search commit"
+      - check: commit-is-gone
+        message: "Finish search box"
+        label: "The commit \"Finish search box\" is no longer in the history"
+      - check: latest-commit-message-contains
+        text: "search"
+        label: "The newest commit's message contains \"search\""
+      - check: file-is-committed
+        file: search.js
+        label: "search.js is committed"
+      - check: file-is-committed
+        file: search.css
+        label: "search.css is committed"
+      - check: working-folder-clean
+        label: "git status shows nothing left to do"
+    hints:
+      - "This is squashing. How many commits back do you need to go, and what should stay staged?"
+      - "git reset --soft HEAD~2 moves your branch back two commits and leaves the finished files staged."
+      - "Run: git reset --soft HEAD~2, then git commit -m \"Add search box\"."
+    solution:
+      - git reset --soft HEAD~2
+      - git commit -q -m "Add search box"
+
+  - id: one-reset-too-far
+    title: One reset too far
+    level: hard
+    brief: "Two experiment commits (\"Try neon colours\", \"Try comic font\") had to go. A teammate ran git reset --hard HEAD~3, one commit too many, and the real fix \"Fix price rounding\" went with them. Bring the fix back as the newest commit, and keep both experiments out. git status must end up clean."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Shop app" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - echo "price = 9.999" > prices.txt
+      - git add prices.txt
+      - git commit -q -m "Add prices"
+      - echo "price = 10.00" > prices.txt
+      - git commit -q -am "Fix price rounding"
+      - 'echo "body { color: lime; }" > style.css'
+      - git add style.css
+      - git commit -q -m "Try neon colours"
+      - 'echo "body { color: lime; font-family: Comic Sans MS; }" > style.css'
+      - git commit -q -am "Try comic font"
+      - git reset -q --hard HEAD~3
+    goal:
+      - check: latest-commit-message-contains
+        text: "Fix price rounding"
+        label: "\"Fix price rounding\" is the newest commit again"
+      - check: commit-count-is
+        count: 3
+        label: "The history has three commits"
+      - check: commit-is-gone
+        message: "Try neon colours"
+        label: "\"Try neon colours\" is not in the history"
+      - check: commit-is-gone
+        message: "Try comic font"
+        label: "\"Try comic font\" is not in the history"
+      - check: working-folder-clean
+        label: "git status shows nothing left to do"
+    hints:
+      - "A commit that was reset away is not deleted. Which command lists every place HEAD has been? (See \"Getting a commit back after a reset\".)"
+      - "Run git reflog and find the line \"commit: Fix price rounding\". Its first column is the ID you need. Reset can move forward to it."
+      - "Run: git reflog, copy the ID of \"commit: Fix price rounding\", then git reset --hard <that ID>. Use --hard: with --soft or --mixed, prices.txt keeps its old content and git status is not clean."
+    solution:
+      - git reset -q --hard "HEAD@{3}"

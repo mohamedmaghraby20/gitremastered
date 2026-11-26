@@ -1,6 +1,12 @@
 id: pro-path
 title: Pro path
 modules:
+  - id: orientation
+    title: Orientation
+    lessons: [what-is-git, setup, first-look-inside]
   - id: daily-loop
     title: Your daily loop
-    lessons: [three-areas, ignoring-files]
+    lessons: [start-a-repo, three-areas, ignoring-files, remove-move-files, reading-history, diffs-in-depth]
+  - id: undo-and-fix
+    title: Undo and fix
+    lessons: [undo-basics, fix-last-commit, revert-a-commit, reset-demystified]

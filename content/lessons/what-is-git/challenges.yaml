@@ -1,0 +1,116 @@
+challenges:
+  - id: count-the-commits
+    title: How many times was this project recorded?
+    level: easy
+    brief: "A family keeps its recipes in this project. Find out how many commits its history holds, and write the number into answer.txt, for example with: echo 3 > answer.txt"
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo answer.txt >> .git/info/exclude
+      - echo "# Family recipes" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - printf 'Pancakes\n2 cups flour\n3 spoons sugar\n' > pancakes.md
+      - git add pancakes.md
+      - git commit -q -m "Add pancake recipe"
+      - printf 'Tomato soup\n6 tomatoes\n1 onion\n' > soup.md
+      - git add soup.md
+      - git commit -q -m "Add Friday dinner idea"
+      - printf 'Pancakes\n2 cups flour\n1 spoon sugar\n' > pancakes.md
+      - git commit -q -am "Use less sugar"
+      - printf 'flour\ntomatoes\n' > shopping.txt
+      - git add shopping.txt
+      - git commit -q -m "Add shopping list"
+      - printf 'Bread\n3 cups flour\n1 spoon yeast\n' > bread.md
+      - git add bread.md
+      - git commit -q -m "Add bread recipe"
+    goal:
+      - check: answer-is
+        answer: "6"
+        label: "answer.txt holds the number of commits"
+    hints:
+      - "Which command from the lesson lists the history, one line per commit?"
+      - "Run git log --oneline and count the lines. The history map shows the same commits as stations."
+      - "There are 6 commits. Run: echo 6 > answer.txt"
+    solution:
+      - git log --oneline | wc -l > answer.txt
+
+  - id: who-added-the-soup
+    title: Which commit brought in the soup?
+    level: medium
+    brief: "Someone added soup.md, but no commit message mentions soup. Find the commit that added the file and write its short ID (the 7 characters at the start of its line) into answer.txt."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo answer.txt >> .git/info/exclude
+      - echo "# Family recipes" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - printf 'Pancakes\n2 cups flour\n3 spoons sugar\n' > pancakes.md
+      - git add pancakes.md
+      - git commit -q -m "Add pancake recipe"
+      - printf 'Tomato soup\n6 tomatoes\n1 onion\n' > soup.md
+      - git add soup.md
+      - git commit -q -m "Add Friday dinner idea"
+      - printf 'Pancakes\n2 cups flour\n1 spoon sugar\n' > pancakes.md
+      - git commit -q -am "Use less sugar"
+      - printf 'flour\ntomatoes\n' > shopping.txt
+      - git add shopping.txt
+      - git commit -q -m "Add shopping list"
+      - printf 'Bread\n3 cups flour\n1 spoon yeast\n' > bread.md
+      - git add bread.md
+      - git commit -q -m "Add bread recipe"
+      - printf 'Lentil stew\n2 cups lentils\n' > stew.md
+      - git add stew.md
+      - git commit -q -m "Add weekend dinner idea"
+    goal:
+      - check: answer-is-commit
+        message: "Add Friday dinner idea"
+        label: "answer.txt holds the short ID of the commit that added soup.md"
+    hints:
+      - "The messages do not name the file, so look inside the commits. Which command showed the files a commit touched?"
+      - "Run git log --oneline, then git show --stat <id> on the commits that sound like a dinner. One of them lists soup.md."
+      - "The commit is \"Add Friday dinner idea\". Copy the ID at the start of its line and run: echo <that-id> > answer.txt"
+    solution:
+      - git log -1 --format=%h --grep="Friday" > answer.txt
+
+  - id: last-seen-shopping-list
+    title: The shopping list is gone, or is it?
+    level: hard
+    brief: "shopping.txt is no longer in the folder: a commit deleted it. Git only adds, so older snapshots still hold the file. Write into answer.txt the short ID of the newest commit whose snapshot still contains shopping.txt."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo answer.txt >> .git/info/exclude
+      - echo "# Family recipes" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - printf 'Pancakes\n2 cups flour\n3 spoons sugar\n' > pancakes.md
+      - git add pancakes.md
+      - git commit -q -m "Add pancake recipe"
+      - printf 'flour\ntomatoes\n' > shopping.txt
+      - git add shopping.txt
+      - git commit -q -m "Add shopping list"
+      - printf 'Bread\n3 cups flour\n1 spoon yeast\n' > bread.md
+      - git add bread.md
+      - git commit -q -m "Add bread recipe"
+      - git rm -q shopping.txt
+      - git commit -q -m "Tidy up the folder"
+      - echo "Share with the family" >> README.md
+      - git commit -q -am "Explain who this is for"
+    goal:
+      - check: answer-is-commit
+        message: "Add bread recipe"
+        label: "answer.txt holds the short ID of the newest commit that still has shopping.txt"
+    hints:
+      - "First find the commit that deleted the file: git show --stat <id> lists a deleted file with minus signs only."
+      - "Each commit is a full snapshot. The snapshot right before the deleting commit still has the file. Under the hood shows git ls-tree <id>, which lists a snapshot's files, to check."
+      - "\"Tidy up the folder\" deleted shopping.txt, so the commit just below it in git log --oneline, \"Add bread recipe\", is the newest one that has it. Run: echo <its-id> > answer.txt"
+    solution:
+      - git log -1 --format=%h --grep="bread" > answer.txt

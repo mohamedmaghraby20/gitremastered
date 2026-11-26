@@ -1,0 +1,90 @@
+challenges:
+  - id: work-identity
+    title: A work identity for one project
+    level: easy
+    brief: "This project belongs to your new job at a shop. Its commits must carry your work name and email: Sam Rivera, sam@shop.example. Set them for this repository only, and leave the settings of your computer as they are."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Shop app" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+    goal:
+      - check: config-is
+        key: user.name
+        value: Sam Rivera
+        label: "This repository's user.name is Sam Rivera"
+      - check: config-is
+        key: user.email
+        value: sam@shop.example
+        label: "This repository's user.email is sam@shop.example"
+    hints:
+      - "Which level applies to one repository only? It is the one git config uses when you give no option."
+      - "Run git config user.name with the new name, without --global. The name has a space, so it needs quotes. Then do the same for user.email."
+      - "Run: git config user.name \"Sam Rivera\", then git config user.email sam@shop.example"
+    solution:
+      - git config user.name "Sam Rivera"
+      - git config user.email sam@shop.example
+
+  - id: editor-with-a-flag
+    title: An editor that waits
+    level: medium
+    brief: "Your team writes commit messages in VS Code. Someone set this repository's editor to code, and Git never waits for the message. Change it to the full command, code --wait, for this repository only."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Shop app" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - git config core.editor code
+    goal:
+      - check: config-is
+        key: core.editor
+        value: code --wait
+        label: "This repository's core.editor is exactly: code --wait"
+    hints:
+      - "Run git config core.editor. Someone already set an editor here, but a part of the command is missing."
+      - "The value has a space in it. What does the shell do with two words that are not in quotes?"
+      - "Run: git config core.editor \"code --wait\", then check it with git config --show-origin core.editor"
+    solution:
+      - git config core.editor "code --wait"
+
+  - id: build-bot-name
+    title: Commits signed by a robot
+    level: hard
+    brief: "New commits in this project say they were made by \"Build Bot\", and you never chose that name. Find out which level sets it (system, global or local) and write that one word into answer.txt. Then give this repository the identity Lin Chen, lin@shop.example."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo answer.txt >> .git/info/exclude
+      - echo "# Shop app" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - git config user.name "Build Bot"
+      - git config user.email "bot@ci.example"
+    goal:
+      - check: answer-is
+        answer: local
+        label: "answer.txt names the level that set the name Build Bot"
+      - check: config-is
+        key: user.name
+        value: Lin Chen
+        label: "This repository's user.name is Lin Chen"
+      - check: config-is
+        key: user.email
+        value: lin@shop.example
+        label: "This repository's user.email is lin@shop.example"
+    hints:
+      - "Git can tell you where a value comes from. Look at \"Show the level by name\" in the Advanced layer."
+      - "Run git config --show-scope user.name. The first word of the answer is the level. Write it down with echo <level> > answer.txt."
+      - "Run: echo local > answer.txt, then git config user.name \"Lin Chen\" and git config user.email lin@shop.example"
+    solution:
+      - echo local > answer.txt
+      - git config user.name "Lin Chen"
+      - git config user.email lin@shop.example

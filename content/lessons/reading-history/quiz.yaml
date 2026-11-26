@@ -1,0 +1,40 @@
+questions:
+  - question: "A teammate says the function sendReceipt disappeared from the code some time last year. No commit message mentions it. How do you find the commit that removed it?"
+    answers:
+      - text: "git log --grep=sendReceipt"
+        explanation: "--grep searches commit messages, and no message mentions the function."
+      - text: "git log -S sendReceipt"
+        correct: true
+        explanation: "-S lists the commits that added or removed the text. The newest one in the list is the commit that removed it."
+      - text: "git log -- sendReceipt"
+        explanation: "After the two dashes Git expects a file or folder. This looks for commits that changed a file named sendReceipt."
+
+  - question: "You run git log and the terminal stops with a colon on the last line. Nothing you type seems to run. What is going on?"
+    answers:
+      - text: "Git is still searching the history; wait for it to finish"
+        explanation: "The search is done. Git is showing the result one screen at a time and waits for a key."
+      - text: "The output is open in a pager; press q to leave it"
+        correct: true
+        explanation: "Long output opens in the pager. Space shows the next screen, and q goes back to the prompt."
+      - text: "The repository is damaged and git log cannot finish"
+        explanation: "A damaged repository prints an error starting with \"fatal:\". A colon is the pager's prompt."
+
+  - question: "You want every commit that changed anything in the docs folder since 1 March. Which command is right?"
+    answers:
+      - text: "git log --since=\"2026-03-01\" -- docs/"
+        correct: true
+        explanation: "Options come first, then the two dashes, then the path. A commit must pass both filters."
+      - text: "git log -- docs/ --since=\"2026-03-01\""
+        explanation: "Everything after the two dashes is read as a path, so --since would be treated as a file name and the date filter never applies."
+      - text: "git log --grep=docs --since=\"2026-03-01\""
+        explanation: "--grep reads commit messages. A commit can change the docs folder without the word docs in its message."
+
+  - question: "git log --oneline --author=Sam lists commits by Sam Lee and by Samira Noor. Why?"
+    answers:
+      - text: "--author keeps every author whose name or email contains the text"
+        correct: true
+        explanation: "Sam is part of both names. Write more of the name, like --author=\"Sam Lee\", to get one person."
+      - text: "--author only works together with --grep"
+        explanation: "The two filters are independent. --author works on its own."
+      - text: "The two authors share commits, so Git cannot tell them apart"
+        explanation: "Each commit has one author. Git lists both people because the text Sam fits both names."

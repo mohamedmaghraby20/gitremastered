@@ -1,0 +1,40 @@
+questions:
+  - question: "You edited app.js, ran git add app.js, and now git diff prints nothing. What happened to your change?"
+    answers:
+      - text: "It is staged; git diff --staged shows it"
+        correct: true
+        explanation: "Plain git diff compares the working tree with the staging area. After git add they match, so there is nothing to print."
+      - text: "Git lost it; you have to edit the file again"
+        explanation: "git add never throws a change away. It copied the file into the staging area, which plain git diff does not report."
+      - text: "It was committed by git add"
+        explanation: "git add only stages. The change is in no commit until you run git commit."
+
+  - question: "A diff shows \"-timeout = 30\" directly followed by \"+timeout = 60\". What did the author do?"
+    answers:
+      - text: "Deleted one setting and added an unrelated one"
+        explanation: "Both lines are the same setting at the same place. Git shows whole lines, so one edit looks like a removal plus an addition."
+      - text: "Edited one line: the timeout went from 30 to 60"
+        correct: true
+        explanation: "A - line followed by a + line at the same spot is the old and the new version of one edited line."
+      - text: "Added a second timeout line under the first"
+        explanation: "Then the first line would start with a space, as unchanged context, and only the new line would have a +."
+
+  - question: "You staged a fix in login.js, then kept editing the same file. Just before committing, which command shows exactly what the commit will contain?"
+    answers:
+      - text: "git diff"
+        explanation: "That shows only the edits made after staging, which are the ones the commit will not contain."
+      - text: "git diff HEAD"
+        explanation: "That mixes the staged fix with the later, unstaged edits. The commit takes only the staged part."
+      - text: "git diff --staged"
+        correct: true
+        explanation: "It compares the staging area with the last commit, and the staging area is what git commit records."
+
+  - question: "A line was added in one commit and removed again two commits later. You run git diff between the commit before the addition and the latest commit. What do you see for that line?"
+    answers:
+      - text: "Nothing: the line is in neither of the two versions"
+        correct: true
+        explanation: "git diff compares two snapshots and ignores the steps between them. Use git log -p to see each step."
+      - text: "The line once with + and once with -"
+        explanation: "That is what you would see by reading each commit's own diff. A diff between two commits only compares the two ends."
+      - text: "The line with a +, because it was added first"
+        explanation: "The order of events between the two commits does not matter. Only the two snapshots are compared, and the line is in neither."

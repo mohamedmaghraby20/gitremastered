@@ -1,0 +1,127 @@
+challenges:
+  - id: undo-debug-mode
+    title: Debug mode went out to everyone
+    level: easy
+    brief: "The last commit, \"Turn on debug mode\", added debug.js, and the team already has it. Undo that commit without removing anything from the history."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Shop app" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - printf 'Opening hours\nMon-Fri 9-17\n' > hours.txt
+      - git add hours.txt
+      - git commit -q -m "Add opening hours"
+      - echo "function checkout() {}" > checkout.js
+      - git add checkout.js
+      - git commit -q -m "Add checkout"
+      - echo "const debugMode = true;" > debug.js
+      - git add debug.js
+      - git commit -q -m "Turn on debug mode"
+    goal:
+      - check: commit-exists
+        message: 'Revert "Turn on debug mode"'
+        label: "A new commit reverts \"Turn on debug mode\""
+      - check: commit-count-is
+        count: 5
+        label: "The history has 5 commits: nothing was removed"
+      - check: file-is-missing
+        file: debug.js
+        label: "debug.js is gone from the project"
+      - check: working-folder-clean
+        label: "git status shows nothing left to do"
+    hints:
+      - "The commit is shared, so it must stay in the history. Which command undoes a commit by adding a new one?"
+      - "HEAD is the newest commit. git revert HEAD undoes it; add --no-edit to keep Git's message."
+      - "Run: git revert --no-edit HEAD"
+    solution:
+      - git revert --no-edit HEAD
+
+  - id: revert-the-tracker
+    title: A bad commit under two good ones
+    level: medium
+    brief: "Three commits ago someone added a tracking script, tracker.js, that must go. The contact page and the opening hours came after it and must stay. Undo only the tracking commit."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Shop app" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - printf 'Coffee 3.00\nTea 2.50\n' > prices.txt
+      - git add prices.txt
+      - git commit -q -m "Add price list"
+      - echo "sendEverythingTo('ads.example.com');" > tracker.js
+      - git add tracker.js
+      - git commit -q -m "Add tracking script"
+      - echo "Write to hello@shop.example" > contact.txt
+      - git add contact.txt
+      - git commit -q -m "Add contact page"
+      - printf 'Opening hours\nMon-Fri 9-17\n' > hours.txt
+      - git add hours.txt
+      - git commit -q -m "Add opening hours"
+    goal:
+      - check: commit-exists
+        message: 'Revert "Add tracking script"'
+        label: "A new commit reverts \"Add tracking script\""
+      - check: file-is-missing
+        file: tracker.js
+        label: "tracker.js is gone from the project"
+      - check: file-is-committed
+        file: contact.txt
+        label: "contact.txt is still committed"
+      - check: file-is-committed
+        file: hours.txt
+        label: "hours.txt is still committed"
+      - check: commit-count-is
+        count: 6
+        label: "The history has 6 commits: the old five and your revert"
+    hints:
+      - "Run git log --oneline. Which commit added the tracker, and what is its ID?"
+      - "git revert takes a commit ID. It undoes only that commit and keeps the later ones."
+      - "Run: git log --oneline, copy the ID in front of \"Add tracking script\", then git revert --no-edit <that ID>"
+    solution:
+      - git revert --no-edit HEAD~2
+
+  - id: revert-with-conflict
+    title: The revert stops on a conflict
+    level: hard
+    brief: "\"Double the coffee price\" was a mistake: coffee should cost 3.00 again. A later commit renamed the same line to \"Filter coffee\", so the revert will stop on a conflict. Finish it: the line should read \"Filter coffee 3.00\"."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Shop app" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - printf 'Coffee 3.00\nTea 2.50\n' > prices.txt
+      - git add prices.txt
+      - git commit -q -m "Add price list"
+      - printf 'Coffee 6.00\nTea 2.50\n' > prices.txt
+      - git commit -q -am "Double the coffee price"
+      - printf 'Filter coffee 6.00\nTea 2.50\n' > prices.txt
+      - git commit -q -am "Rename coffee to filter coffee"
+    goal:
+      - check: commit-exists
+        message: 'Revert "Double the coffee price"'
+        label: "A new commit reverts \"Double the coffee price\""
+      - check: no-operation-in-progress
+        label: "The revert is finished: no conflict is left"
+      - check: commit-count-is
+        count: 5
+        label: "The history has 5 commits: nothing was removed"
+      - check: working-folder-clean
+        label: "git status shows nothing left to do"
+    hints:
+      - "Revert \"Double the coffee price\" by its ID. Git stops and says CONFLICT. Open prices.txt: what are the two versions between the markers?"
+      - "Edit prices.txt so the first line is \"Filter coffee 3.00\" and the marker lines are gone. Then tell Git the conflict is solved with git add. See \"When it goes wrong\" in Must know."
+      - "Run: git revert --no-edit <ID of \"Double the coffee price\">, then printf 'Filter coffee 3.00\\nTea 2.50\\n' > prices.txt, then git add prices.txt, then git revert --continue"
+    solution:
+      - git revert --no-edit HEAD~1 || true
+      - printf 'Filter coffee 3.00\nTea 2.50\n' > prices.txt
+      - git add prices.txt
+      - git revert --continue

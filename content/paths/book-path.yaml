@@ -1,9 +1,63 @@
 id: book-path
 title: Book path
 chapters:
+  - number: 1
+    title: Getting Started
+    sections:
+      - number: "1.1"
+        title: About Version Control
+        lessons: [what-is-git]
+      - number: "1.2"
+        title: A Short History of Git
+        lessons: [what-is-git]
+      - number: "1.3"
+        title: What is Git?
+        lessons: [what-is-git]
+      - number: "1.4"
+        title: The Command Line
+        lessons: [setup]
+      - number: "1.5"
+        title: Installing Git
+        lessons: [setup]
+      - number: "1.6"
+        title: First-Time Git Setup
+        lessons: [setup]
+      - number: "1.7"
+        title: Getting Help
+        lessons: [setup]
   - number: 2
     title: Git Basics
     sections:
+      - number: "2.1"
+        title: Getting a Git Repository
+        lessons: [start-a-repo]
       - number: "2.2"
         title: Recording Changes to the Repository
-        lessons: [three-areas, ignoring-files]
+        lessons: [three-areas, ignoring-files, remove-move-files, diffs-in-depth]
+      - number: "2.3"
+        title: Viewing the Commit History
+        lessons: [reading-history]
+      - number: "2.4"
+        title: Undoing Things
+        lessons: [undo-basics, fix-last-commit]
+  - number: 7
+    title: Git Tools
+    sections:
+      - number: "7.7"
+        title: Reset Demystified
+        lessons: [reset-demystified]
+      - number: "7.8"
+        title: Advanced Merging
+        lessons: [revert-a-commit]
+  - number: 10
+    title: Git Internals
+    sections:
+      - number: "10.1"
+        title: Plumbing and Porcelain
+        lessons: [first-look-inside]
+      - number: "10.2"
+        title: Git Objects
+        lessons: [first-look-inside]
+      - number: "10.3"
+        title: Git References
+        lessons: [first-look-inside]

@@ -1,0 +1,40 @@
+questions:
+  - question: "You pushed a commit this morning. A teammate has already built two commits on top of it. Now you see it has a bug. What do you do?"
+    answers:
+      - text: "Fix it with git commit --amend and push again"
+        explanation: "Amend only replaces the newest commit, and it gives the replacement a new ID. Your teammate's work sits on the old one, so your histories would no longer match."
+      - text: "Run git revert on that commit"
+        correct: true
+        explanation: "Revert adds a new commit that undoes the change. The shared commit stays, so everyone's history still fits together."
+      - text: "Run git restore on the files it changed"
+        explanation: "git restore only discards changes that are not committed yet. This change is already in the history."
+
+  - question: "Your history is A, B, C (C is the newest). You run git revert B. What does git log show afterwards?"
+    answers:
+      - text: "A and C: B was removed"
+        explanation: "Revert never removes a commit. It adds one."
+      - text: "A, B, C and a new commit that undoes B"
+        correct: true
+        explanation: "The new commit goes on top of C and applies the opposite of B's change. B and C are both still there, and C's work is kept."
+      - text: "A only: everything from B onwards was undone"
+        explanation: "Revert undoes the one commit you name. Later commits keep their changes."
+
+  - question: "You committed a file with a password, pushed it, and then reverted the commit. Is the password safe now?"
+    answers:
+      - text: "Yes, the revert deleted the commit that held it"
+        explanation: "The revert only added a commit that removes the file from the current project. The old commit is still in the history."
+      - text: "No, the old commit still holds the password and anyone can read it"
+        correct: true
+        explanation: "Nothing is deleted by a revert. Change the password first, then remove it from history with the tools from the lesson on leaked secrets."
+      - text: "Yes, as long as nobody runs git log"
+        explanation: "Hoping nobody looks is not protection. The commit and its content stay in the repository and on the server."
+
+  - question: "git revert stopped with \"CONFLICT (content)\". You decide you do not want this revert after all. What do you run?"
+    answers:
+      - text: "git revert --abort"
+        correct: true
+        explanation: "It cancels the paused revert and puts your files back as they were before you started."
+      - text: "git revert --continue"
+        explanation: "That finishes the revert, and only works after you fixed the file and ran git add."
+      - text: "Nothing: closing the terminal cancels it"
+        explanation: "The paused revert is stored in the .git folder. It is still waiting when you open the terminal again."

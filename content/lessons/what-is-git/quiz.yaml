@@ -1,0 +1,40 @@
+questions:
+  - question: "A project has 200 files. You change one of them and commit. What does the new commit hold?"
+    answers:
+      - text: "Only the lines that changed in that one file"
+        explanation: "That is how difference-based tools work. Git records the whole project each time."
+      - text: "A snapshot of all 200 files, where the 199 unchanged ones point at content Git already stored"
+        correct: true
+        explanation: "Every commit is a full snapshot. Unchanged files cost almost nothing, because the snapshot reuses the stored content."
+      - text: "A fresh copy of all 200 files, stored again in full"
+        explanation: "The snapshot is complete, but Git does not store unchanged content twice. It points at the copy it already has."
+
+  - question: "You are on a train with no internet. Which of these can you NOT do?"
+    answers:
+      - text: "Read the project's whole history"
+        explanation: "The full history is in your clone, in the .git folder, so reading it needs no network."
+      - text: "Make new commits"
+        explanation: "Commits are added to the repository on your own disk. You can make as many as you like offline."
+      - text: "Send your commits to your teammates"
+        correct: true
+        explanation: "Sharing is one of the few things that needs the network. Everything else works from your own disk."
+
+  - question: "A disk error flips one character inside an old file that Git stored. What happens?"
+    answers:
+      - text: "Nothing: Git cannot tell, because the file name is the same"
+        explanation: "Git does not go by names. It names content by its checksum, and the damaged content no longer matches."
+      - text: "Git can notice, because the content no longer matches its checksum"
+        correct: true
+        explanation: "Everything Git stores is named by a checksum of its content. Changed content gives a different checksum, so the damage shows."
+      - text: "Git repairs the file from the commit before it"
+        explanation: "Git detects the damage; it does not repair it by itself. You would restore the repository from another clone."
+
+  - question: "Yesterday's commit deleted notes.txt. Today you need a line from it. Is it still there?"
+    answers:
+      - text: "Yes: the commits before the deletion still hold the file in their snapshots"
+        correct: true
+        explanation: "A new commit never changes older ones. The deletion is a new snapshot without the file; the older snapshots keep it."
+      - text: "No: a committed deletion removes the file from the repository"
+        explanation: "The deleting commit only adds a snapshot that lacks the file. Git almost never removes data it has committed."
+      - text: "Only if you copied it somewhere first"
+        explanation: "No copy is needed. The file was committed before, so earlier commits still have it."

@@ -1,0 +1,40 @@
+questions:
+  - question: "You staged config.js by mistake. Its edits are good, they just belong in a later commit. What do you run?"
+    answers:
+      - text: "git restore config.js"
+        explanation: "Without --staged, restore works on the working tree. Here it would change nothing, because the file matches its staged version, and config.js would still be staged."
+      - text: "git restore --staged config.js"
+        correct: true
+        explanation: "--staged takes the change out of the staging area and never touches the file in your working tree, so the edits stay."
+      - text: "rm config.js, then git add config.js"
+        explanation: "That deletes the file and stages the deletion. The edits are lost and the next commit would remove the file."
+
+  - question: "You edited report.md for an hour, never staged it, and then ran git restore report.md. How do you get the edits back with Git?"
+    answers:
+      - text: "git restore --staged report.md"
+        explanation: "That copies the last commit's version into the staging area. Your edits were never there."
+      - text: "Run git restore report.md a second time"
+        explanation: "Restore copies Git's version over your file. Running it again copies the same version again."
+      - text: "You cannot: Git never had those edits"
+        correct: true
+        explanation: "Git only keeps what was staged or committed. Edits that lived only in the working tree are gone; your editor's own file history is the only place left to look."
+
+  - question: "notes.txt is new and untracked. You run git restore notes.txt. What happens?"
+    answers:
+      - text: "Git prints a pathspec error and leaves the file alone"
+        correct: true
+        explanation: "Restore only works on tracked files. Git has no version of notes.txt to copy back, so it refuses. Delete an untracked file yourself with rm."
+      - text: "Git deletes notes.txt, because the last commit does not have it"
+        explanation: "Restore never deletes untracked files. It does nothing to files Git does not track."
+      - text: "Git stages notes.txt"
+        explanation: "Staging is the job of git add. Restore moves changes backward, not forward."
+
+  - question: "You staged a working version of app.js, then kept editing and broke it. git status -s shows MM app.js. What does git restore app.js give you?"
+    answers:
+      - text: "The version from the last commit"
+        explanation: "Plain restore copies from the staging area, not from the last commit. The staged version is newer than the commit here."
+      - text: "The staged version: the one that worked"
+        correct: true
+        explanation: "git restore copies the staged version over the working tree. The broken edits are discarded and the staged version stays staged."
+      - text: "The broken version, now unstaged"
+        explanation: "That would leave your working tree unchanged. Restore without --staged always overwrites the working tree."

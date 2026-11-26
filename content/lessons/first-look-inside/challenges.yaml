@@ -1,0 +1,99 @@
+challenges:
+  - id: name-the-kind
+    title: What kind of object is this?
+    level: easy
+    brief: "A teammate sends you an ID from the recipe book's repository: 09d2726. Find out what kind of object it is, and write the kind (commit, tree or blob) into answer.txt."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo answer.txt >> .git/info/exclude
+      - echo "# Recipe book" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - mkdir recipes
+      - echo "Boil the pasta for 9 minutes." > recipes/pasta.txt
+      - git add recipes
+      - git commit -q -m "Add pasta recipe"
+      - echo "Toast the bread, then add butter." > recipes/toast.txt
+      - git add recipes
+      - git commit -q -m "Add toast recipe"
+    goal:
+      - check: answer-is
+        answer: tree
+        label: "answer.txt names the right kind of object"
+    hints:
+      - "One git cat-file option prints only the type of an object."
+      - "Run git cat-file -t 09d2726 and read the one word Git prints."
+      - "Run: git cat-file -t 09d2726 > answer.txt (the > writes the output into the file). Or type the word yourself: echo tree > answer.txt"
+    solution:
+      - git cat-file -t 09d2726 > answer.txt
+
+  - id: find-the-parent
+    title: The commit before the newest one
+    level: medium
+    brief: "Without using git log, find the commit that came right before the one main points at. Write its ID (short or full) into answer.txt."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo answer.txt >> .git/info/exclude
+      - echo "# Recipe book" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - mkdir recipes
+      - echo "Boil the pasta for 9 minutes." > recipes/pasta.txt
+      - git add recipes
+      - git commit -q -m "Add pasta recipe"
+      - echo "Toast the bread, then add butter." > recipes/toast.txt
+      - git add recipes
+      - git commit -q -m "Add toast recipe"
+    goal:
+      - check: answer-is-commit
+        message: "Add pasta recipe"
+        label: "answer.txt holds the ID of the commit before the newest one"
+    hints:
+      - "Which file under .git/refs/heads tells you the commit main points at? And which line inside a commit names the commit before it?"
+      - "Run cat .git/refs/heads/main to get the newest commit's ID, then print that commit with git cat-file -p and read its parent line."
+      - "Run: git cat-file -p main, copy the ID after the word parent, then echo <that ID> > answer.txt. The first seven characters are enough."
+    solution:
+      - git cat-file -p main | sed -n 2p | cut -d" " -f2 > answer.txt
+
+  - id: deleted-ingredient
+    title: Read a file that was deleted
+    level: hard
+    brief: "A teammate deleted the drafts folder, and with it drafts/secret.txt, which named the secret ingredient in one word. The commit \"Add secret ingredient\" still holds it. Walk from that commit to its tree to the blob, and write the word into answer.txt."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo answer.txt >> .git/info/exclude
+      - echo "# Recipe book" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - mkdir drafts
+      - echo "saffron" > drafts/secret.txt
+      - git add drafts
+      - git commit -q -m "Add secret ingredient"
+      - git rm -q -r drafts
+      - git commit -q -m "Remove the drafts folder"
+      - mkdir recipes
+      - echo "Boil the pasta for 9 minutes." > recipes/pasta.txt
+      - git add recipes
+      - git commit -q -m "Add pasta recipe"
+    goal:
+      - check: answer-is
+        answer: saffron
+        label: "answer.txt holds the secret ingredient"
+      - check: file-is-missing
+        file: drafts/secret.txt
+        label: "The drafts folder is still deleted"
+    hints:
+      - "Deleting a file in a later commit does not remove the old commit, its tree or its blob. Run git log --oneline to find the ID of \"Add secret ingredient\"."
+      - "Print that commit with git cat-file -p and follow the trail: its tree, then the drafts tree inside it, then the blob for secret.txt. The Advanced layer shows a shortcut: <commit>:<path>."
+      - "Run: git log --oneline, then git cat-file -p <commit ID>, git cat-file -p <tree ID>, git cat-file -p <drafts tree ID>, git cat-file -p <blob ID>. Then echo saffron > answer.txt"
+    solution:
+      - git cat-file -p HEAD~2:drafts/secret.txt > answer.txt

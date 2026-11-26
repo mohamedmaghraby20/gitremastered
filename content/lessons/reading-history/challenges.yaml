@@ -1,0 +1,85 @@
+# All three challenges read the same project: a shop app with nine commits by three people
+# (Maya Chen, Omar Haddad, Omar Said) between 5 October and 16 November 2026.
+# "&shop-history" names the setup list once; "*shop-history" reuses it, so the three stay equal.
+# Every commit sets its author, committer and dates, so the history is the same on every computer.
+challenges:
+  - id: count-one-author
+    title: How many commits did Omar Haddad make?
+    level: easy
+    brief: "Your team lead asks how much of the shop app Omar Haddad wrote. Count his commits and write the number into answer.txt, for example with: echo 5 > answer.txt. Careful: two people on this project are called Omar."
+    setup: &shop-history
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo answer.txt >> .git/info/exclude
+      - printf "# Shop app\n\nA small online shop.\n" > README.md
+      - git add README.md
+      - GIT_AUTHOR_NAME="Maya Chen" GIT_AUTHOR_EMAIL=maya@shop.example GIT_COMMITTER_NAME="Maya Chen" GIT_COMMITTER_EMAIL=maya@shop.example GIT_AUTHOR_DATE="2026-10-05T09:15:00+0000" GIT_COMMITTER_DATE="2026-10-05T09:15:00+0000" git commit -q -m "Add README"
+      - printf "function listProducts() {\n  return ['book', 'pen', 'lamp'];\n}\n" > shop.js
+      - git add shop.js
+      - GIT_AUTHOR_NAME="Maya Chen" GIT_AUTHOR_EMAIL=maya@shop.example GIT_COMMITTER_NAME="Maya Chen" GIT_COMMITTER_EMAIL=maya@shop.example GIT_AUTHOR_DATE="2026-10-07T14:30:00+0000" GIT_COMMITTER_DATE="2026-10-07T14:30:00+0000" git commit -q -m "Add shop page"
+      - printf "function cartTotal(prices) {\n  let total = 0;\n  for (const price of prices) {\n    total = total + price;\n  }\n  return total;\n}\n\nfunction applyDiscount(total) {\n  return total * 0.9;\n}\n" > cart.js
+      - git add cart.js
+      - GIT_AUTHOR_NAME="Omar Haddad" GIT_AUTHOR_EMAIL=omar.haddad@shop.example GIT_COMMITTER_NAME="Omar Haddad" GIT_COMMITTER_EMAIL=omar.haddad@shop.example GIT_AUTHOR_DATE="2026-10-12T11:05:00+0000" GIT_COMMITTER_DATE="2026-10-12T11:05:00+0000" git commit -q -m "Add cart with a discount code"
+      - printf "function checkout(prices) {\n  return 'Thank you for your order';\n}\n" > checkout.js
+      - git add checkout.js
+      - GIT_AUTHOR_NAME="Omar Said" GIT_AUTHOR_EMAIL=omar.said@shop.example GIT_COMMITTER_NAME="Omar Said" GIT_COMMITTER_EMAIL=omar.said@shop.example GIT_AUTHOR_DATE="2026-10-19T16:40:00+0000" GIT_COMMITTER_DATE="2026-10-19T16:40:00+0000" git commit -q -m "Add checkout page"
+      - printf "function cartTotal(prices) {\n  let total = 0;\n  for (const price of prices) {\n    total = total + price;\n  }\n  return Math.round(total * 100) / 100;\n}\n\nfunction applyDiscount(total) {\n  return total * 0.9;\n}\n" > cart.js
+      - git add cart.js
+      - GIT_AUTHOR_NAME="Omar Haddad" GIT_AUTHOR_EMAIL=omar.haddad@shop.example GIT_COMMITTER_NAME="Omar Haddad" GIT_COMMITTER_EMAIL=omar.haddad@shop.example GIT_AUTHOR_DATE="2026-10-26T10:20:00+0000" GIT_COMMITTER_DATE="2026-10-26T10:20:00+0000" git commit -q -m "Fix rounding in cart total"
+      - printf "function checkout(prices) {\n  const total = cartTotal(prices);\n  return 'Thank you for your order. Total ' + total;\n}\n" > checkout.js
+      - git add checkout.js
+      - GIT_AUTHOR_NAME="Maya Chen" GIT_AUTHOR_EMAIL=maya@shop.example GIT_COMMITTER_NAME="Maya Chen" GIT_COMMITTER_EMAIL=maya@shop.example GIT_AUTHOR_DATE="2026-10-28T13:00:00+0000" GIT_COMMITTER_DATE="2026-10-28T13:00:00+0000" git commit -q -m "Show the order total at checkout"
+      - printf "\n## Tests\n\nRun the tests with npm test before you commit.\n" >> README.md
+      - git add README.md
+      - GIT_AUTHOR_NAME="Omar Said" GIT_AUTHOR_EMAIL=omar.said@shop.example GIT_COMMITTER_NAME="Omar Said" GIT_COMMITTER_EMAIL=omar.said@shop.example GIT_AUTHOR_DATE="2026-11-02T09:45:00+0000" GIT_COMMITTER_DATE="2026-11-02T09:45:00+0000" git commit -q -m "Describe how to run the tests"
+      - printf "function cartTotal(prices) {\n  let total = 0;\n  for (const price of prices) {\n    total = total + price;\n  }\n  return Math.round(total * 100) / 100;\n}\n" > cart.js
+      - git add cart.js
+      - GIT_AUTHOR_NAME="Omar Haddad" GIT_AUTHOR_EMAIL=omar.haddad@shop.example GIT_COMMITTER_NAME="Omar Haddad" GIT_COMMITTER_EMAIL=omar.haddad@shop.example GIT_AUTHOR_DATE="2026-11-09T15:10:00+0000" GIT_COMMITTER_DATE="2026-11-09T15:10:00+0000" git commit -q -m "Remove the discount code"
+      - 'printf "function checkout(prices) {\n  const total = cartTotal(prices);\n  const shipping = total > 50 ? 0 : 5;\n  return ''Thank you for your order. Total '' + (total + shipping);\n}\n" > checkout.js'
+      - printf "\n## Shipping\n\nShipping is free for orders over 50.\n" >> README.md
+      - git add checkout.js README.md
+      - GIT_AUTHOR_NAME="Maya Chen" GIT_AUTHOR_EMAIL=maya@shop.example GIT_COMMITTER_NAME="Maya Chen" GIT_COMMITTER_EMAIL=maya@shop.example GIT_AUTHOR_DATE="2026-11-16T12:25:00+0000" GIT_COMMITTER_DATE="2026-11-16T12:25:00+0000" git commit -q -m "Add free shipping over 50"
+    goal:
+      - check: answer-is
+        answer: "3"
+        label: "answer.txt holds the number of commits by Omar Haddad"
+    hints:
+      - "Which option of git log keeps only one person's commits? Add --oneline, so each commit is one line you can count."
+      - "--author=Omar matches both Omar Haddad and Omar Said. Write enough of the name to fit only one of them, in quotes because of the space."
+      - "Run: git log --oneline --author=\"Omar Haddad\", count the lines, then echo 3 > answer.txt"
+    solution:
+      - git log --oneline --author="Omar Haddad" | wc -l > answer.txt
+
+  - id: find-added-function
+    title: Which commit added the discount?
+    level: medium
+    brief: "The shop used to give a discount through a function called applyDiscount in cart.js. The function is gone today. Find the commit that first added it, and write its short ID into answer.txt, for example with: echo a1b2c3d > answer.txt"
+    setup: *shop-history
+    goal:
+      - check: answer-is-commit
+        message: "Add cart with a discount code"
+        label: "answer.txt holds the ID of the commit that added applyDiscount"
+    hints:
+      - "The function is not in the files any more, so searching the files will not help. Which option of git log searches the lines that commits added or removed?"
+      - "git log --oneline -S applyDiscount lists two commits: one added the text, one removed it. The newest is on top."
+      - "The lower line is the older commit, the one that added the function. Run: echo 021b552 > answer.txt (use the ID your own git log prints)."
+    solution:
+      - git log -S applyDiscount --pretty=format:%h | tail -1 > answer.txt
+
+  - id: last-change-in-october
+    title: The checkout as it was at the end of October
+    level: hard
+    brief: "A customer complains about an order from 31 October 2026. To see the checkout code they used, you need the last commit that changed checkout.js on or before that day. Write its short ID into answer.txt."
+    setup: *shop-history
+    goal:
+      - check: answer-is-commit
+        message: "Show the order total at checkout"
+        label: "answer.txt holds the ID of the last October commit that changed checkout.js"
+    hints:
+      - "Two filters are needed at once: one for the file, one for the date. A commit has to pass both."
+      - "--until keeps commits up to a date, and a path after -- keeps commits that changed that file. The newest match is the first line; -1 prints only that one."
+      - "Run: git log --oneline --until=\"2026-10-31 23:59\" -1 -- checkout.js, then write the ID it prints into answer.txt"
+    solution:
+      - git log --until="2026-10-31 23:59" -1 --pretty=format:%h -- checkout.js > answer.txt
