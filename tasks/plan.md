@@ -22,8 +22,8 @@ Build the GitRemastered desktop app (Tauri 2 + SvelteKit + Rust) from an empty f
 | 2 | **Pilot lesson** | "Status, stage, commit" works end to end: text, real terminal, live visualizer, mission, quiz, saved progress | Detailed tasks 8–23 |
 | 3 | **Pilot review** | You take the pilot as a student; we fix the lesson format and the engine before scaling | Detailed tasks 24–29 (done 2026-11-25) |
 | 4 | **The other screens** | Home, course map (both paths), search, command index and settings work for real, as in the prototype | Detailed tasks 30–40 |
-| 5 | **Core course** | Modules 0–5 (22 lessons) written and playable. The engine grows as lessons need it: branch graphs, merges, a local "origin" remote | Planned after phase 4, module by module |
-| 6 | **Full course** | Modules 6–12 and the 3 capstones. GitHub lessons run on the student's own real GitHub account and repo (see Open questions) | Planned during phase 5 |
+| 5 | **Core course** | Modules 0–4 (22 new lessons) written and playable, all offline. The engine grows as lessons need it: branch graphs, merges, a local "origin" remote | Detailed tasks 45–75 |
+| 6 | **Full course** | Modules 5–12, `github-account-ssh` and the 3 capstones. GitHub lessons run on the student's own real GitHub account and repo (see Open questions) | Planned during phase 5 |
 | 7 | **Release** | Installers for Windows, macOS and Linux built by GitHub Actions; auto-update; v1.0 published on GitHub | Planned before phase 6 ends |
 
 ## Architecture decisions for phases 1–2
@@ -117,7 +117,7 @@ Full details for each task (acceptance criteria, verification, files) are in `ta
 ### Checkpoint D: Pilot reviewed
 - [x] Measurements within SPEC targets
 - [x] Review findings fixed or listed
-- [ ] You review phases 2 and 3 together and take the pilot yourself
+- [x] Approved 2026-11-26. Your own run-through moves to one review of the whole app when it is finished
 
 ### Phase 4: The other screens
 - [x] Task 30: A segmented switch component
@@ -137,7 +137,29 @@ Full details for each task (acceptance criteria, verification, files) are in `ta
 - [x] Task 44: Challenges instead of one mission (3+ per lesson, easy to hard)
 
 ### Checkpoint E: The other screens
-- [ ] Every prototype screen works with real content and progress; search finds lessons by title and command; you review in the desktop app
+- [x] Every prototype screen works with real content and progress; search finds lessons by title and command. Approved 2026-11-26; your review moves to the whole-app review at the end
+
+### Phase 5: Core course
+Scope approved 2026-11-26: modules 0–4, offline. Run in one go; you review the whole app at the end.
+
+- [ ] Task 45: A short shell prompt
+- [ ] Task 46: The `predict` and `graph` lesson blocks
+- [ ] Task 47: Goal checks for the first three modules
+- [ ] Tasks 48–50: Orientation (`what-is-git`, `setup`, `first-look-inside`)
+- [ ] Tasks 51–54: Your daily loop (`start-a-repo`, `remove-move-files`, `reading-history`, `diffs-in-depth`)
+- [ ] Task 55: The map shows commits that lost their branch
+- [ ] Tasks 56–59: Undo and fix (`undo-basics`, `fix-last-commit`, `revert-a-commit`, `reset-demystified`)
+- [ ] Task 60: A map for branches
+- [ ] Task 61: Merge, conflict and stash state
+- [ ] Tasks 62–66: Branching (`branches-are-pointers`, `switch-and-detached-head`, `branch-and-merge`, `branch-management`, `stash-and-clean`)
+- [ ] Task 67: A local "origin" and a teammate
+- [ ] Tasks 68–72: Remotes (`how-git-talks`, `remotes`, `remote-branches`, `refspecs`, `tags-and-releases`)
+- [ ] Task 73: Module checkpoints
+- [ ] Task 74: Link pass, paths and coverage
+- [ ] Task 75: Measure again and plan phase 6
+
+### Checkpoint F: Core course
+- [ ] All 24 lessons of modules 0–4 playable; tests pass; measurements within targets; you review the whole app
 
 ## Risks and mitigations
 

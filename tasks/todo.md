@@ -649,6 +649,150 @@ Ctrl K from any screen opens a **quick search panel** over the current screen, l
 **Verification:** unit tests (parsing, progress), mission tests, driver play-through · **Files:** `content/`, `mission-engine/`, `components/mission-panel/` · **Scope:** L
 
 ## Checkpoint E: The other screens
-- [ ] Every screen in the prototype works with real content and progress
-- [ ] Search finds lessons by title and by command (SPEC §10 item 9)
-- [ ] All tests pass; you review the screens in the desktop app
+- [x] Every screen in the prototype works with real content and progress
+- [x] Search finds lessons by title and by command (SPEC §10 item 9)
+- [x] All tests pass. Approved 2026-11-26: you review the whole app in one go when it is finished, not screen by screen
+
+---
+
+## Phase 5: Core course
+
+Goal: modules 0–4 of the Pro path written and playable: Orientation, Your daily loop, Undo and fix, Branching, Remotes. That is 22 new lessons on top of the 2 that exist. Everything runs offline against a local "origin"; nothing needs a GitHub account.
+
+**Scope, approved 2026-11-26:**
+- In: 22 lessons, the engine pieces they need, 4 module checkpoints.
+- Moved to phase 6: `github-account-ssh`, the GitHub-release half of `tags-and-releases`, and module 5 (Working in a team). They need a real GitHub account, which is designed in phase 6.
+- You asked for phase 5 in one run, task after task, and you review the whole app at the end. So the "you approve the text" step of each lesson moves to that final review.
+
+**Every lesson task** follows `docs/writing-lessons.md`: `lesson.md`, `coverage.md`, 3+ challenges, a quiz, command pages and glossary terms for what it teaches, both path files, the 18 teaching rules, real Git output, `pnpm content:check` and `pnpm test:missions` green, one commit.
+
+### Prep
+
+### Task 45: A short shell prompt
+**Description:** Pilot finding 4. Git Bash's two-line prompt with the full practice path loses the first key after Ctrl C and stalls after a resize. Start the shell with our own small start file: the prompt becomes `practice-folder (branch) $` on one line.
+
+**Acceptance criteria:**
+- [ ] The prompt is one line: folder name, branch in brackets, `$`
+- [ ] Git Bash's own settings (colors, aliases, PATH) still load
+
+**Verification:** Rust unit tests, driver check in the desktop app · **Files:** `git_runner/shell_choice.rs`, a new start-file module · **Scope:** S
+
+### Task 46: The `predict` and `graph` lesson blocks
+**Description:** Teaching rules 16 and 17 name two blocks that are documented but not built. `predict`: a question with the answer behind a "Show answer" button. `graph`: a small static commit diagram in the history map's style (commits, branch labels, HEAD).
+
+**Acceptance criteria:**
+- [ ] Both blocks parse, render and fail the content check when badly filled
+- [ ] The graph draws branches on their own rows and merge commits with two parents
+- [ ] Keyboard and screen-reader friendly (button with `aria-expanded`; the graph has a text description)
+
+**Verification:** unit tests (parsing, layout), component tests · **Files:** `content/render-blocks.ts`, `visualizer/`, `components/lesson-reader/` · **Scope:** M
+
+### Task 47: Goal checks for the first three modules
+**Description:** New lessons need goals the snapshot cannot answer yet. Snapshot gains `localConfig` (the repo's own settings) and `answer` (the first line of `answer.txt`, for "find out and write it down" challenges). New checks: `commit-count-is`, `latest-commit-message-contains`, `config-is`, `answer-is`, `answer-is-commit`, `file-exists`, `file-is-missing`.
+
+**Acceptance criteria:**
+- [ ] Rust and TypeScript shapes match (the JSON-name test covers the new fields)
+- [ ] Every new check has a passing and a failing test
+- [ ] `docs/writing-lessons.md` lists the new checks; SPEC 3.4 shows the new fields
+
+**Verification:** Rust tests, goal-checker tests · **Files:** `models/`, `repo_inspector/`, `mission-engine/`, `types/`, `content/parse-mission.ts` · **Scope:** M
+
+### Module 0: Orientation
+
+| Task | Lesson | Teaches |
+|---|---|---|
+| 48 | `what-is-git` | Version control, snapshots not differences, nearly everything is local, integrity |
+| 49 | `setup` | Installing, `git config` levels, identity, editor, default branch, getting help |
+| 50 | `first-look-inside` | The `.git` folder, objects (blob, tree, commit), refs, plumbing vs porcelain |
+
+### Module 1: Your daily loop
+
+| Task | Lesson | Teaches |
+|---|---|---|
+| 51 | `start-a-repo` | `git init`, `git clone` (from a local folder here), what each creates |
+| 52 | `remove-move-files` | `git rm`, `git rm --cached`, `git mv`, how Git sees a rename |
+| 53 | `reading-history` | `git log` and its options: `--oneline`, `-p`, `--stat`, `--graph`, limiting |
+| 54 | `diffs-in-depth` | `git diff`, `--staged`, between commits, reading a hunk |
+
+### Module 2: Undo and fix
+
+### Task 55: The map shows commits that lost their branch
+**Description:** After `git commit --amend` or `git reset`, the old commit vanishes from the map, which hides what really happened. Read the reflog too: a commit no branch or tag reaches shows as a faded station marked "no branch". Stash commits stay off the map.
+
+**Acceptance criteria:**
+- [ ] After an amend, the old commit is still on the map, faded
+- [ ] `commit-count-…` checks count only reachable commits
+
+**Verification:** Rust tests against real Git, layout tests · **Files:** `repo_inspector/`, `visualizer/history-layout.ts`, `CommitStation.svelte` · **Scope:** M
+
+| Task | Lesson | Teaches |
+|---|---|---|
+| 56 | `undo-basics` | `git restore`, `git restore --staged`, what cannot be undone |
+| 57 | `fix-last-commit` | `git commit --amend`: message, forgotten file; never after pushing |
+| 58 | `revert-a-commit` | `git revert`: a new commit that undoes an old one |
+| 59 | `reset-demystified` | `git reset --soft`, `--mixed`, `--hard`: the three trees |
+
+### Module 3: Branching
+
+### Task 60: A map for branches
+**Description:** One row (lane) per branch, labels for remote-tracking branches and tags, and a clear detached HEAD (the HEAD pin on a commit with no branch label, plus a caption).
+
+**Acceptance criteria:**
+- [ ] Two branches that split draw as two rows that meet again at a merge commit
+- [ ] Detached HEAD is named on the map; tags and `origin/…` labels have their own look
+
+**Verification:** layout unit tests, component tests · **Files:** `visualizer/`, `components/visualizer/` · **Scope:** M
+
+### Task 61: Merge, conflict and stash state
+**Description:** Snapshot gains `conflictedFiles`, `operation` (a merge, rebase, revert or cherry-pick in progress) and `stashes`. The desk marks conflicted files; the caption says when a merge is waiting. New checks: `branch-exists`, `branch-is-missing`, `head-is-on-branch`, `head-is-detached`, `branch-is-merged-into`, `head-commit-is-merge`, `no-operation-in-progress`, `stash-count-is`.
+
+**Verification:** Rust tests against real Git, goal-checker tests, component tests · **Files:** `models/`, `repo_inspector/`, `mission-engine/`, `components/visualizer/` · **Scope:** L
+
+| Task | Lesson | Teaches |
+|---|---|---|
+| 62 | `branches-are-pointers` | A branch is a pointer to a commit; HEAD; `git branch`, `git log --decorate` |
+| 63 | `switch-and-detached-head` | `git switch`, `-c`, switching with changes, detached HEAD and getting out |
+| 64 | `branch-and-merge` | Fast-forward and three-way merge, conflicts and how to resolve them |
+| 65 | `branch-management` | List, `--merged`, delete, rename, changing the default branch name |
+| 66 | `stash-and-clean` | `git stash` (push, list, pop, apply, `-u`), `git clean` |
+
+### Module 4: Remotes
+
+### Task 67: A local "origin" and a teammate
+**Description:** Practice setup can build a bare repository beside the practice folder and use it as `origin`, and can push "a teammate's" commits to it, so fetch, pull and push work offline. Snapshot branches gain `upstream`, `ahead` and `behind`; snapshot gains `remotes`. New checks: `remote-exists`, `branch-tracks`, `branch-is-in-sync`, `remote-branch-exists`, `remote-branch-is-missing`, `tag-exists`, `tag-is-missing`.
+
+**Acceptance criteria:**
+- [ ] Reset rebuilds the remote too; nothing is left behind in the practice root
+- [ ] `pnpm test:missions` runs remote challenges with no network
+
+**Verification:** Rust tests against real Git, mission tests · **Files:** `git_runner/practice_folder.rs`, `repo_inspector/`, `models/`, `mission-engine/` · **Scope:** L
+
+| Task | Lesson | Teaches |
+|---|---|---|
+| 68 | `how-git-talks` | Local, HTTPS and SSH protocols; what fetch and push send |
+| 69 | `remotes` | `git remote`, `fetch`, `pull`, `push`, the rejected push |
+| 70 | `remote-branches` | `origin/main`, tracking branches, ahead and behind, deleting remote branches |
+| 71 | `refspecs` | How fetch and push map branches; `+`, deleting with a refspec |
+| 72 | `tags-and-releases` | Lightweight and annotated tags, pushing tags (GitHub releases wait for phase 6) |
+
+### Wrap-up
+
+### Task 73: Module checkpoints
+**Description:** One optional checkpoint at the end of modules 1–4: a short page with three harder challenges that mix the module's skills, with no hints (course map rule 4). Hints become optional in `challenges.yaml` for checkpoints only.
+
+**Verification:** parser tests, mission tests · **Scope:** M
+
+### Task 74: Link pass, paths and coverage
+**Description:** Turn every plain-text mention of a lesson that now exists into a `lesson:` link (teaching rule 18). Fill both path files. Check each book section of chapters 1–3 and 10.1–10.3 maps to a lesson or a "left out" row.
+
+**Verification:** `pnpm content:check`, a script that lists plain-text mentions · **Scope:** S
+
+### Task 75: Measure again and plan phase 6
+**Description:** Re-run `pnpm review:measure` with a branching lesson open (delay under 300 ms, memory near 250 MB), play one lesson per module with the student driver, update `docs/measurements.md`, and write phase 6's tasks.
+
+**Verification:** driver run in the desktop app · **Scope:** M
+
+## Checkpoint F: Core course
+- [ ] All 24 lessons of modules 0–4 are playable in the desktop app
+- [ ] All tests pass; measurements within SPEC targets
+- [ ] You review the whole app
