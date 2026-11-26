@@ -91,7 +91,9 @@ export type GitHubGoalCheck =
 
 /** Goals about other folders that share or hold the repository: worktrees and submodules. */
 export type WorkspaceGoalCheck =
-	{ check: 'worktree-exists'; branch: string } | { check: 'submodule-exists'; path: string };
+	| { check: 'worktree-exists'; branch: string }
+	| { check: 'worktree-count-is'; count: number }
+	| { check: 'submodule-exists'; path: string };
 
 /**
  * One goal the student must reach, checked against the repo snapshot.

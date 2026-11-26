@@ -50,6 +50,8 @@ pub struct RepoSnapshot {
     pub worktrees: Vec<Worktree>,
     /// Submodules listed in `.gitmodules`.
     pub submodules: Vec<Submodule>,
+    /// Committed files a sparse checkout left out of the working tree.
+    pub sparse_skipped_files: Vec<String>,
 }
 
 /// One commit.
@@ -197,6 +199,7 @@ mod tests {
                 path: "vendor/library".to_string(),
                 is_initialized: true,
             }],
+            sparse_skipped_files: vec![],
         }
     }
 

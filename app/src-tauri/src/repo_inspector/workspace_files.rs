@@ -100,6 +100,27 @@ pub fn read_submodules(repo_folder: &Path) -> Vec<Submodule> {
         .collect()
 }
 
+/// Lists the committed files a sparse checkout left out of the working tree. Git does not
+/// report them as deleted, so without this list they would look present. Runs only when a
+/// sparse checkout is set up (`.git/info/sparse-checkout` exists), so it costs nothing else.
+///
+/// Inputs: the repository's top folder and the files in the latest commit.
+/// Output: the committed files that are not on disk.
+pub fn read_sparse_skipped_files(repo_folder: &Path, committed_files: &[String]) -> Vec<String> {
+    let sparse_settings = repo_folder
+        .join(".git")
+        .join("info")
+        .join("sparse-checkout");
+    if !sparse_settings.is_file() {
+        return Vec::new();
+    }
+    committed_files
+        .iter()
+        .filter(|path| !repo_folder.join(path).exists())
+        .cloned()
+        .collect()
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -121,6 +142,20 @@ mod tests {
                 text: "Tea\n".to_string()
             }]
         );
+    }
+
+    /// Without a sparse checkout nothing counts as skipped; with one, files not on disk do.
+    #[test]
+    fn lists_files_a_sparse_checkout_left_out() {
+        let folder = tempfile::tempdir().expect("temporary folder");
+        fs::write(folder.path().join("README.md"), "hi").expect("write");
+        let committed = ["README.md", "art/ship.png"].map(str::to_string);
+        assert!(read_sparse_skipped_files(folder.path(), &committed).is_empty());
+
+        fs::create_dir_all(folder.path().join(".git/info")).expect("create folder");
+        fs::write(folder.path().join(".git/info/sparse-checkout"), "/*").expect("write");
+        let skipped = read_sparse_skipped_files(folder.path(), &committed);
+        assert_eq!(skipped, vec!["art/ship.png".to_string()]);
     }
 
     /// A worktree on a branch and one with a detached HEAD.

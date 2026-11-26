@@ -17,7 +17,9 @@ use super::parse_refs::parse_refs;
 use super::parse_status::{StatusSummary, parse_status};
 use super::reachability::mark_reachability;
 use super::repo_files::{find_operation, read_answer, read_remote_tag_names};
-use super::workspace_files::{read_submodules, read_working_texts, read_worktrees};
+use super::workspace_files::{
+    read_sparse_skipped_files, read_submodules, read_working_texts, read_worktrees,
+};
 
 /// One stash entry: the commit Git made for it, and its message.
 struct StashEntry {
@@ -45,6 +47,7 @@ pub fn read_snapshot(folder: &PracticeFolder) -> Result<RepoSnapshot, String> {
     let commits = mark_reachability(parse_log(&readings.log?), &tip_ids, &stash_ids);
     let (working_file_texts, committed_file_texts) =
         read_file_texts(folder, &status, &committed_files);
+    let sparse_skipped_files = read_sparse_skipped_files(folder.path(), &committed_files);
 
     Ok(RepoSnapshot {
         commits,
@@ -68,6 +71,7 @@ pub fn read_snapshot(folder: &PracticeFolder) -> Result<RepoSnapshot, String> {
         committed_file_texts,
         worktrees: read_worktrees(folder.path()),
         submodules: read_submodules(folder.path()),
+        sparse_skipped_files,
     })
 }
 

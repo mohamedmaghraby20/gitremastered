@@ -36,7 +36,8 @@ function snapshotWithUntracked(untrackedCount: number): RepoSnapshot {
 		workingFileTexts: [],
 		committedFileTexts: [],
 		worktrees: [],
-		submodules: []
+		submodules: [],
+		sparseSkippedFiles: []
 	};
 }
 

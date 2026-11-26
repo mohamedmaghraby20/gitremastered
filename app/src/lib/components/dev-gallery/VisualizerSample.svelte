@@ -61,7 +61,8 @@
 		workingFileTexts: [],
 		committedFileTexts: [],
 		worktrees: [],
-		submodules: []
+		submodules: [],
+		sparseSkippedFiles: []
 	};
 
 	const featureId = 'c4e81aa'.padEnd(40, '0');

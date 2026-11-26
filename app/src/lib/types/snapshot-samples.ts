@@ -26,7 +26,8 @@ export const emptySnapshot: RepoSnapshot = {
 	workingFileTexts: [],
 	committedFileTexts: [],
 	worktrees: [],
-	submodules: []
+	submodules: [],
+	sparseSkippedFiles: []
 };
 
 /**

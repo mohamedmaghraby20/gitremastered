@@ -32,6 +32,7 @@ function snapshotWith(changes: Partial<RepoSnapshot>): RepoSnapshot {
 		committedFileTexts: [],
 		worktrees: [],
 		submodules: [],
+		sparseSkippedFiles: [],
 		...changes
 	};
 }

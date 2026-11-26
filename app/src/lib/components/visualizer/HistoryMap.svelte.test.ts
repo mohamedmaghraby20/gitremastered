@@ -54,7 +54,8 @@ const twoCommitSnapshot: RepoSnapshot = {
 	workingFileTexts: [],
 	committedFileTexts: [],
 	worktrees: [],
-	submodules: []
+	submodules: [],
+	sparseSkippedFiles: []
 };
 
 describe('HistoryMap', () => {

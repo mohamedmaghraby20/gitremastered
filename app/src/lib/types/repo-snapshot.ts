@@ -25,6 +25,7 @@ export type RepoSnapshot = {
 	committedFileTexts: FileText[]; // small text files as they are in the latest commit (HEAD)
 	worktrees: Worktree[]; // linked worktrees (git worktree add), not the main one
 	submodules: Submodule[]; // submodules listed in .gitmodules
+	sparseSkippedFiles: string[]; // committed files a sparse checkout left out of the working tree
 };
 
 /** One commit. */

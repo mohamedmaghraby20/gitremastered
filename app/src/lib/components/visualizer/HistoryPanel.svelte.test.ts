@@ -52,7 +52,8 @@ function snapshotWithCommits(commitCount: number): RepoSnapshot {
 		workingFileTexts: [],
 		committedFileTexts: [],
 		worktrees: [],
-		submodules: []
+		submodules: [],
+		sparseSkippedFiles: []
 	};
 }
 

@@ -25,7 +25,8 @@ describe('searchItems with the real course', () => {
 
 	it('finds commands, terms and Pro Git sections', () => {
 		const kinds = new Set(searchItems(courseSearchIndex, 'staging').map((item) => item.kind));
-		expect(kinds).toEqual(new Set(['command', 'term']));
+		// "Interactive Staging" (Pro Git 7.2) is a book section since phase 6.
+		expect(kinds).toEqual(new Set(['command', 'term', 'book']));
 		expect(
 			searchItems(courseSearchIndex, 'recording changes').some((item) => item.kind === 'book')
 		).toBe(true);

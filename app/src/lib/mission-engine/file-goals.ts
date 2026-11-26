@@ -65,7 +65,8 @@ function isFileCommitted(file: string, snapshot: RepoSnapshot): boolean {
 function doesFileExist(file: string, snapshot: RepoSnapshot): boolean {
 	const isDeletedInWorkingTree = hasChange(snapshot.modifiedFiles, file, 'deleted');
 	const isDeletionStaged = hasChange(snapshot.stagedFiles, file, 'deleted');
-	if (isDeletedInWorkingTree) {
+	const isLeftOutBySparseCheckout = snapshot.sparseSkippedFiles.includes(file);
+	if (isDeletedInWorkingTree || isLeftOutBySparseCheckout) {
 		return false;
 	}
 	if (snapshot.untrackedFiles.includes(file)) {
