@@ -861,6 +861,9 @@ Phase 6 is built in one run with no questions. Where something is not covered he
 - A4. A free personal account cannot fork its own repository. The open-source capstone and `team-contributing` explain forks in words and practise the same mechanics with two practice repositories: `…-upstream` (the project) and the student's own copy with an `upstream` remote.
 - A5. Setup lines never call `gh` or name a GitHub address: GitHub writes in a challenge's setup go through the guarded Rust module as structured `github` teammate steps, and setup lines reach the practice repository only through `$PRACTICE_GITHUB_URL`. Solution lines are what the student types, so they may use `gh`, but never `--repo`/`-R`, an address, or `gh repo delete`. The content check enforces both.
 - A8. A GitHub challenge counts pull requests and issues made from one minute before it was built (clocks differ a little); the start is saved with the progress, so a restart does not lose it.
+- A10. Each GitHub lesson has its own practice repository, `gitremastered-practice-<lesson-id>` (fork lessons add `…-upstream`), instead of one per lesson family: parallel writers and tests never share a repository, and a reset of one lesson never disturbs another.
+- A11. The Book path's chapters are whole numbers, so Appendix A (`git-in-your-tools`) is on the Pro path only; adding letter chapters is a small parser change left for later.
+- A12. Wave A's checks ran on the committed state in a separate worktree while wave C writers kept working; `pnpm review:course` (the desktop playthrough) runs once for waves A to C together, when the working tree is quiet.
 - A9. `latest-commit-is-signed` counts only a good signature (`%G?` is `G` or `U`), so a bad or unverifiable one does not pass.
 - A6. GitHub goal checks read GitHub through `gh api` with a 15-second time limit, only when the challenge starts, after a push (at most once every 10 seconds), every 20 seconds while a GitHub goal is still open, and on a "Check GitHub now" button. Pull requests, issues and workflow runs count only when made after the challenge started.
 - A7. `pnpm test:missions` and CI skip GitHub challenges (no account there). `pnpm test:github` runs them against the real account on this PC.
@@ -931,8 +934,8 @@ Every lesson task follows `docs/writing-lessons.md` exactly as in phase 5: four 
 **Description:** One small module, `github/`, is the only code that writes to GitHub. It runs `gh` with a time limit, reads the signed-in login, and refuses any repository whose name does not start with `gitremastered-practice` or whose owner is not the signed-in user. Deleting also needs the consent flag. Nothing it logs contains a token. A read-only `get_github_connection` command reports: `gh` installed, signed in, login, scopes.
 
 **Acceptance criteria:**
-- [ ] Unit tests: the name and owner rules refuse every other repository; a timeout stops a hanging `gh`
-- [ ] `gh` is never called on a snapshot
+- [x] Unit tests: the name and owner rules refuse every other repository; a timeout stops a hanging `gh`
+- [x] `gh` is never called on a snapshot
 
 **Verification:** Rust tests · **Files:** `src-tauri/src/github/`, `commands/github.rs` · **Scope:** M
 
@@ -940,8 +943,8 @@ Every lesson task follows `docs/writing-lessons.md` exactly as in phase 5: four 
 **Description:** A challenge may have a `github` field: the practice repository's name and the scripted teammate steps (open, comment on, merge a pull request; open an issue; push a branch). Starting the challenge creates the repository if needed (public), resets it (A1), runs the setup with `PRACTICE_GITHUB_URL` set, then the teammate steps, all through the guard.
 
 **Acceptance criteria:**
-- [ ] The content check refuses a `github` repo name without the prefix, and any setup or solution line that calls `gh` or names github.com (A5)
-- [ ] Without consent, nothing is created
+- [x] The content check refuses a `github` repo name without the prefix, setup lines that call `gh` or name github.com, and solution lines that name another repository (A5)
+- [x] Without consent, nothing is created
 
 **Verification:** parser tests, Rust tests · **Files:** `content/parse-challenges.ts`, `types/mission.ts`, `github/`, `commands/` · **Scope:** L
 
@@ -959,6 +962,8 @@ Every lesson task follows `docs/writing-lessons.md` exactly as in phase 5: four 
 **Description:** `pnpm test:github` runs every GitHub challenge's setup, teammate steps and solution on the account on this PC, then checks every goal; `pnpm test:missions` and CI skip them (A7).
 
 **Verification:** a run on this PC · **Scope:** M
+
+**Result (2026-11-27, wave B):** the guard, practice repositories with teammate steps and an optional upstream (fork lessons, A4), 14 `github-…` goal checks, the throttled reader, the consent card, Settings, GitHub, and `pnpm test:github` are built. An end-to-end run on the real account (repository created and reset, teammate pull request, the student's `gh pr merge`, goals read from GitHub) passed in 30 s.
 
 ### Task 89: Lesson `github-account-ssh`
 The first GitHub lesson: account, SSH keys, credential helpers, and connecting the app through `gh`. Challenges only read (decision 6).
