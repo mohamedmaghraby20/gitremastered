@@ -1,0 +1,40 @@
+questions:
+  - question: "You are on the branch feature, which has three commits that main lacks. You run git rebase main and it finishes. What is true now?"
+    answers:
+      - text: "main now contains the three commits of feature"
+        explanation: "The branch you name is only read. main points where it did; to bring the work in, switch to main and merge feature, which is now a fast-forward."
+      - text: "feature has three new commits with new IDs on top of main's newest commit; main did not move"
+        correct: true
+        explanation: "A rebase makes your commits again on the new base. A different parent means a different ID. Only the branch you are on is rewritten."
+      - text: "The same three commits, with the same IDs, now come after main's newest commit"
+        explanation: "A commit's ID is a checksum that includes its parent. A commit with a new parent is a new commit, so the IDs cannot stay."
+
+  - question: "Which of these is safe to rebase?"
+    answers:
+      - text: "main, right after your teammates pulled it, to tidy the last five commits"
+        explanation: "Your teammates have those five commits and may have built on them. After the rebase they would hold the old ones and the server the copies: the doubled history the golden rule warns about."
+      - text: "A branch you pushed yesterday, which a teammate has since added two commits to"
+        explanation: "Their two commits sit on your old ones. Rebasing replaces those under their feet. Merge instead."
+      - text: "Four commits on your own branch that you have not pushed yet"
+        correct: true
+        explanation: "These commits exist only in your repository, so nobody can have based work on them. This is the case rebase is made for."
+
+  - question: "A rebase of five commits stopped at the second one with a conflict in app.txt. You edited the file, removed the markers and ran git add app.txt. What do you run next?"
+    answers:
+      - text: "git rebase --continue"
+        correct: true
+        explanation: "It commits your resolution as the copy of the second commit, then replays the three commits that are left."
+      - text: "git rebase --skip"
+        explanation: "That throws away the second commit, including the resolution you just staged, and moves on. Use it only when the commit is no longer needed."
+      - text: "git rebase --abort"
+        explanation: "That gives up the whole rebase and puts the branch back as it was before, so the resolution you just made is lost and the conflict waits for you next time."
+
+  - question: "Your rebase finished a minute ago and you now see that you resolved a conflict wrongly. You have done nothing else since. How do you get the branch back as it was before the rebase?"
+    answers:
+      - text: "git rebase --abort"
+        explanation: "Abort works only while a rebase is still paused. This one finished, so Git answers: fatal: no rebase in progress."
+      - text: "git reset --hard ORIG_HEAD"
+        correct: true
+        explanation: "Git wrote the branch's old position into ORIG_HEAD when the rebase started. The old commits are still in the repository, so the reset points the branch back at them."
+      - text: "You cannot: the rebase replaced the old commits, so they are gone"
+        explanation: "The old commits are left behind, not deleted. ORIG_HEAD and the reflog still lead to them for weeks."

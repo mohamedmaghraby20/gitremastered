@@ -1,0 +1,182 @@
+challenges:
+  - id: menu-on-top-of-main
+    title: Put the menu on top of main
+    level: easy
+    brief: "The menu branch was started two days ago, and main got a new tagline since. The team wants a straight history with no merge commit. Rebase menu onto main, and finish on the menu branch. Leave main where it is."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "<h1>Corner Bakery</h1>" > index.html
+      - git add index.html
+      - git commit -q -m "Add homepage"
+      - 'echo "Email: hello@bakery.example" > contact.txt'
+      - git add contact.txt
+      - git commit -q -m "Add contact page"
+      - git switch -q -c menu
+      - echo "Bread, cake, coffee" > menu.txt
+      - git add menu.txt
+      - git commit -q -m "Add menu"
+      - echo "Bread 3, cake 4, coffee 2" > menu.txt
+      - git commit -q -am "Add prices to menu"
+      - git switch -q main
+      - echo "<p>Fresh every morning</p>" >> index.html
+      - git commit -q -am "Add tagline to homepage"
+    goal:
+      - check: head-is-on-branch
+        branch: menu
+        label: "You are on menu"
+      - check: branch-is-merged-into
+        branch: main
+        into: menu
+        label: "menu now starts from main's newest commit"
+      - check: history-is-linear
+        label: "The history of menu is a straight line (no merge commit)"
+      - check: branch-contains-commit
+        branch: menu
+        message: Add prices to menu
+        label: "menu still has both of its commits"
+      - check: branch-lacks-commit
+        branch: main
+        message: Add menu
+        label: "main was left where it was"
+    hints:
+      - "A rebase rewrites the branch you are on. Which branch should be rewritten here, and which one are you on? Check with git status."
+      - "Switch to menu first. Then name the branch whose newest commit should become the new base of menu."
+      - "Run: git switch menu, then git rebase main"
+    solution:
+      - git switch -q menu
+      - git rebase -q main
+
+  - id: new-address-clash
+    title: A rebase that stops halfway
+    level: medium
+    brief: "The orders branch has two commits: one changes the email on the contact page to orders@bakery.example, one adds an order form. Meanwhile main moved the bakery to a new domain, cornerbakery.example. Rebase orders onto main. The contact page must end up as \"Email: orders@cornerbakery.example\", and both commits of orders must survive."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "<h1>Corner Bakery</h1>" > index.html
+      - git add index.html
+      - git commit -q -m "Add homepage"
+      - 'echo "Email: hello@bakery.example" > contact.txt'
+      - git add contact.txt
+      - git commit -q -m "Add contact page"
+      - git switch -q -c orders
+      - 'echo "Email: orders@bakery.example" > contact.txt'
+      - git commit -q -am "Send mail to the orders desk"
+      - echo "Name, bread, pickup day" > order-form.txt
+      - git add order-form.txt
+      - git commit -q -m "Add order form"
+      - git switch -q main
+      - 'echo "Email: hello@cornerbakery.example" > contact.txt'
+      - git commit -q -am "Move to the new domain"
+      - git switch -q orders
+    goal:
+      - check: file-contains
+        file: contact.txt
+        text: "Email: orders@cornerbakery.example"
+        label: "contact.txt reads \"Email: orders@cornerbakery.example\""
+      - check: file-lacks
+        file: contact.txt
+        text: "<<<<<<<"
+        label: "No <<<<<<< marker line is left in contact.txt"
+      - check: file-lacks
+        file: contact.txt
+        text: ">>>>>>>"
+        label: "No >>>>>>> marker line is left in contact.txt"
+      - check: no-operation-in-progress
+        label: "The rebase is finished: nothing is waiting"
+      - check: branch-is-merged-into
+        branch: main
+        into: orders
+        label: "orders now starts from main's newest commit"
+      - check: history-is-linear
+        label: "The history of orders is a straight line (no merge commit)"
+      - check: branch-contains-commit
+        branch: orders
+        message: Send mail to the orders desk
+        label: "The email commit survived (it was not skipped)"
+      - check: branch-contains-commit
+        branch: orders
+        message: Add order form
+        label: "The order form commit was replayed too"
+      - check: working-folder-clean
+        label: "git status shows nothing left to do"
+    hints:
+      - "Start the rebase and read what Git prints. Which commit did it stop at, and which file is in conflict? git status shows both."
+      - "Open contact.txt. The top part is main's line, the bottom part is your commit's line. Write the one line the brief asks for, remove the three marker lines, and stage the file. Then tell the rebase to go on: it makes the commit itself, and --skip would lose your commit."
+      - "Run: git rebase main, then echo \"Email: orders@cornerbakery.example\" > contact.txt, git add contact.txt, git rebase --continue (save and close the editor when it opens)"
+    solution:
+      - git rebase main || true
+      - 'echo "Email: orders@cornerbakery.example" > contact.txt'
+      - git add contact.txt
+      - git rebase --continue
+
+  - id: allergens-without-winter
+    title: Release one branch without the other
+    level: hard
+    brief: "A teammate started the allergens branch from the seasonal branch by mistake. Customers need the allergen list today, but the winter menu on seasonal must stay out of main until December. Move allergens so it holds only its own two commits on top of main, then bring it into main with a fast-forward. Leave seasonal as it is."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "<h1>Corner Bakery</h1>" > index.html
+      - git add index.html
+      - git commit -q -m "Add homepage"
+      - 'echo "Email: hello@bakery.example" > contact.txt'
+      - git add contact.txt
+      - git commit -q -m "Add contact page"
+      - git switch -q -c seasonal
+      - echo "Stollen, gingerbread" > winter.txt
+      - git add winter.txt
+      - git commit -q -m "Add winter menu"
+      - git switch -q -c allergens
+      - echo "Bread has gluten. Cake has gluten, egg, milk." > allergens.txt
+      - git add allergens.txt
+      - git commit -q -m "Add allergen list"
+      - echo "Ask us about allergens, or read allergens.txt" >> contact.txt
+      - git commit -q -am "Point to the allergen list"
+      - git switch -q seasonal
+      - echo "Stollen 12, gingerbread 5" > winter.txt
+      - git commit -q -am "Add winter prices"
+      - git switch -q main
+      - echo "<p>Fresh every morning</p>" >> index.html
+      - git commit -q -am "Add tagline to homepage"
+    goal:
+      - check: branch-lacks-commit
+        branch: allergens
+        message: Add winter menu
+        label: "allergens no longer carries the winter menu"
+      - check: branch-contains-commit
+        branch: allergens
+        message: Point to the allergen list
+        label: "allergens still has both of its own commits"
+      - check: branch-contains-commit
+        branch: main
+        message: Add allergen list
+        label: "main has the allergen list"
+      - check: branch-lacks-commit
+        branch: main
+        message: Add winter menu
+        label: "main does not have the winter menu"
+      - check: history-is-linear
+        label: "The history is a straight line (no merge commit)"
+      - check: branch-contains-commit
+        branch: seasonal
+        message: Add winter prices
+        label: "seasonal still has its work"
+      - check: head-is-on-branch
+        branch: main
+        label: "You are on main"
+    hints:
+      - "Run git log --oneline --graph --all. Which commits of allergens are its own, and which one came along from seasonal? A plain git rebase main would replay all three."
+      - "The Advanced part \"Move a branch off another branch: --onto\" has the command. It takes three names: where the commits should go, the branch whose commits to leave out, and the branch to move. Afterwards main is simply behind allergens, so a merge is a fast-forward."
+      - "Run: git rebase --onto main seasonal allergens, then git switch main, then git merge allergens"
+    solution:
+      - git rebase -q --onto main seasonal allergens
+      - git switch -q main
+      - git merge -q allergens

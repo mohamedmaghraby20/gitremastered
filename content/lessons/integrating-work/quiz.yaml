@@ -1,0 +1,40 @@
+questions:
+  - question: "A teammate's branch report was started from main last week. Since then main got a new file, LICENSE, which report never touched. You run git diff main report. What does it say about LICENSE?"
+    answers:
+      - text: "Nothing: report did not change the file, so it is not in the diff"
+        explanation: "That is what git diff main...report (three dots) would do. With two names, Git compares the two newest snapshots and has no idea who changed what."
+      - text: "It shows LICENSE as deleted"
+        correct: true
+        explanation: "The newest snapshot of main has the file and the newest snapshot of report does not, so the direct comparison reads as a deletion. Three dots compare from the merge base and leave it out."
+      - text: "It shows LICENSE as a new file"
+        explanation: "The diff reads from main to report. The file exists in main and is missing in report, so it shows as removed, not added."
+
+  - question: "The branch feature has commits A, B and C, in that order. You are on main and run git cherry-pick with the ID of B. What is true afterwards?"
+    answers:
+      - text: "B moved from feature to main; feature now has A and C"
+        explanation: "A cherry-pick never changes the branch it picks from. feature still has A, B and C."
+      - text: "main has A and B, because B was built on A"
+        explanation: "Only the change B made is applied. A's change is not included, even though B's snapshot contains it."
+      - text: "main has a new commit with B's change and message but a different ID; feature is unchanged"
+        correct: true
+        explanation: "The copy has a different parent and committer, so its ID differs. The original stays on feature."
+
+  - question: "A cherry-pick stopped on a conflict in prices.txt. You look at the file and decide you picked the wrong commit. How do you get back to where you were?"
+    answers:
+      - text: "git cherry-pick --abort"
+        correct: true
+        explanation: "It puts the branch, the staging area and the files back as they were before the pick started."
+      - text: "git cherry-pick --continue"
+        explanation: "That finishes the pick, and only after you fixed and staged the file. It would make the commit you do not want."
+      - text: "Delete prices.txt and run git status"
+        explanation: "The pick stays open: Git still remembers the commit in .git/CHERRY_PICK_HEAD, and now a tracked file is missing too."
+
+  - question: "Yesterday you cherry-picked one fix from the branch payments onto main. Today you run git log --oneline main..payments, and the fix is still in the list. Why?"
+    answers:
+      - text: "The cherry-pick failed without telling you"
+        explanation: "The pick worked. The list compares commit IDs, and the copy on main has a different ID from the original."
+      - text: "main..payments lists commits by ID, and the copy on main is a new commit with its own ID"
+        correct: true
+        explanation: "By ID, the original is still missing from main. git cherry -v main payments compares the changes instead and marks the picked one with a minus."
+      - text: "You have to delete the original from payments after a cherry-pick"
+        explanation: "Nothing needs deleting. The original stays, and a later merge of payments handles the same change on both sides without a conflict."

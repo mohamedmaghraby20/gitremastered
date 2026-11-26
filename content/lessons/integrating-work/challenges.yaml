@@ -1,0 +1,188 @@
+challenges:
+  - id: pick-the-fix
+    title: Take only the fix
+    level: easy
+    brief: "The homepage shows the wrong ride time, and riders are turning up an hour late. Nadia fixed it on her signup branch, in the commit \"Fix wrong ride time\", but the signup page itself is not ready. Bring only that one commit into main. The other two commits of signup must stay out, and the signup branch stays as it is."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - printf '<h1>Riverside Cycling Club</h1>\n<p>We ride every Sunday at 9:00</p>\n' > index.html
+      - git add index.html
+      - git commit -q -m "Add club homepage"
+      - 'printf "River loop: 20 km\nHill climb: 35 km\n" > routes.txt'
+      - git add routes.txt
+      - git commit -q -m "Add ride routes"
+      # Nadia's topic branch: a feature in two commits, with a fix in between
+      - git switch -q -c signup
+      - echo "<form>Name, email</form>" > signup.html
+      - git add signup.html
+      - git commit -q --author="Nadia Karim <nadia@example.com>" -m "Add signup form"
+      - printf '<h1>Riverside Cycling Club</h1>\n<p>We ride every Sunday at 8:00</p>\n' > index.html
+      - git commit -q -a --author="Nadia Karim <nadia@example.com>" -m "Fix wrong ride time"
+      - echo "<p>Thanks for joining!</p>" >> signup.html
+      - git commit -q -a --author="Nadia Karim <nadia@example.com>" -m "Add signup confirmation"
+      # Meanwhile main moved on
+      - git switch -q main
+      - 'echo "Email: rides@riverside.example" > contact.txt'
+      - git add contact.txt
+      - git commit -q -m "Add contact details"
+    goal:
+      - check: branch-contains-commit
+        branch: main
+        message: Fix wrong ride time
+        label: "main has the commit \"Fix wrong ride time\""
+      - check: committed-file-contains
+        file: index.html
+        text: "Sunday at 8:00"
+        label: "The homepage on main shows 8:00"
+      - check: branch-lacks-commit
+        branch: main
+        message: Add signup form
+        label: "\"Add signup form\" is not on main"
+      - check: branch-lacks-commit
+        branch: main
+        message: Add signup confirmation
+        label: "\"Add signup confirmation\" is not on main"
+      - check: branch-is-at-commit
+        branch: signup
+        message: Add signup confirmation
+        label: "The signup branch is unchanged"
+      - check: head-is-on-branch
+        branch: main
+        label: "You are on main"
+    hints:
+      - "A merge would bring all three commits. Which command copies one commit onto the branch you are on? List the commits of signup first: git log --oneline main..signup"
+      - "Stay on main. Copy the ID in front of \"Fix wrong ride time\" and give it to git cherry-pick."
+      - "Run: git log --oneline main..signup, then git cherry-pick <the ID of Fix wrong ride time>. The name signup~1 means the same commit: one before the newest of signup."
+    solution:
+      - git cherry-pick signup~1
+
+  - id: count-the-work
+    title: How much is Omar asking you to merge?
+    level: medium
+    brief: "Omar asks you to merge his gallery branch into main. Before you say yes, find out how many commits of his own work the branch would bring into main. Do not count merge commits: Omar merged main into his branch once to stay up to date. Write the number into answer.txt, for example: echo 9 > answer.txt. Only look; do not merge anything yet."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo answer.txt >> .git/info/exclude
+      - printf '<h1>Riverside Cycling Club</h1>\n<p>We ride every Sunday at 8:00</p>\n' > index.html
+      - git add index.html
+      - git commit -q -m "Add club homepage"
+      - 'printf "River loop: 20 km\nHill climb: 35 km\n" > routes.txt'
+      - git add routes.txt
+      - git commit -q -m "Add ride routes"
+      # Omar's topic branch
+      - git switch -q -c gallery
+      - echo "<h2>Photos</h2>" > gallery.html
+      - git add gallery.html
+      - git commit -q --author="Omar Haddad <omar@example.com>" -m "Add photo gallery page"
+      - echo "<p>Spring ride, river loop</p>" >> gallery.html
+      - git commit -q -a --author="Omar Haddad <omar@example.com>" -m "Add captions to gallery"
+      # main moves, and Omar merges it into his branch
+      - git switch -q main
+      - 'echo "Email: rides@riverside.example" > contact.txt'
+      - git add contact.txt
+      - git commit -q -m "Add contact details"
+      - git switch -q gallery
+      - git merge -q --no-edit main
+      - echo "<a href=gallery.html>Photos</a>" >> index.html
+      - git commit -q -a --author="Omar Haddad <omar@example.com>" -m "Link gallery from homepage"
+      # main moves again
+      - git switch -q main
+      - 'echo "Membership: 30 per year" > fees.txt'
+      - git add fees.txt
+      - git commit -q -m "Add membership fee"
+    goal:
+      - check: answer-is
+        answer: "3"
+        label: "answer.txt holds the number of Omar's own commits that gallery would bring in"
+      - check: branch-is-at-commit
+        branch: main
+        message: Add membership fee
+        label: "main is untouched: nothing was merged or picked"
+    hints:
+      - "git log gallery lists every commit the branch can reach, including the ones main already has. Which form of git log lists only the commits main lacks?"
+      - "git log --oneline main..gallery shows four lines, and one of them starts with \"Merge branch\". There is an option that leaves merge commits out."
+      - "Run: git log --oneline --no-merges main..gallery and count the lines: 3. Then: echo 3 > answer.txt"
+    solution:
+      - git log --oneline --no-merges main..gallery
+      - echo 3 > answer.txt
+
+  - id: backport-two-fixes
+    title: Backport two fixes to the release
+    level: hard
+    brief: "Version 1.0 of the club site lives on the branch release-1.0. Since then, main got two fixes, \"Fix wrong ride time\" and \"Fix hill climb distance\", and one new feature between them, \"Add night ride\". Copy both fixes to release-1.0, in that order, and keep the feature out: release-1.0 must not list a night ride. One of the picks will stop on a conflict."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - printf '<h1>Riverside Cycling Club</h1>\n<p>We ride every Sunday at 9:00</p>\n' > index.html
+      - git add index.html
+      - git commit -q -m "Add club homepage"
+      - 'printf "River loop: 20 km\nHill climb: 35 km\n" > routes.txt'
+      - git add routes.txt
+      - git commit -q -m "Add ride routes"
+      # The release branch, with one commit of its own
+      - git switch -q -c release-1.0
+      - echo "1.0" > VERSION
+      - git add VERSION
+      - git commit -q -m "Mark version 1.0"
+      # main goes on: fix, feature, fix
+      - git switch -q main
+      - printf '<h1>Riverside Cycling Club</h1>\n<p>We ride every Sunday at 8:00</p>\n' > index.html
+      - git commit -q -am "Fix wrong ride time"
+      - 'printf "River loop: 20 km\nHill climb: 35 km\nNight ride: 15 km\n" > routes.txt'
+      - git commit -q -am "Add night ride"
+      - 'printf "River loop: 20 km\nHill climb: 38 km\nNight ride: 15 km\n" > routes.txt'
+      - git commit -q -am "Fix hill climb distance"
+    goal:
+      - check: head-is-on-branch
+        branch: release-1.0
+        label: "You are on release-1.0"
+      - check: branch-contains-commit
+        branch: release-1.0
+        message: Fix wrong ride time
+        label: "release-1.0 has \"Fix wrong ride time\""
+      - check: branch-contains-commit
+        branch: release-1.0
+        message: Fix hill climb distance
+        label: "release-1.0 has \"Fix hill climb distance\""
+      - check: commit-comes-before
+        message: Fix wrong ride time
+        later: Fix hill climb distance
+        label: "The ride time fix comes before the hill climb fix"
+      - check: branch-lacks-commit
+        branch: release-1.0
+        message: Add night ride
+        label: "\"Add night ride\" is not on release-1.0"
+      - check: file-contains
+        file: routes.txt
+        text: "Hill climb: 38 km"
+        label: "routes.txt says the hill climb is 38 km"
+      - check: file-lacks
+        file: routes.txt
+        text: "Night ride"
+        label: "routes.txt lists no night ride"
+      - check: file-lacks
+        file: routes.txt
+        text: "<<<<<<<"
+        label: "No conflict markers are left in routes.txt"
+      - check: no-operation-in-progress
+        label: "The cherry-pick is finished: no conflict is left open"
+      - check: working-folder-clean
+        label: "git status shows nothing left to do"
+    hints:
+      - "The branch you are on receives the picks, so switch to release-1.0 first. git log --oneline release-1.0..main lists the three commits main has; you want the first and the last."
+      - "You can name both commits in one git cherry-pick, oldest first (Advanced, \"Pick several commits at once\"). The second pick stops on routes.txt. Read the markers: the bottom part holds the fixed distance and also a night ride line, which comes from the commit you left out (Under the hood, \"What a cherry-pick compares\"). Keep 38 km, drop the night ride."
+      - "Run: git switch release-1.0, then git cherry-pick <ID of Fix wrong ride time> <ID of Fix hill climb distance>. Edit routes.txt so it has two lines, \"River loop: 20 km\" and \"Hill climb: 38 km\", with no marker lines. Then git add routes.txt and git cherry-pick --continue (save and close the editor, or add --no-edit)."
+    solution:
+      - git switch -q release-1.0
+      - git cherry-pick main~2 main || true
+      - 'printf "River loop: 20 km\nHill climb: 38 km\n" > routes.txt'
+      - git add routes.txt
+      - git cherry-pick --continue --no-edit

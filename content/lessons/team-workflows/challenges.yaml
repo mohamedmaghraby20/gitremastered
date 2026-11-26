@@ -1,0 +1,203 @@
+challenges:
+  - id: finish-the-search
+    title: Finish a topic branch
+    level: easy
+    brief: "The Tasklist team keeps finished work on develop and released work on main. The search feature on the add-search branch is finished. Bring it into develop and delete the topic branch. main is the released version: it must not get the search yet."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Tasklist" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - echo "<h1>My tasks</h1>" > index.html
+      - git add index.html
+      - git commit -q -m "Add task list page"
+      - git switch -q -c develop
+      - 'echo "Due dates: on" > settings.txt'
+      - git add settings.txt
+      - git commit -q -m "Add due dates"
+      - git switch -q -c add-search
+      - echo "Search box" > search.txt
+      - git add search.txt
+      - git commit -q -m "Add search box"
+      - echo "Search by tag" >> search.txt
+      - git commit -q -am "Search by tag"
+      - git switch -q develop
+      - echo "Tasklist keeps your tasks in one place." >> README.md
+      - git commit -q -am "Describe the app in the README"
+      - git switch -q main
+    goal:
+      - check: branch-contains-commit
+        branch: develop
+        message: Search by tag
+        label: "develop has the search feature"
+      - check: branch-is-missing
+        branch: add-search
+        label: "The add-search branch is deleted"
+      - check: branch-lacks-commit
+        branch: main
+        message: Add search box
+        label: "main does not have the search yet"
+      - check: branch-lacks-commit
+        branch: main
+        message: Add due dates
+        label: "main was not given develop's other work either"
+    hints:
+      - "Run git status. Which branch are you on, and which branch should receive the search feature?"
+      - "The branch you are on receives a merge, so switch to develop first. Both develop and add-search have commits of their own, so Git makes a merge commit: --no-edit keeps its message. Delete the topic branch while you are still on develop."
+      - "Run: git switch develop, then git merge add-search --no-edit, then git branch -d add-search"
+    solution:
+      - git switch -q develop
+      - git merge -q add-search --no-edit
+      - git branch -d add-search
+
+  - id: release-day
+    title: Release day
+    level: medium
+    brief: "It is release day for Tasklist 1.0. The search feature on add-search is finished; the dark-mode branch is not. Bring add-search into develop. Then release develop into main with a merge commit, so the release shows as one commit on main, and put an annotated tag v1.0 on that commit. Delete add-search. dark-mode must stay out of the release and stay as a branch."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Tasklist" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - echo "<h1>My tasks</h1>" > index.html
+      - git add index.html
+      - git commit -q -m "Add task list page"
+      - git switch -q -c develop
+      - 'echo "Due dates: on" > settings.txt'
+      - git add settings.txt
+      - git commit -q -m "Add due dates"
+      - git switch -q -c add-search
+      - echo "Search box" > search.txt
+      - git add search.txt
+      - git commit -q -m "Add search box"
+      - echo "Search by tag" >> search.txt
+      - git commit -q -am "Search by tag"
+      - git switch -q -c dark-mode develop
+      - 'echo "Theme: dark (unfinished)" > theme.txt'
+      - git add theme.txt
+      - git commit -q -m "Start dark mode"
+      - git switch -q develop
+      - echo "Tasklist keeps your tasks in one place." >> README.md
+      - git commit -q -am "Describe the app in the README"
+      - git switch -q dark-mode
+    goal:
+      - check: branch-contains-commit
+        branch: develop
+        message: Search by tag
+        label: "develop has the search feature"
+      - check: branch-is-merged-into
+        branch: develop
+        into: main
+        label: "main contains everything on develop"
+      - check: head-is-on-branch
+        branch: main
+        label: "You are on main"
+      - check: head-commit-is-merge
+        label: "The release is a merge commit on main"
+      - check: tag-is-annotated
+        tag: v1.0
+        label: "v1.0 is an annotated tag"
+      - check: tag-is-on-commit
+        tag: v1.0
+        message: "Merge branch 'develop'"
+        label: "v1.0 points at the release commit"
+      - check: branch-is-missing
+        branch: add-search
+        label: "The add-search branch is deleted"
+      - check: branch-exists
+        branch: dark-mode
+        label: "The dark-mode branch still exists"
+      - check: branch-lacks-commit
+        branch: main
+        message: Start dark mode
+        label: "The unfinished dark mode is not in the release"
+    hints:
+      - "Two merges, in order: the topic branch into develop, then develop into main. For each one, ask which branch receives the work, and switch to it first. Run git log --oneline main..develop before the release to see what will go out."
+      - "main has no commits of its own, so a plain git merge develop would fast-forward and leave no release commit. The part \"Long-running branches: levels of trust\" shows the option that always makes a merge commit. An annotated tag is made with git tag -a and a message."
+      - "Run: git switch develop, git merge add-search --no-edit, git branch -d add-search, git switch main, git merge --no-ff develop --no-edit, then git tag -a v1.0 -m \"Version 1.0\""
+    solution:
+      - git switch -q develop
+      - git merge -q add-search --no-edit
+      - git branch -d add-search
+      - git switch -q main
+      - git merge -q --no-ff develop --no-edit
+      - git tag -a v1.0 -m "Version 1.0"
+
+  - id: urgent-hotfix
+    title: An urgent fix for the released version
+    level: hard
+    brief: "Tasklist 1.0 is live, and users cannot add an 11th task: limits.txt says 10 and should say 100. You are on develop, which holds a half-built export feature that must not reach users. Make a branch named hotfix from main, change the line to \"Max tasks per list: 100\" and commit it with the message \"Raise task limit to 100\". Merge hotfix into main with a merge commit, merge it into develop too, and delete the hotfix branch. Finish on develop."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Tasklist" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - 'echo "Max tasks per list: 10" > limits.txt'
+      - git add limits.txt
+      - git commit -q -m "Add task limit"
+      - git switch -q -c develop
+      - 'echo "Due dates: on" > settings.txt'
+      - git add settings.txt
+      - git commit -q -m "Add due dates"
+      - git switch -q main
+      - git merge -q --no-ff develop --no-edit
+      - git tag -a v1.0 -m "Version 1.0"
+      - git switch -q develop
+      - 'echo "Export: half done" > export.txt'
+      - git add export.txt
+      - git commit -q -m "Start export feature"
+    goal:
+      - check: branch-contains-commit
+        branch: main
+        message: Raise task limit to 100
+        label: "main has the fix"
+      - check: branch-is-at-commit
+        branch: main
+        message: "Merge branch 'hotfix'"
+        label: "main's newest commit is the merge of hotfix"
+      - check: branch-lacks-commit
+        branch: main
+        message: Start export feature
+        label: "The half-built export feature did not reach main"
+      - check: branch-contains-commit
+        branch: develop
+        message: Raise task limit to 100
+        label: "develop has the fix too"
+      - check: branch-contains-commit
+        branch: develop
+        message: Start export feature
+        label: "develop still has the export work"
+      - check: branch-is-missing
+        branch: hotfix
+        label: "The hotfix branch is deleted"
+      - check: head-is-on-branch
+        branch: develop
+        label: "You are on develop"
+      - check: file-contains
+        file: limits.txt
+        text: "Max tasks per list: 100"
+        label: "limits.txt on develop reads \"Max tasks per list: 100\""
+      - check: working-folder-clean
+        label: "git status shows nothing left to do"
+    hints:
+      - "Where must the fix start so that it carries none of develop's unfinished work? Check with git log --oneline main..hotfix before you merge: it should list one commit."
+      - "The Advanced part \"A hotfix, step by step\" has the whole route. git switch -c takes a starting point after the new name. On main a fast-forward is possible, so ask for a merge commit. Then the same branch goes into develop."
+      - "Run: git switch -c hotfix main, then echo \"Max tasks per list: 100\" > limits.txt, git commit -am \"Raise task limit to 100\", git switch main, git merge --no-ff hotfix --no-edit, git switch develop, git merge hotfix --no-edit, git branch -d hotfix"
+    solution:
+      - git switch -q -c hotfix main
+      - 'echo "Max tasks per list: 100" > limits.txt'
+      - git commit -q -am "Raise task limit to 100"
+      - git switch -q main
+      - git merge -q --no-ff hotfix --no-edit
+      - git switch -q develop
+      - git merge -q hotfix --no-edit
+      - git branch -d hotfix

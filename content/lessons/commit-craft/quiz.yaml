@@ -1,0 +1,37 @@
+questions:
+  - question: "On Friday evening your working tree holds a bug fix in cart.js, a new feature in coupon.js and a reworded README. What is the best way to commit?"
+    answers:
+      - text: "One commit, \"Friday's work\", so nothing gets lost"
+        explanation: "Nothing would be lost either way. But a reviewer has to read three unrelated changes at once, and undoing the feature later would undo the bug fix too."
+      - text: "Three commits, one per job, each with its own message"
+        correct: true
+        explanation: "Each job can now be reviewed, found and undone alone. The project ends up identical; only the history is easier to use."
+      - text: "One commit per changed line, to keep commits as small as possible"
+        explanation: "Atomic means one complete job, not the smallest possible piece. Half a bug fix is not useful as a commit."
+  - question: "You staged login.js, then ran git diff --check. It printed nothing, yet the reviewer found trailing spaces in your commit. Why?"
+    answers:
+      - text: "git diff --check only looks at files Git does not track yet"
+        explanation: "It is the other way round: like every git diff, it reads changes to tracked files."
+      - text: "Plain git diff compares the working tree with the staging area, and after git add they were the same"
+        correct: true
+        explanation: "There was no difference left to check. git diff --staged --check reads what is staged, which is what the commit will hold."
+      - text: "Git removes trailing spaces when you stage a file, so they must have come from the reviewer"
+        explanation: "git add stores the file exactly as it is, spaces included. Git reports whitespace errors when asked, and never fixes them while staging."
+  - question: "A teammate writes a commit message on two lines, a subject and an explanation, with no empty line between them. What happens?"
+    answers:
+      - text: "Git refuses the commit until the blank line is added"
+        explanation: "Git accepts any message that is not empty. The shape is a convention between people and tools, and Git does not check it."
+      - text: "Nothing changes: Git always takes the first line as the subject"
+        explanation: "The subject ends at the first blank line, not at the first line break. Without the blank line there is nothing to end it."
+      - text: "git log --oneline shows both lines joined as one long subject"
+        correct: true
+        explanation: "Git treats everything up to the first blank line as the subject, so the two lines run together in every compact view."
+  - question: "A project uses Conventional Commits. You rename the function cartTotal to orderTotal, so every program that calls cartTotal stops working. Which subject fits?"
+    answers:
+      - text: "refactor!: rename cartTotal to orderTotal"
+        correct: true
+        explanation: "The ! marks a breaking change: people who use the code must change theirs. Tools that compute version numbers raise the major number for it."
+      - text: "fix: renamed the cart function"
+        explanation: "No bug was fixed, \"renamed\" is not the imperative, and nothing warns users that their code will break."
+      - text: "docs: rename cartTotal to orderTotal"
+        explanation: "docs is for changes to documentation only. This commit changes code, and it breaks the code of everyone who calls the function."

@@ -1,0 +1,40 @@
+questions:
+  - question: "Your team uses main for released code and develop for finished work. You finished a feature on the topic branch add-export, which you started from develop. Where do you merge it?"
+    answers:
+      - text: "Into develop; it reaches main with the next release"
+        correct: true
+        explanation: "A topic branch goes back into the branch it was made for. develop collects finished work, and a release later moves main forward to include it."
+      - text: "Into main, so users get it right away"
+        explanation: "add-export started from develop, so it carries every unreleased commit of develop with it. Merging it into main would release all of them."
+      - text: "Into both main and develop"
+        explanation: "Only a hotfix goes into both, because it repairs the released version. A feature waits on develop for the next release."
+
+  - question: "Users of the released version report a crash. develop is full of half-finished features. Following Git Flow, where does the hotfix branch start and where does it end up?"
+    answers:
+      - text: "It starts from develop and is merged into main"
+        explanation: "A branch made from develop contains develop's unfinished commits. Merging it into main would ship them along with the fix."
+      - text: "It starts from main and is merged into main only"
+        explanation: "The fix reaches users, but develop never gets it. The next release from develop could bring the crash back or conflict with the fix."
+      - text: "It starts from main and is merged into both main and develop"
+        correct: true
+        explanation: "main is what users run, so the fix starts there and carries nothing else. Merging it into develop too keeps the bug out of the next release."
+
+  - question: "A team of six runs a web app they can update at any time. They have good automated tests. They use Git Flow and complain that work sits on develop for weeks and release merges are painful. What would you suggest?"
+    answers:
+      - text: "Add a third long-running branch between develop and main for extra testing"
+        explanation: "Another level means one more merge and one more place for work to wait. Their problem is too much waiting, not too little."
+      - text: "Drop develop: use short topic branches merged straight into main, as in GitHub Flow or trunk-based development"
+        correct: true
+        explanation: "When you can release at any moment, merged and released can be the same thing, so one long-running branch is enough. Small, frequent merges are also the easy ones."
+      - text: "Stop using topic branches and let everyone commit to develop"
+        explanation: "That removes the protection topic branches give and keeps the slow part, the wait between develop and main."
+
+  - question: "You want to fix a typo in an open-source project on GitHub. You are not a member of the project, so you cannot push to its repository. Which workflow lets you contribute anyway?"
+    answers:
+      - text: "Centralized: you clone the repository and push your fix to its main"
+        explanation: "In the centralized workflow everyone who contributes has push access. You do not, so the push is refused."
+      - text: "Integration-manager: you push the fix to your own public copy and ask the maintainer to take it"
+        correct: true
+        explanation: "Each contributor writes only to their own copy (a fork on GitHub). The maintainer reviews the request and merges it into the official repository."
+      - text: "Trunk-based development: you commit straight to main"
+        explanation: "Trunk-based development is a branching model. It says how long branches live, not who may push, and you still have no push access."

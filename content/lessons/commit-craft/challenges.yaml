@@ -1,0 +1,180 @@
+challenges:
+  - id: two-jobs
+    title: Two jobs, two commits
+    level: easy
+    brief: "You fixed a bug in cart.js (the total ignored the quantity) and, while you were there, added a \"Run the tests\" section to README.md. They are two different jobs. Make two commits: first cart.js alone with the message \"Fix cart total for quantities above one\", then README.md with \"Document how to run the tests\"."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - printf '%s\n' "# Shop app" "" "Sell books online." > README.md
+      - printf '%s\n' "function cartTotal(items) {" "  let total = 0;" "  for (const item of items) {" "    total = total + item.price;" "  }" "  return total;" "}" > cart.js
+      - git add README.md cart.js
+      - git commit -q -m "Add shop app with cart total"
+      - printf '%s\n' "function cartTotal(items) {" "  let total = 0;" "  for (const item of items) {" "    total = total + item.price * item.quantity;" "  }" "  return total;" "}" > cart.js
+      - printf '%s\n' "" "## Run the tests" "" "Run npm test before you push." >> README.md
+    goal:
+      - check: commit-exists
+        message: "Fix cart total for quantities above one"
+        label: "A commit named \"Fix cart total for quantities above one\" exists"
+      - check: commit-exists
+        message: "Document how to run the tests"
+        label: "A commit named \"Document how to run the tests\" exists"
+      - check: commit-comes-before
+        message: "Fix cart total for quantities above one"
+        later: "Document how to run the tests"
+        label: "The cart fix was committed first"
+      - check: commit-count-is
+        count: 3
+        label: "The history has exactly two new commits (three in all)"
+      - check: committed-file-contains
+        file: cart.js
+        text: "item.price * item.quantity"
+        label: "The fix in cart.js is committed"
+      - check: committed-file-contains
+        file: README.md
+        text: "Run npm test before you push."
+        label: "The new README section is committed"
+      - check: working-folder-clean
+        label: "git status shows nothing left to do"
+    hints:
+      - "Run git status -s. Two files changed. Which one holds the bug fix?"
+      - "A commit takes only what is staged. Stage cart.js alone, look at it with git diff --staged, and commit it. Then do the same for README.md."
+      - "Run: git add cart.js, git commit -m \"Fix cart total for quantities above one\", then git add README.md, git commit -m \"Document how to run the tests\"."
+    solution:
+      - git add cart.js
+      - git commit -q -m "Fix cart total for quantities above one"
+      - git add README.md
+      - git commit -q -m "Document how to run the tests"
+
+  - id: conventional-pair
+    title: Speak the team's commit language
+    level: medium
+    brief: "This team writes Conventional Commits; run git log --oneline to see. Two changes wait in your working tree: a bug fix in cart.js (an empty cart crashed the total) and a new file, coupon.js, that adds coupon codes. Make one commit for each, the bug fix first. Start each message with the right type, a colon and a space, with no scope, then describe the change in your own words."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - printf '%s\n' "function cartTotal(items) {" "  let total = 0;" "  for (const item of items) {" "    total = total + item.price * item.quantity;" "  }" "  return total;" "}" > cart.js
+      - git add cart.js
+      - 'git commit -q -m "feat: add cart total"'
+      - printf '%s\n' "# Shop app" "" "Sell books online." > README.md
+      - git add README.md
+      - 'git commit -q -m "docs: describe the shop in the README"'
+      - printf '%s\n' "function cartTotal(items) {" "  if (!items) {" "    return 0;" "  }" "  let total = 0;" "  for (const item of items) {" "    total = total + item.price * item.quantity;" "  }" "  return total;" "}" > cart.js
+      - printf '%s\n' "function applyCoupon(total, code) {" "  if (code === \"BOOKS10\") {" "    return total * 0.9;" "  }" "  return total;" "}" > coupon.js
+    goal:
+      - check: commit-exists
+        message: "fix: "
+        label: "A commit whose message starts with the bug-fix type exists"
+      - check: branch-is-at-commit
+        branch: main
+        message: "feat: "
+        label: "The newest commit has the new-feature type"
+      - check: commit-count-is
+        count: 4
+        label: "The history has exactly two new commits (four in all)"
+      - check: committed-file-contains
+        file: cart.js
+        text: "if (!items)"
+        label: "The empty-cart fix is committed"
+      - check: committed-file-contains
+        file: coupon.js
+        text: "applyCoupon"
+        label: "coupon.js is committed"
+      - check: working-folder-clean
+        label: "git status shows nothing left to do"
+    hints:
+      - "Run git log --oneline and read the word before each colon. Which type means a bug fix, and which means a new feature?"
+      - "A bug fix is fix and a new feature is feat. Stage cart.js alone and commit it with a message that starts with \"fix: \". Then stage coupon.js and commit it with a message that starts with \"feat: \"."
+      - "Run: git add cart.js, git commit -m \"fix: return zero for an empty cart\", then git add coupon.js, git commit -m \"feat: add coupon codes\"."
+    solution:
+      - git add cart.js
+      - 'git commit -q -m "fix: return zero for an empty cart"'
+      - git add coupon.js
+      - 'git commit -q -m "feat: add coupon codes"'
+
+  - id: whitespace-cleanup
+    title: Clean up before the review
+    level: hard
+    brief: "You staged a new function in receipt.js and are about to commit. Your editor left spaces at the end of some lines, and the reviewer's tools will flag them. Find the whitespace errors in what is staged, remove them without changing the code, and commit with the message \"Add receipt footer\". The commit must hold the clean file."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - printf '%s\n' "function receiptHeader() {" "  return \"Shop app receipt\";" "}" > receipt.js
+      - git add receipt.js
+      - git commit -q -m "Add receipt header"
+      - printf '%s\n' "" "function receiptFooter() {" "  const thanks = \"Thank you for your order\";  " "  return thanks;   " "}" >> receipt.js
+      - git add receipt.js
+    goal:
+      - check: file-contains
+        file: receipt.js
+        text: ";\n  return thanks;\n}"
+        label: "receipt.js has no spaces left at the end of the two lines, and the code is unchanged"
+      - check: committed-file-contains
+        file: receipt.js
+        text: ";\n  return thanks;\n}"
+        label: "The committed receipt.js is the clean version"
+      - check: commit-exists
+        message: "Add receipt footer"
+        label: "A commit named \"Add receipt footer\" exists"
+      - check: commit-count-is
+        count: 2
+        label: "The history has exactly one new commit (two in all)"
+      - check: working-folder-clean
+        label: "git status shows nothing left to do"
+    hints:
+      - "git diff --check prints nothing here. Which two areas does plain git diff compare, and where is your change right now? Under the hood, \"What --check looks at\", has this case."
+      - "Run git diff --staged --check. It names the file and the line numbers. Remove the spaces at the end of those lines in your editor, or with sed -i 's/[[:space:]]*$//' receipt.js. The staging area still holds the old photo of the file, so stage the file again."
+      - "Run: sed -i 's/[[:space:]]*$//' receipt.js, git add receipt.js, git diff --staged --check (it prints nothing now), then git commit -m \"Add receipt footer\"."
+    solution:
+      - sed -i 's/[[:space:]]*$//' receipt.js
+      - git add receipt.js
+      - git diff --staged --check
+      - git commit -q -m "Add receipt footer"
+
+  - id: team-template
+    title: Switch on the team's commit template
+    level: hard
+    brief: "A teammate committed a message template, .gitmessage.txt, so everyone writes messages of the same shape. The file came with the project, but the setting that uses it did not. Tell this repository, and only this one, to use .gitmessage.txt as its commit template. Then commit the waiting README.md change with the subject \"Add opening hours to README\"."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - printf '%s\n' "# Shop app" "" "Sell books online." > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - printf '%s\n' "" "" "# Subject, on the first line. Imperative, 50 characters or less." "# Leave the second line blank." "# Body. Say why the change was needed. Wrap at 72 characters." > .gitmessage.txt
+      - git add .gitmessage.txt
+      - git commit -q -m "Add commit message template"
+      - printf '%s\n' "" "## Opening hours" "" "Every day from 9 to 18." >> README.md
+    goal:
+      - check: config-is
+        key: commit.template
+        value: .gitmessage.txt
+        label: "This repository's own settings use .gitmessage.txt as the commit template"
+      - check: commit-exists
+        message: "Add opening hours to README"
+        label: "A commit named \"Add opening hours to README\" exists"
+      - check: commit-count-is
+        count: 3
+        label: "The history has exactly one new commit (three in all)"
+      - check: committed-file-contains
+        file: README.md
+        text: "Every day from 9 to 18."
+        label: "The opening hours are committed"
+      - check: working-folder-clean
+        label: "git status shows nothing left to do"
+    hints:
+      - "A template is switched on with a setting, and a setting made with --local stays in this repository. The Advanced part \"A commit template for the team\" names the setting."
+      - "Run git config --local commit.template .gitmessage.txt. Then stage README.md and run git commit with no -m: the editor opens with the template's reminder lines. Type the subject on the empty first line, save and close."
+      - "Run: git config --local commit.template .gitmessage.txt, git add README.md, then git commit and type \"Add opening hours to README\" on the first line (in Vim: press i, type it, press Esc, type :wq and Enter). Git skips the template when you give -m, so git commit -m \"Add opening hours to README\" passes too."
+    solution:
+      - git config --local commit.template .gitmessage.txt
+      - git add README.md
+      - git commit -q -m "Add opening hours to README"
