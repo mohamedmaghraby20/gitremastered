@@ -562,8 +562,8 @@ Goal: home, course map (both paths), search, command index and settings work for
 **Description:** Left list grouped by command group with a Commands / Terms switch; the page shows usage, the explanation, blocks (careful, today vs. the book), "Learn it" links to lessons and the Pro Git link (system browser, task 24).
 
 **Acceptance criteria:**
-- [ ] `/commands/<id>` opens one command; the list marks the selected one
-- [ ] Works fully by keyboard
+- [x] `/commands/<id>` opens one command; the list marks the selected one
+- [x] Works fully by keyboard
 
 **Verification:** component tests · **Files:** `routes/commands/`, `components/command-index/` · **Scope:** M
 

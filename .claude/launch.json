@@ -4,8 +4,27 @@
     {
       "name": "app-screens",
       "runtimeExecutable": "pnpm",
-      "runtimeArgs": ["--dir", "app", "dev"],
+      "runtimeArgs": [
+        "--dir",
+        "app",
+        "dev"
+      ],
       "port": 1420
+    },
+    {
+      "name": "app-screens-check",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": [
+        "--dir",
+        "app",
+        "exec",
+        "vite",
+        "dev",
+        "--port",
+        "1430"
+      ],
+      "port": 1430,
+      "autoPort": false
     }
   ]
 }
