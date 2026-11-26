@@ -58,6 +58,20 @@ describe('sortFilesIntoZones', () => {
 		});
 	});
 
+	it('marks a file with a merge conflict, and leaves lost commits out of the repository', () => {
+		const lostCommit = { ...commit('c', 'Old version'), isReachable: false };
+		const zones = sortFilesIntoZones(
+			snapshotWith({
+				commits: [lostCommit, commit('a', 'Add README')],
+				modifiedFiles: [{ path: 'app.js', changeKind: 'modified', oldPath: null }],
+				conflictedFiles: ['app.js']
+			})
+		);
+		expect(zones.working).toEqual([{ path: 'app.js', label: 'conflict' }]);
+		expect(zones.repository.commitCount).toBe(1);
+		expect(zones.repository.latestCommits).toEqual([{ shortId: 'aaaaaaa', message: 'Add README' }]);
+	});
+
 	it('puts an untracked file in the working tree, marked new', () => {
 		const zones = sortFilesIntoZones(snapshotWith({ untrackedFiles: ['notes.txt'] }));
 		expect(zones.working).toEqual([{ path: 'notes.txt', label: 'new' }]);

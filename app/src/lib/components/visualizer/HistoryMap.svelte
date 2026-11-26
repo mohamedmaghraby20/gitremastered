@@ -1,8 +1,9 @@
 <!--
   HistoryMap.svelte
   The metro-map history from DESIGN.md, drawn with Svelte Flow: commits as stations on a solid
-  track, oldest on the left, HEAD and the branch label on their station, and a dashed track to
-  the faded "next commit" station. Placement comes from history-layout.ts (ELK).
+  track, oldest on the left, one row per line of work, HEAD and the branch, remote and tag
+  labels on their station, and a dashed track to the faded "next commit" station. A commit no
+  branch reaches any more keeps its place, faded. Placement comes from history-layout.ts.
   The map is for looking only: no dragging, connecting or selecting. It can be zoomed with
   the buttons, the mouse wheel or a trackpad pinch, and dragged to look around. After each
   change the view shows the whole history, or follows HEAD once the history is too long to
@@ -42,20 +43,21 @@
 	let mapWidth = $state(0);
 	let mapHeight = $state(0);
 
+	/** The CSS class of each kind of track. */
+	const trackClasses = {
+		commit: 'commit-track',
+		'next-commit': 'next-track',
+		unreachable: 'lost-track'
+	};
+
 	/**
 	 * Builds and places the map for a snapshot, then hands it to Svelte Flow.
 	 * @param currentSnapshot - the repo state
-	 * @param isStillCurrent - tells whether a newer snapshot has arrived meanwhile
 	 */
-	async function drawHistory(
-		currentSnapshot: RepoSnapshot,
-		isStillCurrent: () => boolean
-	): Promise<void> {
+	function drawHistory(currentSnapshot: RepoSnapshot): void {
 		const graph = buildHistoryGraph(currentSnapshot);
-		const newStations = await placeStations(graph);
-		if (!isStillCurrent()) {
-			return;
-		}
+		const newStations = placeStations(graph, currentSnapshot);
+		const rowOfStation = new Map(newStations.map((station) => [station.id, station.y]));
 		placedStations = newStations;
 		nodes = newStations.map((station) => ({
 			id: station.id,
@@ -69,20 +71,18 @@
 			id: track.id,
 			source: track.fromId,
 			target: track.toId,
-			type: 'straight',
-			class: track.isNextCommit ? 'next-track' : 'commit-track',
+			// Inside one row the track is straight; between rows it bends, like a line changing level.
+			type:
+				rowOfStation.get(track.fromId) === rowOfStation.get(track.toId) ? 'straight' : 'default',
+			class: trackClasses[track.kind],
 			selectable: false
 		}));
 	}
 
 	$effect(() => {
-		let isCurrent = true;
 		if (snapshot !== null) {
-			void drawHistory(snapshot, () => isCurrent);
+			drawHistory(snapshot);
 		}
-		return () => {
-			isCurrent = false;
-		};
 	});
 </script>
 
@@ -138,8 +138,10 @@
 		stroke-linecap: round;
 	}
 
-	/* The line to the commit you have not made yet: thin, dashed and faded. */
-	.history-map :global(.next-track path) {
+	/* The lines to the commit you have not made yet and to commits no branch reaches:
+	   thin, dashed and faded. */
+	.history-map :global(.next-track path),
+	.history-map :global(.lost-track path) {
 		stroke: var(--git-branch);
 		stroke-width: 2px;
 		stroke-dasharray: 3 5;

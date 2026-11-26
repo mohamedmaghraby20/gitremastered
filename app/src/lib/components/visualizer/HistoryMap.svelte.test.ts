@@ -82,4 +82,47 @@ describe('HistoryMap', () => {
 		await expect.element(page.getByRole('button', { name: /zoom out/i })).toBeInTheDocument();
 		await expect.element(page.getByRole('button', { name: /fit view/i })).toBeInTheDocument();
 	});
+
+	it('fades a commit no branch reaches and marks it "no branch"', async () => {
+		document.body.style.height = '400px';
+		const lostCommit = {
+			id: 'c'.repeat(40),
+			message: 'Add ntoes',
+			parentIds: [firstId],
+			authorName: 'Student',
+			authoredAt: '2026-11-25T10:03:00+00:00',
+			isReachable: false
+		};
+		const amended = { ...twoCommitSnapshot, commits: [lostCommit, ...twoCommitSnapshot.commits] };
+		await render(HistoryMap, { snapshot: amended });
+
+		const lostStation = page.getByTestId('commit-station').filter({ hasText: 'ccccccc' });
+		await expect.element(lostStation).toHaveAttribute('data-unreachable', 'true');
+		await expect.poll(() => lostStation.element().textContent).toContain('no branch');
+	});
+
+	it('labels a remote-tracking branch, a tag and a detached HEAD', async () => {
+		document.body.style.height = '400px';
+		const snapshot = {
+			...twoCommitSnapshot,
+			branches: [
+				...twoCommitSnapshot.branches,
+				{
+					name: 'origin/main',
+					commitId: firstId,
+					isRemote: true,
+					upstream: null,
+					ahead: 0,
+					behind: 0
+				}
+			],
+			tags: [{ name: 'v1.0', commitId: firstId, isAnnotated: false }],
+			head: { kind: 'detached' as const, commitId: firstId }
+		};
+		await render(HistoryMap, { snapshot });
+
+		await expect.element(page.getByText('origin/main')).toBeInTheDocument();
+		await expect.element(page.getByText('v1.0')).toBeInTheDocument();
+		await expect.element(page.getByText('HEAD · detached')).toBeInTheDocument();
+	});
 });

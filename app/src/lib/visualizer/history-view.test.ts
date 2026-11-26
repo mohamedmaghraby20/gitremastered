@@ -6,7 +6,7 @@
 
 import { describe, expect, it } from 'vitest';
 import type { PlacedStation } from './history-layout';
-import { chooseHistoryView, followZoom } from './history-view';
+import { chooseHistoryView, followZoom, smallestFollowZoom } from './history-view';
 
 /**
  * Places a row of commit stations, oldest on the left, with HEAD on the newest and the
@@ -26,6 +26,10 @@ function rowOfStations(commitCount: number): PlacedStation[] {
 				shortId: isNextCommit ? '' : `c${index}`,
 				message: '',
 				branchNames: [],
+				remoteBranchNames: [],
+				tagNames: [],
+				isHeadDetached: false,
+				isUnreachable: false,
 				isHead: index === commitCount - 1,
 				isNextCommit
 			}
@@ -48,6 +52,21 @@ describe('chooseHistoryView', () => {
 			expect(view.zoom).toBe(followZoom);
 			// Halfway between HEAD (commit 24, x 3648) and the next-commit station (x 3800).
 			expect(view.x).toBe((24 * 152 + 25 * 152 + 112) / 2);
+		}
+	});
+
+	it('zooms out a little to keep a second branch row in sight while following HEAD', () => {
+		const stations = rowOfStations(25);
+		// A commit on a second row, below the first one.
+		stations.push({ ...stations[3], id: 'feature-commit', y: 140 });
+		const view = chooseHistoryView(stations, mapArea);
+		expect(view.kind).toBe('center');
+		if (view.kind === 'center') {
+			// Two rows are 264 px tall; 70% of the 300 px area is 210 px, so the zoom is 210 / 264.
+			expect(view.zoom).toBeCloseTo(210 / 264);
+			expect(view.zoom).toBeGreaterThan(smallestFollowZoom);
+			// The view is centered between the two rows, not on HEAD's row alone.
+			expect(view.y).toBe(264 / 2);
 		}
 	});
 

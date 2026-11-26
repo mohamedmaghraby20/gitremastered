@@ -1,7 +1,9 @@
 <!--
   VisualizerBoard.svelte
   The dotted drawing board from DESIGN.md: the files desk on top, the history map in the
-  middle (passed in as "history"), and the caption bar at the bottom.
+  middle (passed in as "history"), and the caption bar at the bottom. The header says which
+  branch you are on and how far it is from the branch it follows on the remote; a strip
+  under it appears for a merge that is waiting and for stashed work (WorkStatus).
 
   The "Files" header folds the desk away, for more room for the history map.
 
@@ -13,8 +15,10 @@
 	import type { Snippet } from 'svelte';
 	import type { RepoSnapshot } from '$lib/types/repo-snapshot';
 	import type { CommandCaption } from '$lib/visualizer/explain-command';
+	import { describeUpstream } from '$lib/visualizer/work-state';
 	import AreaDesk from './AreaDesk.svelte';
 	import CaptionBar from './CaptionBar.svelte';
+	import WorkStatus from './WorkStatus.svelte';
 
 	let {
 		snapshot,
@@ -37,7 +41,9 @@
 		if (snapshot.head.kind === 'detached') {
 			return `HEAD detached at ${snapshot.head.commitId.slice(0, 7)}`;
 		}
-		return `on branch ${snapshot.head.branchName}`;
+		const upstreamText = describeUpstream(snapshot);
+		const branchText = `on branch ${snapshot.head.branchName}`;
+		return upstreamText === null ? branchText : `${branchText} · ${upstreamText}`;
 	});
 </script>
 
@@ -58,6 +64,7 @@
 		</button>
 		<span class="type-label-mono text-ink-faint">{branchLabel}</span>
 	</div>
+	<WorkStatus {snapshot} />
 	<div id="files-desk" class="px-3.5 pt-1 pb-2.5" hidden={isDeskFolded}>
 		<AreaDesk {snapshot} />
 	</div>

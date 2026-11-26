@@ -722,8 +722,8 @@ Goal: modules 0–4 of the Pro path written and playable: Orientation, Your dail
 **Description:** After `git commit --amend` or `git reset`, the old commit vanishes from the map, which hides what really happened. The snapshot already marks such commits (task 47); the map now draws them as faded stations marked "no branch".
 
 **Acceptance criteria:**
-- [ ] After an amend, the old commit is still on the map, faded
-- [ ] `commit-count-…` checks count only reachable commits
+- [x] After an amend, the old commit is still on the map, faded
+- [x] `commit-count-…` checks count only reachable commits
 
 **Verification:** Rust tests against real Git, layout tests · **Files:** `repo_inspector/`, `visualizer/history-layout.ts`, `CommitStation.svelte` · **Scope:** M
 
@@ -740,13 +740,17 @@ Goal: modules 0–4 of the Pro path written and playable: Orientation, Your dail
 **Description:** One row (lane) per branch, labels for remote-tracking branches and tags, and a clear detached HEAD (the HEAD pin on a commit with no branch label, plus a caption).
 
 **Acceptance criteria:**
-- [ ] Two branches that split draw as two rows that meet again at a merge commit
-- [ ] Detached HEAD is named on the map; tags and `origin/…` labels have their own look
+- [x] Two branches that split draw as two rows that meet again at a merge commit
+- [x] Detached HEAD is named on the map; tags and `origin/…` labels have their own look
+
+**Result (2026-11-26):** the map no longer uses ELK: `lane-layout.ts` (also behind the `:::graph` block) places commits by plain rules, at once and the same way every time. main keeps the top row; a branch that is only ahead stays on its row; a branch beside it gets the next row; rows are reused once a branch has ended. While following HEAD, the view zooms out a little (down to 0.55) to keep the other rows in sight. `elkjs` can be removed from the dependencies (task 75).
 
 **Verification:** layout unit tests, component tests · **Files:** `visualizer/`, `components/visualizer/` · **Scope:** M
 
 ### Task 61: Merge, conflict and stash state
 **Description:** The snapshot already carries `conflictedFiles`, `operation` and `stashes` (task 47). Show them: the desk marks conflicted files, a banner says when a merge is waiting to be finished, and a small "stash" shelf shows stashed work.
+
+**Result (2026-11-26):** conflicted files show as sheets marked `conflict` with a warning edge; a banner names the stopped operation and the next step ("Fix each file, git add it, then git commit. To give up: git merge --abort."); the Stash shelf lists the newest two entries; the board's header adds the distance to the upstream ("on branch main · 1 ahead of origin/main"). The repository zone counts only commits a branch still reaches.
 
 **Verification:** Rust tests against real Git, goal-checker tests, component tests · **Files:** `models/`, `repo_inspector/`, `mission-engine/`, `components/visualizer/` · **Scope:** L
 
@@ -764,8 +768,8 @@ Goal: modules 0–4 of the Pro path written and playable: Orientation, Your dail
 **Description:** Practice setup can build a bare repository beside the practice folder and use it as `origin`, and can push "a teammate's" commits to it, so fetch, pull and push work offline. The snapshot and goal checks are already there (task 47); this task makes the practice folder own its remote (built and removed with it) and shows ahead/behind on the map.
 
 **Acceptance criteria:**
-- [ ] Reset rebuilds the remote too; nothing is left behind in the practice root
-- [ ] `pnpm test:missions` runs remote challenges with no network
+- [x] Reset rebuilds the remote too; nothing is left behind in the practice root (the practice folder is now `practice/<mission>/project` inside a workspace that is rebuilt as a whole)
+- [x] `pnpm test:missions` runs remote challenges with no network
 
 **Verification:** Rust tests against real Git, mission tests · **Files:** `git_runner/practice_folder.rs`, `repo_inspector/`, `models/`, `mission-engine/` · **Scope:** L
 

@@ -12,7 +12,7 @@ export type ZoneName = 'working' | 'staging' | 'repository';
 /** One paper sheet on the desk: a file and the small word printed on it. */
 export type FileSheetInfo = {
 	path: string;
-	label: 'new' | 'edited' | 'added' | 'deleted' | 'renamed';
+	label: 'new' | 'edited' | 'added' | 'deleted' | 'renamed' | 'conflict';
 };
 
 /** One commit card in the repository zone. */
@@ -40,20 +40,24 @@ export function sortFilesIntoZones(snapshot: RepoSnapshot): DeskZones {
 	}));
 	const modifiedSheets: FileSheetInfo[] = snapshot.modifiedFiles.map((change) => ({
 		path: change.path,
-		label: workingLabel(change.changeKind)
+		label: snapshot.conflictedFiles.includes(change.path)
+			? 'conflict'
+			: workingLabel(change.changeKind)
 	}));
 	const stagedSheets: FileSheetInfo[] = snapshot.stagedFiles.map((change) => ({
 		path: change.path,
 		label: stagedLabel(change.changeKind)
 	}));
-	const latestCommits = snapshot.commits.slice(0, visibleCommitCount).map((commit) => ({
+	// A commit no branch reaches any more (after an amend or a reset) is not counted as saved.
+	const reachableCommits = snapshot.commits.filter((commit) => commit.isReachable);
+	const latestCommits = reachableCommits.slice(0, visibleCommitCount).map((commit) => ({
 		shortId: commit.id.slice(0, 7),
 		message: commit.message
 	}));
 	return {
 		working: [...modifiedSheets, ...untrackedSheets],
 		staging: stagedSheets,
-		repository: { commitCount: snapshot.commits.length, latestCommits }
+		repository: { commitCount: reachableCommits.length, latestCommits }
 	};
 }
 

@@ -147,12 +147,12 @@ Scope approved 2026-11-26: modules 0–4, offline. Run in one go; you review the
 - [x] Task 47: Snapshot version 2 and the goal checks for all of phase 5
 - [ ] Tasks 48–50: Orientation (`what-is-git`, `setup`, `first-look-inside`)
 - [ ] Tasks 51–54: Your daily loop (`start-a-repo`, `remove-move-files`, `reading-history`, `diffs-in-depth`)
-- [ ] Task 55: The map shows commits that lost their branch
+- [x] Task 55: The map shows commits that lost their branch
 - [ ] Tasks 56–59: Undo and fix (`undo-basics`, `fix-last-commit`, `revert-a-commit`, `reset-demystified`)
-- [ ] Task 60: A map for branches
-- [ ] Task 61: Merge, conflict and stash state
+- [x] Task 60: A map for branches
+- [x] Task 61: Merge, conflict and stash state
 - [ ] Tasks 62–66: Branching (`branches-are-pointers`, `switch-and-detached-head`, `branch-and-merge`, `branch-management`, `stash-and-clean`)
-- [ ] Task 67: A local "origin" and a teammate
+- [x] Task 67: A local "origin" and a teammate
 - [ ] Tasks 68–72: Remotes (`how-git-talks`, `remotes`, `remote-branches`, `refspecs`, `tags-and-releases`)
 - [ ] Task 73: Module checkpoints
 - [ ] Task 74: Link pass, paths and coverage

@@ -3,6 +3,7 @@
   One file as a paper sheet on the desk, in its zone's look (DESIGN.md "draft → highlighted"):
   dashed edges in the working tree, a highlighter stripe in the staging area.
   A sheet that just arrived gets a brief outline (instant with "reduce motion").
+  A file with a merge conflict carries the word "conflict" and a thicker warning edge.
 
   Inputs: path, label (the small word: new, edited…), zone ("working" or "staging"),
           isJustMoved (true right after the file arrived in this zone).
@@ -26,16 +27,23 @@
 <li
 	class={[
 		'file-sheet type-label-mono flex items-center justify-between gap-2 rounded-small bg-surface px-1.5 py-0.5',
-		zone === 'working'
-			? 'border border-dashed border-git-working'
-			: 'border border-git-staging-edge',
+		zone === 'working' && label !== 'conflict' && 'border border-dashed border-git-working',
+		zone === 'working' && label === 'conflict' && 'border-2 border-warning',
+		zone === 'staging' && 'border border-git-staging-edge',
 		zone === 'staging' && 'staged-stripe',
 		isJustMoved && 'just-moved'
 	]}
 	data-just-moved={isJustMoved}
 >
 	<span class="truncate">{path}</span>
-	<span class="type-caption text-ink-muted uppercase">{label}</span>
+	<span
+		class={[
+			'type-caption uppercase',
+			label === 'conflict' ? 'font-bold text-warning' : 'text-ink-muted'
+		]}
+	>
+		{label}
+	</span>
 </li>
 
 <style>
