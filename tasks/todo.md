@@ -544,8 +544,8 @@ Goal: home, course map (both paths), search, command index and settings work for
 **Description:** Pro path: modules with their lessons (number, title, source, time, ✓ done / ● current). Book path: chapters with sections and the lesson for each. The switch remembers the choice. Nothing is locked; every row opens its lesson.
 
 **Acceptance criteria:**
-- [ ] Both orders come only from the path files
-- [ ] Status never by color alone (✓ and ● have text labels for screen readers)
+- [x] Both orders come only from the path files
+- [x] Status never by color alone (✓ and ● have text labels for screen readers)
 
 **Verification:** component tests (both paths, marks) · **Files:** `routes/course-map/+page.svelte`, `components/course-map/` · **Scope:** M
 
