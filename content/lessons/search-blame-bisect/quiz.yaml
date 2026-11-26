@@ -1,0 +1,40 @@
+questions:
+  - question: "A customer on release v2.0 reports a crash in sendReceipt. You are in the middle of other work and do not want to switch branches. How do you list every line that mentions sendReceipt in the code as it was in v2.0?"
+    answers:
+      - text: "git grep -n sendReceipt v2.0"
+        correct: true
+        explanation: "A tag after the text makes git grep search the files of that commit, straight from the repository. Your working tree is not touched."
+      - text: "git log -S sendReceipt v2.0"
+        explanation: "That lists the commits up to v2.0 that added or removed the text. It answers when, not where: you get commits, not the lines of the files."
+      - text: "git blame v2.0 sendReceipt"
+        explanation: "git blame needs a file name and shows who last changed each of its lines. It does not search for a text across the project."
+
+  - question: "git blame shows the same commit, \"Run the code formatter\", for every line of a function with a bug in it. What do you do next?"
+    answers:
+      - text: "Ask the author of the formatter commit why they wrote the function this way"
+        explanation: "That commit only changed how the lines look. Blame shows the last commit that touched a line, which is not always the one that decided what it does."
+      - text: "Run blame again with -w, or with --ignore-rev and the formatter commit's ID"
+        correct: true
+        explanation: "-w looks past changes that are only spaces, and --ignore-rev looks past one named commit. Blame then shows the commits that last changed what the lines say."
+      - text: "Use git bisect, because blame cannot see past a formatting commit"
+        explanation: "Blame can see past it: that is what -w and --ignore-rev are for. Bisect is for when you do not know which lines are wrong."
+
+  - question: "The tests passed in last month's release and fail today. About 1,000 commits were made in between. You bisect with the release as good and today's commit as bad. Roughly how many commits will you have to test?"
+    answers:
+      - text: "About 500, half of them"
+        explanation: "The first test rules out half, but so does every test after it. The number of suspects is halved again and again, not once."
+      - text: "About 10"
+        correct: true
+        explanation: "Each test halves the suspects: 1,000, 500, 250 and so on, down to one after about ten tests."
+      - text: "It depends on where the bad commit is: between 1 and 1,000"
+        explanation: "That is a search from one end, commit by commit. Bisect always tests the middle of what is left, so the count barely depends on where the bad commit is."
+
+  - question: "git bisect has printed \"... is the first 'bad' commit\". You open the file it names and start fixing the bug right away. What is wrong with that?"
+    answers:
+      - text: "Nothing: finding the commit ends the bisect"
+        explanation: "The bisect stays open until git bisect reset. git status still says \"You are currently bisecting\"."
+      - text: "You are still on an old commit with a detached HEAD; run git bisect reset first"
+        correct: true
+        explanation: "Bisect left you on one of the commits it tested, not on your branch. git bisect reset puts you back on the branch you started from, with the newest code, and that is where the fix belongs."
+      - text: "Bisect changed the commits it tested, so they must be repaired first"
+        explanation: "Bisect only moves HEAD from commit to commit. It never changes a commit or a branch."

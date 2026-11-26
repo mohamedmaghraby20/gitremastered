@@ -1,0 +1,200 @@
+challenges:
+  - id: squash-the-wip
+    title: Squash two WIP commits into one
+    level: easy
+    brief: "The opening hours page was built in two commits, \"WIP opening hours\" and \"WIP more hours\". Nothing was pushed yet. Join them into one commit with the message \"Add opening hours page\". The page must keep both of its lines."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "<h1>Fresh bread daily</h1>" > index.html
+      - git add index.html
+      - git commit -q -m "Add homepage"
+      - 'echo "<p>Monday to Friday: 7 to 5</p>" > hours.html'
+      - git add hours.html
+      - git commit -q -m "WIP opening hours"
+      - 'echo "<p>Saturday: 8 to 2</p>" >> hours.html'
+      - git add hours.html
+      - git commit -q -m "WIP more hours"
+    goal:
+      - check: commit-count-is
+        count: 2
+        label: "The history has two commits, not three"
+      - check: commit-is-gone
+        message: "WIP"
+        label: "No commit with \"WIP\" in its message is left"
+      - check: latest-commit-message-contains
+        text: "Add opening hours page"
+        label: "The joined commit says \"Add opening hours page\""
+      - check: committed-file-contains
+        file: hours.html
+        text: "Monday to Friday"
+        label: "hours.html still has the weekday line"
+      - check: committed-file-contains
+        file: hours.html
+        text: "Saturday"
+        label: "hours.html still has the Saturday line"
+      - check: no-operation-in-progress
+        label: "The rebase is finished"
+    hints:
+      - "Run git log --oneline. How many commits back do you need to reach both WIP commits?"
+      - "git rebase -i HEAD~2 opens the todo list with the two WIP commits, oldest on top. squash joins a commit into the line above it, then lets you write the message."
+      - "Run: git rebase -i HEAD~2. On the second line change pick to squash, then write and quit (in Vim: Esc, :wq, Enter). In the message editor, delete both WIP lines, type Add opening hours page, then write and quit."
+    solution:
+      - GIT_SEQUENCE_EDITOR="sed -i -e '2s/^pick/squash/'" git rebase -i HEAD~2
+      - git commit --amend -q -m "Add opening hours page"
+
+  - id: reorder-and-reword
+    title: Put two commits in the right order and fix a message
+    level: medium
+    brief: "A reviewer will read your three commits in order. The footer commit links to a menu page that only arrives one commit later, and that later commit's message has a typo: \"Add menu pgae\". Nothing was pushed yet. Make \"Add menu page\" (spelled right) come before \"Add footer link to the menu\"."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "<h1>Fresh bread daily</h1>" > index.html
+      - git add index.html
+      - git commit -q -m "Add homepage"
+      - echo "<a href=menu.html>Menu</a>" > footer.html
+      - git add footer.html
+      - git commit -q -m "Add footer link to the menu"
+      - echo "<h1>Menu</h1>" > menu.html
+      - git add menu.html
+      - git commit -q -m "Add menu pgae"
+    goal:
+      - check: commit-comes-before
+        message: "Add menu page"
+        later: "Add footer link to the menu"
+        label: "\"Add menu page\" comes before \"Add footer link to the menu\""
+      - check: commit-is-gone
+        message: "pgae"
+        label: "No commit with the typo \"pgae\" is left"
+      - check: commit-exists
+        message: "Add homepage"
+        label: "\"Add homepage\" is still in the history"
+      - check: commit-count-is
+        count: 3
+        label: "The history still has three commits"
+      - check: file-is-committed
+        file: footer.html
+        label: "footer.html is in the last commit"
+      - check: no-operation-in-progress
+        label: "The rebase is finished"
+    hints:
+      - "Both jobs fit in one todo list. Which two commits does it need to show?"
+      - "In git rebase -i HEAD~2, moving a line changes the order, and reword on a line lets you fix that commit's message. The typo is fixed in the editor that opens afterwards, not in the todo list."
+      - "Run: git rebase -i HEAD~2. Cut the first line, the footer one, and paste it under the menu line (in Vim: cursor on the first line, dd, then p). On the \"Add menu pgae\" line change pick to reword. Write and quit. When the message opens, correct pgae to page, then write and quit."
+    solution:
+      - GIT_SEQUENCE_EDITOR="sed -i -e '/pgae/s/^pick/reword/' -e '1{h;d}' -e '2{G}'" GIT_EDITOR="sed -i -e '1s/pgae/page/'" git rebase -i HEAD~2
+
+  - id: fixup-the-menu
+    title: Send a fix back into an older commit
+    level: hard
+    brief: "menu.html spells \"Crossiant\". The commit that added it, \"Add menu page\", is not your last commit, and nothing was pushed yet. Correct the spelling to \"Croissant\" and make the fix part of \"Add menu page\": record it with git commit --fixup, then fold it in with an autosquash rebase. Also turn autosquash on for this repository only, so the next clean-up needs no extra option. The history must end with the same three commits."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "<h1>Fresh bread daily</h1>" > index.html
+      - git add index.html
+      - git commit -q -m "Add homepage"
+      - echo "<li>Crossiant 2.50</li>" > menu.html
+      - echo "<li>Baguette 3.00</li>" >> menu.html
+      - git add menu.html
+      - git commit -q -m "Add menu page"
+      - echo "<h1>Contact us</h1>" > contact.html
+      - git add contact.html
+      - git commit -q -m "Add contact page"
+    goal:
+      - check: committed-file-contains
+        file: menu.html
+        text: "Croissant"
+        label: "The committed menu.html says \"Croissant\""
+      - check: committed-file-lacks
+        file: menu.html
+        text: "Crossiant"
+        label: "The misspelling is gone from the committed menu.html"
+      - check: commit-is-gone
+        message: "fixup!"
+        label: "No \"fixup!\" commit is left in the history"
+      - check: commit-count-is
+        count: 3
+        label: "The history still has three commits"
+      - check: latest-commit-message-contains
+        text: "Add contact page"
+        label: "\"Add contact page\" is still the last commit"
+      - check: config-is
+        key: rebase.autosquash
+        value: "true"
+        label: "rebase.autoSquash is true in this repository's own settings"
+      - check: working-folder-clean
+        label: "git status shows nothing left to do"
+      - check: no-operation-in-progress
+        label: "The rebase is finished"
+    hints:
+      - "Amend cannot reach \"Add menu page\": it is not the last commit. See \"Fixup commits and autosquash\" in Must know, and \"Turn autosquash on for good\" in Advanced."
+      - "Edit menu.html and stage it. git commit --fixup with the ID of \"Add menu page\" records the fix. git config --local rebase.autoSquash true sets the option for this repository. Then an interactive rebase over the last three commits puts the fix in place."
+      - "Change Crossiant to Croissant in menu.html (in any editor, or with: sed -i 's/Crossiant/Croissant/' menu.html). Then run: git add menu.html, git commit --fixup HEAD~1, git config --local rebase.autoSquash true, git rebase -i HEAD~3. The todo list is already arranged: write and quit."
+    solution:
+      - sed -i -e 's/Crossiant/Croissant/' menu.html
+      - git add menu.html
+      - git commit -q --fixup HEAD~1
+      - git config --local rebase.autoSquash true
+      - GIT_SEQUENCE_EDITOR=true git rebase -i HEAD~3
+
+  - id: split-the-big-commit
+    title: Split one commit into two
+    level: hard
+    brief: "The commit \"Add menu and contact pages\" did two things at once, and \"Add footer\" came after it. Nothing was pushed yet. Split the big commit into two: first \"Add menu page\" with menu.html, then \"Add contact page\" with contact.html. \"Add footer\" must stay the last commit."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "<h1>Fresh bread daily</h1>" > index.html
+      - git add index.html
+      - git commit -q -m "Add homepage"
+      - echo "<h1>Menu</h1>" > menu.html
+      - echo "<h1>Contact us</h1>" > contact.html
+      - git add menu.html contact.html
+      - git commit -q -m "Add menu and contact pages"
+      - echo "<p>Open every day</p>" > footer.html
+      - git add footer.html
+      - git commit -q -m "Add footer"
+    goal:
+      - check: commit-is-gone
+        message: "Add menu and contact pages"
+        label: "The big commit is gone from the history"
+      - check: commit-comes-before
+        message: "Add menu page"
+        later: "Add contact page"
+        label: "\"Add menu page\" comes before \"Add contact page\""
+      - check: commit-comes-before
+        message: "Add contact page"
+        later: "Add footer"
+        label: "\"Add contact page\" comes before \"Add footer\""
+      - check: latest-commit-message-contains
+        text: "Add footer"
+        label: "\"Add footer\" is still the last commit"
+      - check: commit-count-is
+        count: 4
+        label: "The history has four commits"
+      - check: working-folder-clean
+        label: "git status shows nothing left to do: both pages are committed"
+      - check: no-operation-in-progress
+        label: "The rebase is finished"
+    hints:
+      - "A commit is split while a rebase is stopped on it. Which todo command stops? See \"Edit: stop and split a commit\"."
+      - "Mark the big commit edit in git rebase -i HEAD~2. When Git stops, git reset HEAD^ undoes that commit and keeps both files in the working tree. Commit them one at a time, then continue the rebase."
+      - "Run: git rebase -i HEAD~2 and change pick to edit on the first line; write and quit. Then: git reset HEAD^, git add menu.html, git commit -m \"Add menu page\", git add contact.html, git commit -m \"Add contact page\", git rebase --continue"
+    solution:
+      - GIT_SEQUENCE_EDITOR="sed -i -e '1s/^pick/edit/'" git rebase -i HEAD~2
+      - git reset -q HEAD^
+      - git add menu.html
+      - git commit -q -m "Add menu page"
+      - git add contact.html
+      - git commit -q -m "Add contact page"
+      - git rebase --continue

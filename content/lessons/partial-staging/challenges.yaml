@@ -1,0 +1,125 @@
+challenges:
+  - id: tax-not-debug
+    title: Commit the tax change, keep the debug switch
+    level: easy
+    brief: "The shop's tax rate went up to 25, and you changed it in settings.ini. While testing, you also turned debug on in the same file. Commit the tax change alone. The debug switch stays on in your file, uncommitted."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - 'printf "%s\n" "# Shop settings" "name = Corner Books" "currency = EUR" "tax_rate = 20" "shipping = 4.50" "free_shipping_from = 50" "opening = 09.00" "closing = 18.00" "language = en" "theme = light" "items_per_page = 20" "email = hello@cornerbooks.example" "debug = off" "log_level = warn" > settings.ini'
+      - git add settings.ini
+      - git commit -q -m "Add shop settings"
+      - sed -i "s/tax_rate = 20/tax_rate = 25/" settings.ini
+      - sed -i "s/debug = off/debug = on/" settings.ini
+    goal:
+      - check: committed-file-contains
+        file: settings.ini
+        text: "tax_rate = 25"
+        label: "The latest commit has the new tax rate, 25"
+      - check: committed-file-lacks
+        file: settings.ini
+        text: "debug = on"
+        label: "The latest commit does not turn debug on"
+      - check: file-contains
+        file: settings.ini
+        text: "debug = on"
+        label: "debug is still on in your working tree"
+      - check: file-is-modified
+        file: settings.ini
+        label: "settings.ini still has an unstaged change"
+    hints:
+      - "Run git diff. How many hunks does settings.ini have, and which one is the tax change?"
+      - "git add -p settings.ini asks about each hunk. Answer y for the tax hunk and n for the debug hunk, then check with git diff --staged."
+      - "Run: git add -p settings.ini, answer y, then n. Then git commit -m \"Raise tax rate to 25\". Do not use git commit -a."
+    solution:
+      - printf 'y\nn\n' | git add -p settings.ini
+      - git commit -q -m "Raise tax rate to 25"
+
+  - id: split-the-menu
+    title: Two edits in one hunk
+    level: medium
+    brief: "In menu.txt you raised the Latte price to 3.40, which the owner approved. Two lines below, you left a question for Mia on the Tea line. Commit the Latte price alone, and keep the note to Mia in your file, uncommitted."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - printf "%s\n" "Cafe menu" "Espresso 2.00" "Latte 3.20" "Cappuccino 3.00" "Tea 2.20" "Hot chocolate 3.50" "Croissant 2.40" "Muffin 2.80" > menu.txt
+      - git add menu.txt
+      - git commit -q -m "Add cafe menu"
+      - sed -i "s/Latte 3.20/Latte 3.40/" menu.txt
+      - sed -i "s/Tea 2.20/Tea 2.20 (ask Mia about herbal tea)/" menu.txt
+    goal:
+      - check: committed-file-contains
+        file: menu.txt
+        text: "Latte 3.40"
+        label: "The latest commit has the new Latte price"
+      - check: committed-file-lacks
+        file: menu.txt
+        text: "ask Mia"
+        label: "The latest commit does not hold the note to Mia"
+      - check: file-contains
+        file: menu.txt
+        text: "ask Mia"
+        label: "The note to Mia is still in your working tree"
+      - check: commit-count-is
+        count: 2
+        label: "The history has exactly one new commit"
+    hints:
+      - "Run git add -p menu.txt and look before you answer. Git shows one hunk with both edits, so y would stage both."
+      - "Look at the letters in brackets. s splits the hunk at the unchanged line between the two edits; then you answer for each part."
+      - "Run: git add -p menu.txt, answer s, then y for the Latte part and n for the Tea part. Check with git diff --staged, then git commit -m \"Raise Latte price\"."
+    solution:
+      - printf 's\ny\nn\n' | git add -p menu.txt
+      - git commit -q -m "Raise Latte price"
+
+  - id: clean-the-stage
+    title: Everything was staged by habit
+    level: hard
+    brief: "server.conf has three edits, and a quick git add staged them all. The port change to 9090 is the fix: commit it alone. verbose = yes was only for debugging: remove it from your file too. cache_minutes = 30 is an experiment still running: keep it in your file, uncommitted."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - 'printf "%s\n" "# Server settings" "port = 8080" "host = 0.0.0.0" "workers = 4" "timeout_seconds = 30" "max_upload_mb = 10" "compress = yes" "https_only = yes" "session_hours = 12" "log_file = server.log" "verbose = no" "log_days = 14" "backup = nightly" "backup_keep = 7" "mail_from = shop@example.com" "mail_retries = 3" "rate_limit = 100" "rate_window_seconds = 60" "static_dir = public" "cache_minutes = 10" "cache_dir = tmp" "maintenance = off" > server.conf'
+      - git add server.conf
+      - git commit -q -m "Add server settings"
+      - sed -i "s/port = 8080/port = 9090/" server.conf
+      - sed -i "s/verbose = no/verbose = yes/" server.conf
+      - sed -i "s/cache_minutes = 10/cache_minutes = 30/" server.conf
+      - git add server.conf
+    goal:
+      - check: committed-file-contains
+        file: server.conf
+        text: "port = 9090"
+        label: "The latest commit has the port fix"
+      - check: committed-file-lacks
+        file: server.conf
+        text: "verbose = yes"
+        label: "The latest commit does not turn verbose on"
+      - check: committed-file-lacks
+        file: server.conf
+        text: "cache_minutes = 30"
+        label: "The latest commit does not hold the cache experiment"
+      - check: file-lacks
+        file: server.conf
+        text: "verbose = yes"
+        label: "verbose = yes is gone from your working tree"
+      - check: file-contains
+        file: server.conf
+        text: "cache_minutes = 30"
+        label: "The cache experiment is still in your working tree"
+      - check: file-is-modified
+        file: server.conf
+        label: "server.conf still has an unstaged change"
+    hints:
+      - "Two jobs, in order: first take two of the three hunks back out of the staging area and commit, then remove one of them from your file. Run git diff --staged to see the three hunks."
+      - "Under the hood has a table of which versions each patch command compares. git restore --staged -p walks through the staged hunks and asks \"Unstage this hunk?\". After the commit, git restore -p walks through the unstaged hunks and asks \"Discard this hunk from worktree?\"."
+      - "Run: git restore --staged -p server.conf, answer n (port), y (verbose), y (cache). Then git commit -m \"Change port to 9090\". Then git restore -p server.conf, answer y (verbose), n (cache)."
+    solution:
+      - printf 'n\ny\ny\n' | git restore --staged -p server.conf
+      - git commit -q -m "Change port to 9090"
+      - printf 'y\nn\n' | git restore -p server.conf

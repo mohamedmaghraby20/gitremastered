@@ -1,0 +1,40 @@
+questions:
+  - question: "You are on main and just merged the branch feature, so HEAD is a merge commit. You want the newest commit of feature. Which name gives it to you?"
+    answers:
+      - text: "HEAD~2"
+        explanation: "The ~ sign always follows first parents. HEAD~2 is two commits back on main's own line, before the merge."
+      - text: "HEAD^2"
+        correct: true
+        explanation: "The second parent of a merge commit is the commit that was merged in: the tip of feature at that moment."
+      - text: "HEAD^^"
+        explanation: "Two carets with no number mean the parent of the parent, both times the first parent. That is the same commit as HEAD~2."
+
+  - question: "Before you merge the branch search into main, you want to list the commits the merge would bring in. Which command does that?"
+    answers:
+      - text: "git log main..search"
+        correct: true
+        explanation: "The range is everything reachable from search without what main already has: exactly the commits main would gain."
+      - text: "git log search..main"
+        explanation: "This is the other direction: what main has and search lacks. Those commits are already in main."
+      - text: "git log main search"
+        explanation: "Two names with no dots add up: Git lists the whole history of both branches, including everything they share."
+
+  - question: "A teammate writes: \"The bug started in HEAD@{3}, have a look.\" You run git show HEAD@{3} in your own clone and see an unrelated commit. Why?"
+    answers:
+      - text: "Your clone is out of date; after git pull the name will match"
+        explanation: "A pull does not bring anyone's reflog. It even adds a new entry to yours, which shifts the numbers again."
+      - text: "HEAD@{3} counts the last three moves of HEAD in your own repository, not in your teammate's"
+        correct: true
+        explanation: "The reflog is a local diary. Each repository has its own, so these names mean something different on every computer. Ask for the commit ID."
+      - text: "HEAD@{3} is the same as HEAD~3, and your branch has different commits"
+        explanation: "The two are different questions. HEAD~3 follows parents and would agree on both computers if you are on the same commit. HEAD@{3} follows your own moves."
+
+  - question: "git log --oneline --left-right main...search prints two lines that start with < and five that start with >. What does that tell you?"
+    answers:
+      - text: "main has two commits that search lacks, and search has five that main lacks"
+        correct: true
+        explanation: "Three dots list what only one side has. < marks the name left of the dots (main), > the name on the right (search)."
+      - text: "search is seven commits ahead of main"
+        explanation: "Seven is the size of the whole list. Two of those commits are only on main, so search is five ahead and two behind."
+      - text: "Two commits are on both branches, and five are only on search"
+        explanation: "Commits that both branches share are exactly what three dots leave out. Every line shown belongs to one side only."

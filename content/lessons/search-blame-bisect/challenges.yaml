@@ -1,0 +1,114 @@
+# All three challenges read the same project: three small shell scripts that work out the price
+# of a shop order, with twelve commits by three people between 5 October and 16 November 2026.
+# The tag v1.0 sits on the third commit, the last release that is known to work.
+# "&order-tools" names the setup list once; "*order-tools" reuses it, so the three stay equal.
+# Every commit sets its author, committer and dates, so the commit IDs are the same on every computer.
+#
+# Two bugs are in the history on purpose:
+#   - "Make the shipping fee a setting" breaks shipping (sh order.sh 1000 prints 1000, not 1499).
+#     The lesson's Try-its hunt this one.
+#   - "Use a clearer name in cart_total" breaks orders of two or more items. The hard challenge
+#     hunts this one with test-order.sh, an untracked script the setup writes last.
+challenges:
+  - id: who-added-the-coupon
+    title: Which commit brought in the coupon code?
+    level: easy
+    brief: "Marketing wants to know since when the shop accepts the coupon code SPRING10. The code appears in several places today. Find the commit that first brought the text SPRING10 into the project, and write its short ID into answer.txt, for example with: echo a1b2c3d > answer.txt"
+    setup: &order-tools
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo answer.txt >> .git/info/exclude
+      - echo test-order.sh >> .git/info/exclude
+      - printf '# Order tools\n\nSmall shell scripts that work out the price of a shop order.\nAll prices are in cents.\n' > README.md
+      - git add README.md
+      - GIT_AUTHOR_NAME="Maya Chen" GIT_AUTHOR_EMAIL=maya@shop.example GIT_COMMITTER_NAME="Maya Chen" GIT_COMMITTER_EMAIL=maya@shop.example GIT_AUTHOR_DATE="2026-10-05T09:15:00+0000" GIT_COMMITTER_DATE="2026-10-05T09:15:00+0000" git commit -q -m "Add README"
+      - 'printf ''#!/bin/sh\n# Prints the total of an order. Prices are in cents: sh order.sh 1200 800\n\ncart_total() {\n  total=0\n  for price in "$@"; do\n    total=$((total + price))\n  done\n  echo "$total"\n}\n\necho "Total: $(cart_total "$@")"\n'' > order.sh'
+      - git add order.sh
+      - GIT_AUTHOR_NAME="Maya Chen" GIT_AUTHOR_EMAIL=maya@shop.example GIT_COMMITTER_NAME="Maya Chen" GIT_COMMITTER_EMAIL=maya@shop.example GIT_AUTHOR_DATE="2026-10-07T14:30:00+0000" GIT_COMMITTER_DATE="2026-10-07T14:30:00+0000" git commit -q -m "Add the order script"
+      - 'printf ''#!/bin/sh\n# Prints the total of an order. Prices are in cents: sh order.sh 1200 800\n\ncart_total() {\n  total=0\n  for price in "$@"; do\n    total=$((total + price))\n  done\n  echo "$total"\n}\n\nshipping_fee() {\n  if [ "$1" -ge 5000 ]; then\n    echo 0\n  else\n    echo 499\n  fi\n}\n\norder_total() {\n  items=$(cart_total "$@")\n  shipping=$(shipping_fee "$items")\n  echo $((items + shipping))\n}\n\necho "Total: $(order_total "$@")"\n'' > order.sh'
+      - printf '\n## Shipping\n\nShipping costs 499. Orders of 5000 or more ship free.\n' >> README.md
+      - git add order.sh README.md
+      - GIT_AUTHOR_NAME="Omar Haddad" GIT_AUTHOR_EMAIL=omar.haddad@shop.example GIT_COMMITTER_NAME="Omar Haddad" GIT_COMMITTER_EMAIL=omar.haddad@shop.example GIT_AUTHOR_DATE="2026-10-12T11:05:00+0000" GIT_COMMITTER_DATE="2026-10-12T11:05:00+0000" git commit -q -m "Charge a shipping fee"
+      - git tag v1.0
+      - printf '# Price rules for the shop. All amounts are in cents.\n\ncart_total() {\n  total=0\n  for price in "$@"; do\n    total=$((total + price))\n  done\n  echo "$total"\n}\n\nshipping_fee() {\n  if [ "$1" -ge 5000 ]; then\n    echo 0\n  else\n    echo 499\n  fi\n}\n\norder_total() {\n  items=$(cart_total "$@")\n  shipping=$(shipping_fee "$items")\n  echo $((items + shipping))\n}\n' > pricing.sh
+      - 'printf ''#!/bin/sh\n# Prints the total of an order. Prices are in cents: sh order.sh 1200 800\n\n. ./pricing.sh\n\necho "Total: $(order_total "$@")"\n'' > order.sh'
+      - git add pricing.sh order.sh
+      - GIT_AUTHOR_NAME="Maya Chen" GIT_AUTHOR_EMAIL=maya@shop.example GIT_COMMITTER_NAME="Maya Chen" GIT_COMMITTER_EMAIL=maya@shop.example GIT_AUTHOR_DATE="2026-10-15T10:00:00+0000" GIT_COMMITTER_DATE="2026-10-15T10:00:00+0000" git commit -q -m "Move the price functions into pricing.sh"
+      - 'printf ''#!/bin/sh\n# Prints a receipt for an order: sh receipt.sh 1200 800\n\n. ./pricing.sh\n\nitems=$(cart_total "$@")\necho "Items:    $items"\necho "Shipping: $(shipping_fee "$items")"\necho "Total:    $(order_total "$@")"\n'' > receipt.sh'
+      - git add receipt.sh
+      - GIT_AUTHOR_NAME="Omar Said" GIT_AUTHOR_EMAIL=omar.said@shop.example GIT_COMMITTER_NAME="Omar Said" GIT_COMMITTER_EMAIL=omar.said@shop.example GIT_AUTHOR_DATE="2026-10-19T16:40:00+0000" GIT_COMMITTER_DATE="2026-10-19T16:40:00+0000" git commit -q -m "Add a receipt script"
+      - sed -i -e 's/^cart_total() {$/SHIPPING_FEE=499\nFREE_SHIPPING_FROM=5000\n\ncart_total() {/' -e 's/-ge 5000 ]/-ge "$SHIPPING_FEE" ]/' -e 's/echo 499/echo "$SHIPPING_FEE"/' pricing.sh
+      - git add pricing.sh
+      - GIT_AUTHOR_NAME="Omar Haddad" GIT_AUTHOR_EMAIL=omar.haddad@shop.example GIT_COMMITTER_NAME="Omar Haddad" GIT_COMMITTER_EMAIL=omar.haddad@shop.example GIT_AUTHOR_DATE="2026-10-22T10:20:00+0000" GIT_COMMITTER_DATE="2026-10-22T10:20:00+0000" git commit -q -m "Make the shipping fee a setting"
+      - sed -i -e 's/^order_total() {$/coupon_discount() {\n  if [ "$COUPON" = "SPRING10" ]; then\n    echo $(($1 \/ 10))\n  else\n    echo 0\n  fi\n}\n\norder_total() {/' -e 's/^  shipping=/  discount=$(coupon_discount "$items")\n  shipping=/' -e 's/items + shipping/items - discount + shipping/' pricing.sh
+      - git add pricing.sh
+      - GIT_AUTHOR_NAME="Maya Chen" GIT_AUTHOR_EMAIL=maya@shop.example GIT_COMMITTER_NAME="Maya Chen" GIT_COMMITTER_EMAIL=maya@shop.example GIT_AUTHOR_DATE="2026-10-28T13:00:00+0000" GIT_COMMITTER_DATE="2026-10-28T13:00:00+0000" git commit -q -m "Add the SPRING10 coupon"
+      - sed -i -e 's/echo $(($1 \/ 10))/echo $((($1 + 9) \/ 10))/' pricing.sh
+      - git add pricing.sh
+      - GIT_AUTHOR_NAME="Omar Said" GIT_AUTHOR_EMAIL=omar.said@shop.example GIT_COMMITTER_NAME="Omar Said" GIT_COMMITTER_EMAIL=omar.said@shop.example GIT_AUTHOR_DATE="2026-11-02T09:45:00+0000" GIT_COMMITTER_DATE="2026-11-02T09:45:00+0000" git commit -q -m "Round the coupon discount up"
+      - sed -i -e 's/^    /        /' -e 's/^  \([^ ]\)/    \1/' pricing.sh
+      - git add pricing.sh
+      - GIT_AUTHOR_NAME="Omar Said" GIT_AUTHOR_EMAIL=omar.said@shop.example GIT_COMMITTER_NAME="Omar Said" GIT_COMMITTER_EMAIL=omar.said@shop.example GIT_AUTHOR_DATE="2026-11-04T15:30:00+0000" GIT_COMMITTER_DATE="2026-11-04T15:30:00+0000" git commit -q -m "Reindent pricing.sh with four spaces"
+      - sed -i -e 's/total=0/sum=0/' -e 's/total=$((total + price))/sum=$((total + price))/' -e 's/echo "$total"/echo "$sum"/' pricing.sh
+      - git add pricing.sh
+      - GIT_AUTHOR_NAME="Omar Haddad" GIT_AUTHOR_EMAIL=omar.haddad@shop.example GIT_COMMITTER_NAME="Omar Haddad" GIT_COMMITTER_EMAIL=omar.haddad@shop.example GIT_AUTHOR_DATE="2026-11-09T15:10:00+0000" GIT_COMMITTER_DATE="2026-11-09T15:10:00+0000" git commit -q -m "Use a clearer name in cart_total"
+      - sed -i -e 's/FREE_SHIPPING_FROM=5000/FREE_SHIPPING_FROM=4000/' pricing.sh
+      - sed -i -e 's/Orders of 5000 or more/Orders of 4000 or more/' README.md
+      - git add pricing.sh README.md
+      - GIT_AUTHOR_NAME="Maya Chen" GIT_AUTHOR_EMAIL=maya@shop.example GIT_COMMITTER_NAME="Maya Chen" GIT_COMMITTER_EMAIL=maya@shop.example GIT_AUTHOR_DATE="2026-11-12T11:40:00+0000" GIT_COMMITTER_DATE="2026-11-12T11:40:00+0000" git commit -q -m "Lower the free shipping limit to 40.00"
+      - 'printf ''if [ "$COUPON" = "SPRING10" ]; then\n  echo "Coupon:   SPRING10, 10 percent off"\nfi\n'' >> receipt.sh'
+      - git add receipt.sh
+      - GIT_AUTHOR_NAME="Omar Said" GIT_AUTHOR_EMAIL=omar.said@shop.example GIT_COMMITTER_NAME="Omar Said" GIT_COMMITTER_EMAIL=omar.said@shop.example GIT_AUTHOR_DATE="2026-11-16T12:25:00+0000" GIT_COMMITTER_DATE="2026-11-16T12:25:00+0000" git commit -q -m "Show the coupon on the receipt"
+      - 'printf ''#!/bin/sh\n# Passes (exit code 0) when a two-item order gets the right total.\nresult=$(sh order.sh 3000 2500)\ntest "$result" = "Total: 5500"\n'' > test-order.sh'
+    goal:
+      - check: answer-is-commit
+        message: "Add the SPRING10 coupon"
+        label: "answer.txt holds the ID of the commit that first added SPRING10"
+    hints:
+      - "git grep SPRING10 shows where the text is today, not when it arrived. Which option of git log lists the commits that added or removed a text?"
+      - "git log --oneline -S SPRING10 lists two commits, newest on top. Each one changed how many times the text appears."
+      - "The lower line is the older commit, the one that first added the code. Run: echo 04c07b1 > answer.txt (use the ID your own git log prints)."
+    solution:
+      - git log -S SPRING10 --pretty=format:%h | tail -1 > answer.txt
+
+  - id: who-changed-the-discount
+    title: Who really changed the discount line?
+    level: medium
+    brief: "A customer with a coupon got a slightly bigger discount than the rules say. The discount is worked out on one line of pricing.sh, inside the function coupon_discount: the line that divides by 10. Find the commit that last changed what that line says. Careful: a later commit reindented the whole file, and that one does not count. Write the short commit ID into answer.txt."
+    setup: *order-tools
+    goal:
+      - check: answer-is-commit
+        message: "Round the coupon discount up"
+        label: "answer.txt holds the ID of the commit that last changed what the discount line says"
+    hints:
+      - "First find the line number: git grep -n \") / 10\" prints the file, the line number and the line. Then ask git blame about that one line with -L."
+      - "Plain git blame names the reindent commit, because it was the last to touch the line. Which option makes blame ignore changes that are only spaces?"
+      - "Run: git blame -w -L 24,24 pricing.sh. The first column is the commit ID; write it into answer.txt, for example: echo d5a354a9 > answer.txt (use the ID your own blame prints)."
+    solution:
+      - git blame -w -s -L 24,24 pricing.sh | cut -c 1-8 > answer.txt
+
+  - id: bisect-the-wrong-total
+    title: Let a script find the commit that broke the total
+    level: hard
+    brief: "Orders of two or more items get a wrong total: sh order.sh 3000 2500 should print Total: 5500. The tag v1.0 was right. The script test-order.sh in the practice folder checks exactly this: it ends with exit code 0 when the total is right and 1 when it is wrong. Git does not track the script, so it stays in place while commits change. Use it with git bisect run to find the first bad commit among the nine after v1.0, write that commit's short ID into answer.txt, and end the bisect so you are back on main."
+    setup: *order-tools
+    goal:
+      - check: answer-is-commit
+        message: "Use a clearer name in cart_total"
+        label: "answer.txt holds the ID of the first bad commit"
+      - check: no-operation-in-progress
+        label: "The bisect is finished (no bisect in progress)"
+      - check: head-is-on-branch
+        branch: main
+        label: "You are back on main"
+    hints:
+      - "This one needs \"Let a script do the testing\" in the Advanced layer. A bisect needs a bad commit and a good commit before it can run a script. Which ones do you know here?"
+      - "git bisect start HEAD v1.0 gives both ends in one line, bad first. Then git bisect run sh test-order.sh tests each commit for you and prints the first bad commit."
+      - "Run: git bisect start HEAD v1.0, then git bisect run sh test-order.sh. Copy the first 7 characters of the ID in the line \"... is the first 'bad' commit\" into answer.txt with echo, then run git bisect reset."
+    solution:
+      - git bisect start HEAD v1.0
+      - git bisect run sh test-order.sh
+      - git rev-parse --short refs/bisect/bad > answer.txt
+      - git bisect reset

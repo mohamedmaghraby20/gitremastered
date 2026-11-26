@@ -1,0 +1,184 @@
+challenges:
+  - id: both-steps-in-order
+    title: Keep both steps, in the right order
+    level: easy
+    brief: "main added a blueberry topping to the pancake recipe, and the frying branch added the frying step at the same spot. Merge frying into main and keep both new lines. A pancake is fried before it gets its topping, so the frying line comes first."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - printf 'Mix flour, milk and eggs\nHeat the pan\nServe warm\n' > pancakes.txt
+      - git add pancakes.txt
+      - git commit -q -m "Add pancake recipe"
+      - git switch -q -c frying
+      - printf 'Mix flour, milk and eggs\nHeat the pan\nFry each side for one minute\nServe warm\n' > pancakes.txt
+      - git commit -q -am "Add the frying step"
+      - git switch -q main
+      - printf 'Mix flour, milk and eggs\nHeat the pan\nTop with blueberries\nServe warm\n' > pancakes.txt
+      - git commit -q -am "Add blueberries"
+    goal:
+      - check: head-is-on-branch
+        branch: main
+        label: "You are on main"
+      - check: file-contains
+        file: pancakes.txt
+        text: "Heat the pan\nFry each side for one minute\nTop with blueberries\nServe warm"
+        label: "pancakes.txt has both new lines: frying first, then the blueberries"
+      - check: file-lacks
+        file: pancakes.txt
+        text: "<<<<<<<"
+        label: "No <<<<<<< marker line is left in pancakes.txt"
+      - check: file-lacks
+        file: pancakes.txt
+        text: "======="
+        label: "No ======= marker line is left in pancakes.txt"
+      - check: file-lacks
+        file: pancakes.txt
+        text: ">>>>>>>"
+        label: "No >>>>>>> marker line is left in pancakes.txt"
+      - check: no-operation-in-progress
+        label: "The merge is finished: no conflict is left open"
+      - check: head-commit-is-merge
+        label: "main's newest commit is a merge commit"
+    hints:
+      - "Start the merge, then open pancakes.txt. Which of the two lines between the markers is yours (HEAD), and which comes from frying?"
+      - "Neither side is wrong, so keep both lines and delete only the three marker lines. Git put your line on top; the recipe needs the frying line on top, so swap them. Then stage the file and commit."
+      - "Run: git merge frying, then edit pancakes.txt (for example with nano pancakes.txt) until it reads: Mix flour, milk and eggs / Heat the pan / Fry each side for one minute / Top with blueberries / Serve warm, one per line. Then git add pancakes.txt and git commit --no-edit"
+    solution:
+      - git merge frying || true
+      - printf 'Mix flour, milk and eggs\nHeat the pan\nFry each side for one minute\nTop with blueberries\nServe warm\n' > pancakes.txt
+      - git add pancakes.txt
+      - git commit -q --no-edit
+
+  - id: one-side-each
+    title: Their waffles, our notes
+    level: medium
+    brief: "The metric branch rewrote waffles.txt in grams and millilitres, and that version is the one to keep, from the first line to the last. Its change to notes.txt is out of date: notes.txt must stay exactly as main has it. Merge metric into main."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - printf 'Waffles\n2 cups flour\n1 cup milk\n2 eggs\n' > waffles.txt
+      - printf 'Notes\nThe book is printed in March\n' > notes.txt
+      - git add waffles.txt notes.txt
+      - git commit -q -m "Add waffles and notes"
+      - git switch -q -c metric
+      - printf 'Waffles\n250 g flour\n240 ml milk\n2 eggs\nA pinch of salt\n' > waffles.txt
+      - printf 'Notes\nThe book is printed in April\n' > notes.txt
+      - git commit -q -am "Convert waffles to metric"
+      - git switch -q main
+      - printf 'Waffles\n2 cups of flour\n1 cup of milk\n2 eggs\n' > waffles.txt
+      - printf 'Notes\nThe book is printed in May\nAsk Lina for photos\n' > notes.txt
+      - git commit -q -am "Reword waffles and update the notes"
+    goal:
+      - check: head-is-on-branch
+        branch: main
+        label: "You are on main"
+      - check: file-contains
+        file: waffles.txt
+        text: "250 g flour\n240 ml milk"
+        label: "waffles.txt is the metric version"
+      - check: file-lacks
+        file: waffles.txt
+        text: "cup"
+        label: "No line of waffles.txt still measures in cups"
+      - check: file-contains
+        file: notes.txt
+        text: "The book is printed in May\nAsk Lina for photos"
+        label: "notes.txt reads as it did on main"
+      - check: file-lacks
+        file: notes.txt
+        text: "April"
+        label: "notes.txt does not have the date from metric"
+      - check: file-lacks
+        file: waffles.txt
+        text: "<<<<<<<"
+        label: "No marker line is left in waffles.txt"
+      - check: file-lacks
+        file: notes.txt
+        text: "<<<<<<<"
+        label: "No marker line is left in notes.txt"
+      - check: no-operation-in-progress
+        label: "The merge is finished: no conflict is left open"
+      - check: head-commit-is-merge
+        label: "main's newest commit is a merge commit"
+    hints:
+      - "Start the merge and run git status. Two files are unmerged. For each one, ask: whose version is right, ours (main) or theirs (metric)?"
+      - "Neither file needs editing by hand. git restore --theirs <file> writes the version from the branch being merged in; git restore --ours <file> writes the version of the branch you are on. Stage both files afterwards."
+      - "Run: git merge metric, then git restore --theirs waffles.txt, git restore --ours notes.txt, git add waffles.txt notes.txt, git commit --no-edit"
+    solution:
+      - git merge metric || true
+      - git restore --theirs waffles.txt
+      - git restore --ours notes.txt
+      - git add waffles.txt notes.txt
+      - git commit -q --no-edit
+
+  - id: resolve-it-once
+    title: Resolve it once, merge it twice
+    level: hard
+    brief: "The honey branch has to go into two branches, main and print-edition, and it conflicts with both in the same way. Turn on rerere for this repository (not globally). Merge honey into main and resolve the line to \"Sweeten with 1 spoon of honey\". Then merge honey into print-edition, where Git can fill in your resolution. Finish on print-edition."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - printf 'Mix flour, milk and eggs\nSweeten with 2 spoons of sugar\nFry each side for one minute\n' > pancakes.txt
+      - git add pancakes.txt
+      - git commit -q -m "Add pancake recipe"
+      - git switch -q -c honey
+      - printf 'Mix flour, milk and eggs\nSweeten with 2 spoons of honey\nFry each side for one minute\n' > pancakes.txt
+      - git commit -q -am "Use honey instead of sugar"
+      - git switch -q main
+      - printf 'Mix flour, milk and eggs\nSweeten with 1 spoon of sugar\nFry each side for one minute\n' > pancakes.txt
+      - git commit -q -am "Make the pancakes less sweet"
+      - git switch -q -c print-edition
+      - echo "Family recipes, printed edition" > cover.txt
+      - git add cover.txt
+      - git commit -q -m "Add a cover page"
+      - git switch -q main
+    goal:
+      - check: config-is
+        key: rerere.enabled
+        value: "true"
+        label: "rerere is turned on in this repository's own settings"
+      - check: branch-is-merged-into
+        branch: honey
+        into: main
+        label: "main contains the work of honey"
+      - check: head-is-on-branch
+        branch: print-edition
+        label: "You are on print-edition"
+      - check: head-commit-is-merge
+        label: "print-edition's newest commit is a merge commit"
+      - check: branch-is-merged-into
+        branch: honey
+        into: print-edition
+        label: "print-edition contains the work of honey"
+      - check: file-contains
+        file: pancakes.txt
+        text: "Sweeten with 1 spoon of honey"
+        label: "pancakes.txt has the resolved line"
+      - check: file-lacks
+        file: pancakes.txt
+        text: "<<<<<<<"
+        label: "No marker line is left in pancakes.txt"
+      - check: no-operation-in-progress
+        label: "Both merges are finished: no conflict is left open"
+      - check: working-folder-clean
+        label: "git status shows nothing left to do"
+    hints:
+      - "rerere can only replay a resolution it watched you make, so the setting has to be on before the first merge stops. \"What rerere stores\" in Under the hood explains why the answer carries over to another branch."
+      - "After git config rerere.enabled true, merge honey into main: Git prints \"Recorded preimage\". Resolve, stage and commit, and it prints \"Recorded resolution\". On print-edition the same merge prints \"Resolved 'pancakes.txt' using previous resolution.\", but the merge still waits for git add and git commit."
+      - "Run: git config rerere.enabled true, git merge honey, edit pancakes.txt so line 2 reads Sweeten with 1 spoon of honey and the markers are gone, git add pancakes.txt, git commit --no-edit, git switch print-edition, git merge honey, cat pancakes.txt, git add pancakes.txt, git commit --no-edit"
+    solution:
+      - git config --local rerere.enabled true
+      - git merge honey || true
+      - printf 'Mix flour, milk and eggs\nSweeten with 1 spoon of honey\nFry each side for one minute\n' > pancakes.txt
+      - git add pancakes.txt
+      - git commit -q --no-edit
+      - git switch -q print-edition
+      - git merge honey || true
+      - git add pancakes.txt
+      - git commit -q --no-edit

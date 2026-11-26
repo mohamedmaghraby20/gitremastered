@@ -1,0 +1,40 @@
+questions:
+  - question: "A merge stopped on a conflict in config.txt. The markers show your line and their line, and you cannot tell which of you changed what. Which command shows the line as it was before either branch touched it?"
+    answers:
+      - text: "git restore --conflict=diff3 config.txt"
+        correct: true
+        explanation: "It rewrites the conflict in the file with a third part, the base, between ||||||| and =======. Comparing each side with the base shows what each side meant to do."
+      - text: "git restore --ours config.txt"
+        explanation: "That replaces the whole file with your branch's version. You see your side only, and their changes to this file are dropped."
+      - text: "git merge --abort"
+        explanation: "That backs out of the merge and puts your own version back. It shows nothing about the base."
+
+  - question: "Your branch and the branch reports both changed line 10 of data.txt in different ways. reports also added a new file, chart.txt. You run git merge -Xours reports. What is the result?"
+    answers:
+      - text: "Line 10 is yours, and chart.txt is added"
+        correct: true
+        explanation: "-Xours only decides the conflicts. Everything that merges without trouble, like a new file, still comes in from the other branch."
+      - text: "Line 10 is yours, and chart.txt is not added, because ours wins everywhere"
+        explanation: "That describes -s ours, a different strategy that ignores the other branch's files completely. -Xours is a setting of the normal merge."
+      - text: "Git stops on line 10 and writes conflict markers, as always"
+        explanation: "With -Xours Git writes no markers: it settles each conflict in favor of your side and makes the merge commit."
+
+  - question: "Last week you merged the branch payments into main and pushed. Your teammates have pulled it. Today the merge turns out to break the checkout page. How do you take it out?"
+    answers:
+      - text: "git reset --hard HEAD~ on main, then push"
+        explanation: "That moves main back and rewrites history your teammates already have. It would also throw away every commit made on main since the merge."
+      - text: "git revert -m 1 <ID of the merge commit>"
+        correct: true
+        explanation: "A revert adds a new commit that undoes what the merge brought in, so nobody's history is rewritten. -m 1 keeps the side main was on before the merge."
+      - text: "git merge --abort"
+        explanation: "--abort only works while a merge is stopped on a conflict. This merge was finished a week ago."
+
+  - question: "rerere is on. You merge a branch and Git prints \"Resolved 'app.txt' using previous resolution.\" followed by \"Automatic merge failed; fix conflicts and then commit the result.\" What is the state of things?"
+    answers:
+      - text: "The merge is finished; the second line is a leftover message you can ignore"
+        explanation: "No merge commit was made. git status still lists app.txt as unmerged."
+      - text: "rerere failed, and app.txt has conflict markers in it"
+        explanation: "The first line says the opposite: rerere wrote your earlier resolution into the file, and the markers are gone."
+      - text: "app.txt already holds your earlier resolution, but the merge still waits for you to check it, run git add and commit"
+        correct: true
+        explanation: "rerere fills in the file and leaves the decision to you. Until you stage the file, Git treats it as unmerged."

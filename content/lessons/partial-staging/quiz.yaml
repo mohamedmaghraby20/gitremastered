@@ -1,0 +1,40 @@
+questions:
+  - question: "You run git add -p app.js, answer y to the first hunk and n to the second, then run git commit -m \"Fix total\". Where is the second hunk now?"
+    answers:
+      - text: "In your working tree, unstaged, exactly as you wrote it"
+        correct: true
+        explanation: "git add -p only writes to the staging area. The hunk you answered n to never left your file, and the commit took only what was staged."
+      - text: "Gone, because n discards the hunk"
+        explanation: "In git add -p, n means \"do not stage\". Only git restore -p removes a hunk from your file, and it asks \"Discard this hunk from worktree?\"."
+      - text: "In the commit, because a commit always takes the whole file"
+        explanation: "A commit takes the staged version of the file, and that version held the first hunk only."
+
+  - question: "git add -p shows one hunk that holds two edits, three lines apart. You want to stage only the first edit. Which answer do you type?"
+    answers:
+      - text: "y, then fix it up afterwards"
+        explanation: "y stages the whole hunk, both edits. You would then have to unstage part of it again."
+      - text: "s"
+        correct: true
+        explanation: "s cuts the hunk at the unchanged lines between the two edits, and Git then asks about each part."
+      - text: "q"
+        explanation: "q stops without staging this hunk, so neither edit would be staged."
+
+  - question: "git status -s prints \"MM report.txt\". You want to see exactly what the next commit will change in report.txt. What do you run?"
+    answers:
+      - text: "git diff report.txt"
+        explanation: "Plain git diff compares the staging area with the working tree, so it shows what you left out of the commit."
+      - text: "git diff --staged report.txt"
+        correct: true
+        explanation: "--staged compares the last commit with the staging area, which is exactly what the next commit will record."
+      - text: "git status report.txt"
+        explanation: "git status names the file in both lists but does not show which lines are staged."
+
+  - question: "You staged three hunks of config.yml and then notice one is a debugging line. It should stay in your file for now, but not be committed. What do you run?"
+    answers:
+      - text: "git restore -p config.yml and answer y for that hunk"
+        explanation: "Without --staged, git restore -p looks at unstaged changes and discards them from your file. Your staged hunk would not even be offered."
+      - text: "git restore --staged -p config.yml and answer y for that hunk"
+        correct: true
+        explanation: "It asks \"Unstage this hunk?\" for each staged hunk. The one you unstage leaves the staging area and stays in your working tree."
+      - text: "git commit -a and remove the line later"
+        explanation: "-a stages every change in tracked files, so the debugging line would be committed."

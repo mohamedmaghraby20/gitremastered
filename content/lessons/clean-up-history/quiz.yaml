@@ -1,0 +1,40 @@
+questions:
+  - question: "git log --oneline shows, from the top: \"Fix typo in login\", \"Add signup form\", \"Add login form\". You want the typo fix joined into \"Add login form\". In the todo list of git rebase -i HEAD~3, what do you do?"
+    answers:
+      - text: "Move the \"Fix typo in login\" line right under \"Add login form\" and change its pick to fixup"
+        correct: true
+        explanation: "fixup and squash join a commit into the line above it, so the fix has to sit directly under its target. The todo list runs oldest first, so \"Add login form\" is the top line."
+      - text: "Change pick to fixup on the \"Fix typo in login\" line and leave it where it is"
+        explanation: "It would be joined into the line above it, which is \"Add signup form\". The fix would land in the wrong commit."
+      - text: "Change pick to fixup on the \"Add login form\" line"
+        explanation: "That is the first line of the list. Git stops with: cannot 'fixup' without a previous commit."
+
+  - question: "Your branch has four unpushed commits, A, B, C and D (D is the newest). You reword only B. Which commits have a new ID afterwards?"
+    answers:
+      - text: "Only B"
+        explanation: "C stores B's ID as its parent. B's ID changed, so C must be written again, and then D too."
+      - text: "B, C and D"
+        correct: true
+        explanation: "Every commit from the first changed one on is a new copy. A comes before the change and keeps its ID."
+      - text: "All four"
+        explanation: "A is replayed unchanged on its old parent, so Git reuses it as it is."
+
+  - question: "While editing a todo list you delete the line of a commit you were not sure about, then write and quit. What happens?"
+    answers:
+      - text: "Git asks whether you really want to remove that commit"
+        explanation: "By default there is no question and no warning. Only the setting rebase.missingCommitsCheck makes Git complain."
+      - text: "Git keeps the commit, because only the word drop removes one"
+        explanation: "A missing line is treated like drop. The help text in the todo list says: if you remove a line here, that commit will be lost."
+      - text: "The commit is left out of the branch, with no warning"
+        correct: true
+        explanation: "Git replays only the lines that are in the list. The old commit can still be found through ORIG_HEAD and the reflog for a while, so it can be brought back."
+
+  - question: "You pushed three commits to the team's shared branch yesterday, and a teammate has pulled them. Today you see that two of them should have been one. What do you do?"
+    answers:
+      - text: "Squash them with git rebase -i and push again"
+        explanation: "The squash makes a new commit the server has never seen and removes two it has. Git refuses the push, and forcing it breaks your teammate's history."
+      - text: "Leave them. Shared commits are final; tidy up before pushing next time"
+        correct: true
+        explanation: "Two commits that could have been one do no harm. Rewriting commits other people have built on does."
+      - text: "Squash them with fixup, because fixup keeps the old commit IDs"
+        explanation: "No todo command keeps an ID. Any commit whose content, message or parent changes is a new commit."
