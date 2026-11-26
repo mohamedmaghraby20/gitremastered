@@ -6,7 +6,8 @@
   Inputs:  lesson (the loaded lesson), place (its number and neighbours in the path, or null),
            afterText (optional: content shown under the recap on the "Must know" tab only,
            like the mission and the quiz), onLayerChange (optional: called with the layer the
-           student switches to, so it can be saved).
+           student switches to, so it can be saved), widthShare (optional: the column's share
+           of the screen in percent, set by dragging the resize handle; null = the default).
 -->
 <script lang="ts">
 	import type { Snippet } from 'svelte';
@@ -23,12 +24,14 @@
 		lesson,
 		place,
 		afterText,
-		onLayerChange = () => {}
+		onLayerChange = () => {},
+		widthShare = null
 	}: {
 		lesson: Lesson;
 		place: LessonPlace | null;
 		afterText?: Snippet;
 		onLayerChange?: (layerId: LessonLayerId) => void;
+		widthShare?: number | null;
 	} = $props();
 
 	/** The three reading layers; the recap is always shown, so it is not a tab. */
@@ -54,8 +57,15 @@
 	const moduleTitle = $derived(place?.moduleTitle ?? lesson.module);
 </script>
 
+<!-- Default: a flexible column up to 640px. After a drag: exactly the dragged share. -->
 <article
-	class="flex h-full max-w-160 min-w-0 flex-[1_1_35rem] flex-col border-r bg-surface narrow:flex-[1_1_25rem]"
+	style:--lesson-share={widthShare === null ? undefined : `${widthShare}%`}
+	class={[
+		'flex h-full min-w-80 flex-col border-r bg-surface',
+		widthShare === null
+			? 'max-w-160 flex-[1_1_35rem] narrow:flex-[1_1_25rem]'
+			: 'flex-[0_0_var(--lesson-share)]'
+	]}
 >
 	<!-- relative: screen-reader-only text (absolutely positioned) stays inside this scroll area
 	     instead of stretching the whole page. -->

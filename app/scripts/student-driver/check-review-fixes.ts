@@ -4,7 +4,7 @@
  * the terminal's share of the practice column (about 55%), even gaps around the desk's commands, paste,
  * Ctrl C still stopping a command, Ctrl + / 0 text size, the mission and quiz headings, and the
  * history map's zoom buttons, Esc reaching Vim for a commit message, F6 leaving the terminal,
- * and the small-window layout at 1024 × 700. Saves a screenshot for a person to look at.
+ * the small-window layout at 1024 × 700, and the resize handle. Saves a screenshot for a person to look at.
  * Run from app/:  pnpm review:fixes   (build the review copy first: pnpm review:build)
  */
 
@@ -46,7 +46,8 @@ const checks: ReviewCheck[] = [
 	{ name: 'History map zooms out with its button', run: checkZoomOut },
 	{ name: 'Esc reaches Vim: a commit message written in the editor', run: checkVimCommit },
 	{ name: 'F6 moves focus out of the terminal', run: checkLeaveTerminal },
-	{ name: 'Small window (1024 × 700): one practice panel, nothing cut off', run: checkSmallWindow }
+	{ name: 'Small window (1024 × 700): one practice panel, nothing cut off', run: checkSmallWindow },
+	{ name: 'Column handle resizes by keyboard and resets', run: checkColumnHandle }
 ];
 
 /**
@@ -196,6 +197,9 @@ async function checkVimCommit(student: StudentActions): Promise<string> {
 	await student.pressSpecialKey('Escape', 27);
 	await student.typeCommand(':wq');
 	await student.waitForPrompt();
+	// A fresh prompt again: the first key after Vim closes can be lost too (finding 4).
+	await student.typeCommand('');
+	await student.waitForPrompt();
 	await student.typeCommand('git log -1 --format=saved:%s');
 	await student.waitUntil(
 		`[...document.querySelectorAll('.xterm-rows > div')].some((row) => row.textContent.includes('saved:Written in Vim'))`
@@ -244,6 +248,32 @@ async function checkSmallWindow(student: StudentActions): Promise<string> {
 	} finally {
 		await student.emulateWindowSize(null);
 	}
+}
+
+/**
+ * Moves the handle between the lesson and practice columns with the keyboard, checks the
+ * lesson column grew, then double-clicks it back to the default (so later runs start clean).
+ * @param student - the student actions
+ * @returns the widths before, after and after reset
+ */
+async function checkColumnHandle(student: StudentActions): Promise<string> {
+	const lessonWidth = `Math.round(document.querySelector('article').getBoundingClientRect().width)`;
+	const resetHandle = `document.querySelector('[role=separator]').dispatchEvent(new MouseEvent('dblclick', { bubbles: true }))`;
+	// Start from the default widths, whatever an earlier run saved.
+	await student.evaluate(resetHandle);
+	await pause(300);
+	const before = await student.evaluate<number>(lessonWidth);
+	await student.evaluate(`document.querySelector('[role=separator]').focus()`);
+	for (let pressCount = 0; pressCount < 5; pressCount += 1) {
+		await student.pressSpecialKey('ArrowRight', 39);
+	}
+	await student.waitUntil(`${lessonWidth} > ${before + 40}`);
+	const after = await student.evaluate<number>(lessonWidth);
+	await student.evaluate(resetHandle);
+	await student.waitUntil(`Math.abs(${lessonWidth} - ${before}) <= 1`);
+	// Give the saved reset a moment to reach the disk before the app closes.
+	await pause(500);
+	return `${before} px → ${after} px → ${before} px after double-click`;
 }
 
 /**

@@ -27,9 +27,13 @@
 		markMissionFinished,
 		saveLayerRead,
 		saveLessonOpened,
+		progress,
+		savePanelSizes,
 		saveQuizResult
 	} from '$lib/stores/progress';
 	import PracticeColumn from './PracticeColumn.svelte';
+	import { ResizeHandle } from '$lib/components/ui/resize-handle';
+	import { lessonColumnLimits } from '$lib/layout/panel-sizes';
 
 	let { lesson, place }: { lesson: Lesson; place: LessonPlace | null } = $props();
 
@@ -78,6 +82,35 @@
 		void saveLayerRead(lesson.id, layerId);
 	}
 
+	/** The lesson column's share while dragging; it starts from the saved share. */
+	let draggedColumnShare: number | null | undefined = $state(undefined);
+	const lessonColumnShare = $derived(
+		draggedColumnShare === undefined ? $progress.lessonColumnShare : draggedColumnShare
+	);
+
+	/**
+	 * Shows the lesson column at a new share while the handle moves.
+	 * @param share - the lesson column's share in percent
+	 */
+	function showLessonColumnShare(share: number): void {
+		draggedColumnShare = share;
+	}
+
+	/**
+	 * Saves the share once the drag or key press is done.
+	 * @param share - the lesson column's share in percent
+	 */
+	function saveLessonColumnShare(share: number): void {
+		draggedColumnShare = undefined;
+		void savePanelSizes({ lessonColumnShare: share });
+	}
+
+	/** Goes back to the design's default column widths (double-click on the handle). */
+	function resetLessonColumnShare(): void {
+		draggedColumnShare = undefined;
+		void savePanelSizes({ lessonColumnShare: null });
+	}
+
 	// Opening the lesson makes it the one "Pick up where you left off" continues.
 	$effect(() => {
 		void saveLessonOpened(lesson.id);
@@ -94,10 +127,10 @@
 
 <!-- Fills the page area (all of <main>, under the top bar), so each column scrolls on its own.
      Each column is h-full: in a wrapping flex row a column would otherwise grow to its whole
-     content height and push the terminal out of sight. Below 1100px (narrow:) the columns stay
-     side by side and the practice column shows one tool at a time (PracticeColumn). -->
-<div class="flex h-full flex-wrap overflow-y-auto narrow:flex-nowrap">
-	<LessonReader {lesson} {place} onLayerChange={rememberLayer}>
+     content height and push the terminal out of sight. The handle between the columns resizes
+     them; below 1100px (narrow:) the practice column shows one tool at a time. -->
+<div class="flex h-full overflow-y-auto">
+	<LessonReader {lesson} {place} onLayerChange={rememberLayer} widthShare={lessonColumnShare}>
 		{#snippet afterText()}
 			<section aria-labelledby="mission-heading" class="flex flex-col gap-3">
 				<PartHeading
@@ -116,5 +149,13 @@
 			<Quiz quiz={lesson.quiz} onfinish={saveQuizScore} />
 		{/snippet}
 	</LessonReader>
+	<ResizeHandle
+		direction="columns"
+		label="Resize the lesson and practice columns"
+		limits={lessonColumnLimits}
+		onresize={showLessonColumnShare}
+		onresizeend={saveLessonColumnShare}
+		onreset={resetLessonColumnShare}
+	/>
 	<PracticeColumn missionId={lesson.id} {session} snapshot={$currentRepoSnapshot} />
 </div>

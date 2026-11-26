@@ -14,6 +14,7 @@ import {
 	saveChosenPath,
 	saveLessonTextSize,
 	saveMotionReduced,
+	savePanelSizes,
 	saveLayerRead,
 	saveLessonOpened,
 	saveQuizResult,
@@ -34,7 +35,9 @@ describe('progress', () => {
 			furthestLayers: {},
 			chosenPathId: 'pro-path',
 			lessonTextSize: null,
-			isMotionReduced: false
+			isMotionReduced: false,
+			lessonColumnShare: null,
+			terminalShare: null
 		});
 	});
 
@@ -60,7 +63,9 @@ describe('progress', () => {
 			furthestLayers: {},
 			chosenPathId: 'pro-path',
 			lessonTextSize: null,
-			isMotionReduced: false
+			isMotionReduced: false,
+			lessonColumnShare: null,
+			terminalShare: null
 		});
 	});
 
@@ -108,22 +113,28 @@ describe('progress', () => {
 			furthestLayers: {},
 			chosenPathId: 'pro-path',
 			lessonTextSize: null,
-			isMotionReduced: false
+			isMotionReduced: false,
+			lessonColumnShare: null,
+			terminalShare: null
 		});
 	});
 
-	it('remembers the chosen path, text size and reduce motion, and keeps them on reset like the theme', async () => {
+	it('remembers the chosen path, text size, reduce motion and panel sizes, and keeps them on reset', async () => {
 		const storage = createMemoryStorage();
 		await loadProgress(storage);
 
 		await saveChosenPath('book-path');
 		await saveLessonTextSize(20);
 		await saveMotionReduced(true);
+		await savePanelSizes({ lessonColumnShare: 40 });
+		await savePanelSizes({ terminalShare: 60 });
 		await resetProgress();
 
 		const reloaded = await loadProgress(storage);
 		expect(reloaded.chosenPathId).toBe('book-path');
 		expect(reloaded.lessonTextSize).toBe(20);
 		expect(reloaded.isMotionReduced).toBe(true);
+		expect(reloaded.lessonColumnShare).toBe(40);
+		expect(reloaded.terminalShare).toBe(60);
 	});
 });

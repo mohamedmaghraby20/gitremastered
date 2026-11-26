@@ -605,9 +605,9 @@ Ctrl K from any screen opens a **quick search panel** over the current screen, l
 **Description:** Drag handles between the lesson column and the practice column, and between the visualizer and the terminal, so the student picks the sizes (asked for in the walkthrough, 2026-11-26). Arrow keys move a focused handle; double-click goes back to the default split; sizes are remembered.
 
 **Acceptance criteria:**
-- [ ] Both handles work by mouse and keyboard, with a visible focus ring and a screen-reader label
-- [ ] Each panel keeps a minimum size, so the terminal and the lesson text never vanish
-- [ ] Sizes survive a restart
+- [x] Both handles work by mouse and keyboard, with a visible focus ring and a screen-reader label
+- [x] Each panel keeps a minimum size, so the terminal and the lesson text never vanish
+- [x] Sizes survive a restart
 
 **Verification:** component tests (keys, limits), driver check in the desktop app · **Files:** `components/lesson-screen/` · **Scope:** M
 

@@ -2,7 +2,8 @@
  * progress.ts
  * The one module that saves and loads the student's progress: finished missions, quiz
  * results, the last opened lesson and the furthest layer read in each, plus screen choices
- * (theme, terminal and lesson text size, reduce motion, folded files desk, chosen path). In the desktop app it uses the Tauri store
+ * (theme, terminal and lesson text size, reduce motion, folded files desk, chosen path,
+ * panel sizes). In the desktop app it uses the Tauri store
  * plugin (a small JSON file in the app's data folder); in a plain browser it keeps progress in
  * memory only.
  * Screens read the `progress` store and call the functions below; nothing else touches storage.
@@ -32,6 +33,8 @@ export type ProgressData = {
 	chosenPathId: CoursePathId; // the path picked on home and the course map
 	lessonTextSize: number | null; // pixels, from Settings; null = the design's size
 	isMotionReduced: boolean; // the app's own "Reduce motion" switch in Settings
+	lessonColumnShare: number | null; // percent of the lesson screen's width; null = default
+	terminalShare: number | null; // percent of the practice column's height; null = default
 };
 
 /** The few storage actions this module needs (the Tauri store has them; tests pass a fake). */
@@ -58,7 +61,9 @@ export const emptyProgress: ProgressData = {
 	furthestLayers: {},
 	chosenPathId: 'pro-path',
 	lessonTextSize: null,
-	isMotionReduced: false
+	isMotionReduced: false,
+	lessonColumnShare: null,
+	terminalShare: null
 };
 
 const progressStore = writable<ProgressData>(emptyProgress);
@@ -144,6 +149,16 @@ export async function saveMotionReduced(isReduced: boolean): Promise<void> {
 }
 
 /**
+ * Remembers the panel sizes the student dragged on the lesson screen.
+ * @param sizes - the lesson column's and the terminal's share in percent (null = default)
+ */
+export async function savePanelSizes(
+	sizes: Partial<Pick<ProgressData, 'lessonColumnShare' | 'terminalShare'>>
+): Promise<void> {
+	await saveProgress({ ...get(progressStore), ...sizes });
+}
+
+/**
  * Remembers which path the student follows.
  * @param pathId - "pro-path" or "book-path"
  */
@@ -189,7 +204,9 @@ export async function resetProgress(): Promise<void> {
 		isFilesDeskFolded: current.isFilesDeskFolded,
 		chosenPathId: current.chosenPathId,
 		lessonTextSize: current.lessonTextSize,
-		isMotionReduced: current.isMotionReduced
+		isMotionReduced: current.isMotionReduced,
+		lessonColumnShare: current.lessonColumnShare,
+		terminalShare: current.terminalShare
 	});
 }
 
