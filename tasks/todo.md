@@ -831,6 +831,30 @@ No GitHub account needed, so this wave can start right away.
 
 Each module ends with a checkpoint, as in phase 5.
 
+### Phase 6 decisions (made by the user on 2026-11-27: do not ask again)
+
+Phase 6 is built in one run with no questions. Where something is not covered here, pick the safer option, write it down under "Assumptions" in this file, and keep going.
+
+| # | Question | Decided |
+|---|---|---|
+| 1 | Sign-in | The `gh` CLI. A guided setup: explain why, give the install command per system, then `gh auth login`, and wait until `gh auth status` succeeds, with a clear "connected" state. The app never stores a token. A "Connect GitHub" button may come later as a second option; not now. |
+| 2 | Practice repository | The app creates it when the student starts a GitHub challenge. Public for now. One fixed name per lesson family, always starting with `gitremastered-practice`. A private option waits: branch protection and rulesets are not free on private repositories. |
+| 3 | Teammate | Scripted steps from the student's own account. What one account cannot do (approving your own pull request) is explained, with what the student would see and do next, not practised. |
+| 4 | Writing to the account | The app reads freely. It writes only inside repositories it created itself (name starts with `gitremastered-practice`), and only after a one-time consent screen that says exactly what it will create and delete. It never touches any other repository, and never changes account settings, keys or organizations. |
+| 5 | Features a free account lacks (organizations, teams) | Teach with explanation and quiz; challenges only where a free personal account can do the work. |
+| 6 | The student's real computer (SSH keys, signing, global config) | The lesson guides and the student types. Challenges only read; they never change a global setting. |
+| 7 | Testing with the user's account | Allowed, through the `gh` login on this PC. Only repositories named `gitremastered-practice…`; delete them at the end; touch nothing else. If `gh auth status` fails, build the GitHub lessons anyway and list them as untested. |
+| 8 | Scope | Everything in one run: the 39 remaining lessons, their checkpoints and the 3 capstones. Order: wave A, then B, C, D. |
+| 9 | Review | The user reviews at the end. The agent reviews its own work as it sees fit. |
+| 10 | Push | Commit per task; push to `main` once at the end, when every check passes. |
+| 11 | Contract changes (snapshot fields, goal checks) | Allowed when a lesson needs them; update SPEC 3.4 and `docs/writing-lessons.md`. |
+| 12 | New packages | Agent's judgment; add each one to the dependency table in `tasks/plan.md` with its reason. |
+| 13 | Real GitHub or a local stand-in | Real GitHub for what only GitHub has (pull requests, reviews, Actions, releases, rulesets), confined to the practice repository. Everything Git can do alone stays on the local `../origin.git`. Each GitHub lesson tells the student they may use a separate, empty account if they prefer. |
+
+**Safety rules for the code that talks to GitHub:** every write goes through one small Rust module that refuses any repository whose name does not start with `gitremastered-practice` and whose owner is not the signed-in user; deleting needs the same check plus the consent; `gh` is called with a time limit and never on every snapshot; nothing is logged that contains a token.
+
+**Assumptions** (the agent adds lines here during the run):
+
 ### Wave B: connect a real GitHub account (design first)
 
 Direction already decided: the student connects their own GitHub account, and GitHub lessons run on a real repository of theirs. Open, and yours to decide:
