@@ -13,7 +13,7 @@ You run `git fetch`, and `origin/main` moves while your own `main` stays where i
 
 ## Must know
 
-In "Remote and tracking branches" you used `fetch` and `push` with short names, like `git push origin main`. Git fills in the rest for you. This lesson shows what it fills in.
+In [Remote and tracking branches](lesson:remote-branches) you used `fetch` and `push` with short names, like `git push origin main`. Git fills in the rest for you. This lesson shows what it fills in.
 
 The rule is called a [refspec](term:refspec), short for "reference specification". It answers one question for a fetch or a push: **which name on that side becomes which name on this side?**
 
@@ -21,7 +21,7 @@ The rule is called a [refspec](term:refspec), short for "reference specification
 
 A refspec is written with full names, so those come first.
 
-In "A first look inside .git" you saw that a branch is a [ref](term:ref): a small file under `.git/refs` that holds a commit ID. The short names you type every day are the ends of longer ones:
+In [A first look inside .git](lesson:first-look-inside) you saw that a branch is a [ref](term:ref): a small file under `.git/refs` that holds a commit ID. The short names you type every day are the ends of longer ones:
 
 | You type | Full name | What it is |
 |---|---|---|
@@ -259,7 +259,7 @@ The first prints the full name behind a short one. The second prints every fetch
 
 ### What a fetch does with the line
 
-In "How Git talks to servers" you saw that a fetch asks the server for its refs, works out which commits you lack, and downloads them. The refspec is the last step: for every server ref that matches a source pattern, Git writes the matching destination ref in your repository. A ref that matches no pattern is skipped, and its commits are not downloaded.
+In [How Git talks to servers](lesson:how-git-talks) you saw that a fetch asks the server for its refs, works out which commits you lack, and downloads them. The refspec is the last step: for every server ref that matches a source pattern, Git writes the matching destination ref in your repository. A ref that matches no pattern is skipped, and its commits are not downloaded.
 
 ## Advanced
 

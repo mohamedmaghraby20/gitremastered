@@ -30,8 +30,8 @@ describe('command page', () => {
 		});
 
 		await expect.element(page.getByRole('heading', { level: 1 })).toHaveTextContent('git restore');
-		await expect.element(page.getByText('git restore --staged <file>')).toBeVisible();
-		await expect.element(page.getByText(/deletes your unsaved edits/)).toBeVisible();
+		await expect.element(page.getByText('git restore --staged <file>').first()).toBeVisible();
+		await expect.element(page.getByText(/deletes your uncommitted edits/)).toBeVisible();
 		const lessonLink = page.getByRole('link', { name: /Status, stage, commit/ });
 		await expect.element(lessonLink).toHaveAttribute('href', '/lessons/three-areas');
 		await expect.element(page.getByRole('link', { name: /Pro Git 2\.4/ })).toBeVisible();

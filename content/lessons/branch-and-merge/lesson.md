@@ -13,7 +13,7 @@ You are halfway through a new feature when someone reports a bug that cannot wai
 
 ## Must know
 
-In the last two lessons, "Branches are just pointers" and "Switching branches and detached HEAD", you made [branches](term:branch), switched between them, and watched two branches grow apart. Work that stays on a side branch forever helps nobody. At some point it has to come back into `main`. That step is a [merge](term:merge).
+In the last two lessons, [Branches are just pointers](lesson:branches-are-pointers) and [Switching branches and detached HEAD](lesson:switch-and-detached-head), you made [branches](term:branch), switched between them, and watched two branches grow apart. Work that stays on a side branch forever helps nobody. At some point it has to come back into `main`. That step is a [merge](term:merge).
 
 ### Merge brings another branch into yours
 
@@ -129,7 +129,7 @@ $ git branch -d try-hours
 Deleted branch try-hours (was 4dd0424).
 ```
 
-`git branch -d` deletes a branch only when its work is already merged, so it cannot lose commits. Run it now for `try-hours`. In the picture, the `branch try-hours` tag disappears and its station stays. The next lesson, "List, delete and rename branches", covers the other ways to delete and tidy branches.
+`git branch -d` deletes a branch only when its work is already merged, so it cannot lose commits. Run it now for `try-hours`. In the picture, the `branch try-hours` tag disappears and its station stays. The next lesson, [List, delete and rename branches](lesson:branch-management), covers the other ways to delete and tidy branches.
 
 ### When both branches moved: a merge commit
 
@@ -339,7 +339,7 @@ Please commit your changes or stash them before you merge.
 Aborting
 ```
 
-You have edits you have not committed, in a file the merge needs to change. Git refuses, so your edits are safe. Commit them first, or throw them away with `git restore hours.txt` (the lesson "Unstage and discard changes"), then merge again. The lesson "Stash unfinished work, clean the folder" shows a third way.
+You have edits you have not committed, in a file the merge needs to change. Git refuses, so your edits are safe. Commit them first, or throw them away with `git restore hours.txt` (the lesson [Unstage and discard changes](lesson:undo-basics)), then merge again. The lesson [Stash unfinished work, clean the folder](lesson:stash-and-clean) shows a third way.
 
 ```console
 $ git merge late
@@ -349,7 +349,7 @@ Please, commit your changes before you merge.
 
 An earlier merge is still open: you resolved its conflicts but never ran `git commit`. Finish it with `git commit`, or give it up with `git merge --abort`. The same unfinished merge is behind `fatal: cannot switch branch while merging`.
 
-**You merged in the wrong direction.** You ran `git merge main` while on your feature branch, and wanted the opposite. If you have not shared the result with anyone, you can take the merge back: `git reset --hard ORIG_HEAD` moves your branch to where it was just before the merge. This throws away uncommitted edits too, so run `git status` first. The lesson "Reset demystified: the three trees" explains what that command does.
+**You merged in the wrong direction.** You ran `git merge main` while on your feature branch, and wanted the opposite. If you have not shared the result with anyone, you can take the merge back: `git reset --hard ORIG_HEAD` moves your branch to where it was just before the merge. This throws away uncommitted edits too, so run `git status` first. The lesson [Reset demystified: the three trees](lesson:reset-demystified) explains what that command does.
 
 ## Under the hood
 

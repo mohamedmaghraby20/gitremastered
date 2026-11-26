@@ -38,7 +38,9 @@ describe('course links', () => {
 		await render(LessonMarkdown, { markdown: 'On [branch](term:branch) main.' });
 
 		(page.getByRole('link', { name: 'branch' }).element() as HTMLElement).focus();
-		await expect.poll(readCardText).toContain('Coming later');
+		await expect
+			.poll(readCardText)
+			.toContain('Click to open the lesson: Branches are just pointers');
 
 		await userEvent.keyboard('{Escape}');
 		await expect.poll(readCardText).toBe('');

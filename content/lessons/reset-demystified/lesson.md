@@ -317,7 +317,7 @@ $ cat .git/HEAD
 ref: refs/heads/main
 ```
 
-HEAD still says "I am on `main`". Pro Git stresses this point: reset moves the branch that HEAD points to. It does not move HEAD to somewhere else. Switching branches is the command that changes HEAD itself, and the lesson "Switching branches and detached HEAD" picks that up.
+HEAD still says "I am on `main`". Pro Git stresses this point: reset moves the branch that HEAD points to. It does not move HEAD to somewhere else. Switching branches is the command that changes HEAD itself, and the lesson [Switching branches and detached HEAD](lesson:switch-and-detached-head) picks that up.
 
 ### Steps 2 and 3 are copies
 

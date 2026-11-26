@@ -168,7 +168,7 @@ This example picks VS Code. `--wait` tells VS Code to keep Git waiting until you
 $ git config --global init.defaultBranch main
 ```
 
-This course's practice projects already use `main`, whatever you set here. The setting matters when you create your own repositories, in the lesson "Start or clone a repository".
+This course's practice projects already use `main`, whatever you set here. The setting matters when you create your own repositories, in the lesson [Start or clone a repository](lesson:start-a-repo).
 
 Both commands above change real settings of your computer, so run them only if you want them. In the practice project, try the local version:
 
@@ -272,7 +272,7 @@ Git only catches a missing dot. A typo after the dot, like `user.nmae`, is store
 | Global | `.gitconfig` in your home folder (`~/.gitconfig`) | `C:/Users/<you>/.gitconfig` |
 | Local | `.git/config` inside the repository | the same, in each project |
 
-`~` is the shell's short name for your home folder. `.git` is a hidden folder that Git keeps in every repository, with all its data; the lesson "A first look inside .git" opens it.
+`~` is the shell's short name for your home folder. `.git` is a hidden folder that Git keeps in every repository, with all its data; the lesson [A first look inside .git](lesson:first-look-inside) opens it.
 
 Git reads the files in this order, and a value read later replaces one read earlier. "The closest level wins" is nothing more than "the file read last wins".
 

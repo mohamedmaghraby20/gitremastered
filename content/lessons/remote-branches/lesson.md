@@ -13,7 +13,7 @@ readFirst: [remotes, branch-and-merge]
 
 ## Must know
 
-In the lesson "Work with remotes: fetch, pull, push" you fetched, pulled and pushed one branch, `main`. Real teams work on many branches at once, so you need to know exactly which branch lives where.
+In the lesson [Work with remotes: fetch, pull, push](lesson:remotes) you fetched, pulled and pushed one branch, `main`. Real teams work on many branches at once, so you need to know exactly which branch lives where.
 
 ### Three branches with almost the same name
 
@@ -363,7 +363,7 @@ $ cat .git/config
 
 Read the `[branch "feature"]` block as: "for my branch `feature`, the remote is `origin`, and the branch to merge from there is `feature`". That is the whole upstream. `git pull` reads these two lines to know what to fetch and merge; `git push` reads them to know where to send.
 
-The `fetch =` line under `[remote "origin"]` is the rule that turns every branch on the server into an `origin/...` branch here. The lesson "Refspecs: how fetch and push map branches" reads it piece by piece.
+The `fetch =` line under `[remote "origin"]` is the rule that turns every branch on the server into an `origin/...` branch here. The lesson [Refspecs: how fetch and push map branches](lesson:refspecs) reads it piece by piece.
 
 You can ask Git for a branch's upstream directly:
 

@@ -1,0 +1,40 @@
+questions:
+  - question: "You pushed a commit an hour ago, and a teammate has already built on it. Now you see it broke the login page. What do you run?"
+    answers:
+      - text: "git commit --amend, with the fix staged"
+        explanation: "Amend replaces the commit with a new one. Your teammate still has the old one, so your histories stop matching."
+      - text: "git reset --hard HEAD~1"
+        explanation: "Reset drops the commit from your branch only. The server and your teammate still have it, and your next push is refused."
+      - text: "git revert with the commit's ID"
+        correct: true
+        explanation: "Revert adds a new commit that does the opposite. History stays the same for everyone, and the teammate's work on top is kept."
+
+  - question: "You staged report.md, then kept editing it and broke it. You run git restore report.md. Which version do you get back?"
+    answers:
+      - text: "The version from the last commit"
+        explanation: "That would need --source=HEAD or an unstage first. Plain git restore copies from the staging area."
+      - text: "The version you staged"
+        correct: true
+        explanation: "git restore <file> copies the file from the staging area into the working tree. The staged version is the staging area's copy."
+      - text: "Nothing changes, because the file is staged"
+        explanation: "The staged copy stays as it is, but the working-tree copy is overwritten with it."
+
+  - question: "Your last two commits are local. You run git reset --soft HEAD~2. Where is their work now?"
+    answers:
+      - text: "In the staging area, ready to be committed again"
+        correct: true
+        explanation: "--soft moves only the branch. The index and your files keep everything, so the work of both commits shows as staged."
+      - text: "In the working tree, not staged"
+        explanation: "That is what plain git reset (--mixed) leaves. --soft stops one step earlier and keeps the index."
+      - text: "Gone, unless you find the commits in the reflog"
+        explanation: "That describes --hard. With --soft, no file and no staged change is touched."
+
+  - question: "The last commit is fine, but the one before it has a typo in its message. Both are local. Why does git commit --amend -m not fix it?"
+    answers:
+      - text: "Amend works only on commits that were pushed"
+        explanation: "It is the other way round: amend is for commits that are still only on your computer."
+      - text: "Amend needs a staged change before it does anything"
+        explanation: "Amend with -m and nothing staged still replaces the last commit with a new message."
+      - text: "Amend only replaces the newest commit on the branch"
+        correct: true
+        explanation: "It would change the message of the fine commit. An older commit needs another tool, such as a reset back to it or the history-editing lesson later in the course."

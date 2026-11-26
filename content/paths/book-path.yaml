@@ -40,12 +40,42 @@ chapters:
       - number: "2.4"
         title: Undoing Things
         lessons: [undo-basics, fix-last-commit]
+      - number: "2.5"
+        title: Working with Remotes
+        lessons: [remotes]
+      - number: "2.6"
+        title: Tagging
+        lessons: [tags-and-releases]
+  - number: 3
+    title: Git Branching
+    sections:
+      - number: "3.1"
+        title: Branches in a Nutshell
+        lessons: [branches-are-pointers, switch-and-detached-head]
+      - number: "3.2"
+        title: Basic Branching and Merging
+        lessons: [branch-and-merge]
+      - number: "3.3"
+        title: Branch Management
+        lessons: [branch-management]
+      - number: "3.5"
+        title: Remote Branches
+        lessons: [remote-branches]
+  - number: 4
+    title: Git on the Server
+    sections:
+      - number: "4.1"
+        title: The Protocols
+        lessons: [how-git-talks]
   - number: 7
     title: Git Tools
     sections:
+      - number: "7.3"
+        title: Stashing and Cleaning
+        lessons: [stash-and-clean]
       - number: "7.7"
         title: Reset Demystified
-        lessons: [reset-demystified]
+        lessons: [reset-demystified, switch-and-detached-head]
       - number: "7.8"
         title: Advanced Merging
         lessons: [revert-a-commit]
@@ -61,3 +91,9 @@ chapters:
       - number: "10.3"
         title: Git References
         lessons: [first-look-inside]
+      - number: "10.5"
+        title: The Refspec
+        lessons: [refspecs]
+      - number: "10.6"
+        title: Transfer Protocols
+        lessons: [how-git-talks]

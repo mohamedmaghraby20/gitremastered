@@ -105,7 +105,7 @@ head: main
 
 This is good news and a warning.
 
-- **Good news:** a deleted file can be brought back from an older commit. The lesson "Unstage and discard changes" shows how.
+- **Good news:** a deleted file can be brought back from an older commit. The lesson [Unstage and discard changes](lesson:undo-basics) shows how.
 - **Warning:** deleting a file does not erase a secret. A password that was committed is still readable in the old commits.
 
 ### Stop tracking, but keep the file: `--cached`
@@ -378,7 +378,7 @@ Pro Git puts it this way: no information is stored that says you renamed the fil
 
 ### Follow a file across a rename
 
-`git log -- <file>` lists the commits that touched one file (the lesson "Read the commit history" covers `git log`). By default it stops at a rename, because before that commit no file had this name:
+`git log -- <file>` lists the commits that touched one file (the lesson [Read the commit history](lesson:reading-history) covers `git log`). By default it stops at a rename, because before that commit no file had this name:
 
 ```console
 $ git log --oneline -- shopping.txt

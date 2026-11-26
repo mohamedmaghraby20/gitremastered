@@ -1,0 +1,40 @@
+questions:
+  - question: "You renamed report.txt to summary.txt in your editor and fixed a typo in app.js. git status -s prints \" D report.txt\", \" M app.js\" and \"?? summary.txt\". You want one commit that holds only the rename. What do you run before git commit?"
+    answers:
+      - text: "git add report.txt summary.txt"
+        correct: true
+        explanation: "Staging the deletion and the new file gives Git both halves, and it records them as one rename. app.js stays changed in your working tree for a later commit."
+      - text: "git add ."
+        explanation: "That stages the rename, but the app.js fix goes into the same commit too."
+      - text: "git mv report.txt summary.txt"
+        explanation: "The file is already renamed on disk, so git mv finds no report.txt to move and stops with an error."
+
+  - question: "You staged login.js, then changed one more line in it. Which command shows exactly the lines your next commit will record for login.js?"
+    answers:
+      - text: "git diff login.js"
+        explanation: "That compares the working tree with the staging area, so it shows only the line you changed after staging: the part the commit will not hold."
+      - text: "git diff --staged login.js"
+        correct: true
+        explanation: "It compares the staging area with the last commit, and a commit records the staging area."
+      - text: "git diff HEAD login.js"
+        explanation: "That compares the working tree with the last commit, so it mixes the staged change with the newer one that is not staged."
+
+  - question: "config.env was committed last month. Today you add the line config.env to .gitignore and commit that. A week later you edit config.env. What does git status show?"
+    answers:
+      - text: "Nothing: the file is ignored now"
+        explanation: ".gitignore only filters files Git does not track. config.env is tracked, so Git keeps reporting its changes."
+      - text: "config.env as modified"
+        correct: true
+        explanation: "A tracked file stays tracked whatever .gitignore says. To stop tracking it and keep it on disk, run git rm --cached config.env and commit."
+      - text: "config.env as untracked"
+        explanation: "It would be untracked only after git rm --cached and a commit. Adding a line to .gitignore does not change what Git tracks."
+
+  - question: "A function called sendInvoice was in billing.js last year and is gone today. Nobody remembers when it went. Which command finds the commits to look at?"
+    answers:
+      - text: "git log --grep=\"sendInvoice\""
+        explanation: "--grep searches commit messages. It finds the commit only if someone happened to write the function's name in a message."
+      - text: "git diff HEAD~1 HEAD -- billing.js"
+        explanation: "That compares only the last two commits. The function may have gone many commits ago."
+      - text: "git log -S \"sendInvoice\" -- billing.js"
+        correct: true
+        explanation: "-S lists the commits that added or removed that text in the file: the one that wrote the function and the one that deleted it."

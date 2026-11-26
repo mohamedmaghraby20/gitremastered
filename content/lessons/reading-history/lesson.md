@@ -148,7 +148,7 @@ For now, three things are enough to read it:
 - A line starting with `-` was removed by this commit.
 - A line starting with `+` was added by it. Lines with neither are unchanged and only give context.
 
-Here the commit removed the `applyDiscount` function from `cart.js`. The next lesson, "Read any diff: working, staged, between commits", explains every line of a diff.
+Here the commit removed the `applyDiscount` function from `cart.js`. The next lesson, [Read any diff: working, staged, between commits](lesson:diffs-in-depth), explains every line of a diff.
 
 Notice the `a9ed8dc` at the end of the command. Give `git log` a commit ID and it starts from that commit instead of the newest one.
 

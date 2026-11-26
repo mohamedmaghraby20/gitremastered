@@ -19,15 +19,20 @@ describe('buildProModules', () => {
 	it('lists the modules in path order with numbered lesson rows', () => {
 		const modules = buildProModules(newStudent);
 		expect(modules[0].numberLabel).toBe('00');
-		expect(modules[0].title).toBe('Your daily loop');
-		expect(modules[0].rows.map((row) => row.id)).toEqual(['three-areas', 'ignoring-files']);
-		expect(modules[0].summary).toBe('2 lessons');
+		expect(modules[0].title).toBe('Orientation');
+		expect(modules[0].rows.map((row) => row.id)).toEqual([
+			'what-is-git',
+			'setup',
+			'first-look-inside'
+		]);
+		expect(modules[0].summary).toBe('3 lessons');
+		expect(modules[1].title).toBe('Your daily loop');
 	});
 
 	it('marks done and current lessons and sums the module up', () => {
-		const student = { finishedMissions: ['three-areas'], lastOpenedLessonId: 'ignoring-files' };
+		const student = { finishedMissions: ['what-is-git'], lastOpenedLessonId: 'setup' };
 		const rows = buildProModules(student)[0].rows;
-		expect(rows.map((row) => row.status)).toEqual(['done', 'current']);
+		expect(rows.map((row) => row.status)).toEqual(['done', 'current', 'todo']);
 		expect(buildProModules(student)[0].summary).toBe('In progress');
 	});
 });
@@ -35,9 +40,10 @@ describe('buildProModules', () => {
 describe('buildBookChapters', () => {
 	it('lists chapters and sections with the lessons that teach them', () => {
 		const chapters = buildBookChapters(newStudent);
-		expect(chapters[0].title).toBe('Git Basics');
-		expect(chapters[0].sections[0].number).toBe('2.2');
-		expect(chapters[0].sections[0].rows.map((row) => row.id)).toContain('three-areas');
+		expect(chapters[0].title).toBe('Getting Started');
+		const gitBasics = chapters.find((chapter) => chapter.title === 'Git Basics');
+		const sectionTwoTwo = gitBasics?.sections.find((section) => section.number === '2.2');
+		expect(sectionTwoTwo?.rows.map((row) => row.id)).toContain('three-areas');
 	});
 });
 
@@ -61,6 +67,7 @@ describe('findLessonStatus', () => {
 
 describe('countCourseLessons', () => {
 	it('counts every lesson of the Pro path', () => {
-		expect(countCourseLessons()).toBe(2);
+		// The core course: modules 0 to 4. The number only grows as lessons are written.
+		expect(countCourseLessons()).toBeGreaterThanOrEqual(23);
 	});
 });

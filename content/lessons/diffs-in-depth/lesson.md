@@ -126,7 +126,7 @@ Give `git diff` two commits, the older one first:
 $ git diff f63716c 275358e
 ```
 
-The IDs come from `git log --oneline`, which you met in the lesson "Read the commit history". Typing IDs gets tiring, so Git has a shortcut for recent commits. `HEAD~1` means "the commit before the one you are on", `HEAD~2` the one before that.
+The IDs come from `git log --oneline`, which you met in the lesson [Read the commit history](lesson:reading-history). Typing IDs gets tiring, so Git has a shortcut for recent commits. `HEAD~1` means "the commit before the one you are on", `HEAD~2` the one before that.
 
 :::graph
 caption: "HEAD is the commit you are on; HEAD~1 and HEAD~2 count back from it"

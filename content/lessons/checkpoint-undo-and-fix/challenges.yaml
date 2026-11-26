@@ -1,0 +1,151 @@
+challenges:
+  - id: tidy-then-fix-the-message
+    title: Tidy up, then fix the message
+    level: easy
+    brief: "Your last commit, \"Add contcat page\", has a typo and is not shared yet. Before you fix it: todo.md was staged by mistake (keep its edit, but out of any commit), and LICENSE was deleted by accident. End with LICENSE back, todo.md still edited, and the message reading \"Add contact page\"."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Bakery site" > README.md
+      - echo "MIT License" > LICENSE
+      - echo "- write the menu" > todo.md
+      - git add README.md LICENSE todo.md
+      - git commit -q -m "Add README, license and todo"
+      - echo "<h1>Contact us</h1>" > contact.html
+      - git add contact.html
+      - git commit -q -m "Add contcat page"
+      - echo "- call the printer" >> todo.md
+      - git add todo.md
+      - rm LICENSE
+    goal:
+      - check: latest-commit-message-contains
+        text: "Add contact page"
+        label: "The last commit's message reads \"Add contact page\""
+      - check: commit-is-gone
+        message: "contcat"
+        label: "The commit with the typo is off the branch"
+      - check: commit-count-is
+        count: 2
+        label: "The history still has 2 commits"
+      - check: file-is-committed
+        file: LICENSE
+        label: "LICENSE is back, exactly as committed"
+      - check: file-is-modified
+        file: todo.md
+        label: "todo.md is still edited, and not staged"
+    solution:
+      - git restore --staged todo.md
+      - git restore LICENSE
+      - git commit -q --amend -m "Add contact page"
+
+  - id: one-shared-one-local
+    title: One shared mistake, one local mistake
+    level: medium
+    brief: "Two commits are wrong. \"Add tracking script\" added tracker.js, and the team already has it, together with \"Add checkout\" on top of it. Your newest commit, \"Add recipt page\", is still only on your computer: its message has a typo and it forgot receipt.css. Undo the tracking script without removing history, and make the newest commit read \"Add receipt page\" with receipt.css inside. Think about the order."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Shop app" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - printf 'bread 3\ncake 12\n' > prices.txt
+      - git add prices.txt
+      - git commit -q -m "Add price list"
+      - echo "trackEveryClick();" > tracker.js
+      - git add tracker.js
+      - git commit -q -m "Add tracking script"
+      - echo "function checkout() {}" > checkout.js
+      - git add checkout.js
+      - git commit -q -m "Add checkout"
+      - echo "<h1>Your receipt</h1>" > receipt.html
+      - git add receipt.html
+      - git commit -q -m "Add recipt page"
+      - 'echo "h1 { color: green; }" > receipt.css'
+    goal:
+      - check: commit-exists
+        message: 'Revert "Add tracking script"'
+        label: "A new commit reverts \"Add tracking script\""
+      - check: file-is-missing
+        file: tracker.js
+        label: "tracker.js is gone from the project"
+      - check: commit-exists
+        message: "Add receipt page"
+        label: "A commit reads \"Add receipt page\""
+      - check: commit-is-gone
+        message: "recipt"
+        label: "The commit with the typo is off the branch"
+      - check: file-is-committed
+        file: receipt.css
+        label: "receipt.css is committed"
+      - check: file-is-committed
+        file: checkout.js
+        label: "The checkout commit's file is still there"
+      - check: commit-count-is
+        count: 6
+        label: "The history has 6 commits: the 5 jobs and the revert"
+      - check: working-folder-clean
+        label: "git status shows nothing left to do"
+    solution:
+      - git add receipt.css
+      - git commit -q --amend -m "Add receipt page"
+      - git revert --no-edit HEAD~2
+
+  - id: clear-the-experiments
+    title: Clear the experiments, keep the fix
+    level: hard
+    brief: "This repository is in a mess. The two newest commits, both starting with \"WIP\", are local experiments that must vanish from the branch together with theme.css. An edit to hours.txt is staged: it is a real fix, and it must survive and be committed as \"Fix opening hours\". And \"Add secret sauce recipe\" (sauce.txt) is shared with the team but must be undone, without removing history. One of the undo commands would destroy the hours.txt fix: do not reach for it first."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Noodle bar" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - printf 'ramen 9\nudon 8\n' > menu.txt
+      - git add menu.txt
+      - git commit -q -m "Add menu"
+      - echo "two spoons of everything" > sauce.txt
+      - git add sauce.txt
+      - git commit -q -m "Add secret sauce recipe"
+      - printf 'Mon-Fri 11-21\nSat 11-21\n' > hours.txt
+      - git add hours.txt
+      - git commit -q -m "Add opening hours"
+      - 'echo "body { background: black; }" > theme.css'
+      - git add theme.css
+      - git commit -q -m "WIP try a dark theme"
+      - 'echo "h1 { color: white; }" >> theme.css'
+      - git commit -q -am "WIP more theme"
+      - printf 'Mon-Fri 11-21\nSat 12-22\n' > hours.txt
+      - git add hours.txt
+    goal:
+      - check: commit-is-gone
+        message: "WIP"
+        label: "Both WIP commits are off the branch"
+      - check: file-is-missing
+        file: theme.css
+        label: "theme.css is gone from the project"
+      - check: commit-exists
+        message: "Fix opening hours"
+        label: "The hours.txt fix is committed as \"Fix opening hours\""
+      - check: commit-exists
+        message: 'Revert "Add secret sauce recipe"'
+        label: "A new commit reverts \"Add secret sauce recipe\""
+      - check: file-is-missing
+        file: sauce.txt
+        label: "sauce.txt is gone from the project"
+      - check: commit-count-is
+        count: 6
+        label: "The history has 6 commits: 4 shared ones, the fix and the revert"
+      - check: working-folder-clean
+        label: "git status shows nothing left to do"
+    solution:
+      - git reset -q HEAD~2
+      - rm theme.css
+      - git add hours.txt
+      - git commit -q -m "Fix opening hours"
+      - git revert --no-edit HEAD~2

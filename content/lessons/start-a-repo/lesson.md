@@ -76,7 +76,7 @@ Most projects and hosting sites call the first branch `main`. Git's own default 
 | For every repository you create from now on | `git config --global init.defaultBranch main` |
 | Right after a plain `git init`, before the first commit | `git branch -m main` |
 
-`-b` is short for `--initial-branch`. The second line is a setting you make once; the lesson "Install, configure and get help" covers `git config`.
+`-b` is short for `--initial-branch`. The second line is a setting you make once; the lesson [Install, configure and get help](lesson:setup) covers `git config`.
 
 You can also create the folder and the repository in one step: `git init recipes` makes a folder named `recipes` with a `.git` inside it.
 
@@ -171,7 +171,7 @@ The address of a repository can take three shapes. You copy it from the project'
 | SSH | `git@github.com:libgit2/libgit2.git` | You set up an SSH key once and never type a password again |
 | Local path | `../recipes.git` or `/srv/git/recipes.git` | The repository is a folder on this computer or on a shared disk |
 
-All three give you the same clone. The lesson "How Git talks to servers" explains the differences.
+All three give you the same clone. The lesson [How Git talks to servers](lesson:how-git-talks) explains the differences.
 
 ### When it goes wrong
 

@@ -13,7 +13,7 @@ Your teammate finished a feature an hour ago, and your copy of the project still
 
 ## Must know
 
-So far every commit you made stayed in your own repository. A team works on one shared copy, usually on a server, and each person has a full copy of their own. The lesson "How Git talks to servers" showed what travels between two copies. Here you do the daily work: see which copies you know, bring new commits in, and send yours out.
+So far every commit you made stayed in your own repository. A team works on one shared copy, usually on a server, and each person has a full copy of their own. The lesson [How Git talks to servers](lesson:how-git-talks) showed what travels between two copies. Here you do the daily work: see which copies you know, bring new commits in, and send yours out.
 
 ### A remote is a name for an address
 
@@ -157,7 +157,7 @@ Because a fetch never touches your work, it is always safe. Run it whenever you 
 
 ### Take the work in: merge `origin/main`
 
-The fetched commits sit beside your branch. To get them into `main`, you merge, exactly as you merged a branch in the lesson "Branch, merge, and fix conflicts". `origin/main` can be merged like any other branch.
+The fetched commits sit beside your branch. To get them into `main`, you merge, exactly as you merged a branch in the lesson [Branch, merge, and fix conflicts](lesson:branch-and-merge). `origin/main` can be merged like any other branch.
 
 :::try-it
 1. Run `git merge origin/main`. Git prints "Fast-forward": you had no new commits of your own, so `main` simply moves forward onto Tariq's commit. In the picture, the `branch main` tag and the `HEAD · you` pin move onto the "Add a packing list" station, next to `remote origin/main`. The header reads `level with origin/main` again.
@@ -189,7 +189,7 @@ Fast-forward
 
 The first two lines are the fetch, the same lines `git fetch` prints. Everything from "Updating" on is the merge.
 
-Plain `git pull`, with no names, works because your `main` remembers which remote branch it follows. That link is called the [upstream](term:upstream) branch, and `git clone` sets it up for you. The lesson "Remote and tracking branches" covers upstreams in full.
+Plain `git pull`, with no names, works because your `main` remembers which remote branch it follows. That link is called the [upstream](term:upstream) branch, and `git clone` sets it up for you. The lesson [Remote and tracking branches](lesson:remote-branches) covers upstreams in full.
 
 | Command | Downloads commits | Moves `origin/main` | Changes your `main` and files |
 |---|---|---|---|
@@ -405,7 +405,7 @@ $ cat .git/config
 ```
 
 - `url` is the address `git remote -v` prints.
-- `fetch` is the rule for which branches to download and where to record them: every branch under `refs/heads/` on the server goes to `refs/remotes/origin/` here. A rule like this is called a [refspec](term:refspec); the lesson "Refspecs: how fetch and push map branches" reads it piece by piece.
+- `fetch` is the rule for which branches to download and where to record them: every branch under `refs/heads/` on the server goes to `refs/remotes/origin/` here. A rule like this is called a [refspec](term:refspec); the lesson [Refspecs: how fetch and push map branches](lesson:refspecs) reads it piece by piece.
 - The `[branch "main"]` block is the upstream: "`main` follows the branch `main` on `origin`". Plain `git pull` and `git push` read it.
 
 ### What a push changes

@@ -13,7 +13,7 @@ A commit you made yesterday broke the app, and your teammates already have it. Y
 
 ## Must know
 
-In the lesson "Fix the last commit (amend)" you repaired a commit by replacing it. That works while the commit exists only on your computer. This lesson is about the other case: the commit is already shared.
+In the lesson [Fix the last commit (amend)](lesson:fix-last-commit) you repaired a commit by replacing it. That works while the commit exists only on your computer. This lesson is about the other case: the commit is already shared.
 
 ### Why you cannot amend a shared commit
 
@@ -261,7 +261,7 @@ You now know three ways to undo. They fit different moments:
 
 When you are unsure whether a commit is shared, use revert. It is never wrong, only a little noisier.
 
-A fourth tool, `git reset`, moves your branch back and drops commits from it. It is for commits only you have, and the next lesson, "Reset demystified: the three trees", teaches it.
+A fourth tool, `git reset`, moves your branch back and drops commits from it. It is for commits only you have, and the next lesson, [Reset demystified: the three trees](lesson:reset-demystified), teaches it.
 
 ### When it goes wrong
 
@@ -300,7 +300,7 @@ You have two ways out:
 1. **Finish it.** Fix the file, run `git add banner.txt` to tell Git the conflict is solved, then `git revert --continue`. Git makes the revert commit; if your editor opens for the message first, save and close it.
 2. **Give up.** Run `git revert --abort`. Everything goes back to how it was before you ran `git revert`.
 
-The lesson "Branch, merge, and fix conflicts" covers conflicts in full.
+The lesson [Branch, merge, and fix conflicts](lesson:branch-and-merge) covers conflicts in full.
 
 **Uncommitted changes in the way.**
 
@@ -313,7 +313,7 @@ Aborting
 fatal: revert failed
 ```
 
-You have edits in a file the revert needs to change, and Git will not overwrite them. Commit them first, or discard them with `git restore banner.txt`, then run the revert again. ("Stash" is a way to put changes aside; it has its own lesson, "Stash unfinished work, clean the folder".)
+You have edits in a file the revert needs to change, and Git will not overwrite them. Commit them first, or discard them with `git restore banner.txt`, then run the revert again. ("Stash" is a way to put changes aside; it has its own lesson, [Stash unfinished work, clean the folder](lesson:stash-and-clean).)
 
 **A wrong ID.**
 

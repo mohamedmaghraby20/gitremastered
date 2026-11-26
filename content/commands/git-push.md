@@ -3,10 +3,10 @@ id: git-push
 command: git push
 group: Remotes
 summary: Uploads your commits to a remote and moves its branch to match yours.
-usage: ["git push", "git push origin main", "git push -u origin main", "git push --dry-run"]
+usage: ["git push", "git push origin main", "git push -u origin <branch>", "git push origin --delete <branch>", "git push origin <tag>", "git push --dry-run"]
 bookSection: "2.5 Working with Remotes"
 bookUrl: https://git-scm.com/book/en/v2/Git-Basics-Working-with-Remotes#_pushing_remotes
-lessons: [remotes]
+lessons: [remotes, remote-branches, refspecs, tags-and-releases]
 ---
 
 `git push` sends the commits the server lacks, then asks the server to move its branch onto your newest commit. When it works, your record `origin/main` moves too.
@@ -43,6 +43,24 @@ Nothing was sent. Run `git pull` to merge their commits into your branch, then `
 
 If Git answers `fatal: The current branch main has no upstream branch`, the branch has never been pushed: run `git push -u origin main`.
 
+**Branches, tags and other names**
+
+| You type | What happens |
+|---|---|
+| `git push -u origin feature` | Publishes a new branch and records `origin/feature` as its upstream, so plain `git push` and `git pull` work from then on |
+| `git push origin --delete feature` | Deletes the branch on the server, for the whole team. Check it is merged first |
+| `git push origin v1.0` | Sends one tag. A plain `git push` never sends tags |
+| `git push origin --tags` | Sends every tag; `--follow-tags` sends only annotated tags on the commits being pushed |
+| `git push origin feature:review/feature` | Pushes your `feature` under another name on the server (`source:destination`) |
+| `git push origin HEAD` | Pushes the branch you are on, without typing its name |
+
+:::compare
+today: "`git push origin --delete feature` deletes a branch on the server."
+book: "`git push origin :feature` does the same: an empty source means \"put nothing there\"."
+:::
+
+Set `git config --global push.autoSetupRemote true` and the first plain `git push` of a new branch sets the upstream for you.
+
 :::careful
-`git push --force` moves the server's branch to your commit even when that drops commits other people pushed. Never use it on a branch your team shares.
+`git push --force` moves the server's branch to your commit even when that drops commits other people pushed. Never use it on a branch your team shares. A `+` before the name (`git push origin +main`) is the same force push in refspec form.
 :::

@@ -1,0 +1,122 @@
+challenges:
+  - id: first-clean-commit
+    title: A clean first commit
+    level: easy
+    brief: "This folder holds a small weather app, and Git does not know it yet. It also holds what the build left behind: a build folder and debug.log. Make it a repository on a branch named main, and commit README.md, app.js and a .gitignore that keeps the build folder and every .log file out. Nothing may be left to report in git status."
+    setup:
+      - echo "# Weather app" > README.md
+      - echo "console.log('sunny')" > app.js
+      - mkdir build
+      - echo "compiled program" > build/app.bin
+      - 'echo "debug: started" > debug.log'
+    goal:
+      - check: head-is-on-branch
+        branch: main
+        label: "The folder is a repository on the branch main"
+      - check: file-is-committed
+        file: README.md
+        label: "README.md is committed"
+      - check: file-is-committed
+        file: app.js
+        label: "app.js is committed"
+      - check: file-is-committed
+        file: .gitignore
+        label: ".gitignore is committed"
+      - check: file-is-not-committed
+        file: build/app.bin
+        label: "The build folder is not in the commit"
+      - check: file-is-not-committed
+        file: debug.log
+        label: "debug.log is not in the commit"
+      - check: working-folder-clean
+        label: "git status shows nothing left to do"
+    solution:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - printf 'build/\n*.log\n' > .gitignore
+      - git add README.md app.js .gitignore
+      - git commit -q -m "Start the weather app"
+
+  - id: tidy-in-two-commits
+    title: Tidy up, one job per commit
+    level: medium
+    brief: "Two clean-up jobs wait in the bakery project. The list of changes lives in notes.txt and must be called CHANGELOG.md. old-draft.txt is out of date and must go. Make each job its own commit: the rename first, then the removal. Your unfinished edit to README.md belongs to neither job and must stay uncommitted."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Bakery" > README.md
+      - printf 'Version 1.0\nFirst release of the bakery site\nOpening hours page\nBread list with prices\n' > notes.txt
+      - echo "Ideas from last year" > old-draft.txt
+      - git add .
+      - git commit -q -m "Add the bakery project"
+      - echo "We open at seven." >> README.md
+    goal:
+      - check: file-is-committed
+        file: CHANGELOG.md
+        label: "CHANGELOG.md is committed"
+      - check: file-is-not-committed
+        file: notes.txt
+        label: "notes.txt is no longer in the project"
+      - check: file-is-missing
+        file: old-draft.txt
+        label: "old-draft.txt is gone from the folder"
+      - check: file-is-not-committed
+        file: old-draft.txt
+        label: "old-draft.txt is gone from the latest commit"
+      - check: commit-count-is
+        count: 3
+        label: "The history has exactly two new commits"
+      - check: file-is-modified
+        file: README.md
+        label: "README.md is still changed, not committed"
+    solution:
+      - git mv notes.txt CHANGELOG.md
+      - git commit -q -m "Rename notes.txt to CHANGELOG.md"
+      - git rm -q old-draft.txt
+      - git commit -q -m "Remove the old draft"
+
+  - id: find-and-untrack-the-secret
+    title: Who committed the password file?
+    level: hard
+    brief: "secrets.env holds the shop's payment password, and it is in the repository. First find the commit that added it and write that commit's short ID into answer.txt (for example: echo a1b2c3d > answer.txt). Then make Git stop tracking secrets.env: the file must stay on your disk, be ignored from now on, and the fix must be committed."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo answer.txt >> .git/info/exclude
+      - echo "# Shop" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - echo "<h1>Shop</h1>" > index.html
+      - git add index.html
+      - git commit -q -m "Add shop page"
+      - echo "function pay() {}" > payments.js
+      - echo "PAYMENT_PASSWORD=hunter2" > secrets.env
+      - git add payments.js secrets.env
+      - git commit -q -m "Set up payments"
+      - echo "function addToCart() {}" > cart.js
+      - git add cart.js
+      - git commit -q -m "Add cart"
+      - echo "function total() {}" >> cart.js
+      - git commit -q -am "Add cart total"
+    goal:
+      - check: answer-is-commit
+        message: "Set up payments"
+        label: "answer.txt names the commit that added secrets.env"
+      - check: file-is-not-committed
+        file: secrets.env
+        label: "secrets.env is no longer in the latest commit"
+      - check: file-is-committed
+        file: .gitignore
+        label: ".gitignore is committed"
+      - check: working-folder-clean
+        label: "git status shows nothing left to do, so secrets.env is ignored"
+    solution:
+      - git log --format=%h -- secrets.env > answer.txt
+      - git rm -q --cached secrets.env
+      - echo "secrets.env" > .gitignore
+      - git add .gitignore
+      - git commit -q -m "Stop tracking secrets.env"

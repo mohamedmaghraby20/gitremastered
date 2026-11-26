@@ -261,7 +261,7 @@ Follow what that means. If anyone changed one letter in an old file, that file's
 
 ### Where it all lives
 
-Everything Git knows about the project is in the hidden `.git` folder at the top of it. Delete the other files and Git can restore them from `.git`. Delete `.git` and you keep your files but lose the history. The lesson "A first look inside `.git`" opens that folder.
+Everything Git knows about the project is in the hidden `.git` folder at the top of it. Delete the other files and Git can restore them from `.git`. Delete `.git` and you keep your files but lose the history. The lesson [A first look inside `.git`](lesson:first-look-inside) opens that folder.
 
 ## Advanced
 

@@ -1,0 +1,40 @@
+questions:
+  - question: "You tag a release with git tag -a v2.0 -m \"Version 2.0\" and run git push. A teammate fetches and cannot find v2.0. Why?"
+    answers:
+      - text: "A plain git push sends commits, not tags"
+        correct: true
+        explanation: "Tags travel only when you name them: git push origin v2.0, or git push --follow-tags for annotated tags on the commits you push."
+      - text: "Annotated tags stay on the computer that made them"
+        explanation: "Annotated tags are the kind meant for sharing. They only need to be pushed by name."
+      - text: "The teammate must run git pull, because git fetch skips tags"
+        explanation: "A fetch brings the tags that point at commits it downloads. Here the tag never reached the server."
+
+  - question: "git branch -vv shows main [origin/main: behind 2]. You have not fetched since Monday, and today is Thursday. What does \"behind 2\" tell you?"
+    answers:
+      - text: "The server's main has exactly two commits you lack right now"
+        explanation: "The count compares main with your record origin/main, and that record is from Monday. The server may have moved on since."
+      - text: "On Monday, the server's main had two commits your main does not have"
+        correct: true
+        explanation: "Ahead and behind are counted against origin/main, which moves only when you fetch, pull or push. Run git fetch for today's numbers."
+      - text: "Two of your commits are waiting to be pushed"
+        explanation: "That would read \"ahead 2\". Behind means the other side has commits you do not have."
+
+  - question: "Your push is refused with \"! [rejected] main -> main (fetch first)\". A teammate suggests git push origin +main. What would that do?"
+    answers:
+      - text: "Send your commits and keep the teammate's, like a pull followed by a push"
+        explanation: "Nothing is merged. The plus sign tells the server to move its branch even though that loses commits."
+      - text: "Move the server's main to your commit and drop the commits you do not have"
+        correct: true
+        explanation: "A leading + in a push refspec is a force push. On a shared branch, pull first and push again."
+      - text: "Fail the same way, because the server never accepts a plus sign"
+        explanation: "Most servers accept it unless the branch is protected, which is why it is dangerous."
+
+  - question: "Someone deleted the branch search on the server yesterday. You run git fetch, and git branch -r still lists origin/search. What removes it?"
+    answers:
+      - text: "git fetch --prune"
+        correct: true
+        explanation: "A plain fetch adds and moves remote-tracking branches but never removes one. --prune clears those whose branch is gone from the server."
+      - text: "git push origin --delete search"
+        explanation: "The branch is already gone from the server, so this fails with \"remote ref does not exist\". Your stale record is a local matter."
+      - text: "git branch -d search"
+        explanation: "That deletes a local branch named search. origin/search is a remote-tracking branch, a separate ref."

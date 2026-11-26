@@ -1,0 +1,188 @@
+challenges:
+  - id: monday-catch-up
+    title: Monday morning catch-up
+    level: easy
+    brief: "You were away on Friday. Tariq pushed a commit to main and started a new branch named opening-hours on the server. Bring your main level with the server, and get opening-hours as a local branch of your own that follows the server's."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - git config pull.rebase false
+      - echo "# Cafe site" > README.md
+      - 'echo "Espresso: 2.50" > menu.txt'
+      - git add README.md menu.txt
+      - git commit -q -m "Add README and menu"
+      - git init -q --bare -b main ../origin.git
+      - git remote add origin ../origin.git
+      - git push -q -u origin main
+      # Friday, while you were away: Tariq pushes to main and publishes a new branch.
+      - git clone -q -c core.autocrlf=false ../origin.git ../teammate
+      - git -C ../teammate config user.name "Tariq (teammate)"
+      - git -C ../teammate config user.email "tariq@example.com"
+      - git -C ../teammate config pull.rebase false
+      - 'echo "Flat white: 3.20" >> ../teammate/menu.txt'
+      - git -C ../teammate commit -q -am "Add flat white to the menu"
+      - git -C ../teammate push -q
+      - git -C ../teammate switch -q -c opening-hours
+      - 'echo "Open 8 to 18, every day" > ../teammate/hours.txt'
+      - git -C ../teammate add hours.txt
+      - git -C ../teammate commit -q -m "Add opening hours"
+      - git -C ../teammate push -q -u origin opening-hours
+    goal:
+      - check: branch-contains-commit
+        branch: main
+        message: "Add flat white to the menu"
+        label: "Your main has Tariq's commit \"Add flat white to the menu\""
+      - check: branch-is-in-sync
+        branch: main
+        label: "main is level with origin/main"
+      - check: branch-tracks
+        branch: opening-hours
+        upstream: origin/opening-hours
+        label: "You have a local opening-hours branch that follows origin/opening-hours"
+      - check: branch-contains-commit
+        branch: opening-hours
+        message: "Add opening hours"
+        label: "Your opening-hours has the commit \"Add opening hours\""
+    solution:
+      - git pull -q --no-rebase --no-edit
+      - git switch -q opening-hours
+
+  - id: release-day
+    title: Release day
+    level: medium
+    brief: "Version 1.0 of the cafe site is ready: your newest commit on main is \"Set version to 1.0\", and it is not on the server yet. Your branch gift-cards has never been published either. Push main, mark the release commit with an annotated tag v1.0 and get the tag onto the server, and publish gift-cards so that it follows the server's branch."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - git config pull.rebase false
+      - echo "# Cafe site" > README.md
+      - 'echo "Espresso: 2.50" > menu.txt'
+      - git add README.md menu.txt
+      - git commit -q -m "Add README and menu"
+      - git init -q --bare -b main ../origin.git
+      - git remote add origin ../origin.git
+      - git push -q -u origin main
+      - git switch -q -c gift-cards
+      - echo "Gift cards from 10 to 50" > gift-cards.txt
+      - git add gift-cards.txt
+      - git commit -q -m "Start gift cards page"
+      - git switch -q main
+      - echo "1.0" > VERSION
+      - git add VERSION
+      - git commit -q -m "Set version to 1.0"
+    goal:
+      - check: branch-contains-commit
+        branch: origin/main
+        message: "Set version to 1.0"
+        label: "The server's main has \"Set version to 1.0\""
+      - check: branch-is-in-sync
+        branch: main
+        label: "main is level with origin/main"
+      - check: tag-is-annotated
+        tag: v1.0
+        label: "v1.0 is an annotated tag"
+      - check: tag-is-on-commit
+        tag: v1.0
+        message: "Set version to 1.0"
+        label: "v1.0 sits on \"Set version to 1.0\""
+      - check: remote-has-tag
+        tag: v1.0
+        label: "The server has the tag v1.0"
+      - check: branch-tracks
+        branch: gift-cards
+        upstream: origin/gift-cards
+        label: "gift-cards follows origin/gift-cards"
+      - check: branch-is-in-sync
+        branch: gift-cards
+        label: "gift-cards is level with the server"
+    solution:
+      - git push -q
+      - git tag -a v1.0 -m "Version 1.0"
+      - git push -q origin v1.0
+      - git push -q -u origin gift-cards
+
+  - id: friday-clean-up
+    title: A rejected push and a clean-up
+    level: hard
+    brief: "Your push of \"Add loyalty stamps\" was rejected: Tariq pushed first. He also deleted old-prices on the server, but it still shows here as origin/old-prices. Finish the week: get both commits onto the server's main with your main level with it, remove the merged branch seasonal from the server and from your repository, make origin/old-prices go away, and push your branch specials to the server under the name review/specials (the server must not get a branch named specials)."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - git config pull.rebase false
+      - echo "# Cafe site" > README.md
+      - 'echo "Espresso: 2.50" > menu.txt'
+      - git add README.md menu.txt
+      - git commit -q -m "Add README and menu"
+      - git init -q --bare -b main ../origin.git
+      - git remote add origin ../origin.git
+      - git push -q -u origin main
+      - git push -q origin main:old-prices
+      # seasonal: finished, merged into main, and still on the server.
+      - git switch -q -c seasonal
+      - 'echo "Pumpkin latte: 3.90" > seasonal.txt'
+      - git add seasonal.txt
+      - git commit -q -m "Add seasonal drinks"
+      - git push -q -u origin seasonal
+      - git switch -q main
+      - git merge -q seasonal
+      - git push -q
+      # specials: your work for review, not on the server yet.
+      - git switch -q -c specials
+      - 'echo "Monday: soup and bread" > specials.txt'
+      - git add specials.txt
+      - git commit -q -m "Add weekly specials"
+      - git switch -q main
+      # Tariq pushes to main and deletes old-prices on the server.
+      - git clone -q -c core.autocrlf=false ../origin.git ../teammate
+      - git -C ../teammate config user.name "Tariq (teammate)"
+      - git -C ../teammate config user.email "tariq@example.com"
+      - git -C ../teammate config pull.rebase false
+      - echo "Open 8 to 18, every day" > ../teammate/hours.txt
+      - git -C ../teammate add hours.txt
+      - git -C ../teammate commit -q -m "Add opening hours"
+      - git -C ../teammate push -q
+      - git -C ../teammate push -q origin --delete old-prices
+      # Your own commit, which the server will refuse until you have Tariq's.
+      - echo "Ten stamps, one free coffee" > loyalty.txt
+      - git add loyalty.txt
+      - git commit -q -m "Add loyalty stamps"
+    goal:
+      - check: branch-contains-commit
+        branch: origin/main
+        message: "Add opening hours"
+        label: "The server's main still has Tariq's \"Add opening hours\""
+      - check: branch-contains-commit
+        branch: origin/main
+        message: "Add loyalty stamps"
+        label: "The server's main has your \"Add loyalty stamps\""
+      - check: branch-is-in-sync
+        branch: main
+        label: "main is level with origin/main"
+      - check: remote-branch-is-missing
+        branch: origin/seasonal
+        label: "seasonal is gone from the server"
+      - check: branch-is-missing
+        branch: seasonal
+        label: "Your local seasonal branch is deleted"
+      - check: remote-branch-is-missing
+        branch: origin/old-prices
+        label: "origin/old-prices no longer shows here"
+      - check: remote-branch-exists
+        branch: origin/review/specials
+        label: "The server has review/specials"
+      - check: remote-branch-is-missing
+        branch: origin/specials
+        label: "The server has no branch named specials"
+    solution:
+      - git pull -q --no-rebase --no-edit
+      - git push -q
+      - git push -q origin --delete seasonal
+      - git branch -q -d seasonal
+      - git fetch -q --prune
+      - git push -q origin specials:review/specials

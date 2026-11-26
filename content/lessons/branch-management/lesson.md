@@ -13,7 +13,7 @@ A few weeks into a project, `git branch` prints twenty names, and you no longer 
 
 ## Must know
 
-The last three lessons made [branches](term:branch): "Branches are just pointers" created them, "Switching branches and detached HEAD" moved between them, and "Branch, merge, and fix conflicts" joined them. Every job you finish leaves a branch behind. This lesson is the housekeeping.
+The last three lessons made [branches](term:branch): [Branches are just pointers](lesson:branches-are-pointers) created them, [Switching branches and detached HEAD](lesson:switch-and-detached-head) moved between them, and [Branch, merge, and fix conflicts](lesson:branch-and-merge) joined them. Every job you finish leaves a branch behind. This lesson is the housekeeping.
 
 ### See what you have
 
@@ -194,7 +194,7 @@ $ git branch -m master main
 
 If you are on `master`, the prompt changes from `(master)` to `(main)` right away.
 
-A shared repository needs more than this. The server still has a `master` branch until you push `main` and delete the old one there, which the lesson "Remote and tracking branches" teaches. Other things refer to the old name too, and Pro Git lists them: projects that depend on this one, test and build scripts, release scripts, the default-branch and merge-rule settings on your hosting site, the documentation, and open pull requests that target the old branch. Agree on the change with your team before you make it.
+A shared repository needs more than this. The server still has a `master` branch until you push `main` and delete the old one there, which the lesson [Remote and tracking branches](lesson:remote-branches) teaches. Other things refer to the old name too, and Pro Git lists them: projects that depend on this one, test and build scripts, release scripts, the default-branch and merge-rule settings on your hosting site, the documentation, and open pull requests that target the old branch. Agree on the change with your team before you make it.
 
 ### A routine that keeps the list short
 
@@ -358,7 +358,7 @@ $ git branch --contains c4e3d21
 `git branch -f <name> <commit>` makes an existing branch point at a different commit.
 
 :::careful
-`git branch -f` moves the label without asking. Any commits that only the old position reached are left with no branch, just as after `-D`. It refuses to move the branch you are on; for that, the lesson "Reset demystified: the three trees" has the right tool.
+`git branch -f` moves the label without asking. Any commits that only the old position reached are left with no branch, just as after `-D`. It refuses to move the branch you are on; for that, the lesson [Reset demystified: the three trees](lesson:reset-demystified) has the right tool.
 :::
 
 ### The plumbing behind the list

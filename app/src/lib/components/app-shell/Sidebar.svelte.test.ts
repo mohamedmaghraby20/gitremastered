@@ -7,6 +7,7 @@
 import { page } from 'vitest/browser';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-svelte';
+import { countCourseLessons } from '$lib/course-map/course-map-data';
 import {
 	createMemoryStorage,
 	loadProgress,
@@ -43,8 +44,10 @@ describe('Sidebar (full)', () => {
 		await render(Sidebar, { currentPath: '/lessons/ignoring-files', variant: 'full' });
 
 		const pathBar = page.getByRole('progressbar', { name: 'Pro path' });
-		await expect.element(pathBar).toHaveAttribute('aria-valuetext', '1 of 2 done');
-		await expect.element(page.getByText('00 · Your daily loop')).toBeVisible();
+		await expect
+			.element(pathBar)
+			.toHaveAttribute('aria-valuetext', `1 of ${countCourseLessons()} done`);
+		await expect.element(page.getByText('01 · Your daily loop')).toBeVisible();
 		await expect
 			.element(page.getByRole('link', { name: /Status, stage, commit.*done/ }))
 			.toBeVisible();

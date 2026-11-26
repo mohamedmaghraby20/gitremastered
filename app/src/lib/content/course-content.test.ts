@@ -39,8 +39,8 @@ describe('courseContent', () => {
 	});
 
 	it('lists the pilot in the Book path under Pro Git 2.2', () => {
-		const sectionTwoTwo = courseContent.bookPath?.chapters[0].sections[0];
-		expect(sectionTwoTwo?.number).toBe('2.2');
+		const gitBasics = courseContent.bookPath?.chapters.find((chapter) => chapter.number === 2);
+		const sectionTwoTwo = gitBasics?.sections.find((section) => section.number === '2.2');
 		expect(sectionTwoTwo?.lessonIds).toContain('three-areas');
 	});
 
@@ -57,7 +57,7 @@ describe('courseContent', () => {
 	it('builds a list card for the pilot from the lesson and the pro path', () => {
 		const pilotCard = getLessonCard('three-areas');
 		expect(pilotCard?.title).toBe('Status, stage, commit: the three areas');
-		expect(pilotCard?.numberLabel).toBe('01');
+		expect(pilotCard?.numberLabel).toBe('05');
 		expect(pilotCard?.sourceLabel).toBe('Pro Git 2.2');
 		expect(getLessonCard('no-such-lesson')).toBeUndefined();
 	});
@@ -80,7 +80,8 @@ describe('courseContent', () => {
 
 	it('lists the pilot in the pro path', () => {
 		const proPath = courseContent.paths.get('pro-path');
-		expect(proPath?.modules[0].lessonIds).toContain('three-areas');
+		const dailyLoop = proPath?.modules.find((pathModule) => pathModule.id === 'daily-loop');
+		expect(dailyLoop?.lessonIds).toContain('three-areas');
 	});
 
 	it('returns nothing for an unknown lesson ID', () => {

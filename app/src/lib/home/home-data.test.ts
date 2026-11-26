@@ -6,6 +6,7 @@
 
 import { describe, expect, it } from 'vitest';
 import { emptyProgress, type ProgressData } from '$lib/stores/progress';
+import { countCourseLessons } from '$lib/course-map/course-map-data';
 import { buildHomeData } from './home-data';
 
 describe('buildHomeData', () => {
@@ -13,8 +14,8 @@ describe('buildHomeData', () => {
 		const homeData = buildHomeData(emptyProgress, 0);
 
 		expect(homeData.continueCard).toBeNull();
-		expect(homeData.firstLessonCard?.id).toBe('three-areas');
-		expect(homeData.upNextCards.map((card) => card.id)).toEqual(['ignoring-files']);
+		expect(homeData.firstLessonCard?.id).toBe('what-is-git');
+		expect(homeData.upNextCards[0]?.id).toBe('setup');
 		expect(homeData.reviewPick).toBeNull();
 		expect(homeData.wholeProgress.doneCount).toBe(0);
 	});
@@ -31,8 +32,8 @@ describe('buildHomeData', () => {
 
 		expect(homeData.continueCard?.id).toBe('ignoring-files');
 		expect(homeData.furthestLayerId).toBe('underTheHood');
-		expect(homeData.upNextCards).toEqual([]);
-		expect(homeData.wholeProgress).toEqual({ doneCount: 1, totalCount: 2 });
+		expect(homeData.upNextCards[0]?.id).toBe('remove-move-files');
+		expect(homeData.wholeProgress).toEqual({ doneCount: 1, totalCount: countCourseLessons() });
 		expect(homeData.reviewPick?.lessonId).toBe('three-areas');
 		expect(homeData.reviewPick?.lessonTitle).toBe('Status, stage, commit: the three areas');
 	});

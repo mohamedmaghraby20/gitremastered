@@ -28,7 +28,7 @@ describe('home page', () => {
 			.element(page.getByRole('heading', { level: 1 }))
 			.toHaveTextContent('Start learning Git');
 		const startLink = page.getByRole('link', { name: /Start the first lesson/ });
-		await expect.element(startLink).toHaveAttribute('href', '/lessons/three-areas');
+		await expect.element(startLink).toHaveAttribute('href', '/lessons/what-is-git');
 		await expect.element(page.getByText(/Finish a lesson, and a question/)).toBeVisible();
 	});
 

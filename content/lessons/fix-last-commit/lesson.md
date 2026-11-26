@@ -14,7 +14,7 @@ You press Enter on a commit and see it at once: a typo in the message, or a file
 
 ## Must know
 
-In the lesson "Unstage and discard changes" you fixed mistakes that were not committed yet. This lesson covers the next moment: the commit is made, and it is wrong in a small way.
+In the lesson [Unstage and discard changes](lesson:undo-basics) you fixed mistakes that were not committed yet. This lesson covers the next moment: the commit is made, and it is wrong in a small way.
 
 Two mistakes happen to everyone, every week:
 
@@ -206,7 +206,7 @@ Remember what amend does: it replaces the commit with a new one that has a new I
 Sorting that out costs the whole team time, and it can end with two versions of the same change in the history. So:
 
 - **Not pushed yet:** amend freely. Nobody else has seen the old commit.
-- **Already pushed:** do not amend. Make a new commit that fixes the problem. The lesson "Undo a pushed commit with revert" shows the safe way.
+- **Already pushed:** do not amend. Make a new commit that fixes the problem. The lesson [Undo a pushed commit with revert](lesson:revert-a-commit) shows the safe way.
 
 Pro Git puts it in one line: only amend commits that are still local and have not been pushed somewhere.
 
@@ -341,7 +341,7 @@ HEAD is now at c6cfe76 Add contact page
 ```
 
 :::careful
-`git reset --hard` also throws away every change that is not committed. Run `git status` first and make sure the working tree is clean. The lesson "Reset demystified: the three trees" explains this command in full.
+`git reset --hard` also throws away every change that is not committed. Run `git status` first and make sure the working tree is clean. The lesson [Reset demystified: the three trees](lesson:reset-demystified) explains this command in full.
 :::
 
 ### Older commits: fixup

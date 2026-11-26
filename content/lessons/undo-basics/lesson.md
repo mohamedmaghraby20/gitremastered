@@ -43,7 +43,7 @@ Two lists, two undo commands:
 
 To **unstage** means to take a change back out of the staging area. To **discard** means to throw away edits in the working tree. The two words sound close, but the first is always safe and the second never is.
 
-This lesson stops at the staging area. Undoing a commit you already made is a different job with different tools, taught in the next three lessons: "Fix the last commit (amend)", "Undo a pushed commit with revert" and "Reset demystified: the three trees".
+This lesson stops at the staging area. Undoing a commit you already made is a different job with different tools, taught in the next three lessons: [Fix the last commit (amend)](lesson:fix-last-commit), [Undo a pushed commit with revert](lesson:revert-a-commit) and [Reset demystified: the three trees](lesson:reset-demystified).
 
 ### Set up a file to practise on
 
@@ -91,10 +91,10 @@ answer: "Only \"Call the bank\". Git copied its own version over your file, so t
 :::
 
 :::careful
-`git restore <file>` deletes your edits without asking, and Git cannot bring them back. Git only keeps what you committed (and, for a while, what you staged). Edits that only ever lived in your working tree were never given to Git, so there is nothing to recover. Before you discard, run `git diff <file>` to read exactly what you are about to lose (the lesson "Read any diff" covers that command).
+`git restore <file>` deletes your edits without asking, and Git cannot bring them back. Git only keeps what you committed (and, for a while, what you staged). Edits that only ever lived in your working tree were never given to Git, so there is nothing to recover. Before you discard, run `git diff <file>` to read exactly what you are about to lose (the lesson [Read any diff](lesson:diffs-in-depth) covers that command).
 :::
 
-Pro Git puts it the same way: anything committed can almost always be recovered, and anything you lose that was never committed is likely gone. When you are unsure whether you still need the edits, don't discard them. Commit them, or set them aside with the stash (the lesson "Stash unfinished work, clean the folder").
+Pro Git puts it the same way: anything committed can almost always be recovered, and anything you lose that was never committed is likely gone. When you are unsure whether you still need the edits, don't discard them. Commit them, or set them aside with the stash (the lesson [Stash unfinished work, clean the folder](lesson:stash-and-clean)).
 
 ### Several files at once
 

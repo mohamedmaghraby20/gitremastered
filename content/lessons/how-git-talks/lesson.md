@@ -14,7 +14,7 @@ Your first push to a team server fails with "Permission denied", and a teammate 
 
 ## Must know
 
-So far every repository you worked in lived in one folder on your computer. Teams keep one more copy in a place everybody can reach, and each person's Git talks to that copy. This lesson is about the talking. The next lesson, "Work with remotes: fetch, pull, push", turns it into a daily habit.
+So far every repository you worked in lived in one folder on your computer. Teams keep one more copy in a place everybody can reach, and each person's Git talks to that copy. This lesson is about the talking. The next lesson, [Work with remotes: fetch, pull, push](lesson:remotes), turns it into a daily habit.
 
 ### A remote is another copy of the repository
 
@@ -69,7 +69,7 @@ Whatever the protocol, the conversation is the same. This is the core of the les
 
 Git never uploads or downloads "the files that changed". It transfers two things:
 
-- **[Objects](term:object):** commits, with the trees and blobs they need. You met them in "A first look inside .git".
+- **[Objects](term:object):** commits, with the trees and blobs they need. You met them in [A first look inside .git](lesson:first-look-inside).
 - **Ref updates:** which commit each branch and tag now points at. A [ref](term:ref) is a name for a commit, like `refs/heads/main` for the branch `main`.
 
 You can ask the server for its list of refs without downloading anything.

@@ -1,0 +1,159 @@
+challenges:
+  - id: search-round-trip
+    title: A feature from start to finish
+    level: easy
+    brief: "The library site needs a search box, and search.js is already written but not committed. Do the whole round trip: create a branch named search, commit search.js there with the message \"Add search\", bring the work into main, and delete the search branch. End on main with a clean working tree."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# City library" > README.md
+      - echo "Open 9 to 5" > hours.txt
+      - git add README.md hours.txt
+      - git commit -q -m "Add README and opening hours"
+      - echo "function search(title) {}" > search.js
+    goal:
+      - check: branch-contains-commit
+        branch: main
+        message: "Add search"
+        label: "main holds the commit \"Add search\""
+      - check: file-is-committed
+        file: search.js
+        label: "search.js is committed"
+      - check: branch-is-missing
+        branch: search
+        label: "The search branch is deleted"
+      - check: head-is-on-branch
+        branch: main
+        label: "You are on main"
+      - check: working-folder-clean
+        label: "git status shows nothing left to do"
+    solution:
+      - git switch -q -c search
+      - git add search.js
+      - git commit -q -m "Add search"
+      - git switch -q main
+      - git merge -q search
+      - git branch -q -d search
+
+  - id: hotfix-while-busy
+    title: An urgent fix in the middle of your work
+    level: medium
+    brief: "You are on the branch reviews with a half-done edit in reviews.js. The site shows the wrong hours: hours.txt on main must read \"Open 9 to 6\". Put your work away, make a branch named hotfix from main, fix hours.txt there and commit with the message \"Fix opening hours\". Merge hotfix into main and delete it. Then go back to reviews and get your half-done work back. The fix must not land on reviews."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# City library" > README.md
+      - echo "Open 9 to 5" > hours.txt
+      - git add README.md hours.txt
+      - git commit -q -m "Add README and opening hours"
+      - git switch -q -c reviews
+      - echo "function showReviews() {}" > reviews.js
+      - git add reviews.js
+      - git commit -q -m "Start reviews"
+      - echo "function addReview() { /* half done */ }" >> reviews.js
+    goal:
+      - check: branch-contains-commit
+        branch: main
+        message: "Fix opening hours"
+        label: "main holds the commit \"Fix opening hours\""
+      - check: branch-lacks-commit
+        branch: reviews
+        message: "Fix opening hours"
+        label: "The fix is not on reviews"
+      - check: branch-is-missing
+        branch: hotfix
+        label: "The hotfix branch is deleted"
+      - check: head-is-on-branch
+        branch: reviews
+        label: "You are back on reviews"
+      - check: file-is-modified
+        file: reviews.js
+        label: "Your half-done edit to reviews.js is back, not committed"
+      - check: stash-count-is
+        count: 0
+        label: "The stash shelf is empty"
+    solution:
+      - git stash -q
+      - git switch -q main
+      - git switch -q -c hotfix
+      - echo "Open 9 to 6" > hours.txt
+      - git commit -q -am "Fix opening hours"
+      - git switch -q main
+      - git merge -q hotfix
+      - git branch -q -d hotfix
+      - git switch -q reviews
+      - git stash pop -q
+
+  - id: merge-day
+    title: Merge day, then tidy up
+    level: hard
+    brief: "main changed the first line of hours.txt to \"Open 10 to 5\", and the branch events changed the same line to \"Open 9 to 8\". Merge events into main; the librarian wants the line to read \"Open 10 to 8\". Then tidy the branch list: delete every branch that is merged into main, and rename the unfinished branch wip to newsletter. Do not merge or delete the unfinished work. End on main."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# City library" > README.md
+      - echo "Open 9 to 5" > hours.txt
+      - git add README.md hours.txt
+      - git commit -q -m "Add README and opening hours"
+      - git switch -q -c old-banner
+      - echo "Summer reading starts in June" > banner.txt
+      - git add banner.txt
+      - git commit -q -m "Add summer banner"
+      - git switch -q main
+      - git merge -q old-banner
+      - git switch -q -c events
+      - echo "Open 9 to 8" > hours.txt
+      - echo "Author evening every Friday" > events.txt
+      - git add hours.txt events.txt
+      - git commit -q -m "Add events and late closing"
+      - git switch -q main
+      - git switch -q -c wip
+      - echo "Sign up for our newsletter" > newsletter.txt
+      - git add newsletter.txt
+      - git commit -q -m "Start newsletter page"
+      - git switch -q main
+      - echo "Open 10 to 5" > hours.txt
+      - git commit -q -am "Open one hour later"
+    goal:
+      - check: head-commit-is-merge
+        label: "main ends with a merge commit"
+      - check: no-operation-in-progress
+        label: "The merge is finished and no file is conflicted"
+      - check: branch-contains-commit
+        branch: main
+        message: "Add events and late closing"
+        label: "main holds the events work"
+      - check: branch-is-missing
+        branch: events
+        label: "The merged branch events is deleted"
+      - check: branch-is-missing
+        branch: old-banner
+        label: "The merged branch old-banner is deleted"
+      - check: branch-exists
+        branch: newsletter
+        label: "The unfinished branch is now called newsletter"
+      - check: branch-is-missing
+        branch: wip
+        label: "No branch is called wip any more"
+      - check: branch-lacks-commit
+        branch: main
+        message: "Start newsletter page"
+        label: "The unfinished newsletter work is not in main"
+      - check: head-is-on-branch
+        branch: main
+        label: "You are on main"
+      - check: working-folder-clean
+        label: "git status shows nothing left to do"
+    solution:
+      - git merge events || true
+      - echo "Open 10 to 8" > hours.txt
+      - git add hours.txt
+      - git commit -q --no-edit
+      - git branch -q -d events old-banner
+      - git branch -m wip newsletter

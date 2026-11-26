@@ -24,7 +24,7 @@ Git does nothing of the kind. Creating a branch copies no files. To see what it 
 
 ### What a commit stores
 
-The lesson "Read the commit history" showed commits as a list. Each one in that list stores three things:
+The lesson [Read the commit history](lesson:reading-history) showed commits as a list. Each one in that list stores three things:
 
 - a [snapshot](term:snapshot) of all your files at that moment,
 - the message, the author and the date,
@@ -193,7 +193,7 @@ Use plain `git branch` to answer "which branch am I on?" and `git branch -v` to 
 
 In Git, a branch is one tiny file that holds a commit ID: 41 bytes. Creating one takes no time and no disk space worth mentioning, however big the project is.
 
-That changes how people work. Developers who use Git make a branch for every small job, several times a day, and throw it away when the job is done. The lesson "Branch, merge, and fix conflicts" shows that whole routine.
+That changes how people work. Developers who use Git make a branch for every small job, several times a day, and throw it away when the job is done. The lesson [Branch, merge, and fix conflicts](lesson:branch-and-merge) shows that whole routine.
 
 ### Name branches well
 
@@ -209,7 +209,7 @@ Git also refuses a few characters, such as `~`, `^`, `:` and `..`, because they 
 
 ### What comes next
 
-You can now create branches and see where they point. To work on one, you have to move HEAD to it. The command is `git switch testing`, and it is the subject of the next lesson, "Switching branches and detached HEAD". Leave it for then.
+You can now create branches and see where they point. To work on one, you have to move HEAD to it. The command is `git switch testing`, and it is the subject of the next lesson, [Switching branches and detached HEAD](lesson:switch-and-detached-head). Leave it for then.
 
 ### When it goes wrong
 
@@ -243,7 +243,7 @@ Must know called a branch "a label". This layer shows the label on disk. It is a
 
 ### A branch is a file with one line
 
-The lesson "A first look inside .git" showed that `main` is a file. Every branch you create is one more file in the same folder, `.git/refs/heads/`. Git calls such a file a [ref](term:ref).
+The lesson [A first look inside .git](lesson:first-look-inside) showed that `main` is a file. Every branch you create is one more file in the same folder, `.git/refs/heads/`. Git calls such a file a [ref](term:ref).
 
 ```console
 $ cat .git/refs/heads/testing
@@ -334,7 +334,7 @@ Git notes every move of a branch in its [reflog](term:reflog). `git reflog show 
 
 ### `main` is only a convention
 
-Pro Git points out that the first branch is not special. It is a branch like any other. Its name comes from a setting, `init.defaultBranch`, which the lesson "Install, configure and get help" set to `main`. The book and older projects call it `master`. Git treats both names the same.
+Pro Git points out that the first branch is not special. It is a branch like any other. Its name comes from a setting, `init.defaultBranch`, which the lesson [Install, configure and get help](lesson:setup) set to `main`. The book and older projects call it `master`. Git treats both names the same.
 
 ## Recap
 

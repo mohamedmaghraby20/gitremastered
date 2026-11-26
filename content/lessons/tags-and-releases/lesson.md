@@ -246,7 +246,7 @@ $ git switch --detach v0.5
 HEAD is now at 5b9b28a Add search page
 ```
 
-A tag is not a branch, so you are now on a commit and on no branch. This state is called [detached HEAD](term:detached-head); the lesson "Switching branches and detached HEAD" explains it. In the picture, the pin moves onto the tagged station and reads `HEAD · detached`. Look around, run the old version, and go back with `git switch main`.
+A tag is not a branch, so you are now on a commit and on no branch. This state is called [detached HEAD](term:detached-head); the lesson [Switching branches and detached HEAD](lesson:switch-and-detached-head) explains it. In the picture, the pin moves onto the tagged station and reads `HEAD · detached`. Look around, run the old version, and go back with `git switch main`.
 
 Looking is safe. Committing here is not: a new commit would belong to no branch, and the tag would not move to it. When you need to change an old version, for example to fix a bug in 1.0 for a customer, start a branch at the tag first:
 

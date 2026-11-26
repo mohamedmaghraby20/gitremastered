@@ -1,0 +1,40 @@
+questions:
+  - question: "You are on main and run git branch pricing, then make a commit. Where does the new commit go, and where is pricing?"
+    answers:
+      - text: "The commit goes to main; pricing stays on the commit before it"
+        correct: true
+        explanation: "git branch creates a label and leaves you where you are. A commit moves only the branch HEAD points at, which is still main."
+      - text: "The commit goes to pricing, because it is the newest branch"
+        explanation: "Creating a branch does not move you to it. You would need git switch pricing, or git switch -c pricing in one step."
+      - text: "The commit goes to both branches, because they pointed at the same commit"
+        explanation: "Two labels on one commit do not move together. Only the branch you are on moves."
+
+  - question: "You are on feature with an uncommitted edit to cart.js. git switch main is refused, because main has a different cart.js. The edit is not ready to commit. What gets you to main without losing it?"
+    answers:
+      - text: "git restore cart.js, then git switch main"
+        explanation: "That lets you switch, but it throws the edit away for good."
+      - text: "git stash, then git switch main; later git switch feature and git stash pop"
+        correct: true
+        explanation: "The stash shelves the edit and leaves a clean working tree, so the switch works. Pop brings the edit back on feature."
+      - text: "git branch -D feature, then git switch main"
+        explanation: "You cannot delete the branch you are on, and deleting it would not move the edit out of the way."
+
+  - question: "main and hotfix both started at the same commit. Only hotfix has new commits. You are on main and run git merge hotfix. What happens?"
+    answers:
+      - text: "Git makes a merge commit with two parents"
+        explanation: "A merge commit is needed only when both branches have commits of their own. Here main has none."
+      - text: "Git stops with a conflict"
+        explanation: "A conflict needs two different changes to the same lines. main changed nothing since hotfix started."
+      - text: "A fast-forward: the main label moves forward to hotfix's commit, and no new commit is made"
+        correct: true
+        explanation: "main has nothing of its own to combine, so Git only moves the label along the same line."
+
+  - question: "git branch -d reports: error: the branch 'reports' is not fully merged. What is Git telling you?"
+    answers:
+      - text: "reports has commits that the branch you are on does not have; deleting it would leave them with no branch"
+        correct: true
+        explanation: "The -d check protects unmerged work. Merge the branch first, or use -D if you really want to drop that work."
+      - text: "A merge of reports is still in progress and must be finished"
+        explanation: "An unfinished merge shows as \"You have unmerged paths\" in git status. This message is about commits that were never merged."
+      - text: "reports is the branch you are on, so it cannot be deleted"
+        explanation: "That gives a different error, which says the branch is in use. This one is about unmerged commits."

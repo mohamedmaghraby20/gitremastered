@@ -14,7 +14,7 @@ You are halfway through a new feature when someone reports a bug in the released
 
 ## Must know
 
-In "Branches are just pointers" you saw that a [branch](term:branch) is a label on a commit, and that [HEAD](term:head) names the branch you are on. You made a branch with `git branch`, but you stayed where you were. The missing piece is moving: making another branch the one you are on.
+In [Branches are just pointers](lesson:branches-are-pointers) you saw that a [branch](term:branch) is a label on a commit, and that [HEAD](term:head) names the branch you are on. You made a branch with `git branch`, but you stayed where you were. The missing piece is moving: making another branch the one you are on.
 
 ### Move to a branch with `git switch`
 
@@ -161,8 +161,8 @@ You have three ways out:
 | You want to… | Do this |
 |---|---|
 | Keep the change on this branch | Commit it (`git add`, `git commit`), then switch |
-| Throw the change away | `git restore <file>`, then switch (the lesson "Unstage and discard changes") |
-| Keep it for later without a commit | Put it on a shelf with [git stash](term:stash) (the lesson "Stash unfinished work, clean the folder") |
+| Throw the change away | `git restore <file>`, then switch (the lesson [Unstage and discard changes](lesson:undo-basics)) |
+| Keep it for later without a commit | Put it on a shelf with [git stash](term:stash) (the lesson [Stash unfinished work, clean the folder](lesson:stash-and-clean)) |
 
 :::careful
 Run `git status` before you switch. If it shows changes, decide what happens to them first. Changes that travel with you are easy to commit on the wrong branch a few minutes later.
@@ -326,7 +326,7 @@ Git only rewrites the files that differ between the two commits. That is why an 
 
 ### Switch moves HEAD, reset moves the branch
 
-Pro Git compares this with `git reset --hard`, from the lesson "Reset demystified: the three trees". Both make your folder look like another commit. They differ in what they move:
+Pro Git compares this with `git reset --hard`, from the lesson [Reset demystified: the three trees](lesson:reset-demystified). Both make your folder look like another commit. They differ in what they move:
 
 | | `git switch ideas` | `git reset --hard ideas` (while on `main`) |
 |---|---|---|

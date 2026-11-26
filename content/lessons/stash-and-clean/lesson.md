@@ -13,7 +13,7 @@ You are halfway through a change when a teammate asks for an urgent fix on anoth
 
 ## Must know
 
-In the lesson "Switching branches and detached HEAD" you saw Git refuse to switch branches when your uncommitted changes would be overwritten. Until now you had two ways out: commit the work or throw it away. This lesson adds a third, and it is the one people reach for most.
+In the lesson [Switching branches and detached HEAD](lesson:switch-and-detached-head) you saw Git refuse to switch branches when your uncommitted changes would be overwritten. Until now you had two ways out: commit the work or throw it away. This lesson adds a third, and it is the one people reach for most.
 
 ### Half-done work in the way
 
@@ -219,7 +219,7 @@ Some shelved work turns out to be a dead end. `git stash drop` removes one entry
 
 ### Remove files you never wanted: `git clean`
 
-Stash is for work you want back. The opposite case is just as common: your folder fills up with files you never want again, like a log from a test run, a backup copy your editor left, or a scratch file. They are untracked, so `git restore` (the lesson "Unstage and discard changes") does not touch them.
+Stash is for work you want back. The opposite case is just as common: your folder fills up with files you never want again, like a log from a test run, a backup copy your editor left, or a scratch file. They are untracked, so `git restore` (the lesson [Unstage and discard changes](lesson:undo-basics)) does not touch them.
 
 `git clean` deletes untracked files from your working tree.
 
@@ -308,7 +308,7 @@ CONFLICT (content): Merge conflict in cart.js
 The stash entry is kept in case you need it again.
 ```
 
-The branch moved on while your work was on the shelf: a commit changed the same lines. Git puts both versions in the file between conflict markers, exactly like a [merge conflict](term:merge-conflict) (the lesson "Branch, merge, and fix conflicts"):
+The branch moved on while your work was on the shelf: a commit changed the same lines. Git puts both versions in the file between conflict markers, exactly like a [merge conflict](term:merge-conflict) (the lesson [Branch, merge, and fix conflicts](lesson:branch-and-merge)):
 
 ```console
 <<<<<<< Updated upstream
@@ -437,7 +437,7 @@ If you are not sure the untracked files are worthless, Pro Git offers a safer mo
 
 ### For long pauses, commit
 
-A stash entry has no branch, a short message and no place in `git log`. After a few weeks nobody remembers what `stash@{3}` was. For work you will leave for more than a day, a commit on its own branch is safer: `git switch -c discount-wip`, then `git commit -am "WIP: discount"`. It shows in the history, it can be pushed as a backup, and you can tidy it later (the lesson "Fix the last commit (amend)").
+A stash entry has no branch, a short message and no place in `git log`. After a few weeks nobody remembers what `stash@{3}` was. For work you will leave for more than a day, a commit on its own branch is safer: `git switch -c discount-wip`, then `git commit -am "WIP: discount"`. It shows in the history, it can be pushed as a backup, and you can tidy it later (the lesson [Fix the last commit (amend)](lesson:fix-last-commit)).
 
 Scripts can also build an entry by hand with `git stash create` and `git stash store`; you will rarely need them.
 
