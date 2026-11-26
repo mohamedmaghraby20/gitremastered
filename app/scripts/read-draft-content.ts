@@ -11,6 +11,7 @@
 
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
+import { parseDocument } from 'yaml';
 import type { ContentFiles } from '../src/lib/content/load-lessons.ts';
 import { readContentFiles } from './read-content-files.ts';
 
@@ -61,7 +62,35 @@ export function readDraftContentFiles(draft: Draft): ContentFiles {
 			contentFiles[contentPath] = readCommittedFile(contentPath);
 		}
 	}
+	contentFiles['glossary.yaml'] = dropUnseenLessons(
+		contentFiles['glossary.yaml'] ?? '',
+		contentFiles
+	);
 	return contentFiles;
+}
+
+/**
+ * Removes, from each glossary term's lesson list, the lessons this draft cannot see: while
+ * several lessons are written at once, another writer's term may already name its own
+ * lesson, which is not committed yet. Comments and layout are kept.
+ * @param glossaryText - the shared glossary file
+ * @param contentFiles - the files the draft sees
+ * @returns the glossary without links to unseen lessons
+ */
+function dropUnseenLessons(glossaryText: string, contentFiles: ContentFiles): string {
+	const seenLessonIds = new Set(
+		Object.keys(contentFiles)
+			.filter((path) => path.startsWith('lessons/') && path.endsWith('/lesson.md'))
+			.map((path) => path.split('/')[1])
+	);
+	const glossary = parseDocument(glossaryText);
+	const glossaryValue = glossary.toJS() as { terms?: { lessons?: string[] }[] } | null;
+	const terms = glossaryValue?.terms;
+	terms?.forEach((term, index) => {
+		const visibleLessons = (term.lessons ?? []).filter((lessonId) => seenLessonIds.has(lessonId));
+		glossary.setIn(['terms', index, 'lessons'], visibleLessons);
+	});
+	return glossary.toString();
 }
 
 /**

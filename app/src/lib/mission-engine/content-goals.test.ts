@@ -54,3 +54,13 @@ describe('isContentGoalMet', () => {
 		expect(isContentGoalMet(goal, snapshotWith({ commits: [keptCommit] }))).toBe(false);
 	});
 });
+
+describe('isContentGoalMet with Windows line ends', () => {
+	it('matches a multi-line text in a file saved with \r\n', () => {
+		const savedOnWindows = snapshotWith({
+			workingFileTexts: [{ path: 'menu.txt', text: 'Tea\r\nCoffee\r\n' }]
+		});
+		const goal = { check: 'file-contains' as const, file: 'menu.txt', text: 'Tea\nCoffee' };
+		expect(isContentGoalMet(goal, savedOnWindows)).toBe(true);
+	});
+});

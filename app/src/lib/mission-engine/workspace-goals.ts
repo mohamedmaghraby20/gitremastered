@@ -18,6 +18,8 @@ export function isWorkspaceGoalMet(goalCheck: WorkspaceGoalCheck, snapshot: Repo
 	switch (goalCheck.check) {
 		case 'worktree-exists':
 			return snapshot.worktrees.some((worktree) => worktree.branch === goalCheck.branch);
+		case 'worktree-count-is':
+			return snapshot.worktrees.length === goalCheck.count;
 		case 'submodule-exists':
 			return snapshot.submodules.some(
 				(submodule) => submodule.path === goalCheck.path && submodule.isInitialized

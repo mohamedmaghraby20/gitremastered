@@ -16,6 +16,13 @@ describe('isWorkspaceGoalMet', () => {
 		expect(isWorkspaceGoalMet(goal, detached)).toBe(false);
 	});
 
+	it('worktree-count-is counts linked worktrees only', () => {
+		const goal = { check: 'worktree-count-is' as const, count: 0 };
+		expect(isWorkspaceGoalMet(goal, snapshotWith({}))).toBe(true);
+		const oneLeft = snapshotWith({ worktrees: [{ path: '/work/hotfix', branch: null }] });
+		expect(isWorkspaceGoalMet(goal, oneLeft)).toBe(false);
+	});
+
 	it('submodule-exists needs the submodule listed and its files checked out', () => {
 		const goal = { check: 'submodule-exists' as const, path: 'vendor/library' };
 		const ready = snapshotWith({ submodules: [{ path: 'vendor/library', isInitialized: true }] });

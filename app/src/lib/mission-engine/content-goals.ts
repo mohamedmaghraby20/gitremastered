@@ -50,7 +50,19 @@ function doesTextInclude(
 	if (fileText === undefined) {
 		return false;
 	}
-	return fileText.text.includes(text) === shouldInclude;
+	const fileWithUnixLineEnds = withUnixLineEnds(fileText.text);
+	const textWithUnixLineEnds = withUnixLineEnds(text);
+	return fileWithUnixLineEnds.includes(textWithUnixLineEnds) === shouldInclude;
+}
+
+/**
+ * Turns Windows line ends (\r\n) into Unix ones (\n), so a file an editor saved on Windows
+ * matches a multi-line text written in challenges.yaml.
+ * @param text - any text
+ * @returns the same text with \n line ends only
+ */
+function withUnixLineEnds(text: string): string {
+	return text.replaceAll('\r\n', '\n');
 }
 
 /**
