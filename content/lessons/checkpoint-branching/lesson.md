@@ -148,11 +148,11 @@ The lessons on team workflows use short-lived branches the way the first challen
 
 ### When history needs reshaping
 
-Rebasing is the other way to bring two lines of work together, and the lesson "Rebasing, and when not to" compares it with merging. The harder cases of merging are in "Hard conflicts, merge strategies, subtree merges, rerere".
+Rebasing is the other way to bring two lines of work together, and the lesson [Rebasing, and when not to](lesson:rebasing) compares it with merging. The harder cases of merging are in "Hard conflicts, merge strategies, subtree merges, rerere".
 
 ### When something is lost
 
-A branch deleted with `-D`, or commits made on a detached HEAD, stay in the reflog for a while. The lesson "Recover lost commits with reflog and fsck" turns the rescue you saw in this module into a method.
+A branch deleted with `-D`, or commits made on a detached HEAD, stay in the reflog for a while. The lesson [Recover lost commits with reflog and fsck](lesson:rescue-lost-work) turns the rescue you saw in this module into a method.
 
 ## Recap
 

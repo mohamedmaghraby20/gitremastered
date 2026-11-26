@@ -580,7 +580,7 @@ Replacement refs stay local unless you name them. A [refspec](term:refspec) does
 | `git push origin 'refs/replace/*:refs/replace/*'` | Sends your replacement refs to the server |
 | `git fetch origin 'refs/replace/*:refs/replace/*'` | Brings the server's replacement refs into your repository |
 
-To turn a replacement into real history, rewrite the history with a tool from the lesson "Remove a leaked secret or huge file from history": the Git reference notes that `git filter-branch` makes replacements permanent. Every commit after the replaced one then gets a new ID, with all the cost of [rewriting history](term:rewriting-history).
+To turn a replacement into real history, rewrite the history with a tool from the lesson [Remove a leaked secret or huge file from history](lesson:remove-sensitive-data): the Git reference notes that `git filter-branch` makes replacements permanent. Every commit after the replaced one then gets a new ID, with all the cost of [rewriting history](term:rewriting-history).
 
 ### Turn replacements off
 
@@ -605,7 +605,7 @@ Pro Git 10.8 lists many more. These are the ones you may meet:
 | `GIT_SSH` | A program to run in place of `ssh`. It cannot take extra options, which is why `GIT_SSH_COMMAND` is easier |
 | `GIT_ASKPASS` | A program Git runs to ask for a password |
 | `GIT_TRACE_SETUP` | Traces which repository, working tree and current folder Git settled on. The first thing to try when `GIT_DIR` confuses you |
-| `GIT_TRACE_PACK_ACCESS` | Traces every read from a packfile (the lesson "Packfiles and garbage collection" explains packfiles) |
+| `GIT_TRACE_PACK_ACCESS` | Traces every read from a packfile (the lesson [Packfiles and garbage collection](lesson:packfiles-gc) explains packfiles) |
 | `GIT_NAMESPACE` | Keeps several sets of refs apart inside one repository, on servers |
 | `GIT_FLUSH` | Set to `1`, Git writes its output at once without collecting it first |
 

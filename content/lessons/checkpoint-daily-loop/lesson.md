@@ -164,7 +164,7 @@ Where this module's skills come back later in the course:
 - **Undo.** `git restore` throws away edits and unstages files, and `git commit --amend` repairs the last commit. Start with [Unstage and discard changes](lesson:undo-basics).
 - **Branches.** `git log --oneline --graph --all` draws several lines of work at once, and `git diff` compares branches the way it compares commits. Start with [Branches are just pointers](lesson:branches-are-pointers).
 - **Remotes.** `git clone` gave you a remote named `origin`; fetching, pulling and pushing keep the two copies in step. See [Work with remotes: fetch, pull, push](lesson:remotes).
-- **Commit craft.** One job per commit and a clear message is a habit you already practise here. The lesson "Commit messages and atomic commits" goes deeper.
+- **Commit craft.** One job per commit and a clear message is a habit you already practise here. The lesson [Commit messages and atomic commits](lesson:commit-craft) goes deeper.
 
 ## Recap
 

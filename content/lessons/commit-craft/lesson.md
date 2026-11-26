@@ -128,7 +128,7 @@ $ git log --oneline -2
 
 (Your commit IDs will differ from the ones printed in this lesson.)
 
-That was the easy case: each job lives in its own file. Sometimes one file holds two jobs, for example a bug fix at the top of `cart.js` and a half-finished feature at the bottom. `git add` can also stage part of a file; Pro Git names the option, `git add --patch`. It has its own lesson, "Stage part of a file".
+That was the easy case: each job lives in its own file. Sometimes one file holds two jobs, for example a bug fix at the top of `cart.js` and a half-finished feature at the bottom. `git add` can also stage part of a file; Pro Git names the option, `git add --patch`. It has its own lesson, [Stage part of a file](lesson:partial-staging).
 
 :::careful
 `git add .` and `git commit -a` stage every change at once, which is the opposite of splitting. They are fine when everything you changed is one job. When it is not, name the files.

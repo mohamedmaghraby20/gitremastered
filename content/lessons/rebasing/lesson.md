@@ -294,7 +294,7 @@ Unmerged paths:
 no changes added to commit (use "git add" and/or "git commit -a")
 ```
 
-`pick` means "replay this commit". Git says "interactive rebase" even though you asked for a plain one, because every rebase runs on the same machinery today. You can ignore the word here. The interactive rebase, where you edit that list of commits yourself, is the subject of the lesson "Reword, squash, reorder, split; fixup and autosquash".
+`pick` means "replay this commit". Git says "interactive rebase" even though you asked for a plain one, because every rebase runs on the same machinery today. You can ignore the word here. The interactive rebase, where you edit that list of commits yourself, is the subject of the lesson [Reword, squash, reorder, split; fixup and autosquash](lesson:clean-up-history).
 
 And step 11:
 
@@ -552,7 +552,7 @@ eac1b1e try-hours@{1}: commit: Add opening hours
 3ae1e9e try-hours@{2}: branch: Created from HEAD
 ```
 
-A whole rebase is one line in the branch's reflog, however many commits it replayed. The line below it is where the branch was before, so `git reset --hard eac1b1e` undoes the rebase even after `ORIG_HEAD` has been overwritten. The faded stations on the map are these same commits. Git removes them only after the reflog entries expire, weeks later. The lesson "Recover lost commits with reflog and fsck" goes deeper.
+A whole rebase is one line in the branch's reflog, however many commits it replayed. The line below it is where the branch was before, so `git reset --hard eac1b1e` undoes the rebase even after `ORIG_HEAD` has been overwritten. The faded stations on the map are these same commits. Git removes them only after the reflog entries expire, weeks later. The lesson [Recover lost commits with reflog and fsck](lesson:rescue-lost-work) goes deeper.
 
 ## Advanced
 

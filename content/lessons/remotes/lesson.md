@@ -422,7 +422,7 @@ Every fetch also writes what it downloaded into the file `.git/FETCH_HEAD`. `git
 
 A pull that merges leaves a merge commit each time you and a teammate both had new work. Some teams prefer a straight history. `git pull --rebase` fetches, then replays your new commits on top of the fetched ones, so no merge commit is made. `git config --global pull.rebase true` makes that the default for every pull.
 
-Rebasing rewrites your commits, and it has rules of its own. Learn it in the lesson "Rebasing, and when not to" before you switch.
+Rebasing rewrites your commits, and it has rules of its own. Learn it in the lesson [Rebasing, and when not to](lesson:rebasing) before you switch.
 
 ### `git pull --ff-only`: never merge by surprise
 

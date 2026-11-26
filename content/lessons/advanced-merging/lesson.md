@@ -400,7 +400,7 @@ Add lemon
 8. Run `git add tea.txt`, then `git commit --no-edit`. In the picture, the merge station appears for the third time, and this time you typed no resolution.
 :::
 
-Pro Git names the jobs where this pays off: trial merges of a long-lived branch that you back out of until the branch is ready, a branch you merged and now want to rebase instead (the lesson "Rebasing, and when not to"), and a test branch that you rebuild from several feature branches again and again.
+Pro Git names the jobs where this pays off: trial merges of a long-lived branch that you back out of until the branch is ready, a branch you merged and now want to rebase instead (the lesson [Rebasing, and when not to](lesson:rebasing)), and a test branch that you rebuild from several feature branches again and again.
 
 ### When it goes wrong
 
@@ -679,7 +679,7 @@ Merge made by the 'ort' strategy.
  1 file changed, 1 insertion(+)
 ```
 
-Pro Git weighs it this way: all the code is committed in one place, which is simpler for whoever clones your project, but the setup is easier to get wrong than it looks, and sending your changes back to the library is awkward. The lesson "Submodules" teaches the more common way to keep another project inside yours.
+Pro Git weighs it this way: all the code is committed in one place, which is simpler for whoever clones your project, but the setup is easier to get wrong than it looks, and sending your changes back to the library is awkward. The lesson [Submodules](lesson:submodules) teaches the more common way to keep another project inside yours.
 
 :::sidenote
 Pro Git's version of this recipe checks the library out as a local branch and merges with `--squash`. Since Git 2.9, merging two histories with no common commit needs `--allow-unrelated-histories`; the steps above are the ones from Git's own "How to use the subtree merge strategy" guide.

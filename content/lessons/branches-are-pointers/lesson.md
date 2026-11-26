@@ -330,7 +330,7 @@ With these branches the history is still one straight line. Once two branches ea
 
 ### Each branch keeps a diary
 
-Git notes every move of a branch in its [reflog](term:reflog). `git reflog show testing` lists where `testing` pointed before, starting with the moment it was created. The lesson "Recover lost commits with reflog and fsck" uses it for rescue work.
+Git notes every move of a branch in its [reflog](term:reflog). `git reflog show testing` lists where `testing` pointed before, starting with the moment it was created. The lesson [Recover lost commits with reflog and fsck](lesson:rescue-lost-work) uses it for rescue work.
 
 ### `main` is only a convention
 

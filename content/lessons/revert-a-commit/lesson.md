@@ -346,7 +346,7 @@ The result is committed like any other commit. A revert commit has one parent, t
 
 After a revert, the bad commit is still in the history, with its full content. Anyone can run `git show` on it.
 
-This matters for secrets. If you committed a password and reverted the commit, the password is still in the repository, and still on the server if you pushed. Revert fixes the current files and leaves the past readable. Change the password first; the lesson "Remove a leaked secret or huge file from history" shows how to remove it from history.
+This matters for secrets. If you committed a password and reverted the commit, the password is still in the repository, and still on the server if you pushed. Revert fixes the current files and leaves the past readable. Change the password first; the lesson [Remove a leaked secret or huge file from history](lesson:remove-sensitive-data) shows how to remove it from history.
 
 ### What the pause looks like inside
 

@@ -14,7 +14,7 @@ You add one line to a 400-line file and commit, and Git stores the whole file a 
 
 ## Must know
 
-In [A first look inside .git](lesson:first-look-inside) you saw that Git keeps every commit, tree and blob as one [object](term:object), and that each object is one small file under `.git/objects`. The lesson "Blobs, trees, commits and how they are stored" goes deeper into those files. That picture is true for a young repository. This lesson is about what happens to those files as a repository grows.
+In [A first look inside .git](lesson:first-look-inside) you saw that Git keeps every commit, tree and blob as one [object](term:object), and that each object is one small file under `.git/objects`. The lesson [Blobs, trees, commits and how they are stored](lesson:objects-deep) goes deeper into those files. That picture is true for a young repository. This lesson is about what happens to those files as a repository grows.
 
 ### One line changes, one whole file is stored
 
@@ -233,7 +233,7 @@ So when is typing `git gc` yourself worth it?
 | You just imported or rewrote a large history | Yes, once, at the end |
 | Git feels slow in an old, busy repository | Yes, it is harmless to try |
 
-Newer versions of Git also have `git maintenance`, which can run these tidy-ups on a schedule in the background. The lesson "Shallow and partial clone, sparse checkout, LFS, bundles, git maintenance" teaches it.
+Newer versions of Git also have `git maintenance`, which can run these tidy-ups on a schedule in the background. The lesson [Shallow and partial clone, sparse checkout, LFS, bundles, git maintenance](lesson:large-repos) teaches it.
 
 ### What `git gc` keeps and what it may delete
 
@@ -327,7 +327,7 @@ $ ls .git/refs/heads
 main
 ```
 
-For an annotated tag, `packed-refs` holds a second line that starts with `^`: the ID of the commit the tag leads to. The lesson "References, HEAD, tags and remotes on disk" covers refs in full.
+For an annotated tag, `packed-refs` holds a second line that starts with `^`: the ID of the commit the tag leads to. The lesson [References, HEAD, tags and remotes on disk](lesson:refs-deep) covers refs in full.
 
 ### What `git gc` deletes, and what stands in the way
 
@@ -342,7 +342,7 @@ An object is **[reachable](term:reachable)** when you can arrive at it by starti
 | Reflog lines | Commits you were on before: reset away, amended, rebased | 30 days for commits no longer on the branch, 90 days for the others |
 | Nothing at all | Unreachable objects | Two weeks from when they were written, then the next `git gc` deletes them |
 
-The three time limits are settings: `gc.reflogExpireUnreachable` (30 days), `gc.reflogExpire` (90 days) and `gc.pruneExpire` (two weeks). The lesson "Recover lost commits with reflog and fsck" uses these limits from the other side: how long you have for a rescue.
+The three time limits are settings: `gc.reflogExpireUnreachable` (30 days), `gc.reflogExpire` (90 days) and `gc.pruneExpire` (two weeks). The lesson [Recover lost commits with reflog and fsck](lesson:rescue-lost-work) uses these limits from the other side: how long you have for a rescue.
 
 Now the test. If you followed the last console block, you have a commit "Add 3002". If not, run those two commands now. Then abandon the commit:
 
@@ -396,7 +396,7 @@ Each of the two commands removed one protection:
 Run only the second command and the commit survives, because the reflog still leads to it. The same is true for any other starting point. A forgotten tag or a stash entry that leads to a commit keeps that commit, and everything it needs, in the repository.
 
 :::careful
-`git reflog expire --expire=now --all` followed by `git gc --prune=now` removes your safety net for the whole repository, not for one commit: every commit you reset away, amended or rebased in the last weeks is deleted with it. Use the pair only as the planned last step of a clean-up, for example when a password was committed. The lesson "Remove a leaked secret or huge file from history" shows the full procedure. On a copy that others cloned from, the commit also still exists in their copies.
+`git reflog expire --expire=now --all` followed by `git gc --prune=now` removes your safety net for the whole repository, not for one commit: every commit you reset away, amended or rebased in the last weeks is deleted with it. Use the pair only as the planned last step of a clean-up, for example when a password was committed. The lesson [Remove a leaked secret or huge file from history](lesson:remove-sensitive-data) shows the full procedure. On a copy that others cloned from, the commit also still exists in their copies.
 :::
 
 ## Advanced

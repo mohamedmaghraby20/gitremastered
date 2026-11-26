@@ -14,7 +14,7 @@ A password went into a commit, or a 2 GB video did. You delete the file and comm
 
 ## Must know
 
-The lesson "Recover lost commits with reflog and fsck" showed that Git almost never forgets a commit. That is good news when you lose work. It is bad news when you commit something that must not be there. So this lesson is the other side of the same fact: how to make Git forget on purpose, and why that takes more than one command.
+The lesson [Recover lost commits with reflog and fsck](lesson:rescue-lost-work) showed that Git almost never forgets a commit. That is good news when you lose work. It is bad news when you commit something that must not be there. So this lesson is the other side of the same fact: how to make Git forget on purpose, and why that takes more than one command.
 
 ### Why deleting the file is not enough
 

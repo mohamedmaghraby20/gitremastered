@@ -360,7 +360,7 @@ $ git reflog
 2b41f54 HEAD@{2}: checkout: moving from main to HEAD~1
 ```
 
-Read it from the top: the newest move is first. Find the line of the commit you made (here `22e3379`; your IDs differ), copy its ID, and run `git branch <name> <id>`. The lesson "Recover lost commits with reflog and fsck" goes deeper.
+Read it from the top: the newest move is first. Find the line of the commit you made (here `22e3379`; your IDs differ), copy its ID, and run `git branch <name> <id>`. The lesson [Recover lost commits with reflog and fsck](lesson:rescue-lost-work) goes deeper.
 
 ### Switch and drop your changes
 
@@ -383,7 +383,7 @@ book: "`git checkout ideas -- ideas.txt` does the same, and also stages the file
 
 ### Two branches at once
 
-Switching shows one branch at a time. When you truly need two side by side, for example to run the old version while you edit the new one, Git can give a branch its own folder. That is the lesson "Several branches checked out at once".
+Switching shows one branch at a time. When you truly need two side by side, for example to run the old version while you edit the new one, Git can give a branch its own folder. That is the lesson [Several branches checked out at once](lesson:worktrees).
 
 ## Recap
 

@@ -543,7 +543,7 @@ size 300000
 Three lines: the format's version, the checksum that names the real file in the LFS storage, and its size in bytes. In your working tree `ship.png` is still the real 300,000-byte picture: Git LFS swaps pointer and picture on every checkout and every `git add`.
 
 :::careful
-`git lfs track` does not move pictures you committed earlier: their old versions stay in the history at full size. Moving them means rewriting history, which the lesson "Remove a leaked secret or huge file from history" covers.
+`git lfs track` does not move pictures you committed earlier: their old versions stay in the history at full size. Moving them means rewriting history, which the lesson [Remove a leaked secret or huge file from history](lesson:remove-sensitive-data) covers.
 :::
 
 ### `git maintenance` and `git gc`
@@ -585,7 +585,7 @@ The hourly task also fetches new objects from your remotes ahead of time, withou
 `git maintenance start` writes this repository's path into your own Git settings for all projects (`~/.gitconfig`) and adds a scheduled job to your computer. Use it on a real, large project you work in every day, not in the practice folder.
 :::
 
-How packfiles work inside, and what garbage collection removes, is the subject of the lesson "Packfiles and garbage collection".
+How packfiles work inside, and what garbage collection removes, is the subject of the lesson [Packfiles and garbage collection](lesson:packfiles-gc).
 
 ## Recap
 

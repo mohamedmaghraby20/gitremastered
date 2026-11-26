@@ -518,7 +518,7 @@ $ git restore --ours hours.txt
 - `git log --merge --oneline` lists the commits from both branches that touched the conflicted files, which helps when you do not know why the other side changed a line.
 - `git diff --check` reports `leftover conflict marker` for any marker line still in your files.
 
-Harder cases, like conflicts in files that were renamed or the same conflict returning again and again, are in the lesson "Hard conflicts, merge strategies, subtree merges, rerere". Another way to bring two branches together, without a merge commit, is in "Rebasing, and when not to".
+Harder cases, like conflicts in files that were renamed or the same conflict returning again and again, are in the lesson "Hard conflicts, merge strategies, subtree merges, rerere". Another way to bring two branches together, without a merge commit, is in [Rebasing, and when not to](lesson:rebasing).
 
 ## Recap
 

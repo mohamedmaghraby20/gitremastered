@@ -132,7 +132,7 @@ The module's ideas, in a few lines each.
 These skills return later in the course:
 
 - The lesson "Reword, squash, reorder, split" changes commits that are older than the last one, where `--amend` cannot reach.
-- The lesson "Recover lost commits with reflog and fsck" goes deep into the reflog you used here to get a commit back.
+- The lesson [Recover lost commits with reflog and fsck](lesson:rescue-lost-work) goes deep into the reflog you used here to get a commit back.
 - The lesson "Incident playbook" walks through bigger accidents with these same four tools.
 - The lesson "Force-pushing safely with --force-with-lease" covers the rare case where a pushed commit has to be replaced after all.
 - [Branch, merge, and fix conflicts](lesson:branch-and-merge) teaches conflicts fully. A revert that stops on a conflict is resolved the same way.

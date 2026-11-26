@@ -1,0 +1,200 @@
+challenges:
+  - id: manual-writer-setup
+    title: Only the docs, and a second folder for a fix
+    level: easy
+    brief: "You write the manual of the Star game, and you are halfway through a paragraph in docs/levels.md. Two jobs. First, the art and src folders are in your way: make your working tree hold only the docs folder (the files at the top level, like README.md, stay). Second, a typo on the live site cannot wait: prepare a worktree in the folder ../hotfix, on a new branch named hotfix. Do not fix anything yet, and leave your half-written paragraph as it is, uncommitted."
+    setup:
+      - git init -q -b main ../seed
+      - git -C ../seed config core.autocrlf false
+      - git -C ../seed config user.name "Mona (teammate)"
+      - git -C ../seed config user.email "mona@example.com"
+      - mkdir ../seed/src ../seed/docs ../seed/art
+      - echo "# Star game" > ../seed/README.md
+      - echo "print('Star game')" > ../seed/src/game.py
+      - git -C ../seed add .
+      - git -C ../seed commit -q -m "Start the game"
+      - echo "Arrow keys move the ship." > ../seed/docs/controls.md
+      - echo "Level 1 has ten stars." > ../seed/docs/levels.md
+      - git -C ../seed add .
+      - git -C ../seed commit -q -m "Start the manual"
+      # The picture is 20 KB of random bytes: a stand-in for a real image.
+      - head -c 20000 /dev/urandom > ../seed/art/ship.png
+      - git -C ../seed add .
+      - git -C ../seed commit -q -m "Add the ship picture"
+      # The "server": a folder beside the project.
+      - git clone -q --bare ../seed ../game.git
+      - rm -rf ../seed
+      - git clone -q -c core.autocrlf=false ../game.git .
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "Level 2 has a comet that" >> docs/levels.md
+    goal:
+      - check: file-is-missing
+        file: art/ship.png
+        label: "art/ship.png is left out of your working tree"
+      - check: file-is-missing
+        file: src/game.py
+        label: "src/game.py is left out of your working tree"
+      - check: file-exists
+        file: README.md
+        label: "README.md at the top level is still there"
+      - check: worktree-exists
+        branch: hotfix
+        label: "A linked worktree has the branch hotfix checked out"
+      - check: head-is-on-branch
+        branch: main
+        label: "The project folder is still on main"
+      - check: file-is-modified
+        file: docs/levels.md
+        label: "Your paragraph in docs/levels.md is still there, uncommitted"
+      - check: commit-count-is
+        count: 3
+        label: "No new commit: the history still holds three commits"
+    solution:
+      - git sparse-checkout set docs
+      - git worktree add -q ../hotfix -b hotfix
+
+  - id: update-from-the-usb-stick
+    title: A library update that arrives on a USB stick
+    level: medium
+    brief: "Your weather dashboard uses Lina's unit converter as a submodule at vendor/library. Omar moved the dashboard to a newer version of the library and committed that as \"Update the unit converter\". The dashboard's server is down, so he could not push; he saved his commit in a bundle and handed you the stick: ../usb/update.bundle. Check that the bundle fits your repository and get his commit into your main branch. Then make vendor/library hold the library version his commit names. Make no commit of your own. The library's server is a folder here: if Git answers \"transport 'file' not allowed\", put -c protocol.file.allow=always right after git."
+    setup:
+      # Lina's clone of the library, and the library's "server".
+      - git init -q -b main ../library-author
+      - git -C ../library-author config core.autocrlf false
+      - git -C ../library-author config user.name "Lina (library author)"
+      - git -C ../library-author config user.email "lina@example.com"
+      - echo "# Unit converter" > ../library-author/README.md
+      - echo "celsius to fahrenheit = times 1.8, plus 32" > ../library-author/convert.txt
+      - git -C ../library-author add README.md convert.txt
+      - git -C ../library-author commit -q -m "Add the unit converter"
+      - echo "km/h to m/s = divide by 3.6" >> ../library-author/convert.txt
+      - git -C ../library-author commit -q -am "Add wind speed conversion"
+      - git init -q --bare -b main ../library.git
+      - git -C ../library-author remote add origin ../library.git
+      - git -C ../library-author push -q -u origin main
+      # Omar's clone of the dashboard, and the dashboard's "server".
+      - git init -q -b main ../app-seed
+      - git -C ../app-seed config core.autocrlf false
+      - git -C ../app-seed config user.name "Omar (teammate)"
+      - git -C ../app-seed config user.email "omar@example.com"
+      - echo "# Weather dashboard" > ../app-seed/README.md
+      - echo "Show the temperature and the wind." > ../app-seed/plan.txt
+      - git -C ../app-seed add README.md plan.txt
+      - git -C ../app-seed commit -q -m "Start the weather dashboard"
+      - git init -q --bare -b main ../app.git
+      - git -C ../app-seed remote add origin ../app.git
+      - git -C ../app-seed -c protocol.file.allow=always submodule add -q ../library.git vendor/library
+      - git -C ../app-seed commit -q -m "Add the unit converter as a submodule"
+      - git -C ../app-seed push -q -u origin main
+      # Your clone, with the submodule filled.
+      - git clone -q -c core.autocrlf=false ../app.git .
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - git config pull.rebase false
+      - git -c protocol.file.allow=always submodule update -q --init
+      # Lina publishes a new library commit. Omar moves the pointer to it, and his commit
+      # never reaches the dashboard's server: it travels in a bundle.
+      - echo "hPa to mmHg = times 0.75" >> ../library-author/convert.txt
+      - git -C ../library-author commit -q -am "Add pressure conversion"
+      - git -C ../library-author push -q
+      - git -C ../app-seed -c protocol.file.allow=always submodule update -q --remote
+      - git -C ../app-seed commit -q -am "Update the unit converter"
+      - mkdir ../usb
+      - git -C ../app-seed bundle create -q ../usb/update.bundle main~1..main
+      - rm -rf ../app-seed ../library-author
+    goal:
+      - check: branch-is-at-commit
+        branch: main
+        message: "Update the unit converter"
+        label: "main is on Omar's commit, \"Update the unit converter\""
+      - check: commit-count-is
+        count: 3
+        label: "The history holds three commits: the two you had and Omar's, none of your own"
+      - check: submodule-exists
+        path: vendor/library
+        label: "vendor/library is still a submodule with its files"
+      - check: working-folder-clean
+        label: "git status is clean: vendor/library is on the commit the new pointer names"
+    solution:
+      - git bundle verify -q ../usb/update.bundle
+      - git pull -q ../usb/update.bundle main
+      - git -c protocol.file.allow=always submodule update -q
+
+  - id: take-over-a-clone
+    title: Take over a teammate's clone
+    level: hard
+    brief: "Omar changed teams, and his copy of the weather dashboard is yours now. Three things are wrong with it. (1) He cloned it for a quick build, so git log shows a single commit: bring in the full history. (2) The submodule folder vendor/library is empty: fill it. (3) He fixed a typo in a worktree on the branch readme-fix, committed it there, never merged it, and then deleted the worktree's folder by hand. Get his commit \"Fix the title typo\" into main, then leave no trace of the worktree: no worktree record and no readme-fix branch. End on main with a clean working tree. A submodule command that downloads needs -c protocol.file.allow=always right after git."
+    setup:
+      # Lina's library and its "server".
+      - git init -q -b main ../library-author
+      - git -C ../library-author config core.autocrlf false
+      - git -C ../library-author config user.name "Lina (library author)"
+      - git -C ../library-author config user.email "lina@example.com"
+      - echo "# Unit converter" > ../library-author/README.md
+      - echo "celsius to fahrenheit = times 1.8, plus 32" > ../library-author/convert.txt
+      - git -C ../library-author add README.md convert.txt
+      - git -C ../library-author commit -q -m "Add the unit converter"
+      - git init -q --bare -b main ../library.git
+      - git -C ../library-author remote add origin ../library.git
+      - git -C ../library-author push -q -u origin main
+      # The dashboard: four commits on its "server".
+      - git init -q -b main ../app-seed
+      - git -C ../app-seed config core.autocrlf false
+      - git -C ../app-seed config user.name "Omar (teammate)"
+      - git -C ../app-seed config user.email "omar@example.com"
+      - echo "# Weather dashbord" > ../app-seed/README.md
+      - echo "Show the temperature and the wind." > ../app-seed/plan.txt
+      - git -C ../app-seed add README.md plan.txt
+      - git -C ../app-seed commit -q -m "Start the weather dashboard"
+      - git init -q --bare -b main ../app.git
+      - git -C ../app-seed remote add origin ../app.git
+      - git -C ../app-seed -c protocol.file.allow=always submodule add -q ../library.git vendor/library
+      - git -C ../app-seed commit -q -m "Add the unit converter as a submodule"
+      - echo "Show the air pressure." >> ../app-seed/plan.txt
+      - git -C ../app-seed commit -q -am "Plan the pressure panel"
+      - echo "Wind, as an arrow and a speed" > ../app-seed/wind.txt
+      - git -C ../app-seed add wind.txt
+      - git -C ../app-seed commit -q -m "Add the wind panel"
+      - git -C ../app-seed push -q -u origin main
+      - rm -rf ../app-seed ../library-author
+      # Omar's clone: only the newest commit, and the submodule never filled.
+      - git clone -q --depth 1 --no-local -c core.autocrlf=false ../app.git .
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      # His fix in a worktree, then the folder deleted by hand: Git's record of it stays.
+      - git worktree add -q ../readme-fix -b readme-fix
+      - sed -i 's/dashbord/dashboard/' ../readme-fix/README.md
+      - git -C ../readme-fix commit -q -am "Fix the title typo"
+      - rm -rf ../readme-fix
+    goal:
+      - check: commit-count-is
+        count: 5
+        label: "The history is complete: the server's four commits and the typo fix"
+      - check: branch-contains-commit
+        branch: main
+        message: "Fix the title typo"
+        label: "main holds the commit \"Fix the title typo\""
+      - check: submodule-exists
+        path: vendor/library
+        label: "vendor/library is filled: the library's files are checked out"
+      - check: worktree-count-is
+        count: 0
+        label: "No linked worktree is left, not even a record of one"
+      - check: branch-is-missing
+        branch: readme-fix
+        label: "The readme-fix branch is deleted"
+      - check: head-is-on-branch
+        branch: main
+        label: "You are on main"
+      - check: working-folder-clean
+        label: "git status shows nothing left to do"
+    solution:
+      - git fetch -q --unshallow
+      - git -c protocol.file.allow=always submodule update -q --init
+      - git merge -q readme-fix
+      - git worktree prune
+      - git branch -q -d readme-fix

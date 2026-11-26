@@ -321,7 +321,7 @@ $ git log --oneline
 3bafa0b First entry
 ```
 
-`git update-ref <ref> <commit>` writes the ID into the ref. Give it the ref's full name, `refs/heads/main`, not just `main`. The lesson "References, HEAD, tags and remotes on disk" covers refs in depth; here it is only the last step.
+`git update-ref <ref> <commit>` writes the ID into the ref. Give it the ref's full name, `refs/heads/main`, not just `main`. The lesson [References, HEAD, tags and remotes on disk](lesson:refs-deep) covers refs in depth; here it is only the last step.
 
 :::graph
 caption: "After git update-ref: main points at the third commit, and its parents come with it"
@@ -491,7 +491,7 @@ The tree ID, the parent ID, both names, both times and the message are all insid
 
 ### One file per object, for now
 
-Each object you made is its own file. Pro Git says objects are stored this way "initially": later Git gathers many of them into one [packfile](term:packfile) to save space. The lesson "Packfiles and garbage collection" covers that, and what happens to objects nothing points at, like your `hello, objects` blob.
+Each object you made is its own file. Pro Git says objects are stored this way "initially": later Git gathers many of them into one [packfile](term:packfile) to save space. The lesson [Packfiles and garbage collection](lesson:packfiles-gc) covers that, and what happens to objects nothing points at, like your `hello, objects` blob.
 
 ## Advanced
 

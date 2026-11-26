@@ -397,7 +397,7 @@ packs: 0
 ...
 ```
 
-`count` is the number of objects stored as single files. In an older, larger repository most objects sit `in-pack`: from time to time Git gathers many objects into one compressed "packfile". It can also gather refs into a single file, `.git/packed-refs`, so a branch does not always have its own file under `refs/heads`. `git cat-file` and `git rev-parse` give the right answer either way, which is one more reason to ask Git instead of reading the files yourself. The lesson "Packfiles and garbage collection" covers this.
+`count` is the number of objects stored as single files. In an older, larger repository most objects sit `in-pack`: from time to time Git gathers many objects into one compressed "packfile". It can also gather refs into a single file, `.git/packed-refs`, so a branch does not always have its own file under `refs/heads`. `git cat-file` and `git rev-parse` give the right answer either way, which is one more reason to ask Git instead of reading the files yourself. The lesson [Packfiles and garbage collection](lesson:packfiles-gc) covers this.
 
 ### More that `git rev-parse` can tell you
 
@@ -411,7 +411,7 @@ Scripts use these to find their way around a project.
 
 ### Where this continues
 
-This was a first look. The lessons "Blobs, trees, commits and how they are stored" and "References, HEAD, tags and remotes on disk", near the end of the course, build objects by hand and cover tags, remotes and the fourth object type.
+This was a first look. The lessons [Blobs, trees, commits and how they are stored](lesson:objects-deep) and [References, HEAD, tags and remotes on disk](lesson:refs-deep), near the end of the course, build objects by hand and cover tags, remotes and the fourth object type.
 
 ## Recap
 

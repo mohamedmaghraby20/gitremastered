@@ -1,0 +1,40 @@
+questions:
+  - question: "A build machine clones your project for every push, runs the tests and deletes the clone. The project has a long history and one submodule. Which clone is the fastest one that still lets the tests run?"
+    answers:
+      - text: "git clone --depth 1 --recurse-submodules <address>"
+        correct: true
+        explanation: "--depth 1 leaves the old commits on the server, and the tests need none of them. --recurse-submodules fills the submodule's folder, which a plain clone leaves empty."
+      - text: "git clone --depth 1 <address>"
+        explanation: "The history is cut, which is what you want, but the submodule's folder is empty. A clone never downloads a submodule unless you ask, so the tests cannot find the library."
+      - text: "git clone <address>, then git worktree add ../build"
+        explanation: "A worktree is a second folder on the same repository. It downloads nothing less: the clone still brought the whole history, and the submodule is still empty."
+
+  - question: "You have a half-done edit on main and want to look at a teammate's branch without touching your work. You make a second clone of the project in another folder. A colleague says a worktree would have been better. What is the real difference?"
+    answers:
+      - text: "None: a worktree is a second clone under another name"
+        explanation: "A clone is a second repository, with its own copy of every commit. A worktree is a second folder on the one repository you already have."
+      - text: "A worktree shares the repository: no second download, and a commit made in either folder is visible in the other at once"
+        correct: true
+        explanation: "Commits, branches, the stash and the settings are shared by every worktree. Only the files, HEAD and the staging area belong to one folder. Two clones must push and fetch to see each other's work."
+      - text: "A worktree also shares your uncommitted edits, so the second folder shows your half-done work"
+        explanation: "Uncommitted edits live in one folder's files and staging area, and those are exactly what a worktree does not share. The new folder shows the committed files of its branch."
+
+  - question: "The art folder of your game makes the clone huge. One teammate proposes moving it into its own repository and adding it as a submodule. Another proposes git sparse-checkout set src docs for the programmers. What does each one change?"
+    answers:
+      - text: "Both make every programmer's clone smaller"
+        explanation: "A sparse checkout does not. It chooses what is written into the working tree; the clone still downloads the art, unless it is also a partial clone."
+      - text: "The submodule keeps new art out of the main project for everyone; the sparse checkout only keeps the art out of one person's working tree"
+        correct: true
+        explanation: "A submodule is a project decision: from then on the main project records an address and one commit ID, and a plain clone leaves the folder empty. A sparse checkout is a personal setting that nobody else notices. Neither removes the art already in the history."
+      - text: "Neither changes anything until the whole team runs git gc"
+        explanation: "git gc tidies the objects of one repository. It has no part in a sparse checkout or in a submodule."
+
+  - question: "A teammate hands you a bundle with one new commit of the main project. You run git pull on the bundle file, and git status then shows \"modified: vendor/library (new commits)\", though you edited nothing. What happened, and what do you run?"
+    answers:
+      - text: "The bundle was damaged on the way; ask for a new one"
+        explanation: "A damaged bundle fails git bundle verify and the pull. This pull worked. The message is about the submodule's folder, not about the bundle."
+      - text: "The commit moved the submodule's pointer and your folder is still on the old library commit; run git submodule update"
+        correct: true
+        explanation: "A pull moves the pointer, from a server or from a bundle alike, but does not check out the library commit it names. git submodule update makes the folder match the pointer."
+      - text: "The library has new commits on its server; run git commit -am \"Update the library\" to record them"
+        explanation: "That commit would record the old library commit your folder is still on, and undo your teammate's update. Nothing here is yours to commit."

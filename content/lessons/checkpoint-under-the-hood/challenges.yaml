@@ -1,0 +1,144 @@
+# The three challenges share one small project, a harbour cafe's menu.
+# No challenge has hints: this is a checkpoint.
+# Every answer is an object ID that is the same on every computer:
+# - a blob ID depends only on the file's content (first challenge);
+# - a commit ID depends on names, emails and dates too, so the second and third challenges
+#   fix all of them on the commits that matter, and turn signing off in the repository.
+challenges:
+  - id: blob-behind-the-tag
+    title: The file behind the release tag
+    level: easy
+    brief: "The harbour cafe printed its first menu from the tag v1.0, and the printing shop asks which exact file that was. Write the full 40-character ID of the blob that was menu.txt at v1.0 into answer.txt. Three things stand in the way: menu.txt has changed twice since then, v1.0 is an annotated tag, and the repository was packed, so .git/refs and .git/objects hold no file you could read. Change nothing else."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - git config tag.gpgsign false
+      - echo answer.txt >> .git/info/exclude
+      - echo "# Harbour cafe" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - echo "Fish soup" > menu.txt
+      - git add menu.txt
+      - git commit -q -m "Add menu"
+      - git tag -a v1.0 -m "First printed menu"
+      - printf "Fish soup\nGrilled sardines\n" > menu.txt
+      - git commit -q -am "Add sardines"
+      - echo "Fish soup, sardines, lemon tart" > menu.txt
+      - git commit -q -am "Add dessert"
+      # Packs the objects and the refs: no loose object file, no file under .git/refs.
+      - git gc -q
+    goal:
+      - check: answer-is
+        answer: 2bbf19c8c83400c4a427563999a18c73fffbda76
+        label: "answer.txt holds the full ID of the blob that was menu.txt at v1.0"
+      - check: tag-is-annotated
+        tag: v1.0
+        label: "v1.0 is still an annotated tag"
+      - check: commit-count-is
+        count: 4
+        label: "The history still has its four commits"
+      - check: working-folder-clean
+        label: "No file was changed"
+    solution:
+      - git rev-parse v1.0:menu.txt > answer.txt
+
+  - id: same-commit-everywhere
+    title: The same commit ID on every computer
+    level: medium
+    brief: "The cafe's release script must make the very same commit on every computer, so that two builds can be compared by commit ID. notes.txt is already staged. Commit it with the message \"Release 1.0\" so that the author and the committer are both Release Bot with the email bot@example.com, and both dates are 2026-06-03T12:00:00+0000 (the +0000 fixes the time zone). Use environment variables only, and leave the settings alone. Then write the new commit's full 40-character ID into answer.txt. If every value is right, the ID starts with 6f95517."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      # The answer is a commit ID, so the parent commits get a fixed identity and fixed dates,
+      # and nothing is signed here.
+      - git config commit.gpgsign false
+      - git config tag.gpgsign false
+      - echo answer.txt >> .git/info/exclude
+      - echo "# Harbour cafe" > README.md
+      - git add README.md
+      - 'GIT_AUTHOR_NAME="Practice Student" GIT_AUTHOR_EMAIL="student@example.com" GIT_COMMITTER_NAME="Practice Student" GIT_COMMITTER_EMAIL="student@example.com" GIT_AUTHOR_DATE="2026-06-01T08:00:00+0000" GIT_COMMITTER_DATE="2026-06-01T08:00:00+0000" git commit -q -m "Add README"'
+      - echo "Fish soup" > menu.txt
+      - git add menu.txt
+      - 'GIT_AUTHOR_NAME="Practice Student" GIT_AUTHOR_EMAIL="student@example.com" GIT_COMMITTER_NAME="Practice Student" GIT_COMMITTER_EMAIL="student@example.com" GIT_AUTHOR_DATE="2026-06-02T08:00:00+0000" GIT_COMMITTER_DATE="2026-06-02T08:00:00+0000" git commit -q -m "Add menu"'
+      - echo "Version 1.0, the first printed menu" > notes.txt
+      - git add notes.txt
+    goal:
+      - check: latest-commit-message-contains
+        text: "Release 1.0"
+        label: "The newest commit is \"Release 1.0\""
+      - check: file-is-committed
+        file: notes.txt
+        label: "notes.txt is in that commit"
+      - check: commit-count-is
+        count: 3
+        label: "The history has three commits: one new commit, nothing rewritten"
+      - check: answer-is
+        answer: 6f955177c3d09ec6113366fc17a900e09e9fd946
+        label: "answer.txt holds the commit ID that every computer gets for these values"
+    solution:
+      - 'GIT_AUTHOR_NAME="Release Bot" GIT_AUTHOR_EMAIL="bot@example.com" GIT_AUTHOR_DATE="2026-06-03T12:00:00+0000" GIT_COMMITTER_NAME="Release Bot" GIT_COMMITTER_EMAIL="bot@example.com" GIT_COMMITTER_DATE="2026-06-03T12:00:00+0000" git commit -q -m "Release 1.0"'
+      - git rev-parse HEAD > answer.txt
+
+  - id: branch-without-a-name
+    title: Bring back a branch nothing remembers
+    level: hard
+    brief: "A clean-up script went too far. It deleted the branch release, which held one commit that main does not have, \"Prepare release 2.0\". Then it erased every reflog and packed the repository. No branch, no tag and no reflog line leads to that commit any more, so git log, git reflog and the picture cannot show it. It is still stored. Find it, and make the branch release point at it again by writing the ref. Stay on main, do not make a new commit, and write the found commit's full 40-character ID into answer.txt."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      # The answer is the ID of the lost commit, so that commit and the two before it get a
+      # fixed identity and fixed dates, and nothing is signed here.
+      - git config commit.gpgsign false
+      - git config tag.gpgsign false
+      # Keeps Git's usual two-week wait in this repository, whatever the student's own settings say.
+      - git config gc.pruneExpire 2.weeks.ago
+      - echo answer.txt >> .git/info/exclude
+      - echo "# Harbour cafe" > README.md
+      - git add README.md
+      - 'GIT_AUTHOR_NAME="Practice Student" GIT_AUTHOR_EMAIL="student@example.com" GIT_COMMITTER_NAME="Practice Student" GIT_COMMITTER_EMAIL="student@example.com" GIT_AUTHOR_DATE="2026-06-01T08:00:00+0000" GIT_COMMITTER_DATE="2026-06-01T08:00:00+0000" git commit -q -m "Add README"'
+      - echo "Fish soup" > menu.txt
+      - git add menu.txt
+      - 'GIT_AUTHOR_NAME="Practice Student" GIT_AUTHOR_EMAIL="student@example.com" GIT_COMMITTER_NAME="Practice Student" GIT_COMMITTER_EMAIL="student@example.com" GIT_AUTHOR_DATE="2026-06-02T08:00:00+0000" GIT_COMMITTER_DATE="2026-06-02T08:00:00+0000" git commit -q -m "Add menu"'
+      - git switch -q -c release
+      - echo "Version 2.0, the summer menu" > notes.txt
+      - git add notes.txt
+      - 'GIT_AUTHOR_NAME="Practice Student" GIT_AUTHOR_EMAIL="student@example.com" GIT_COMMITTER_NAME="Practice Student" GIT_COMMITTER_EMAIL="student@example.com" GIT_AUTHOR_DATE="2026-06-03T08:00:00+0000" GIT_COMMITTER_DATE="2026-06-03T08:00:00+0000" git commit -q -m "Prepare release 2.0"'
+      - git switch -q main
+      - echo "Open 8 to 16" > hours.txt
+      - git add hours.txt
+      - git commit -q -m "Add opening hours"
+      # The clean-up script: the branch's ref, then every reflog line, then a tidy-up.
+      # The commit is younger than two weeks, so git gc keeps it, with no name leading to it.
+      - git update-ref -d refs/heads/release
+      - git reflog expire --expire=now --all
+      - git gc -q
+    goal:
+      - check: branch-is-at-commit
+        branch: release
+        message: "Prepare release 2.0"
+        label: "The branch release points at \"Prepare release 2.0\" again"
+      - check: answer-is
+        answer: 4790f71dd8e922d75c7b073241d26f26d4e0e180
+        label: "answer.txt holds the full ID of the commit that was lost, not of a new one"
+      - check: branch-lacks-commit
+        branch: main
+        message: "Prepare release 2.0"
+        label: "main does not hold the release commit"
+      - check: branch-is-at-commit
+        branch: main
+        message: "Add opening hours"
+        label: "main still ends at \"Add opening hours\""
+      - check: head-is-on-branch
+        branch: main
+        label: "You are still on main"
+      - check: working-folder-clean
+        label: "git status has nothing to report"
+    solution:
+      - 'for id in $(git cat-file --batch-check --batch-all-objects | grep " commit " | cut -d" " -f1); do if [ "$(git log -1 --format=%s $id)" = "Prepare release 2.0" ]; then git update-ref refs/heads/release $id; fi; done'
+      - git rev-parse release > answer.txt

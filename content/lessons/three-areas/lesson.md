@@ -191,7 +191,7 @@ $ git commit -m "Add todo list"
 
 Only staged changes went into the commit. `README.md` and `notes.txt` are untouched, still in your working tree for later.
 
-Write messages that say what the commit does, like "Add todo list", not "stuff" or "fix". The lesson "Commit messages and atomic commits" goes deeper.
+Write messages that say what the commit does, like "Add todo list", not "stuff" or "fix". The lesson [Commit messages and atomic commits](lesson:commit-craft) goes deeper.
 
 ### When you forget `-m`
 
@@ -379,7 +379,7 @@ The "Undo" lessons cover discarding changes and fixing the last commit.
 
 ### Stage part of a file
 
-`git add -p` walks through a file's changes one piece at a time and asks which ones to stage. It has its own lesson, "Stage part of a file".
+`git add -p` walks through a file's changes one piece at a time and asks which ones to stage. It has its own lesson, [Stage part of a file](lesson:partial-staging).
 
 ## Recap
 

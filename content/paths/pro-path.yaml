@@ -21,16 +21,16 @@ modules:
     lessons: [team-workflows, commit-craft, rebasing, integrating-work]
   - id: history-mastery
     title: History mastery
-    lessons: [revision-selection, clean-up-history, partial-staging, search-blame-bisect, advanced-merging]
+    lessons: [revision-selection, clean-up-history, partial-staging, search-blame-bisect, advanced-merging, checkpoint-history-mastery]
   - id: recovery
     title: Recovery and incidents
-    lessons: [rescue-lost-work, incident-playbook, remove-sensitive-data]
+    lessons: [rescue-lost-work, incident-playbook, remove-sensitive-data, checkpoint-recovery]
   - id: make-git-yours
     title: Make Git yours
-    lessons: [config-pro, git-in-your-tools, hooks, attributes, signing]
+    lessons: [config-pro, git-in-your-tools, hooks, attributes, signing, checkpoint-make-git-yours]
   - id: modern-git
     title: Large repos and modern Git
-    lessons: [worktrees, submodules, large-repos]
+    lessons: [worktrees, submodules, large-repos, checkpoint-modern-git]
   - id: under-the-hood
     title: Under the hood
-    lessons: [objects-deep, refs-deep, packfiles-gc, plumbing-toolkit]
+    lessons: [objects-deep, refs-deep, packfiles-gc, plumbing-toolkit, checkpoint-under-the-hood]

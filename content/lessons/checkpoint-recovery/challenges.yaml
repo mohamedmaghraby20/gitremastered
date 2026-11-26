@@ -1,0 +1,183 @@
+challenges:
+  - id: reset-too-far
+    title: The clean-up that went one commit too far
+    level: easy
+    brief: "You made two wishlist commits on main by mistake: \"Add wishlist\" and \"Share a wishlist\". To move them off main you ran git reset --hard HEAD~3: one commit too many, and before giving the wishlist commits a branch. Now main has lost \"Add checkout\" as well, and the wishlist work is on no branch. Put main back on \"Add checkout\", and put the two wishlist commits on a branch named wishlist. Stay on main."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Shop app" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - echo "function addToCart() {}" > cart.js
+      - git add cart.js
+      - git commit -q -m "Add cart"
+      - echo "function checkout() {}" > checkout.js
+      - git add checkout.js
+      - git commit -q -m "Add checkout"
+      - echo "function addToWishlist() {}" > wishlist.js
+      - git add wishlist.js
+      - git commit -q -m "Add wishlist"
+      - echo "function shareWishlist() {}" >> wishlist.js
+      - git commit -q -am "Share a wishlist"
+      - git reset -q --hard HEAD~3
+    goal:
+      - check: branch-is-at-commit
+        branch: main
+        message: "Add checkout"
+        label: "\"Add checkout\" is the newest commit of main again"
+      - check: branch-lacks-commit
+        branch: main
+        message: "Add wishlist"
+        label: "main holds no wishlist commit"
+      - check: branch-is-at-commit
+        branch: wishlist
+        message: "Share a wishlist"
+        label: "The branch wishlist ends with \"Share a wishlist\""
+      - check: branch-contains-commit
+        branch: wishlist
+        message: "Add wishlist"
+        label: "wishlist holds \"Add wishlist\" too"
+      - check: head-is-on-branch
+        branch: main
+        label: "You are on main"
+      - check: working-folder-clean
+        label: "git status shows nothing left to do"
+    solution:
+      - git reset -q --hard ORIG_HEAD
+      - git branch wishlist
+      - git reset -q --hard HEAD~2
+
+  - id: password-on-the-wrong-branch
+    title: A password, and on the wrong branch
+    level: medium
+    brief: "Your last commit, \"Add mail settings\", has two problems. It was made on main, and it belongs on a new branch named mail. And git add . took mail-password.txt along with mail.js. Nothing is pushed yet. Move the commit to the branch mail and put main back on \"Add cart\". Then take mail-password.txt out of the commit, keep the file on your disk, and make Git ignore it: the .gitignore goes into the same commit, so mail has four commits. End on mail."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Shop app" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - printf "Coffee = 3.00\nCake = 4.50\n" > prices.txt
+      - git add prices.txt
+      - git commit -q -m "Add prices"
+      - echo "function addToCart() {}" > cart.js
+      - git add cart.js
+      - git commit -q -m "Add cart"
+      - echo "function sendMail() {}" > mail.js
+      - echo "MAIL_PASSWORD=demo-pass-12345" > mail-password.txt
+      - git add .
+      - git commit -q -m "Add mail settings"
+    goal:
+      - check: head-is-on-branch
+        branch: mail
+        label: "You are on the branch mail"
+      - check: branch-is-at-commit
+        branch: mail
+        message: "Add mail settings"
+        label: "mail ends with \"Add mail settings\""
+      - check: branch-is-at-commit
+        branch: main
+        message: "Add cart"
+        label: "main is back on \"Add cart\""
+      - check: file-is-in-no-commit
+        file: mail-password.txt
+        label: "No commit that a branch reaches contains mail-password.txt"
+      - check: commit-count-is
+        count: 4
+        label: "The history of mail has four commits"
+      - check: file-is-committed
+        file: mail.js
+        label: "mail.js is still committed"
+      - check: file-contains
+        file: .gitignore
+        text: "mail-password.txt"
+        label: ".gitignore lists mail-password.txt"
+      - check: file-is-committed
+        file: .gitignore
+        label: ".gitignore is committed"
+      - check: working-folder-clean
+        label: "git status shows nothing left to do"
+    solution:
+      - git branch mail
+      - git reset -q --hard HEAD~1
+      - git switch -q mail
+      - git rm -q --cached mail-password.txt
+      - echo "mail-password.txt" >> .gitignore
+      - git add .gitignore
+      - git commit -q --amend --no-edit
+
+  - id: secret-and-a-deleted-branch
+    title: A leaked key and a branch deleted in the panic
+    level: hard
+    brief: "secrets.env went in with \"Add payment\", early in the project. The next commit, \"Add cart\", is tagged v1.0. In the panic after the discovery, someone deleted the unmerged branch coupons, which held two commits: \"Add coupon codes\" and \"Check coupon dates\". Nothing is pushed yet. Bring coupons back under its old name, pointing at \"Check coupon dates\". Then remove secrets.env from everything: main, coupons and the tag. The tag v1.0 must still mark \"Add cart\". Do not merge coupons, and end on main."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Shop app" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - echo "function pay() {}" > payment.js
+      - echo "PAYMENT_API_KEY=demo-key-12345" > secrets.env
+      - git add .
+      - git commit -q -m "Add payment"
+      - echo "function addToCart() {}" > cart.js
+      - git add cart.js
+      - git commit -q -m "Add cart"
+      - git tag -a v1.0 -m "Version 1.0"
+      - git switch -q -c coupons
+      - echo "function applyCoupon() {}" > coupons.js
+      - git add coupons.js
+      - git commit -q -m "Add coupon codes"
+      - echo "function isExpired() {}" >> coupons.js
+      - git commit -q -am "Check coupon dates"
+      - git switch -q main
+      - echo "function checkout() {}" > checkout.js
+      - git add checkout.js
+      - git commit -q -m "Add checkout"
+      - git branch -q -D coupons
+    goal:
+      - check: branch-is-at-commit
+        branch: coupons
+        message: "Check coupon dates"
+        label: "The branch coupons is back, on \"Check coupon dates\""
+      - check: branch-contains-commit
+        branch: coupons
+        message: "Add coupon codes"
+        label: "coupons holds \"Add coupon codes\" too"
+      - check: file-is-in-no-commit
+        file: secrets.env
+        label: "No commit that a branch or a tag reaches contains secrets.env"
+      - check: branch-contains-commit
+        branch: coupons
+        message: "Add payment"
+        label: "coupons still has \"Add payment\" in its history"
+      - check: tag-is-on-commit
+        tag: v1.0
+        message: "Add cart"
+        label: "The tag v1.0 still marks \"Add cart\""
+      - check: branch-is-at-commit
+        branch: main
+        message: "Add checkout"
+        label: "\"Add checkout\" is still the newest commit of main"
+      - check: branch-lacks-commit
+        branch: main
+        message: "Check coupon dates"
+        label: "The coupon work is not merged into main"
+      - check: file-is-committed
+        file: payment.js
+        label: "payment.js is still committed"
+      - check: head-is-on-branch
+        branch: main
+        label: "You are on main"
+      - check: working-folder-clean
+        label: "git status shows nothing left to do"
+    solution:
+      - git branch coupons $(git log -g --format=%h --grep="Check coupon dates" -1)
+      - "FILTER_BRANCH_SQUELCH_WARNING=1 git filter-branch --index-filter 'git rm --cached --ignore-unmatch secrets.env' --tag-name-filter cat -- --all"

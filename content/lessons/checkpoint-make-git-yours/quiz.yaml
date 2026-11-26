@@ -1,0 +1,40 @@
+questions:
+  - question: "Your team keeps a pre-commit hook in the tracked folder .githooks. A new teammate clones the project and commits a file with a leftover DEBUG line; the hook says nothing. The hook file is correct. What is missing?"
+    answers:
+      - text: "In their clone, nobody ran git config core.hooksPath .githooks, so Git still looks in .git/hooks"
+        correct: true
+        explanation: "The folder is cloned because it is tracked, but settings are not cloned. Each person sets core.hooksPath once in their own copy."
+      - text: "Hooks only run for the person who wrote them"
+        explanation: "A hook runs for anyone whose Git finds it. The file is there; Git is looking in another folder."
+      - text: "The teammate must commit with --verify to switch hooks on"
+        explanation: "Hooks run by default. The option that exists is --no-verify, which skips them."
+
+  - question: "You add * text=auto to .gitattributes and commit only that file. A week later, git ls-files --eol still shows i/crlf for menu.txt. Why?"
+    answers:
+      - text: "core.autocrlf in your own settings wins over the rule"
+        explanation: "It is the other way round: where a rule sets text, the committed .gitattributes wins over core.autocrlf."
+      - text: "A new rule does not convert files that are already committed; git add --renormalize . and a commit do"
+        correct: true
+        explanation: "Git converts a file when it is added. menu.txt was added before the rule existed, and with text=auto Git leaves a file already committed with CRLF alone until you renormalize."
+      - text: "The i/ column shows the working tree, which always has CRLF on Windows"
+        explanation: "i/ is the index, which is what the repository will hold. The working tree is the w/ column."
+
+  - question: "Your global settings sign every commit (commit.gpgSign true). One practice repository has no key, and every commit there fails. You want commits in that repository to work unsigned, and nothing else to change. What do you run in it?"
+    answers:
+      - text: "git config --unset commit.gpgSign"
+        explanation: "With no scope option, --unset removes the value from this repository's own settings, where it was never set. The global value still applies."
+      - text: "git config --global commit.gpgSign false"
+        explanation: "That turns signing off in every repository on your computer, which is more than you wanted."
+      - text: "git config --local commit.gpgSign false"
+        correct: true
+        explanation: "A local value is read after the global one, so it wins in this repository only. Every other repository keeps signing."
+
+  - question: "A commit-msg hook in your repository refuses any message without a ticket number. You run git commit --amend --no-edit -S on a commit whose message has none. What happens?"
+    answers:
+      - text: "The hook refuses, and the old, unsigned commit stays as it was"
+        correct: true
+        explanation: "Amending makes a new commit, so the commit hooks run again, on the reused message too. The hook exits with 1, no commit is made, and nothing is lost."
+      - text: "The commit is signed and replaced: hooks run only for new messages"
+        explanation: "The hook cannot tell a reused message from a new one. It is handed the message file either way."
+      - text: "The signature is added to the existing commit, so no hook is involved"
+        explanation: "A signature is part of the commit. Git cannot add one to an existing commit; it replaces the commit, and that runs the hooks."

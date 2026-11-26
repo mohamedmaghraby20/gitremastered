@@ -414,7 +414,7 @@ $ git log --oneline main..try-urgent
 ef2a5fd Add due dates
 ```
 
-You made one commit, and Git lists three. The other two are unreleased work from `develop`, and merging this branch into `main` would release them. For a small fix, start again from the right place with `git switch -c try-urgent-2 main` and redo the change there. The lesson "Bring in others' work: cherry-pick, topic branches, what a change introduces" shows how to copy the one commit across, and the Rebasing lesson how to move a whole branch.
+You made one commit, and Git lists three. The other two are unreleased work from `develop`, and merging this branch into `main` would release them. For a small fix, start again from the right place with `git switch -c try-urgent-2 main` and redo the change there. The lesson [Bring in others' work: cherry-pick, topic branches, what a change introduces](lesson:integrating-work) shows how to copy the one commit across, and the Rebasing lesson how to move a whole branch.
 
 **Your push is rejected.** In a centralized workflow someone else often pushes first:
 

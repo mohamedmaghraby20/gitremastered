@@ -1,0 +1,40 @@
+questions:
+  - question: "You are on main and have just merged the branch payments. Nothing is pushed, and you want to look at main as it was right before the merge. Which name leads to that commit?"
+    answers:
+      - text: "HEAD~1"
+        correct: true
+        explanation: "~ follows the first parent, and the first parent of a merge commit is the commit the receiving branch was on. That is why git reset --hard HEAD~ takes an unpushed merge back."
+      - text: "HEAD^2"
+        explanation: "^2 is the second parent of the merge: the newest commit of payments, the branch that was merged in."
+      - text: "HEAD~2"
+        explanation: "That goes two steps back along first parents, one commit too far: it is the commit before the one main was on."
+
+  - question: "A file holds a finished fix and a half-done experiment. You stage the fix with git add -p and record it with git commit --fixup. Then git rebase -i --autosquash HEAD~3 answers: error: cannot rebase: You have unstaged changes. What is going on?"
+    answers:
+      - text: "The experiment you answered n to is still in the working tree, and a rebase needs a clean one. Stash it, rebase, then bring it back"
+        correct: true
+        explanation: "git add -p only fills the staging area; the hunks you left stay in your file. A rebase checks out older commits on the way, so Git asks you to commit or stash that leftover first."
+      - text: "A fixup commit cannot be made from a partially staged file, so the commit failed"
+        explanation: "The commit worked: a commit records the staging area, however it was filled. The message is about the changes that are still unstaged."
+      - text: "Run git commit -a --fixup first, so that nothing is left unstaged"
+        explanation: "That would put the half-done experiment into the fixup commit, and autosquash would then fold it into the older commit. Keeping it out was the reason for git add -p."
+
+  - question: "git bisect names a merge commit as the first bad commit. Both of its parents passed your test. What does that tell you?"
+    answers:
+      - text: "The bisect went wrong, because a merge commit holds no changes of its own"
+        explanation: "A merge commit holds whatever was committed when the merge finished, including lines someone typed while resolving a conflict."
+      - text: "The bug is somewhere in the branch that was merged in, and bisect could not look inside it"
+        explanation: "Bisect does test the commits of a merged branch. Its newest commit is the merge's second parent, and that one passed."
+      - text: "Each side worked alone and the combination does not: look at how the merge was resolved, for example with git show on the merge commit"
+        correct: true
+        explanation: "Both parents are good and the merge is bad, so the fault came in with the merge itself. git show prints the combined diff of a merge commit: the lines of its hand-made resolution."
+
+  - question: "You squashed four commits on your branch report with git rebase -i, made two more commits, and now see that the squash lost a change. git reflog show report lists the rebase as report@{2}. Which name leads to the branch as it was before the rebase?"
+    answers:
+      - text: "report~3"
+        explanation: "~ follows parents through the history as it is now. The old commits are not in that history any more: no parent link leads to them."
+      - text: "report@{3}"
+        correct: true
+        explanation: "Reflog names follow the moves of the branch, not the parents. If the rebase is move 2, the branch pointed at the old commits one move earlier."
+      - text: "report^2"
+        explanation: "^2 is the second parent of a merge commit. A squashed commit is an ordinary commit with one parent; it keeps no link to the commits it replaced."

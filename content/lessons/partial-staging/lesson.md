@@ -334,7 +334,7 @@ index f2534ff..e1ee203 100644
 `git restore -p` is the one patch command here that destroys work. A hunk you discard was never committed, so Git has no copy and cannot bring it back. Read the question before you press `y`: "Stage" and "Unstage" are safe, "Discard" is not.
 :::
 
-You started with edits mixed together in one file and ended with three commits, one job each. The lesson "Commit messages and atomic commits" explains why small commits like these pay off in review and when something breaks.
+You started with edits mixed together in one file and ended with three commits, one job each. The lesson [Commit messages and atomic commits](lesson:commit-craft) explains why small commits like these pay off in review and when something breaks.
 
 :::graph
 caption: "Three small commits from edits that were mixed in one file"

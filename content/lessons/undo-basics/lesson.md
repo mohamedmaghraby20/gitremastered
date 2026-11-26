@@ -248,7 +248,7 @@ Changes not staged for commit:
 
 ### What Git can still recover
 
-Content you staged at least once was stored in `.git/objects` at that moment, even if you never committed it. Git does not list it anywhere handy, but it is there for a while. The lesson "Recover lost commits with reflog and fsck" shows how to dig it out. Edits you never staged were never stored, and no Git command finds them.
+Content you staged at least once was stored in `.git/objects` at that moment, even if you never committed it. Git does not list it anywhere handy, but it is there for a while. The lesson [Recover lost commits with reflog and fsck](lesson:rescue-lost-work) shows how to dig it out. Edits you never staged were never stored, and no Git command finds them.
 
 ## Recap
 

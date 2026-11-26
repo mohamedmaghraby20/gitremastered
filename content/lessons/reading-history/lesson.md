@@ -418,7 +418,7 @@ $ git shortlog -sn
 - `--name-only` and `--name-status` print the changed file names without the bar chart of `--stat`.
 - `--committer` filters like `--author`, on the person who committed.
 
-Finding which commit broke something, and who last changed a line, has its own lesson: "Search, blame and bisect".
+Finding which commit broke something, and who last changed a line, has its own lesson: [Search, blame and bisect](lesson:search-blame-bisect).
 
 ## Recap
 

@@ -1,0 +1,40 @@
+questions:
+  - question: "Yesterday a rebase of your branch reports went wrong and dropped two commits. Since then you merged main into reports. You run git reset --hard ORIG_HEAD to undo the rebase. Where do you land?"
+    answers:
+      - text: "On the commit reports was on before the rebase"
+        explanation: "That was true right after the rebase. ORIG_HEAD holds one position only, and the merge has overwritten it since."
+      - text: "On the commit reports was on just before the merge; the position from before the rebase has to come from git reflog"
+        correct: true
+        explanation: "Reset, merge and rebase each overwrite ORIG_HEAD. The reflog keeps every position: the line below \"rebase (start)\" has the ID you want."
+      - text: "Nowhere: Git refuses, because ORIG_HEAD expires after one day"
+        explanation: "ORIG_HEAD has no time limit. It is a file with one ID, replaced by the next reset, merge or rebase."
+
+  - question: "A password file went in with your last commit, on main, and the commit should have been on a new branch. Nothing is pushed. You run git reset --hard HEAD~1 to get it off main, with no new branch made first. Is the password gone from your repository?"
+    answers:
+      - text: "Yes: the commit is deleted, and the password with it"
+        explanation: "Reset moves the branch label. The commit stays in the repository, unreachable, and git reflog still lists its ID."
+      - text: "No: the commit is still stored, and the reflog leads to it for about 30 days. A new clone or a push would not carry it, though"
+        correct: true
+        explanation: "No branch reaches the commit, so it does not travel in a push or a clone. On your own disk it stays until the reflog line expires and garbage collection runs, or until you expire the reflog and run git gc --prune=now."
+      - text: "No, and it will also be sent to the server with the next git push"
+        explanation: "A push sends only commits that a branch or a tag reaches. The reflog never leaves your computer."
+
+  - question: "A merge of the branch discount is on the team's server, and two good commits were pushed on top of it. The merge has to be undone. Which command fits?"
+    answers:
+      - text: "git reset --hard to the commit before the merge, then git push --force"
+        explanation: "That throws away the two good commits and rewrites history your teammates already have."
+      - text: "git revert with the merge commit's ID"
+        explanation: "Git refuses: a merge has two parents, and a plain revert cannot guess which side to keep."
+      - text: "git revert -m 1 with the merge commit's ID"
+        correct: true
+        explanation: "It adds one new commit that takes out what discount brought in. -m 1 keeps the main line, the merge commit and the two later commits stay, and nobody's history breaks."
+
+  - question: "You removed secrets.env with git filter-branch, deleted refs/original, ran git reflog expire --expire=now --all and git gc --prune=now. Then you notice the rewrite also dropped a file you needed. Can git reflog or git fsck bring the old commits back?"
+    answers:
+      - text: "Yes, git reflog keeps every position for 90 days"
+        explanation: "Normally it does. --expire=now emptied the reflog of every branch, so it has no lines left."
+      - text: "Yes, git fsck lists them as dangling commits"
+        explanation: "git fsck reports unreachable objects that still exist. git gc --prune=now deleted them, whatever their age."
+      - text: "No. Those commands removed every way back, which is why you check the new history before the clean-up"
+        correct: true
+        explanation: "The backup refs, the reflog and the unreachable objects were the three things holding the old commits. With all three gone, only another copy of the repository, such as a teammate's clone or a backup, still has them."

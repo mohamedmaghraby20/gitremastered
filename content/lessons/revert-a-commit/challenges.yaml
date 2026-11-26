@@ -111,6 +111,14 @@ challenges:
         label: "A new commit reverts \"Double the coffee price\""
       - check: no-operation-in-progress
         label: "The revert is finished: no conflict is left"
+      - check: committed-file-contains
+        file: prices.txt
+        text: "Filter coffee 3.00"
+        label: "prices.txt reads \"Filter coffee 3.00\""
+      - check: committed-file-lacks
+        file: prices.txt
+        text: "<<<<<<<"
+        label: "No conflict markers are left in prices.txt"
       - check: commit-count-is
         count: 5
         label: "The history has 5 commits: nothing was removed"

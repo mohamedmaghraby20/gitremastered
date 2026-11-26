@@ -1,0 +1,185 @@
+# Three challenges for the History mastery checkpoint. Each one has its own small cafe project
+# and needs commands from at least two of the module's lessons. A checkpoint gives no hints.
+challenges:
+  - id: before-it-was-removed
+    title: The last version that still had the line
+    level: easy
+    brief: "The cafe's price list used to offer a student discount, and today that line is gone. A customer asks what the offer was. Find the commit that removed the text \"Student discount\" from the project. Then write the short ID of the commit just before it, the last one that still had the line, into answer.txt, for example with: echo a1b2c3d > answer.txt"
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo answer.txt >> .git/info/exclude
+      - printf '# Corner cafe\n\nPrices and opening hours of the cafe.\n' > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - 'printf ''Espresso: 2.20\nCappuccino: 3.00\nLatte: 3.20\nTea: 2.00\n'' > prices.txt'
+      - git add prices.txt
+      - git commit -q -m "Add price list"
+      - 'printf ''Espresso: 2.20\nCappuccino: 3.00\nLatte: 3.20\nTea: 2.00\nStudent discount: 10 percent on drinks\n'' > prices.txt'
+      - git commit -q -am "Add student discount"
+      - 'printf ''Monday to Friday: 8 to 6\nSaturday: 9 to 4\n'' > hours.txt'
+      - git add hours.txt
+      - git commit -q -m "Add opening hours"
+      - 'printf ''Espresso: 2.20\nCappuccino: 3.20\nLatte: 3.20\nTea: 2.00\nStudent discount: 10 percent on drinks\n'' > prices.txt'
+      - git commit -q -am "Raise the cappuccino price"
+      - 'printf ''Drinks\nEspresso: 2.20\nCappuccino: 3.20\nLatte: 3.20\nTea: 2.00\n'' > prices.txt'
+      - git commit -q -am "Tidy the price list"
+      - 'printf ''Drinks\nEspresso: 2.20\nCappuccino: 3.20\nLatte: 3.20\nTea: 2.00\nHot chocolate: 3.10\n'' > prices.txt'
+      - git commit -q -am "Add hot chocolate"
+      - 'printf ''Monday to Friday: 8 to 6\nSaturday: 9 to 4\nSunday: 10 to 2\n'' > hours.txt'
+      - git commit -q -am "Open on Sundays"
+    goal:
+      - check: answer-is-commit
+        message: "Raise the cappuccino price"
+        label: "answer.txt holds the ID of the last commit that still had the student discount"
+      - check: head-is-on-branch
+        branch: main
+        label: "You are still on main"
+      - check: commit-count-is
+        count: 8
+        label: "The history still has its eight commits"
+    solution:
+      - git rev-parse --short "$(git log -S "Student discount" --pretty=format:%h | head -1)~1" > answer.txt
+
+  - id: split-the-menu-update
+    title: One commit, one file, two jobs
+    level: medium
+    brief: "The commit \"Update menu\" did two things in menu.txt: it raised the Latte price to 3.40 and it added Pumpkin soup. \"Add opening hours\" came after it, and nothing was pushed yet. Split \"Update menu\" into two commits: first \"Raise the latte price\" with the price change only, then \"Add pumpkin soup\" with the new line only. \"Add opening hours\" must stay the last commit."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - 'printf ''Corner cafe menu\nEspresso: 2.20\nCappuccino: 3.00\nLatte: 3.20\nFlat white: 3.10\nTea: 2.00\nHot chocolate: 3.10\nCroissant: 2.40\nBagel: 3.00\nCheese toastie: 4.20\nTomato soup: 4.50\nBrownie: 2.80\n'' > menu.txt'
+      - git add menu.txt
+      - git commit -q -m "Add menu"
+      - 'printf ''Corner cafe menu\nEspresso: 2.20\nCappuccino: 3.00\nLatte: 3.40\nFlat white: 3.10\nTea: 2.00\nHot chocolate: 3.10\nCroissant: 2.40\nBagel: 3.00\nCheese toastie: 4.20\nTomato soup: 4.50\nPumpkin soup: 4.80\nBrownie: 2.80\n'' > menu.txt'
+      - git commit -q -am "Update menu"
+      - 'printf ''Monday to Friday: 8 to 6\nSaturday: 9 to 4\n'' > hours.txt'
+      - git add hours.txt
+      - git commit -q -m "Add opening hours"
+    goal:
+      - check: commit-is-gone
+        message: "Update menu"
+        label: "No commit named \"Update menu\" is left"
+      - check: commit-comes-before
+        message: "Raise the latte price"
+        later: "Add pumpkin soup"
+        label: "\"Raise the latte price\" comes before \"Add pumpkin soup\""
+      - check: commit-comes-before
+        message: "Add pumpkin soup"
+        later: "Add opening hours"
+        label: "\"Add pumpkin soup\" comes before \"Add opening hours\""
+      - check: latest-commit-message-contains
+        text: "Add opening hours"
+        label: "\"Add opening hours\" is still the last commit"
+      - check: commit-count-is
+        count: 4
+        label: "The history has four commits"
+      - check: committed-file-contains
+        file: menu.txt
+        text: "Latte: 3.40"
+        label: "menu.txt still has the new Latte price"
+      - check: committed-file-contains
+        file: menu.txt
+        text: "Pumpkin soup: 4.80"
+        label: "menu.txt still has the Pumpkin soup line"
+      - check: no-operation-in-progress
+        label: "The rebase is finished"
+      - check: working-folder-clean
+        label: "git status shows nothing left to do"
+    solution:
+      - GIT_SEQUENCE_EDITOR="sed -i -e '1s/^pick/edit/'" git rebase -i HEAD~2
+      - git reset -q HEAD^
+      - printf 'y\nn\n' | git add -p menu.txt
+      - git commit -q -m "Raise the latte price"
+      - git add menu.txt
+      - git commit -q -m "Add pumpkin soup"
+      - git rebase --continue
+
+  - id: the-commit-that-broke-the-bill
+    title: Find the commit that broke the bill, and take it back
+    level: hard
+    brief: "The cafe's bill script charges too little: sh bill.sh 1000 should print Total: 1100, as it did at the tag v1.0. The script test-bill.sh in the practice folder checks exactly this: it ends with exit code 0 when the total is right and 1 when it is wrong. Git does not track it, so it stays in place while commits change. Find the first bad commit and write its short ID into answer.txt. Your teammates already have every commit on main, so do not rewrite history: take the bad commit back with a new commit. Finish on main, with the total right again."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo answer.txt >> .git/info/exclude
+      - echo test-bill.sh >> .git/info/exclude
+      - printf '# Corner cafe\n\nThe bill script and the price list of the cafe.\nAll prices in the script are in cents.\n' > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - 'printf ''#!/bin/sh\n# Prints the bill for one order. Prices are in cents: sh bill.sh 1000\nprice=$1\nservice=$((price / 10))\necho "Total: $((price + service))"\n'' > bill.sh'
+      - git add bill.sh
+      - git commit -q -m "Add the bill script"
+      - 'printf ''Monday to Friday: 8 to 6\nSaturday: 9 to 4\n'' > hours.txt'
+      - git add hours.txt
+      - git commit -q -m "Add opening hours"
+      - git tag v1.0
+      - 'printf ''Espresso: 2.20\nCappuccino: 3.00\nLatte: 3.20\n'' > prices.txt'
+      - git add prices.txt
+      - git commit -q -m "List the prices"
+      - git switch -q -c coupons
+      - 'printf ''#!/bin/sh\n# Prints the bill for one order. Prices are in cents: sh bill.sh 1000\nprice=$1\ncoupon=$2\nservice=$((price / 10))\ndiscount=0\nif [ "$coupon" = "WELCOME" ]; then\n    discount=200\nfi\necho "Total: $((price + service - discount))"\n'' > bill.sh'
+      - git commit -q -am "Add the WELCOME coupon"
+      - 'printf ''Show this flyer and say WELCOME to get 2.00 off your first order.\n'' > flyer.txt'
+      - git add flyer.txt
+      - git commit -q -m "Add a coupon flyer"
+      - git switch -q main
+      - 'printf ''#!/bin/sh\n# Prints the bill for one order. Prices are in cents: sh bill.sh 1000\nprice=$1\nservice_charge=$((price / 10))\necho "Total: $((price + service_charge))"\n'' > bill.sh'
+      - git commit -q -am "Rename service to service_charge"
+      - 'printf ''Monday to Friday: 8 to 6\nSaturday: 9 to 4\nSunday: 10 to 2\n'' > hours.txt'
+      - git commit -q -am "Open on Sundays"
+      # The merge conflicts in bill.sh. The resolution below keeps the old name "service" in the
+      # Total line, so the service charge counts as 0: this merge commit is the bug to find.
+      - git merge -q coupons > /dev/null 2>&1 || true
+      - 'printf ''#!/bin/sh\n# Prints the bill for one order. Prices are in cents: sh bill.sh 1000\nprice=$1\ncoupon=$2\nservice_charge=$((price / 10))\ndiscount=0\nif [ "$coupon" = "WELCOME" ]; then\n    discount=200\nfi\necho "Total: $((price + service - discount))"\n'' > bill.sh'
+      - git add bill.sh
+      - git commit -q --no-edit
+      - git branch -q -d coupons
+      - 'printf ''Espresso: 2.40\nCappuccino: 3.00\nLatte: 3.20\n'' > prices.txt'
+      - git commit -q -am "Raise the espresso price"
+      - 'printf ''Monday: 8 to 4\nTuesday to Friday: 8 to 6\nSaturday: 9 to 4\nSunday: 10 to 2\n'' > hours.txt'
+      - git commit -q -am "Close earlier on Mondays"
+      - 'printf ''#!/bin/sh\n# Passes (exit code 0) when an order of 1000 gets the right total.\nresult=$(sh bill.sh 1000)\ntest "$result" = "Total: 1100"\n'' > test-bill.sh'
+    goal:
+      - check: answer-is-commit
+        message: "Merge branch 'coupons'"
+        label: "answer.txt holds the ID of the first bad commit"
+      - check: latest-commit-message-contains
+        text: "Revert"
+        label: "The newest commit on main is a revert"
+      - check: committed-file-contains
+        file: bill.sh
+        text: "price + service_charge))"
+        label: "bill.sh adds the service charge to the total again"
+      - check: committed-file-lacks
+        file: bill.sh
+        text: "discount"
+        label: "The bad commit's changes are out of bill.sh"
+      - check: commit-exists
+        message: "Add the WELCOME coupon"
+        label: "History was not rewritten: the older commits are all still there"
+      - check: commit-exists
+        message: "Close earlier on Mondays"
+        label: "The commits made after the bad one are still there"
+      - check: commit-count-is
+        count: 12
+        label: "The history has twelve commits: one more than before, and none fewer"
+      - check: head-is-on-branch
+        branch: main
+        label: "You are on main"
+      - check: no-operation-in-progress
+        label: "No bisect, merge or revert is left open"
+      - check: working-folder-clean
+        label: "git status shows nothing left to do"
+    solution:
+      - git bisect start HEAD v1.0
+      - git bisect run sh test-bill.sh
+      - git rev-parse --short refs/bisect/bad > answer.txt
+      - git bisect reset
+      - git revert -m 1 --no-edit "$(cat answer.txt)"

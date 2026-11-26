@@ -486,7 +486,7 @@ To put a found entry back on the stash shelf, not into your files, use `git stas
 
 ### Name a position by time
 
-The reflog stores a time on every line, so a position can be named by time as well as by number. `main@{yesterday}` is where `main` pointed a day ago, and `HEAD@{5.minutes.ago}` where HEAD was five minutes ago. `git reset --hard main@{yesterday}` undoes a whole bad afternoon. The lesson "Point at any commit: HEAD~2, ranges, reflog names" teaches these names in full.
+The reflog stores a time on every line, so a position can be named by time as well as by number. `main@{yesterday}` is where `main` pointed a day ago, and `HEAD@{5.minutes.ago}` where HEAD was five minutes ago. `git reset --hard main@{yesterday}` undoes a whole bad afternoon. The lesson [Point at any commit: HEAD~2, ranges, reflog names](lesson:revision-selection) teaches these names in full.
 
 In PowerShell, braces have a meaning of their own, so put such a name in quotes: `git reset --hard "HEAD@{1}"`.
 
@@ -502,7 +502,7 @@ $ git gc --prune=now
 The first empties every reflog; the second deletes every unreachable object, whatever its age.
 
 :::careful
-After these two commands, nothing in this lesson works any more: every commit without a branch or tag is gone for good. Use them only as the last step of a planned clean-up. The lesson "Remove a leaked secret or huge file from history" shows the full procedure, and the lesson "Packfiles and garbage collection" explains what `git gc` does to the rest of the repository.
+After these two commands, nothing in this lesson works any more: every commit without a branch or tag is gone for good. Use them only as the last step of a planned clean-up. The lesson [Remove a leaked secret or huge file from history](lesson:remove-sensitive-data) shows the full procedure, and the lesson [Packfiles and garbage collection](lesson:packfiles-gc) explains what `git gc` does to the rest of the repository.
 :::
 
 ## Recap

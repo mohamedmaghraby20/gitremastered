@@ -120,6 +120,18 @@ challenges:
         label: "main contains the work of late-hours"
       - check: no-operation-in-progress
         label: "The merge is finished: no conflict is left open"
+      - check: committed-file-contains
+        file: hours.txt
+        text: "Open 10 to 8"
+        label: "hours.txt reads \"Open 10 to 8\""
+      - check: committed-file-lacks
+        file: hours.txt
+        text: "<<<<<<<"
+        label: "hours.txt has no conflict markers left"
+      - check: committed-file-contains
+        file: contact.txt
+        text: "Write to us: hello@bakery.example"
+        label: "contact.txt is exactly as late-hours wrote it"
       - check: working-folder-clean
         label: "git status shows nothing left to do"
     hints:

@@ -169,6 +169,18 @@ challenges:
       - check: stash-count-is
         count: 0
         label: "The stash shelf is empty"
+      - check: committed-file-contains
+        file: cart.js
+        text: "return total * 0.9;"
+        label: "cart.js returns total * 0.9"
+      - check: committed-file-lacks
+        file: cart.js
+        text: "<<<<<<<"
+        label: "No conflict markers are left in cart.js"
+      - check: committed-file-lacks
+        file: cart.js
+        text: "TODO"
+        label: "Your TODO line is gone from cart.js"
       - check: working-folder-clean
         label: "git status shows nothing left to do"
     hints:

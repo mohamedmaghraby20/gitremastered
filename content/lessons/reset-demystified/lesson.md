@@ -209,7 +209,7 @@ Read it from the top: the newest line is the reset you just ran, and the line be
 3. Run `cat plan.txt`. It says `v3` again.
 :::
 
-The lesson "Recover lost commits with reflog and fsck" covers the reflog in full. For now, remember the split:
+The lesson [Recover lost commits with reflog and fsck](lesson:rescue-lost-work) covers the reflog in full. For now, remember the split:
 
 - **Committed, then reset away:** recoverable through the reflog.
 - **Never committed, then `--hard`:** lost.
@@ -364,7 +364,7 @@ You can also name a commit: `git reset HEAD~2 plan.txt` stages the file as it wa
 
 ### Unstage part of a file
 
-`git reset -p` walks through the staged changes one piece at a time and asks which to unstage, like `git add -p` in reverse. The lesson "Stage part of a file" teaches this way of working.
+`git reset -p` walks through the staged changes one piece at a time and asks which to unstage, like `git add -p` in reverse. The lesson [Stage part of a file](lesson:partial-staging) teaches this way of working.
 
 ### `--keep` and `--merge`
 

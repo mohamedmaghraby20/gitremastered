@@ -352,7 +352,7 @@ The file that commit added, `thanks.txt`, is gone from the working tree as well.
 Deleting a line from the todo list does the same as `drop`, with no warning. Git says so in the help text: "If you remove a line here THAT COMMIT WILL BE LOST." Write `drop` when you mean it, and never delete a line to tidy up the list.
 :::
 
-`drop` removes one commit from your own unpushed work. Removing a file, such as a password, from every commit of a long history is a different job with its own tool; the lesson "Remove a leaked secret or huge file from history" teaches it.
+`drop` removes one commit from your own unpushed work. Removing a file, such as a password, from every commit of a long history is a different job with its own tool; the lesson [Remove a leaked secret or huge file from history](lesson:remove-sensitive-data) teaches it.
 
 ### Edit: stop and split a commit
 
@@ -577,7 +577,7 @@ $ git reset --hard ORIG_HEAD
 ```
 
 :::careful
-`git reset --hard` throws away uncommitted changes, so check `git status` first. And `ORIG_HEAD` is overwritten by the next rebase, reset or merge. Use it right after the rebase you regret; later, find the old commit in `git reflog`. The lesson "Recover lost commits with reflog and fsck" covers that.
+`git reset --hard` throws away uncommitted changes, so check `git status` first. And `ORIG_HEAD` is overwritten by the next rebase, reset or merge. Use it right after the rebase you regret; later, find the old commit in `git reflog`. The lesson [Recover lost commits with reflog and fsck](lesson:rescue-lost-work) covers that.
 :::
 
 ## Advanced

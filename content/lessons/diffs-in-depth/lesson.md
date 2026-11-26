@@ -208,7 +208,7 @@ Git could not tell whether `HEAD~9` is a commit or a file, because it is neither
 warning: in the working copy of 'about.txt', LF will be replaced by CRLF the next time Git touches it
 ```
 
-This is a note about line endings on Windows, not a problem with your change. You can ignore it here; the lesson "Attributes: binary files, line endings, merge drivers" explains it.
+This is a note about line endings on Windows, not a problem with your change. You can ignore it here; the lesson [Attributes: binary files, line endings, merge drivers](lesson:attributes) explains it.
 
 ## Under the hood
 

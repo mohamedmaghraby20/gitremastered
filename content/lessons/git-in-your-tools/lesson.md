@@ -152,7 +152,7 @@ Three of these buttons do more than their name says.
 
 The staging letters match what you learned in [Status, stage, commit](lesson:three-areas): a file that is staged and then edited again appears in both lists, just as `git status -s` prints `MM`.
 
-Staging selected lines is the place where a GUI is clearly easier than the terminal. The lesson "Stage part of a file" teaches the terminal way, `git add -p`, and the two do the same thing.
+Staging selected lines is the place where a GUI is clearly easier than the terminal. The lesson [Stage part of a file](lesson:partial-staging) teaches the terminal way, `git add -p`, and the two do the same thing.
 
 ### Conflicts in the merge editor
 

@@ -270,7 +270,7 @@ Two more things to know for now:
 3. Run `git show -s --oneline drinks@{1}`. Git prints `be340c5 Add iced tea recipe`: where the `drinks` label sat one move ago. Nothing moves in the picture, because reading the reflog changes nothing.
 :::
 
-The reflog's best-known job is bringing back commits that no branch reaches any more. That is a lesson of its own, "Recover lost commits with reflog and fsck".
+The reflog's best-known job is bringing back commits that no branch reaches any more. That is a lesson of its own, [Recover lost commits with reflog and fsck](lesson:rescue-lost-work).
 
 ### A range: commits one branch has and another lacks
 

@@ -145,6 +145,14 @@ challenges:
         branch: main
         message: "Start newsletter page"
         label: "The unfinished newsletter work is not in main"
+      - check: committed-file-contains
+        file: hours.txt
+        text: "Open 10 to 8"
+        label: "hours.txt reads \"Open 10 to 8\", with no conflict markers"
+      - check: committed-file-lacks
+        file: hours.txt
+        text: "<<<<<<<"
+        label: "No conflict markers are left in hours.txt"
       - check: head-is-on-branch
         branch: main
         label: "You are on main"

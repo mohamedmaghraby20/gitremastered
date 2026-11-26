@@ -1,0 +1,40 @@
+questions:
+  - question: "Two developers on two computers each create notes.txt with exactly the same text, run git add notes.txt, and commit with the same message. Which IDs are the same on both computers?"
+    answers:
+      - text: "The blob and the tree are the same; the two commits differ"
+        correct: true
+        explanation: "A blob's ID comes from the content alone, and a tree's from names, modes and blob IDs. A commit also holds the author, the committer and both times, so its ID differs unless all of those are fixed, for example with the GIT_AUTHOR_… and GIT_COMMITTER_… variables."
+      - text: "All three: the same files and the same message give the same commit"
+        explanation: "The commit's text also holds who made it and when, down to the second. Those are part of the checksum."
+      - text: "None: every repository computes its own IDs"
+        explanation: "An ID is a checksum of the object's content and nothing else. The same content gets the same ID in every repository."
+
+  - question: "You run git update-ref -d refs/heads/experiment. The branch held three commits that no other branch or tag has. Right after the command, what is true?"
+    answers:
+      - text: "The three commits are deleted from .git/objects"
+        explanation: "Deleting a ref removes a name. No object is touched by git update-ref."
+      - text: "The three commits are still stored, but no branch leads to them; a later git gc may delete them once nothing at all leads to them and they are old enough"
+        correct: true
+        explanation: "A ref is only a name that holds one ID. The objects stay until garbage collection finds them unreachable from every ref and reflog line, and older than two weeks."
+      - text: "Git moves the three commits onto main, so nothing is lost"
+        explanation: "No command moves commits to another branch on its own. main's ref still holds the same ID as before."
+
+  - question: "A script finds the release commit with cat .git/refs/tags/v2.0 and passes that ID to git cat-file -p to read the tree line. After a git gc on the server, the script breaks, and before that it sometimes printed no tree line at all. What are the two mistakes?"
+    answers:
+      - text: "git gc deleted the tag, and git cat-file -p cannot print commits"
+        explanation: "git gc never deletes a tag, and git cat-file -p prints any object type."
+      - text: "The tag was renamed by git gc, and the tree line is only in the newest commit"
+        explanation: "Packing never renames a ref, and every commit has a tree line."
+      - text: "After git gc the ref is a line in packed-refs, not a file; and for an annotated tag the ref holds a tag object, which has no tree line"
+        correct: true
+        explanation: "git rev-parse 'v2.0^{commit}' fixes both: Git finds the ref wherever it is stored and follows the tag object to the commit."
+
+  - question: "On main you run git replace --graft HEAD~1 old-history, then git gc. A teammate then clones from your repository. What do they get?"
+    answers:
+      - text: "The joined history, because git gc made the replacement permanent"
+        explanation: "git gc works on the real objects and rewrites no commit. The replacement stays a ref under refs/replace."
+      - text: "The real history, as it was before the graft: the same commit IDs, and no replacement"
+        correct: true
+        explanation: "A replacement is a ref in refs/replace that your Git follows when it reads an object. A clone transfers the real objects and does not carry refs/replace unless someone names it in a refspec."
+      - text: "A broken clone, because HEAD~1 now has two different parents"
+        explanation: "The stored commit still has its one original parent. The second commit with the new parent is a separate object that only your repository shows in its place."

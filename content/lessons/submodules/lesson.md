@@ -610,7 +610,7 @@ Submodule 'library' (../library.git) unregistered for path 'library'
 
 ### The other built-in option: a subtree
 
-Git can also merge another project's history into a subfolder of yours, so its files become ordinary files of your repository: a [subtree merge](term:subtree-merge). Nobody needs extra commands after a clone, which is its advantage. The price is that the library's history is mixed into yours, and sending changes back to the library is harder. The lesson "Hard conflicts, merge strategies and rerere" covers it.
+Git can also merge another project's history into a subfolder of yours, so its files become ordinary files of your repository: a [subtree merge](term:subtree-merge). Nobody needs extra commands after a clone, which is its advantage. The price is that the library's history is mixed into yours, and sending changes back to the library is harder. The lesson [Hard conflicts, merge strategies and rerere](lesson:advanced-merging) covers it.
 
 ## Recap
 

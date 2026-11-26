@@ -131,7 +131,7 @@ Each is set the same way: `git config --global <key> <value>` for yourself, or w
 
 | Setting | What it does | Worth setting? |
 |---|---|---|
-| `commit.template` | A text file Git puts into the editor as the start of every commit message: a [commit template](term:commit-template). Teams use it to remind everyone of the message format | When your team has message rules. The lesson "Commit messages and atomic commits" builds one |
+| `commit.template` | A text file Git puts into the editor as the start of every commit message: a [commit template](term:commit-template). Teams use it to remind everyone of the message format | When your team has message rules. The lesson [Commit messages and atomic commits](lesson:commit-craft) builds one |
 | `core.excludesFile` | A [.gitignore](term:gitignore) file of your own that applies to every repository on your computer: your editor's backup files, `.DS_Store` on macOS | Yes, once you see the same stray files in every project. The lesson [Ignore files with .gitignore](lesson:ignoring-files) shows it |
 | `init.defaultBranch` | The name of the first branch in repositories you create | Yes: `main`. You set it in the setup lesson |
 
@@ -141,7 +141,7 @@ Each is set the same way: `git config --global <key> <value>` for yourself, or w
 |---|---|---|
 | `pull.rebase` | `false`: `git pull` joins your work and the server's with a merge. `true`: it replays your new commits on top of the server's instead (a [rebase](term:rebase)) | Follow your team. The lesson [Work with remotes](lesson:remotes) explains both |
 | `push.autoSetupRemote` | `true`: the first `git push` of a new branch creates it on the server and links the two, so you never type `--set-upstream` | Yes for most people. See [Remote and tracking branches](lesson:remote-branches) |
-| `rerere.enabled` | `true`: Git remembers how you solved a conflict and solves the same one for you next time ([rerere](term:rerere)) | Yes if you rebase or merge long-lived branches. The lesson "Hard conflicts, merge strategies and rerere" teaches it |
+| `rerere.enabled` | `true`: Git remembers how you solved a conflict and solves the same one for you next time ([rerere](term:rerere)) | Yes if you rebase or merge long-lived branches. The lesson [Hard conflicts, merge strategies and rerere](lesson:advanced-merging) teaches it |
 | `core.autocrlf` | Converts line endings between Windows and other systems (see below) | Depends on your system; the table below says which value |
 
 Two of them need a closer look.

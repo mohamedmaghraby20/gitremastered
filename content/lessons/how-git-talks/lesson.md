@@ -354,7 +354,7 @@ The trace above starts with `version 2`. In the first version of the protocol, t
 
 ### Download less
 
-A fetch normally brings whole history. For very large projects Git can leave things out: a shallow clone takes only the newest commits, and a partial clone leaves file contents on the server until they are needed. The lesson "Shallow and partial clone, sparse checkout, LFS, bundles, git maintenance" covers them.
+A fetch normally brings whole history. For very large projects Git can leave things out: a shallow clone takes only the newest commits, and a partial clone leaves file contents on the server until they are needed. The lesson [Shallow and partial clone, sparse checkout, LFS, bundles, git maintenance](lesson:large-repos) covers them.
 
 ## Recap
 

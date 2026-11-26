@@ -160,7 +160,7 @@ hint: If you are sure you want to delete it, run 'git branch -D try-colors'
 :::
 
 :::careful
-`git branch -D` throws away the only name for those commits. Git keeps the commits for a while (about a month by default) and they can be brought back by their ID, but only if you find that ID. Read the name twice before you press Enter. The lesson "Recover lost commits with reflog and fsck" covers the rescue in depth.
+`git branch -D` throws away the only name for those commits. Git keeps the commits for a while (about a month by default) and they can be brought back by their ID, but only if you find that ID. Read the name twice before you press Enter. The lesson [Recover lost commits with reflog and fsck](lesson:rescue-lost-work) covers the rescue in depth.
 :::
 
 One more rule: you cannot delete the branch you are on. Switch to another branch first.

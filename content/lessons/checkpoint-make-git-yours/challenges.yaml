@@ -1,0 +1,168 @@
+challenges:
+  - id: first-day-setup
+    title: First day on the shop project
+    level: easy
+    brief: "You just joined the shop project. Its README asks for three things in your copy: Git looks for hooks in the tracked folder .githooks, VS Code is the editor for commit messages (with the option that keeps Git waiting until you close the tab), and git st runs status. Set all three for this repository only. Then commit the new file hours.txt with the message \"Add opening hours\". Once the team's hook is on, it refuses a message shorter than 10 characters; try \"hours\" first if you want to see it."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - |-
+        printf '%s\n' '# Shop app' '' 'Setup, once after cloning:' '- hooks folder .githooks' '- editor VS Code, waiting' '- alias st for status' > README.md
+      - mkdir .githooks
+      - |-
+        printf '%s\n' '#!/bin/sh' 'subject=$(head -n 1 "$1")' 'if [ ${#subject} -lt 10 ]' 'then' '  echo "commit-msg: \"$subject\" is too short. Say what the commit does."' '  exit 1' 'fi' > .githooks/commit-msg
+      - chmod +x .githooks/commit-msg
+      - git add README.md
+      - git add --chmod=+x .githooks/commit-msg
+      - git commit -q -m "Add README and the team's commit-msg hook"
+      - git config core.editor vim
+      - echo "Open Monday to Friday, 9 to 5" > hours.txt
+    goal:
+      - check: config-is
+        key: core.hooksPath
+        value: .githooks
+        label: "This repository's core.hooksPath is .githooks"
+      - check: config-is
+        key: core.editor
+        value: code --wait
+        label: "This repository's core.editor is exactly: code --wait"
+      - check: config-is
+        key: alias.st
+        value: status
+        label: "This repository's alias st runs: status"
+      - check: commit-exists
+        message: "Add opening hours"
+        label: "A commit named \"Add opening hours\" exists"
+      - check: file-is-committed
+        file: hours.txt
+        label: "hours.txt is committed"
+      - check: working-folder-clean
+        label: "git status shows nothing left to do"
+    solution:
+      - git config --local core.hooksPath .githooks
+      - git config --local core.editor "code --wait"
+      - git config --local alias.st status
+      - git add hours.txt
+      - git commit -q -m "Add opening hours"
+
+  - id: signed-clean-up
+    title: Clean line endings, in a signed commit
+    level: medium
+    brief: "The bakery site's menu.txt and hours.txt were committed with Windows line endings (CRLF), and every small edit now shows up as a whole-file change. Add the rule * text=auto in a .gitattributes file, make Git store both files again with LF, and commit the rule and the two converted files together in one new commit. The team accepts signed commits only: signing is set up in this repository with a practice key but not turned on, so sign this commit. Then prove the clean-up: run git ls-files --eol menu.txt and write the first column Git prints (it looks like i/crlf) into answer.txt."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      # Signing stays off until the student asks for it, whatever their global settings say.
+      - git config commit.gpgsign false
+      - git config tag.gpgsign false
+      # A throwaway key pair, beside the project: never the student's own keys.
+      - mkdir ../keys
+      - ssh-keygen -q -t ed25519 -N "" -C "practice signing key" -f ../keys/practice
+      - echo "$(git config user.email) $(cat ../keys/practice.pub)" > ../keys/allowed_signers
+      - git config gpg.format ssh
+      - git config user.signingkey ../keys/practice.pub
+      - git config gpg.ssh.allowedSignersFile ../keys/allowed_signers
+      - printf 'Bread\r\nCake\r\nCoffee\r\n' > menu.txt
+      - printf 'Open Monday to Friday\r\nClosed on Sunday\r\n' > hours.txt
+      - git add menu.txt hours.txt
+      - git commit -q -m "Add menu and hours"
+      - echo answer.txt >> .git/info/exclude
+    goal:
+      - check: committed-file-contains
+        file: .gitattributes
+        text: "* text=auto"
+        label: "The committed .gitattributes has the rule * text=auto"
+      - check: commit-count-is
+        count: 2
+        label: "The history has exactly two commits: the old one and yours"
+      - check: latest-commit-is-signed
+        label: "The latest commit has a signature that Git can verify"
+      - check: working-folder-clean
+        label: "git status shows nothing left to do"
+      - check: answer-is
+        answer: "i/lf"
+        label: "answer.txt holds what the repository now stores for menu.txt: the first column of git ls-files --eol menu.txt"
+    solution:
+      - echo '* text=auto' > .gitattributes
+      - git add --renormalize .
+      - git add .gitattributes
+      - git commit -q -S -m "Normalize line endings"
+      - git ls-files --eol menu.txt | cut -d' ' -f1 > answer.txt
+
+  - id: release-under-policy
+    title: A release that follows the rules
+    level: hard
+    brief: "The shop team has two rules: every commit message names its ticket in square brackets, like [SHOP-12], and every commit is signed. The tracked hook .githooks/commit-msg checks the first rule, yet your newest commit, \"Set version to 2.0\", got through with no ticket and no signature. Find out why the hook did not run in this repository and fix the setting. Turn on signing for every new commit here (the practice key is already set up). Then repair the release commit without adding a commit: its message becomes \"Set version to 2.0 [SHOP-20]\", it is signed, and it also adds a .gitattributes file with the rule *.sh text eol=lf, so deploy.sh keeps LF line endings on every computer. Last, mark the repaired commit as release v2.0 with a signed tag."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - git config commit.gpgsign false
+      - git config tag.gpgsign false
+      - mkdir ../keys
+      - ssh-keygen -q -t ed25519 -N "" -C "practice signing key" -f ../keys/practice
+      - echo "$(git config user.email) $(cat ../keys/practice.pub)" > ../keys/allowed_signers
+      - git config gpg.format ssh
+      - git config user.signingkey ../keys/practice.pub
+      - git config gpg.ssh.allowedSignersFile ../keys/allowed_signers
+      - echo "# Shop app" > README.md
+      - mkdir .githooks
+      - |-
+        printf '%s\n' '#!/bin/sh' 'if ! grep -qE "\[SHOP-[0-9]+\]" "$1"' 'then' '  echo "commit-msg: add a ticket number like [SHOP-12] to the message."' '  exit 1' 'fi' > .githooks/commit-msg
+      - chmod +x .githooks/commit-msg
+      - git add README.md
+      - git add --chmod=+x .githooks/commit-msg
+      - git commit -q -m "Add README and the ticket hook [SHOP-18]"
+      - printf '#!/bin/sh\necho "Deploying the shop"\n' > deploy.sh
+      - git add deploy.sh
+      - git commit -q -m "Add deploy script [SHOP-19]"
+      # A setup script pointed Git at a folder that does not exist, so no hook runs.
+      - git config core.hooksPath githooks
+      - echo "2.0" > VERSION
+      - git add VERSION
+      - git commit -q -m "Set version to 2.0"
+    goal:
+      - check: config-is
+        key: core.hooksPath
+        value: .githooks
+        label: "This repository's core.hooksPath is .githooks"
+      - check: config-is
+        key: commit.gpgsign
+        value: "true"
+        label: "commit.gpgSign is true in this repository's own settings"
+      - check: latest-commit-message-contains
+        text: "Set version to 2.0 [SHOP-20]"
+        label: "The latest commit's message is \"Set version to 2.0 [SHOP-20]\""
+      - check: latest-commit-is-signed
+        label: "The latest commit has a signature that Git can verify"
+      - check: commit-count-is
+        count: 3
+        label: "The history still has exactly three commits"
+      - check: committed-file-contains
+        file: .gitattributes
+        text: "*.sh text eol=lf"
+        label: "The latest commit holds .gitattributes with the rule *.sh text eol=lf"
+      - check: file-is-committed
+        file: VERSION
+        label: "VERSION is still in the latest commit"
+      - check: tag-is-annotated
+        tag: v2.0
+        label: "v2.0 is a tag with its own record (a signed tag is one)"
+      - check: tag-is-on-commit
+        tag: v2.0
+        message: "[SHOP-20]"
+        label: "v2.0 sits on the repaired commit"
+      - check: working-folder-clean
+        label: "git status shows nothing left to do"
+    solution:
+      - git config --local core.hooksPath .githooks
+      - git config --local commit.gpgSign true
+      - echo '*.sh text eol=lf' > .gitattributes
+      - git add .gitattributes
+      - git commit -q --amend -m "Set version to 2.0 [SHOP-20]"
+      - git tag -s v2.0 -m "Version 2.0"

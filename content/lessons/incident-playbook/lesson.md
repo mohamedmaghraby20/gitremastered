@@ -14,7 +14,7 @@ Three commits went to the wrong branch, a rebase swallowed half your work, or a 
 
 ## Must know
 
-The lesson [Reset demystified: the three trees](lesson:reset-demystified) gave you the tool that moves a branch, and the lesson "Recover lost commits with reflog and fsck" showed that Git keeps commits long after no branch reaches them. This lesson puts both to work on real accidents.
+The lesson [Reset demystified: the three trees](lesson:reset-demystified) gave you the tool that moves a branch, and the lesson [Recover lost commits with reflog and fsck](lesson:rescue-lost-work) showed that Git keeps commits long after no branch reaches them. This lesson puts both to work on real accidents.
 
 We call such an accident an **incident**: the history, or a branch, is suddenly not what you expected. Almost every incident has the same shape. The commits are fine, and a label (a [branch](term:branch)) points at the wrong one. So almost every fix is the same too: find the right commit, and move the label.
 
@@ -167,7 +167,7 @@ $ git log --oneline --graph --all
 
 ### Recipe 2: a rebase went wrong
 
-A **rebase** takes the commits of your branch and replays them, one by one, on top of another commit. The result is a row of new commits with new IDs; the old ones are left behind. The lesson "Rebasing, and when not to" teaches it. Things that go wrong: a conflict you resolved badly, commits dropped by a wrong option, or simply a rebase onto the wrong branch.
+A **rebase** takes the commits of your branch and replays them, one by one, on top of another commit. The result is a row of new commits with new IDs; the old ones are left behind. The lesson [Rebasing, and when not to](lesson:rebasing) teaches it. Things that go wrong: a conflict you resolved badly, commits dropped by a wrong option, or simply a rebase onto the wrong branch.
 
 There are two moments, and each has its own way out.
 
@@ -388,7 +388,7 @@ $ git commit -m "Stop tracking app.log"
 `delete mode` means the file left the project's tracked files. It is still on your disk, and `git status` no longer mentions it. For a whole folder, use `git rm -r --cached <folder>`.
 
 :::careful
-This stops tracking from now on. The file is still in every older commit. For a log file that is fine. For a password or a key it is not: change the secret first, then follow the lesson "Remove a leaked secret or huge file from history". Also tell teammates: when they pull this commit, Git deletes the file from their folder, because for them it is a tracked file that was removed.
+This stops tracking from now on. The file is still in every older commit. For a log file that is fine. For a password or a key it is not: change the secret first, then follow the lesson [Remove a leaked secret or huge file from history](lesson:remove-sensitive-data). Also tell teammates: when they pull this commit, Git deletes the file from their folder, because for them it is a tracked file that was removed.
 :::
 
 ### The playbook on one page
@@ -578,7 +578,7 @@ $ git reflog -3 --date=relative
 7ffaec5 HEAD@{2 minutes ago}: checkout: moving from main to wishlist
 ```
 
-You can also name a time directly: `main@{yesterday}` or `main@{2.hours.ago}` is where `main` pointed then, according to its reflog. The lesson "Point at any commit: HEAD~2, ranges, reflog names" covers these names.
+You can also name a time directly: `main@{yesterday}` or `main@{2.hours.ago}` is where `main` pointed then, according to its reflog. The lesson [Point at any commit: HEAD~2, ranges, reflog names](lesson:revision-selection) covers these names.
 
 ### The amend variant of Recipe 5
 
