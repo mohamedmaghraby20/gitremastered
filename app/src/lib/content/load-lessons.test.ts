@@ -108,6 +108,38 @@ describe('buildCourseContent', () => {
 		);
 	});
 
+	it('rejects a lesson challenge without hints, and a checkpoint challenge with hints', () => {
+		const withoutHints = sampleContentFiles();
+		withoutHints['lessons/sample-lesson/challenges.yaml'] = readSampleLessonFile(
+			'challenges.yaml'
+		).replace(/    hints:\n(      - .*\n)+/, '');
+		expect(() => buildCourseContent(withoutHints)).toThrow(
+			'challenge "commit-notes": "hints" needs at least 1 item'
+		);
+
+		const checkpointWithHints = sampleContentFiles();
+		checkpointWithHints['lessons/sample-lesson/lesson.md'] = readSampleLessonFile(
+			'lesson.md'
+		).replace('readFirst: [start-a-repo]', 'readFirst: [start-a-repo]\ncheckpoint: true');
+		expect(() => buildCourseContent(checkpointWithHints)).toThrow(
+			'challenge "commit-notes": a checkpoint has no hints'
+		);
+	});
+
+	it('loads a checkpoint whose challenges have no hints', () => {
+		const checkpoint = sampleContentFiles();
+		checkpoint['lessons/sample-lesson/lesson.md'] = readSampleLessonFile('lesson.md').replace(
+			'readFirst: [start-a-repo]',
+			'readFirst: [start-a-repo]\ncheckpoint: true'
+		);
+		checkpoint['lessons/sample-lesson/challenges.yaml'] = readSampleLessonFile(
+			'challenges.yaml'
+		).replace(/    hints:\n(      - .*\n)+/g, '');
+		const lesson = findLessonById(buildCourseContent(checkpoint), 'sample-lesson');
+		expect(lesson?.isCheckpoint).toBe(true);
+		expect(lesson?.challenges.every((challenge) => challenge.hints.length === 0)).toBe(true);
+	});
+
 	it('loads the book path when there is one', () => {
 		const contentFiles = sampleContentFiles();
 		contentFiles['paths/book-path.yaml'] = bookPathText;

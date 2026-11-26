@@ -65,6 +65,18 @@ describe('MissionPanel', () => {
 		await expect.element(page.getByText('(not done yet)')).toBeInTheDocument();
 	});
 
+	it('shows no hint button for a checkpoint challenge, and says why', async () => {
+		await render(MissionPanel, {
+			mission: { ...mission, hints: [] },
+			heading: 'Challenge 1 · Easy',
+			snapshot: null,
+			onReset: () => Promise.resolve()
+		});
+
+		await expect.element(page.getByText(/A checkpoint has no hints/)).toBeVisible();
+		await expect.element(page.getByRole('button', { name: /hint/i })).not.toBeInTheDocument();
+	});
+
 	it('reveals hints one at a time', async () => {
 		await render(MissionPanel, {
 			mission,

@@ -3,6 +3,7 @@
   The active challenge as a worksheet ticket (DESIGN.md): header with the challenge's name and
   progress, a dashed separator, the brief in serif, a checklist that ticks itself from the live
   snapshot, and the actions: Check challenge, Reset practice, and the hint ladder.
+  A checkpoint's challenge has no hints: the hint button gives way to a line that says so.
 
   Inputs:  mission (the challenge's mission fields), heading (e.g. "Challenge 2 · Medium"),
            snapshot (live repo state or null), onReset (rebuilds the practice folder),
@@ -108,13 +109,20 @@
 			<Button variant="secondary" onclick={resetPractice} disabled={isResetting}>
 				{isResetting ? 'Resetting…' : 'Reset practice'}
 			</Button>
-			<Button
-				variant="ghost"
-				onclick={() => (hintLadder = revealNextHint(hintLadder))}
-				disabled={!hasHiddenHints(hintLadder)}
-			>
-				{hintButtonLabel(hintLadder)}
-			</Button>
+			{#if mission.hints.length > 0}
+				<Button
+					variant="ghost"
+					onclick={() => (hintLadder = revealNextHint(hintLadder))}
+					disabled={!hasHiddenHints(hintLadder)}
+				>
+					{hintButtonLabel(hintLadder)}
+				</Button>
+			{/if}
 		</div>
+		{#if mission.hints.length === 0}
+			<p class="type-small m-0 text-ink-muted">
+				A checkpoint has no hints. Stuck? The module's lessons are in the sidebar.
+			</p>
+		{/if}
 	</div>
 </section>

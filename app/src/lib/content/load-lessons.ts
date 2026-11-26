@@ -9,6 +9,7 @@
 import type { BookPath } from '../types/book-path.ts';
 import type { LearningPath } from '../types/learning-path.ts';
 import type { Lesson } from '../types/lesson.ts';
+import type { Challenge } from '../types/mission.ts';
 import type { CommandPage, GlossaryTerm } from '../types/reference.ts';
 import { checkLessonsExist } from './check-lesson-ids.ts';
 import { loadCommandPages, loadGlossary } from './load-reference.ts';
@@ -157,6 +158,7 @@ function loadLesson(contentFiles: ContentFiles, folderName: string): Lesson {
 		requireFile(contentFiles, `lessons/${folderName}/challenges.yaml`),
 		`content/lessons/${folderName}/challenges.yaml`
 	);
+	checkHints(challenges, lessonText.frontmatter.isCheckpoint, folderName);
 	const quiz = parseQuizText(
 		requireFile(contentFiles, `lessons/${folderName}/quiz.yaml`),
 		`content/lessons/${folderName}/quiz.yaml`
@@ -168,6 +170,30 @@ function loadLesson(contentFiles: ContentFiles, folderName: string): Lesson {
 		challenges,
 		quiz
 	};
+}
+
+/**
+ * Checks the hint rule: a lesson's challenges each have a hint ladder; a checkpoint's
+ * challenges have none (a checkpoint is done without help, course map rule 4).
+ * @param challenges - the lesson's challenges
+ * @param isCheckpoint - true when the lesson is a module checkpoint
+ * @param folderName - the lesson's folder, for the error message
+ * @throws ContentError naming the first challenge that breaks the rule
+ */
+function checkHints(challenges: Challenge[], isCheckpoint: boolean, folderName: string): void {
+	const fileName = `content/lessons/${folderName}/challenges.yaml`;
+	for (const challenge of challenges) {
+		const hasHints = challenge.hints.length > 0;
+		if (isCheckpoint && hasHints) {
+			throw new ContentError(fileName, `challenge "${challenge.id}": a checkpoint has no hints`);
+		}
+		if (!isCheckpoint && !hasHints) {
+			throw new ContentError(
+				fileName,
+				`challenge "${challenge.id}": "hints" needs at least 1 item`
+			);
+		}
+	}
 }
 
 /**

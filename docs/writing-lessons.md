@@ -205,13 +205,15 @@ A lesson about remotes builds its own server beside the project, so everything w
       - git remote add origin ../origin.git
       - git push -q -u origin main
       # A teammate pushes a commit the student does not have yet:
-      - git clone -q ../origin.git ../teammate
+      - git clone -q -c core.autocrlf=false ../origin.git ../teammate
       - git -C ../teammate config user.name "Tariq (teammate)"
       - git -C ../teammate config user.email "tariq@example.com"
       - echo "Docs live in docs/" >> ../teammate/README.md
       - git -C ../teammate commit -q -am "Point to the docs"
       - git -C ../teammate push -q
 ```
+
+Clone the teammate with `-c core.autocrlf=false`, as above. Without it, on Windows the teammate's commit rewrites the line endings of every file, and the student's pull shows unrelated files as changed.
 
 "Start this challenge" and "Reset" delete and rebuild the whole workspace, so nothing is left behind. A challenge may also start with no repository at all (for `git init` and `git clone`): the picture stays empty until the `project` folder itself is a repository, so ask for `git clone ../shop.git .` (the dot clones into the current folder).
 
@@ -235,6 +237,25 @@ questions:
       - text: "Git deletes it from the repository"
         explanation: ".gitignore never removes anything."
 ```
+
+## Module checkpoints
+
+Each hands-on module ends with a checkpoint (course map, rule 4): a review page whose challenges mix the module's skills and give no hints. It is an ordinary lesson folder with two differences:
+
+- The frontmatter has `checkpoint: true`, the ID is `checkpoint-<module-id>` and the title is "Checkpoint: <module title>".
+- Its challenges have no `hints` field. (The content check refuses hints in a checkpoint, and a missing hint ladder anywhere else.)
+
+What goes in the four sections:
+
+| Section | In a checkpoint |
+|---|---|
+| Lede | What the student can prove here, in one or two sentences |
+| `## Must know` | The module's cheat sheet: one table per lesson with the commands worth remembering, each with a one-line job, and the lesson to go back to. No new material |
+| `## Under the hood` | The module's key ideas, a few lines each |
+| `## Advanced` | Where the module's skills come back later in the course |
+| `## Recap` | The handful of commands to know by heart |
+
+Challenges: three, easy to hard, each a realistic situation that needs commands from at least two of the module's lessons. The quiz mixes the lessons too. `bookSection` and `bookUrl` name the Pro Git chapter the module follows most.
 
 ## Links between lessons
 

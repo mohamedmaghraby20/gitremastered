@@ -29,6 +29,7 @@ export type LessonFrontmatter = {
 	bookUrl: string; // the section in the official online Pro Git, for the citation link
 	bookSources: string[]; // paths of the Pro Git source files under book/
 	readFirst: string[]; // lesson IDs worth reading before this one
+	isCheckpoint: boolean; // true for a module's checkpoint: mixed challenges with no hints
 };
 
 /** One complete lesson: its text, its challenges (3 or more, easy to hard) and its quiz. */

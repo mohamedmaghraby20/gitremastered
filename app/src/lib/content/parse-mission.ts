@@ -26,7 +26,8 @@ export function readMissionFields(reader: FieldReader): Mission {
 		brief: reader.text('brief'),
 		setup: reader.textList('setup'),
 		goals: goalReaders.map(readGoal),
-		hints: reader.textList('hints'),
+		// A checkpoint's challenges have no hints; load-lessons.ts checks that only they do.
+		hints: reader.optionalTextList('hints'),
 		solution: reader.textList('solution')
 	};
 }

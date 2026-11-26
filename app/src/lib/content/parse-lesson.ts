@@ -80,7 +80,8 @@ function readFrontmatter(reader: FieldReader): LessonFrontmatter {
 		bookSection: reader.text('bookSection'),
 		bookUrl: readBookUrl(reader),
 		bookSources: reader.textList('bookSources'),
-		readFirst: reader.textList('readFirst', 0)
+		readFirst: reader.textList('readFirst', 0),
+		isCheckpoint: reader.optionalFlag('checkpoint')
 	};
 }
 

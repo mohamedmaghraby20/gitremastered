@@ -15,6 +15,7 @@ export const sampleLesson: Lesson = {
 	bookUrl: 'https://git-scm.com/book/en/v2/Git-Basics-Recording-Changes-to-the-Repository',
 	bookSources: ['book/progit2/book/02-git-basics/sections/recording-changes.asc'],
 	readFirst: [],
+	isCheckpoint: false,
 	lede: 'This sentence is the lede.',
 	sections: {
 		mustKnow: 'Must know text with `git status`.',
