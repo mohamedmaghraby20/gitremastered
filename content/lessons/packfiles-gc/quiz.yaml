@@ -1,0 +1,42 @@
+questions:
+  - question: "report.txt has 2,000 lines and was committed 50 times, each time with one line changed. The repository was just packed with git gc. How is report.txt stored in the packfile?"
+    answers:
+      - text: "The first version whole, and 49 deltas that each add one change on top"
+        explanation: "It is the other way round. Git keeps the newest version whole, because that is the one you read most often, and rebuilds older ones from it."
+      - text: "The newest version whole, and the older versions as small deltas"
+        correct: true
+        explanation: "Git packs backwards: the latest version is fast to read, and each older version is stored as the difference from a similar one."
+      - text: "50 whole copies, each compressed by itself"
+        explanation: "That describes loose objects, before packing. In a packfile, similar objects are stored as deltas."
+      - text: "As 50 changes only; no version is stored whole"
+        explanation: "A delta needs a base. At least one version must be whole, or nothing could be rebuilt."
+
+  - question: "A teammate says: \"Don't run git gc, it deletes old commits to save space.\" Your repository has 300 commits on main and nothing else. What does git gc do to them?"
+    answers:
+      - text: "It keeps all 300 and only changes how they are stored"
+        correct: true
+        explanation: "Everything a branch leads to is kept. git gc moves the objects into a packfile; the commits, their IDs and their content stay the same."
+      - text: "It deletes commits older than two weeks"
+        explanation: "The two-week limit applies only to objects that nothing leads to. Commits on a branch are never deleted, whatever their age."
+      - text: "It joins old commits into one to shorten the history"
+        explanation: "git gc never rewrites history. Deltas are a way of storing objects, not a change to the commits."
+
+  - question: "Ten minutes ago you ran git reset --hard HEAD~1 and dropped a commit. Now you run git gc --prune=now. Is the dropped commit still in the repository?"
+    answers:
+      - text: "No: --prune=now deletes every commit that is not on a branch"
+        explanation: "--prune=now only removes the two-week waiting time. It still deletes nothing that a reflog line leads to."
+      - text: "Yes: the reflog still has a line for it, and that line protects it"
+        correct: true
+        explanation: "The reflog is one of the starting points Git checks. The commit goes only after its reflog line is gone, by age or by git reflog expire."
+      - text: "Yes, but only because it is younger than two weeks"
+        explanation: "--prune=now sets that waiting time to zero, so age no longer helps. What keeps the commit is its reflog line."
+
+  - question: "git count-objects -v prints count: 0, in-pack: 4810, packs: 1. You commit one changed file in the top folder. What does it print next?"
+    answers:
+      - text: "count: 0 and in-pack: 4813, because new objects go into the pack"
+        explanation: "New objects are always written loose first. They enter a pack at the next git gc or repack."
+      - text: "count: 3 and in-pack: 4810"
+        correct: true
+        explanation: "The commit wrote three loose objects: a blob, a tree and the commit. The pack is untouched until Git packs again."
+      - text: "count: 1 and in-pack: 4810, because one file changed"
+        explanation: "One changed file means a new blob, but also a new tree that lists it and the commit itself."

@@ -1,0 +1,143 @@
+challenges:
+  - id: release-bot
+    title: Commit as the release bot
+    level: easy
+    brief: "The cafe's release script must record its commits as Release Bot, dated 15 January 2026 at noon, whoever runs it. notes.txt is already staged. Commit it with the message \"Release 1.0\", the author name Release Bot and the author date 2026-01-15T12:00:00. Use environment variables only: the name in this repository's settings must stay Mona Adel. Then record the result: git log -1 --format=\"%an %as\" > answer.txt"
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - git config --local user.name "Mona Adel"
+      - git config --local user.email "mona@example.com"
+      - echo answer.txt >> .git/info/exclude
+      - echo "# Corner Cafe" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - echo "Soup of the day" > menu.txt
+      - git add menu.txt
+      - git commit -q -m "Add menu"
+      - echo "Version 1.0, the first printed menu" > notes.txt
+      - git add notes.txt
+    goal:
+      - check: latest-commit-message-contains
+        text: "Release 1.0"
+        label: "The newest commit is \"Release 1.0\""
+      - check: file-is-committed
+        file: notes.txt
+        label: "notes.txt is in that commit"
+      - check: answer-is
+        answer: "Release Bot 2026-01-15"
+        label: "answer.txt shows the author Release Bot and the date 2026-01-15"
+      - check: config-is
+        key: user.name
+        value: "Mona Adel"
+        label: "The name in the repository's settings is still Mona Adel"
+    hints:
+      - "Two variables set the author's name and the author's time for one commit. They go in front of git commit, on the same line."
+      - "Write GIT_AUTHOR_NAME=\"Release Bot\" and GIT_AUTHOR_DATE=\"2026-01-15T12:00:00\" before git commit -m \"Release 1.0\". Do not run git config: the settings must stay as they are."
+      - "Run: GIT_AUTHOR_NAME=\"Release Bot\" GIT_AUTHOR_DATE=\"2026-01-15T12:00:00\" git commit -m \"Release 1.0\", then git log -1 --format=\"%an %as\" > answer.txt"
+    solution:
+      - 'GIT_AUTHOR_NAME="Release Bot" GIT_AUTHOR_DATE="2026-01-15T12:00:00" git commit -q -m "Release 1.0"'
+      - 'git log -1 --format="%an %as" > answer.txt'
+
+  - id: site-from-outside
+    title: Inspect the live site from outside
+    level: medium
+    brief: "The cafe's website is served from the folder ../website. For safety its repository is kept apart, in ../website-repo.git, so git status inside ../website fails. Staying in the project folder, find out two things about the website: how many branches its repository has, and which one file someone edited directly on the live site. Write both on one line of answer.txt, the number, a space, then the file name, like: 2 index.html"
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo answer.txt >> .git/info/exclude
+      - echo "# Corner Cafe" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - echo "Soup of the day" > menu.txt
+      - git add menu.txt
+      - git commit -q -m "Add menu"
+      # The website: a working tree in ../website, its repository moved to ../website-repo.git
+      - git init -q -b main ../website
+      - git -C ../website config core.autocrlf false
+      - git -C ../website config user.name "Practice Student"
+      - git -C ../website config user.email "student@example.com"
+      - echo "<h1>Corner Cafe</h1>" > ../website/index.html
+      - echo "<p>Open since 2019.</p>" > ../website/about.html
+      - echo "<p>Call 555-0100</p>" > ../website/contact.html
+      - git -C ../website add .
+      - git -C ../website commit -q -m "Publish the site"
+      - git -C ../website branch redesign
+      - git -C ../website branch winter-sale
+      - mv ../website/.git ../website-repo.git
+      # Someone edits a file straight on the live site
+      - echo "<p>Closed on Mondays.</p>" >> ../website/about.html
+    goal:
+      - check: answer-is
+        answer: "3 about.html"
+        label: "answer.txt holds the website's branch count and its edited file"
+      - check: commit-count-is
+        count: 2
+        label: "The project's own history is unchanged"
+    hints:
+      - "Git needs to be told two places: where the website's repository is, and where its files are. Listing branches needs only the first; git status needs both."
+      - "GIT_DIR=../website-repo.git git branch lists the branches. For the edited file, add GIT_WORK_TREE=../website and run git status. With GIT_DIR alone, Git compares the website's commit with the folder you are standing in, and the result is nonsense."
+      - "Run: GIT_DIR=../website-repo.git git branch (count the lines), then GIT_DIR=../website-repo.git GIT_WORK_TREE=../website git status --short (one file is marked M). Then: echo \"3 about.html\" > answer.txt"
+    solution:
+      - 'echo "$(GIT_DIR=../website-repo.git git branch | wc -l) $(GIT_DIR=../website-repo.git GIT_WORK_TREE=../website git status --short | cut -c4-)" > answer.txt'
+
+  - id: join-the-archive
+    title: Join the archive to the menu history
+    level: hard
+    brief: "The cafe's menu repository was cut short at the start of 2026: main begins at a placeholder commit, and the three older commits are on the branch archive. The owner wants git log on main to run from \"Add summer menu\" back to \"Open the cafe\" with no placeholder in between. The branch live is what the printing shop already has, so no existing commit may get a new ID: a rebase is not allowed. Make the first real commit of 2026 show the tip of archive as its parent."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Corner Cafe menus" > README.md
+      - git add README.md
+      - git commit -q -m "Open the cafe"
+      - echo "Lentil soup" > winter.txt
+      - git add winter.txt
+      - git commit -q -m "Add winter menu"
+      - echo "Pumpkin pie" > autumn.txt
+      - git add autumn.txt
+      - git commit -q -m "Add autumn menu"
+      - git branch archive
+      # main restarts at a commit with no parent that holds the same files
+      - 'git reset -q --hard $(echo "History before 2026 is on the archive branch" | git commit-tree "HEAD^{tree}")'
+      - echo "Pea salad" > spring.txt
+      - git add spring.txt
+      - git commit -q -m "Add spring menu"
+      - echo "Iced tea" > summer.txt
+      - git add summer.txt
+      - git commit -q -m "Add summer menu"
+      - git branch live
+      - echo "Mint lemonade" >> summer.txt
+      - git commit -q -am "Add lemonade to the summer menu"
+    goal:
+      - check: commit-count-is
+        count: 6
+        label: "main's history has six commits: three from 2026 and three from the archive"
+      - check: commit-is-gone
+        message: "History before 2026 is on the archive branch"
+        label: "The placeholder commit is no longer in main's history"
+      - check: commit-comes-before
+        message: "Add autumn menu"
+        later: "Add spring menu"
+        label: "\"Add autumn menu\" now comes right before \"Add spring menu\""
+      - check: branch-contains-commit
+        branch: live
+        message: "Open the cafe"
+        label: "live reaches the old history too, without having been moved"
+      - check: branch-is-at-commit
+        branch: live
+        message: "Add summer menu"
+        label: "live is still on \"Add summer menu\""
+    hints:
+      - "A rebase would give every 2026 commit a new ID, and live would be left behind. One command makes Git show a commit with a different parent and changes no ID. Which commit needs the new parent? Run git log --oneline and find the one right after the placeholder."
+      - "The command is git replace --graft <commit> <new-parent>: see \"git replace\" in Must know and \"A replacement is a ref\" in Under the hood. The commit is \"Add spring menu\", and its new parent is the tip of archive."
+      - "Run: git log --oneline, copy the ID of \"Add spring menu\", then git replace --graft <that ID> archive (HEAD~2 names the same commit). Check with git log --oneline, and with git log --oneline live."
+    solution:
+      - git replace --graft HEAD~2 archive

@@ -1,0 +1,40 @@
+questions:
+  - question: "A commit holds LICENSE.txt and docs/LICENSE.txt, two files with exactly the same content. How many blobs does Git store for them?"
+    answers:
+      - text: "Two, one for each file"
+        explanation: "A blob has no name and no path, so nothing tells the two apart. The same content gives the same ID, and Git stores an ID once."
+      - text: "One: both trees point at the same blob"
+        correct: true
+        explanation: "The ID comes from the content alone. The names live in the trees: the top tree and the docs tree each have a line with the same blob ID."
+      - text: "None: Git stores only the differences between files"
+        explanation: "Git stores full content as blobs, not differences. It saves space by reaching the same blob from several places."
+
+  - question: "You run git commit-tree and get a new commit ID, then run git log. The new commit is not in the list. Why?"
+    answers:
+      - text: "git commit-tree only computes an ID; the commit was never stored"
+        explanation: "That describes git hash-object without -w. git commit-tree always stores the commit object."
+      - text: "No branch points at the new commit yet"
+        correct: true
+        explanation: "git commit-tree makes the object and stops. git log starts from your branch, so the commit shows up once git update-ref moves a branch to it."
+      - text: "The commit has no parent, so git log cannot reach it"
+        explanation: "git log walks from a branch back through parents. A parent links the new commit to older ones; it does not make a branch point at the new one."
+
+  - question: "You stage notes.txt with git update-index, run git write-tree, then change notes.txt in your editor, and then run git commit-tree on that tree. Which version of notes.txt is in the commit?"
+    answers:
+      - text: "The edited one, because the commit is made last"
+        explanation: "The commit only points at the tree, and the tree was written before the edit. Nothing looks at your folder when the commit is made."
+      - text: "The one that was staged when git write-tree ran"
+        correct: true
+        explanation: "The tree lists the blob that was in the staging area at that moment. The commit points at that tree, so the later edit is not in it."
+      - text: "Both: the commit keeps the old and the new version"
+        explanation: "A commit points at one tree, and a tree has one entry per name. The edit is only in your working tree."
+
+  - question: "A teammate renames report.txt to summary.txt, changes nothing inside, and commits. Which new objects does that commit add?"
+    answers:
+      - text: "A new blob, a new tree and a new commit"
+        explanation: "The content did not change, so its blob ID is the same and the blob is already stored."
+      - text: "Only a new commit: the old tree is used again"
+        explanation: "A tree stores the names. A changed name is a changed tree, and a changed tree has a new ID."
+      - text: "A new tree and a new commit, but no new blob"
+        correct: true
+        explanation: "The name is stored in the tree, so the tree changes. The blob holds only content, which is the same, so the new tree points at the blob that already exists."

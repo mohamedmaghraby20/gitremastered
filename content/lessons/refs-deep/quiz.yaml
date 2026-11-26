@@ -1,0 +1,40 @@
+questions:
+  - question: "A deploy script must move the branch `deployed` to the commit it just released. The script runs on a build machine and must not change which branch is checked out or any file. Which command fits?"
+    answers:
+      - text: "git switch deployed, then git reset --hard <commit>"
+        explanation: "This changes the checked-out branch and rewrites the files in the folder, which the script must not do."
+      - text: "git update-ref refs/heads/deployed <commit>"
+        correct: true
+        explanation: "update-ref changes that one ref and nothing else. It also checks that the commit exists and records the move in the ref's log."
+      - text: "echo <commit> > .git/refs/heads/deployed"
+        explanation: "A hand-written file skips every check, leaves no reflog entry, and is wrong when the ref is stored in packed-refs or a reftable."
+
+  - question: "You are on `main` with a clean working tree. You run `git symbolic-ref HEAD refs/heads/old-release`, a branch several commits behind. What does `git status` show next?"
+    answers:
+      - text: "A clean working tree on old-release, exactly like after git switch old-release"
+        explanation: "git switch also puts the branch's files into the staging area and the folder. symbolic-ref rewrites only the one line in .git/HEAD."
+      - text: "On branch old-release, with the newer work of main listed as staged changes"
+        correct: true
+        explanation: "The staging area and the folder still hold main's files. Compared with the commit of old-release, that newer work looks like changes you staged."
+      - text: "An error, because HEAD may only be changed by git switch"
+        explanation: "git symbolic-ref accepts any target inside refs/. It refuses only names outside refs/."
+
+  - question: "`git rev-parse v2.0` prints `9f3c…`, but `git log -1 --format=%H v2.0` prints `41ab…`. Nothing is broken. What explains the two IDs?"
+    answers:
+      - text: "v2.0 is an annotated tag: its ref holds a tag object (9f3c…), and that object names the commit (41ab…)"
+        correct: true
+        explanation: "rev-parse prints what the ref holds. git log needs a commit, so it follows the tag object to it. `v2.0^{commit}` asks for the commit directly."
+      - text: "v2.0 is a lightweight tag that was moved after it was created"
+        explanation: "A lightweight tag's ref holds the commit ID itself, so both commands would print the same ID."
+      - text: "The tag is packed, and packed-refs holds an outdated ID"
+        explanation: "Git reads packed and loose refs correctly on its own. Both commands looked at the same ref; they differ in what they print for it."
+
+  - question: "A colleague's backup script lists branches with `ls .git/refs/heads`. After `git gc` ran, the script reports that the repository has no branches, yet `git branch` lists twelve. Why?"
+    answers:
+      - text: "git gc deleted the branches, and git branch shows a cached list"
+        explanation: "git gc never deletes branches, and git branch has no cache: it reads the refs each time."
+      - text: "The refs were packed: they are now lines in .git/packed-refs, not files"
+        correct: true
+        explanation: "git gc runs pack-refs. The branches still exist; the script should ask Git, for example with git for-each-ref refs/heads."
+      - text: "The branches moved to .git/logs"
+        explanation: ".git/logs holds the reflogs, the record of where each ref pointed before. The refs themselves are never stored there."

@@ -16,3 +16,21 @@ modules:
   - id: remotes
     title: Remotes
     lessons: [how-git-talks, remotes, remote-branches, refspecs, tags-and-releases, checkpoint-remotes]
+  - id: working-in-a-team
+    title: Working in a team
+    lessons: [team-workflows, commit-craft, rebasing, integrating-work]
+  - id: history-mastery
+    title: History mastery
+    lessons: [revision-selection, clean-up-history, partial-staging, search-blame-bisect, advanced-merging]
+  - id: recovery
+    title: Recovery and incidents
+    lessons: [rescue-lost-work, incident-playbook, remove-sensitive-data]
+  - id: make-git-yours
+    title: Make Git yours
+    lessons: [config-pro, git-in-your-tools, hooks, attributes, signing]
+  - id: modern-git
+    title: Large repos and modern Git
+    lessons: [worktrees, submodules, large-repos]
+  - id: under-the-hood
+    title: Under the hood
+    lessons: [objects-deep, refs-deep, packfiles-gc, plumbing-toolkit]

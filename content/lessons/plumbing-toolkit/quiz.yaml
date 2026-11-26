@@ -1,0 +1,40 @@
+questions:
+  - question: "From your notes folder you run: GIT_DIR=../shop/.git git status. Git lists every file of the shop as deleted. What happened?"
+    answers:
+      - text: "The shop's files were deleted from the disk"
+        explanation: "git status never deletes anything. It only compared two places, and one of them was the wrong one."
+      - text: "With only GIT_DIR set, Git took your notes folder as the working tree"
+        correct: true
+        explanation: "GIT_DIR names the repository only. Without GIT_WORK_TREE, the folder you stand in counts as the working tree, so the shop's files look missing. Add GIT_WORK_TREE=../shop, or use git -C ../shop status."
+      - text: "GIT_DIR has to be exported before Git reads it"
+        explanation: "A variable written in front of a command reaches that command. Git did read it: that is why it found the shop's commits at all."
+
+  - question: "A build script runs: GIT_AUTHOR_NAME=\"Build Server\" git commit -m \"Nightly build\". Your user.name setting is Sara. What does the new commit record?"
+    answers:
+      - text: "Author: Build Server. Committer: Sara"
+        correct: true
+        explanation: "The author and the committer are separate fields with separate variables. Only the author's name was overridden; the committer still comes from the settings."
+      - text: "Author: Build Server. Committer: Build Server"
+        explanation: "The committer has its own variable, GIT_COMMITTER_NAME, and the script did not set it."
+      - text: "Author: Sara, because a setting in the repository wins over a variable"
+        explanation: "It is the other way round: the GIT_AUTHOR_ variables win over every settings file."
+
+  - question: "You run git replace --graft on a commit in the middle of main. A teammate already has a branch that starts from the newest commit of main. What happens to their branch?"
+    answers:
+      - text: "It breaks, because every commit after the grafted one got a new ID"
+        explanation: "That would be true after a rebase. A replacement rewrites nothing: all the IDs stay as they were."
+      - text: "Nothing: no commit ID changed, and the replacement exists only in your repository"
+        correct: true
+        explanation: "git replace adds one ref under refs/replace in your repository. The original commits are untouched, and the teammate does not even see the graft unless you share that ref."
+      - text: "It automatically shows the new parent as well"
+        explanation: "Replacement refs are not pushed or fetched by default. The teammate sees the real history until they fetch refs/replace."
+
+  - question: "git push to your company's server fails with a vague error, and you want to see the messages your Git and the server exchange. Which do you try?"
+    answers:
+      - text: "GIT_TRACE_PACKET=1 git push"
+        correct: true
+        explanation: "GIT_TRACE_PACKET prints each message of the conversation with the server, for this one command."
+      - text: "GIT_TERMINAL_PROMPT=0 git push"
+        explanation: "That only stops Git from asking for a user name or password. It shows nothing about the conversation."
+      - text: "git -c core.pager=cat push"
+        explanation: "That changes how long output is shown. A push does not use the pager, and no trace is turned on."

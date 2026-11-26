@@ -1,0 +1,134 @@
+challenges:
+  - id: branch-with-update-ref
+    title: Make a branch by writing its ref
+    level: easy
+    brief: "The bakery team wants a branch called experiment that starts at the commit \"Add menu\", one commit behind main. Create it the plumbing way: write the ref with git update-ref. Stay on main and do not change any file."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Corner bakery" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - echo "Sourdough loaf" > menu.txt
+      - git add menu.txt
+      - git commit -q -m "Add menu"
+      - git tag v0.9
+      - echo "Open 7 to 15, closed on Monday" > hours.txt
+      - git add hours.txt
+      - git commit -q -m "Add opening hours"
+      - git tag -a v1.0 -m "First release"
+      - git init -q --bare -b main ../origin.git
+      - git remote add origin ../origin.git
+      - git push -q -u origin main
+      - git push -q origin v0.9 v1.0
+    goal:
+      - check: branch-is-at-commit
+        branch: experiment
+        message: Add menu
+        label: "The branch experiment is on the commit \"Add menu\""
+      - check: head-is-on-branch
+        branch: main
+        label: "You are still on main"
+      - check: working-folder-clean
+        label: "No file was changed"
+    hints:
+      - "A branch is a ref under refs/heads. Which commit should the new ref hold? Find its ID with git log --oneline."
+      - "git update-ref takes the ref's full name, then the commit. The full name of a branch starts with refs/heads/."
+      - "Run: git update-ref refs/heads/experiment HEAD~1 (or put the ID of \"Add menu\" in place of HEAD~1). Check with git branch."
+    solution:
+      - git update-ref refs/heads/experiment HEAD~1
+
+  - id: repair-head
+    title: Repair a HEAD that points nowhere
+    level: medium
+    brief: "A build script crashed half-way. Since then git status says \"No commits yet\" and lists every file as new, although the project has three commits. Find out what HEAD says, put it back on main, and delete the leftover branch build-tmp that the script created. Do not commit anything."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Corner bakery" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - echo "Sourdough loaf" > menu.txt
+      - git add menu.txt
+      - git commit -q -m "Add menu"
+      - git tag v0.9
+      - echo "Open 7 to 15, closed on Monday" > hours.txt
+      - git add hours.txt
+      - git commit -q -m "Add opening hours"
+      - git tag -a v1.0 -m "First release"
+      - git init -q --bare -b main ../origin.git
+      - git remote add origin ../origin.git
+      - git push -q -u origin main
+      - git push -q origin v0.9 v1.0
+      # The crashed script: a leftover branch, and a HEAD with a typo in the branch name.
+      - git update-ref refs/heads/build-tmp HEAD~2
+      - git symbolic-ref HEAD refs/heads/mian
+    goal:
+      - check: head-is-on-branch
+        branch: main
+        label: "HEAD is on main again"
+      - check: commit-count-is
+        count: 3
+        label: "The history shows the three commits again"
+      - check: working-folder-clean
+        label: "git status reports nothing to commit"
+      - check: branch-is-missing
+        branch: build-tmp
+        label: "The leftover branch build-tmp is gone"
+    hints:
+      - "Run git symbolic-ref HEAD (or cat .git/HEAD), then git for-each-ref refs/heads. Does the branch HEAD names exist?"
+      - "HEAD names refs/heads/mian, a typo. The real branch is refs/heads/main, and its commits are untouched. git symbolic-ref with two arguments rewrites HEAD; git update-ref -d deletes a ref."
+      - "Run: git symbolic-ref HEAD refs/heads/main, then git update-ref -d refs/heads/build-tmp. Check with git status."
+    solution:
+      - git symbolic-ref HEAD refs/heads/main
+      - git update-ref -d refs/heads/build-tmp
+
+  - id: tag-ref-target
+    title: Read an annotated tag from packed refs
+    level: hard
+    brief: "A release tool asks for the exact ID stored in the ref refs/tags/v1.0. This repository's refs are packed, so the folder .git/refs holds no files. Write the full 40-character ID that the ref refs/tags/v1.0 holds into answer.txt. Careful: v1.0 is an annotated tag, and two IDs belong to it."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      # The answer is an object ID, so this challenge needs the same IDs on every computer:
+      # a fixed identity and fixed dates on every commit and on the tag, and no signing here.
+      - git config commit.gpgsign false
+      - git config tag.gpgsign false
+      - echo answer.txt >> .git/info/exclude
+      - echo "# Corner bakery" > README.md
+      - git add README.md
+      - 'GIT_AUTHOR_NAME="Practice Student" GIT_AUTHOR_EMAIL="student@example.com" GIT_COMMITTER_NAME="Practice Student" GIT_COMMITTER_EMAIL="student@example.com" GIT_AUTHOR_DATE="2026-06-01T08:00:00+0000" GIT_COMMITTER_DATE="2026-06-01T08:00:00+0000" git commit -q -m "Add README"'
+      - echo "Sourdough loaf" > menu.txt
+      - git add menu.txt
+      - 'GIT_AUTHOR_NAME="Practice Student" GIT_AUTHOR_EMAIL="student@example.com" GIT_COMMITTER_NAME="Practice Student" GIT_COMMITTER_EMAIL="student@example.com" GIT_AUTHOR_DATE="2026-06-02T08:00:00+0000" GIT_COMMITTER_DATE="2026-06-02T08:00:00+0000" git commit -q -m "Add menu"'
+      - git tag v0.9
+      - echo "Open 7 to 15, closed on Monday" > hours.txt
+      - git add hours.txt
+      - 'GIT_AUTHOR_NAME="Practice Student" GIT_AUTHOR_EMAIL="student@example.com" GIT_COMMITTER_NAME="Practice Student" GIT_COMMITTER_EMAIL="student@example.com" GIT_AUTHOR_DATE="2026-06-03T08:00:00+0000" GIT_COMMITTER_DATE="2026-06-03T08:00:00+0000" git commit -q -m "Add opening hours"'
+      - 'GIT_AUTHOR_NAME="Practice Student" GIT_AUTHOR_EMAIL="student@example.com" GIT_COMMITTER_NAME="Practice Student" GIT_COMMITTER_EMAIL="student@example.com" GIT_COMMITTER_DATE="2026-06-04T08:00:00+0000" git tag -a v1.0 -m "First release"'
+      - git init -q --bare -b main ../origin.git
+      - git remote add origin ../origin.git
+      - git push -q -u origin main
+      - git push -q origin v0.9 v1.0
+      - git pack-refs --all
+    goal:
+      - check: answer-is
+        answer: b2313ef9cc0533f44ebf30955d8dd25e88d40b71
+        label: "answer.txt holds the full ID stored in refs/tags/v1.0 (the tag object, not the commit)"
+      - check: tag-is-annotated
+        tag: v1.0
+        label: "v1.0 is still an annotated tag"
+      - check: working-folder-clean
+        label: "Nothing else was changed"
+    hints:
+      - "cat .git/refs/tags/v1.0 fails here: the refs are packed (Under the hood, \"Packed refs\"). Open .git/packed-refs, or ask Git with git for-each-ref refs/tags."
+      - "In packed-refs, the line that ends in refs/tags/v1.0 holds the ref's ID. The line below it, starting with ^, is the commit the tag leads to: that is the wrong one. Check with git cat-file -t and the ID: the right one answers tag."
+      - "Run: git rev-parse v1.0 > answer.txt (rev-parse prints what the ref holds; v1.0^{commit} would print the commit)."
+    solution:
+      - git rev-parse v1.0 > answer.txt

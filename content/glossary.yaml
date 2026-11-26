@@ -229,3 +229,391 @@ terms:
     term: packfile
     meaning: "One compressed file that holds many objects. Git sends objects this way on fetch and push."
     lessons: [how-git-talks]
+  - id: workflow
+    term: workflow
+    meaning: "A team's agreement on how to use Git: which branches exist, what goes into each, and who may push or merge."
+    lessons: [team-workflows]
+  - id: topic-branch
+    term: topic branch
+    meaning: "A short-lived branch for one job, such as one feature or one bug fix. You merge it when the job is done and then delete it. Also called a feature branch."
+    lessons: [team-workflows]
+  - id: long-running-branch
+    term: long-running branch
+    meaning: "A branch that stays open for the life of the project, like `main` or `develop`. Each one stands for a level of stability, and work is merged into it from other branches."
+    lessons: [team-workflows]
+  - id: trunk-based-development
+    term: trunk-based development
+    meaning: "A way of working where everyone merges small changes into one main branch (the trunk) at least once a day, and topic branches live for hours, not weeks."
+    lessons: [team-workflows]
+  - id: git-flow
+    term: Git Flow
+    meaning: "A branching model with two long-running branches, `main` for released versions and `develop` for finished work, plus feature, release and hotfix branches."
+    lessons: [team-workflows]
+  - id: hotfix
+    term: hotfix
+    meaning: "An urgent fix to the version users already have. Its branch starts from `main` and is merged back right away, without waiting for the next release."
+    lessons: [team-workflows]
+  - id: rerere
+    term: rerere
+    meaning: "Short for \"reuse recorded resolution\". A setting that makes Git remember how you resolved a conflict and fill in the same answer when the very same conflict comes back."
+    lessons: [advanced-merging]
+  - id: merge-strategy
+    term: merge strategy
+    meaning: "The method Git uses to combine two branches. The default is called `ort`; `-s` picks another one, and `-X` passes a setting, like `-Xours`, to the one in use."
+    lessons: [advanced-merging]
+  - id: combined-diff
+    term: combined diff
+    meaning: "A diff with two columns of plus and minus signs, shown for a merge. It compares the merged file with both sides at once, so you see what each side lost and what was written new."
+    lessons: [advanced-merging]
+  - id: subtree-merge
+    term: subtree merge
+    meaning: "A merge that brings another project into a subfolder of yours, so its files land under that folder and its later updates can be merged again."
+    lessons: [advanced-merging]
+  - id: patch-mode
+    term: patch mode
+    meaning: "A way of running a command, started with `-p` or `--patch`, where Git shows your changes one hunk at a time and asks about each. `git add -p` stages the hunks you say yes to."
+    lessons: [partial-staging]
+  - id: interactive-staging
+    term: interactive staging
+    meaning: "Choosing what goes into the staging area by answering questions in the terminal: the `git add -i` menu, or patch mode with `git add -p`. A file with only some of its changes staged is called partially staged."
+    lessons: [partial-staging]
+  - id: backup-branch
+    term: backup branch
+    meaning: "An extra branch you create on the current commit before a risky fix, like `backup-main`. It keeps that commit and everything before it reachable, whatever you try next."
+    lessons: [incident-playbook]
+  - id: orig-head
+    term: ORIG_HEAD
+    meaning: "A name for where your branch was just before the last reset, merge or rebase moved it. `git reset --hard ORIG_HEAD` puts the branch back; the next such command overwrites it."
+    lessons: [incident-playbook]
+  - id: cherry-pick
+    term: cherry-pick
+    meaning: "To copy the change of one commit onto the branch you are on, as a new commit with a new ID (`git cherry-pick`). The original commit stays where it was."
+    lessons: [integrating-work]
+  - id: maintainer
+    term: maintainer
+    meaning: "The person who decides which work goes into a project's main branches: they review what contributors send and merge it, or turn it down."
+    lessons: [integrating-work]
+  - id: backport
+    term: backport
+    meaning: "To copy a fix from the newest line of work to an older release branch, usually with `git cherry-pick`, so people on the old version get the fix too."
+    lessons: [integrating-work]
+  - id: unreachable-commit
+    term: unreachable commit
+    meaning: "A commit that no branch or tag leads to any more, for example after a reset or a deleted branch. It still exists for a while and can be brought back by its ID."
+    lessons: [rescue-lost-work]
+  - id: dangling-commit
+    term: dangling commit
+    meaning: "An unreachable commit that nothing at all points at: no branch, no tag, no reflog line and no other commit. `git fsck` lists these, for example a dropped stash entry."
+    lessons: [rescue-lost-work]
+  - id: garbage-collection
+    term: garbage collection
+    meaning: "Git's tidy-up job, `git gc`. It packs objects together and deletes the ones that nothing leads to and that are old enough. Git runs it by itself from time to time."
+    lessons: [rescue-lost-work]
+  - id: rebase
+    term: rebase
+    meaning: "To replay the commits of a branch on top of another commit. The replayed commits are new commits with new IDs; the old ones are left behind. Done with `git rebase`."
+    lessons: [rebasing]
+  - id: linear-history
+    term: linear history
+    meaning: "A history that is one straight line of commits, with no merge commits. A rebase followed by a fast-forward keeps history linear."
+    lessons: [rebasing]
+  - id: patch-id
+    term: patch ID
+    meaning: "A checksum of only the change a commit makes, without its parent or dates. A commit and its rebased copy have different commit IDs but the same patch ID."
+    lessons: [rebasing]
+  - id: secret
+    term: secret
+    meaning: "Anything that gives access and must stay private: a password, an API key, an access token or a private key. A secret does not belong in a commit."
+    lessons: [remove-sensitive-data]
+  - id: secret-rotation
+    term: rotating a secret
+    meaning: "Replacing a leaked password or key with a new one at the service that issued it, so the old value stops working. Switching it off without a replacement is called revoking."
+    lessons: [remove-sensitive-data]
+  - id: rewriting-history
+    term: rewriting history
+    meaning: "Replacing existing commits with new ones, for example to remove a file from all of them. Every replaced commit gets a new ID, so it needs care once the commits are shared."
+    lessons: [remove-sensitive-data]
+  - id: interactive-rebase
+    term: interactive rebase
+    meaning: "A rebase that first shows you the list of commits it will replay and lets you edit it: reword, reorder, join, split or remove commits. Started with `git rebase -i`."
+    lessons: [clean-up-history]
+  - id: todo-list
+    term: todo list
+    meaning: "The file an interactive rebase opens in your editor: one line per commit, oldest on top, each starting with a command such as `pick` or `squash`. Also called the rebase script."
+    lessons: [clean-up-history]
+  - id: fixup-commit
+    term: fixup commit
+    meaning: "A small commit made with `git commit --fixup`, whose message starts with `fixup!` and names the older commit it corrects. A later rebase folds it into that commit."
+    lessons: [clean-up-history]
+  - id: autosquash
+    term: autosquash
+    meaning: "A rebase option (`--autosquash`) that moves every fixup commit under the commit it corrects and joins them, so you do not arrange the list by hand."
+    lessons: [clean-up-history]
+  - id: atomic-commit
+    term: atomic commit
+    meaning: "A commit that holds one complete job and nothing else: one bug fix, one feature. Pro Git calls it a logically separate changeset."
+    lessons: [commit-craft]
+  - id: subject-line
+    term: subject line
+    meaning: "The first line of a commit message, up to the first blank line. Short views such as `git log --oneline` show only this line. Also called the summary."
+    lessons: [commit-craft]
+  - id: trailing-whitespace
+    term: trailing whitespace
+    meaning: "Spaces or tabs left at the end of a line. They do nothing, but they show up as changes in a diff. `git diff --check` lists them."
+    lessons: [commit-craft]
+  - id: conventional-commits
+    term: Conventional Commits
+    meaning: "A team agreement to start each commit subject with a type, like `feat:` or `fix:`, so that people and tools can sort the history. It is a convention, not a Git feature."
+    lessons: [commit-craft]
+  - id: commit-template
+    term: commit template
+    meaning: "A text file Git puts into the editor as the starting commit message, usually with reminders of the team's message rules. Set with `commit.template`."
+    lessons: [commit-craft]
+  - id: trailer
+    term: trailer
+    meaning: "A `Key: value` line in the last paragraph of a commit message, such as `Co-authored-by:` or `BREAKING CHANGE:`. Tools read it as data."
+    lessons: [commit-craft]
+  - id: revision
+    term: revision
+    meaning: "Any name Git can turn into a commit: an ID, a short ID, a branch, a tag, `HEAD`, or one of those with a suffix like `~2`. Pro Git's word for \"a way to point at a commit\"."
+    lessons: [revision-selection]
+  - id: commit-range
+    term: commit range
+    meaning: "A group of commits named by two ends. `main..feature` means the commits `feature` has and `main` lacks; three dots mean the commits only one of the two has."
+    lessons: [revision-selection]
+  - id: reachable
+    term: reachable
+    meaning: "A commit is reachable from a branch when you get to it by starting at the branch's newest commit and following parents. The reachable commits are that branch's history."
+    lessons: [revision-selection]
+  - id: blame
+    term: blame
+    meaning: "A view of a file that shows, in front of every line, the last commit that changed it and its author. Made by `git blame`; also called file annotation."
+    lessons: [search-blame-bisect]
+  - id: bisect
+    term: bisect
+    meaning: "A search for the commit that broke something. You name a good and a bad commit, and `git bisect` has you test the commit halfway between them, again and again, until one is left. Also called a binary search."
+    lessons: [search-blame-bisect]
+  - id: pickaxe
+    term: pickaxe
+    meaning: "The nickname of `git log -S <text>`: it digs through history for the commits that added or removed a piece of text."
+    lessons: [search-blame-bisect]
+  - id: exit-code
+    term: exit code
+    meaning: "A number every command hands back when it ends: 0 means it worked, anything else means it failed. `git bisect run` reads it to tell a good commit from a bad one. Also called the exit status."
+    lessons: [search-blame-bisect]
+  - id: regular-expression
+    term: regular expression
+    meaning: "A pattern that describes text, where some characters have a special meaning: `.` stands for any character. A plain word is a pattern that matches itself. Also called a regex."
+    lessons: [search-blame-bisect]
+  - id: worktree
+    term: worktree
+    meaning: "A folder that holds the files of one branch, with its own HEAD and staging area, connected to a repository. One repository can have several, so several branches are checked out at once."
+    lessons: [worktrees]
+  - id: main-worktree
+    term: main worktree
+    meaning: "The folder you got from `git init` or `git clone`. It holds the `.git` directory, the repository that every other worktree uses."
+    lessons: [worktrees]
+  - id: linked-worktree
+    term: linked worktree
+    meaning: "An extra folder made by `git worktree add`, with another branch in it. It shares the commits and branches of the main worktree and keeps its own files."
+    lessons: [worktrees]
+  - id: hook
+    term: hook
+    meaning: "A script Git runs by itself at a set moment, such as just before a commit or when a push arrives. The file's name, like `pre-commit`, says which moment."
+    lessons: [hooks]
+  - id: client-side-hook
+    term: client-side hook
+    meaning: "A hook that runs on your own computer, during commands like `git commit` and `git push`. It catches mistakes early, but anyone can skip it with `--no-verify`."
+    lessons: [hooks]
+  - id: server-side-hook
+    term: server-side hook
+    meaning: "A hook that runs in the repository on the server when a push arrives, like `pre-receive` and `update`. The person pushing cannot skip it, so it can enforce a team's rules."
+    lessons: [hooks]
+  - id: shebang
+    term: shebang
+    meaning: "The first line of a script, starting with `#!`, that names the program that reads the rest of the file. `#!/bin/sh` means: run this file with the shell."
+    lessons: [hooks]
+  - id: hooks-path
+    term: core.hooksPath
+    meaning: "The setting that names the folder Git looks in for hooks, in place of `.git/hooks`. Teams point it at a tracked folder such as `.githooks` to share their hooks."
+    lessons: [hooks]
+  - id: executable-bit
+    term: executable bit
+    meaning: "The mark on a file, on macOS and Linux, that says it may be run as a program. `chmod +x` sets it on disk, and `git add --chmod=+x` records it in Git. Also called the execute permission."
+    lessons: [hooks]
+  - id: alias
+    term: alias
+    meaning: "A short name you make up for a Git command you use often, stored as the setting `alias.<name>`. After `git config alias.st status`, `git st` runs `git status`."
+    lessons: [config-pro]
+  - id: config-scope
+    term: scope
+    meaning: "Git's word for a level of settings: system (the whole computer), global (you) or local (one repository). When a setting exists in several scopes, the closest one wins. Also called a configuration level."
+    lessons: [config-pro]
+  - id: conditional-include
+    term: conditional include
+    meaning: "A rule in a config file, written `[includeIf \"...\"]`, that makes Git read a second settings file only in some repositories, for example all those under `~/work/`. Used to give work projects their own email."
+    lessons: [config-pro]
+  - id: line-ending
+    term: line ending
+    meaning: "The invisible characters that end each line of a text file: two on Windows (CRLF), one on macOS and Linux (LF). The setting `core.autocrlf` makes Git convert between them."
+    lessons: [config-pro]
+  - id: environment-variable
+    term: environment variable
+    meaning: "A named value that your terminal hands to every program it starts, like `HOME`. Git reads many of them, most starting with `GIT_`, to change how one command behaves."
+    lessons: [plumbing-toolkit]
+  - id: replacement-ref
+    term: replacement ref
+    meaning: "A ref under `refs/replace`, made by `git replace`, that tells Git to show a different object whenever one particular object is asked for. The original object stays stored; a replacement that gives a commit new parents is also called a graft."
+    lessons: [plumbing-toolkit]
+  - id: object-database
+    term: object database
+    meaning: "The folder `.git/objects`, where Git keeps every object: each version of each file, each folder listing and each commit. Also called the object store."
+    lessons: [objects-deep]
+  - id: content-addressable-storage
+    term: content-addressable storage
+    meaning: "A store where the key of an item is computed from the item's content, so the same content always has the same key. Git's object database works this way: hand in content, get back its ID."
+    lessons: [objects-deep]
+  - id: file-mode
+    term: file mode
+    meaning: "The number in front of each line of a tree that says what kind of entry it is: `100644` a normal file, `100755` a file that may be run as a program, `120000` a symbolic link, `040000` a folder."
+    lessons: [objects-deep]
+  - id: object-header
+    term: object header
+    meaning: "The few bytes Git puts in front of an object's content before computing its ID: the type, the size in bytes and a zero byte, like `blob 8`."
+    lessons: [objects-deep]
+  - id: sha-1
+    term: SHA-1
+    meaning: "The checksum method Git uses by default. It turns any content into 40 characters, and those 40 characters are the object's ID. Also written SHA1."
+    lessons: [objects-deep]
+  - id: sha-256
+    term: SHA-256
+    meaning: "A newer, stronger checksum method that Git can use in place of SHA-1. Its IDs have 64 characters. You pick it when you create a repository, with `git init --object-format=sha256`."
+    lessons: [objects-deep]
+  - id: zlib
+    term: zlib
+    meaning: "The compression method Git uses to make each object smaller before writing it to disk. ZIP and PNG files use the same method."
+    lessons: [objects-deep]
+  - id: symbolic-ref
+    term: symbolic ref
+    meaning: "A ref that holds the name of another ref, not an ID. HEAD is the usual one: it holds `ref: refs/heads/main` when you are on `main`. Also called a symbolic reference."
+    lessons: [refs-deep]
+  - id: tag-object
+    term: tag object
+    meaning: "The object Git creates for an annotated tag. It holds the tag's name, message, author and date, and the ID of the commit it marks. The tag's ref holds the tag object's ID, not the commit's."
+    lessons: [refs-deep]
+  - id: packed-refs
+    term: packed refs
+    meaning: "Refs stored as lines in the single file `.git/packed-refs`, in place of one small file each under `.git/refs`. `git gc` packs them; Git reads both kinds, so always ask Git and not the folder."
+    lessons: [refs-deep]
+  - id: reftable
+    term: reftable
+    meaning: "A newer way for Git to store refs and their logs: a few compact binary files under `.git/reftable`, with no file per ref. You pick it with `git init --ref-format=reftable`."
+    lessons: [refs-deep]
+  - id: signature
+    term: signature
+    meaning: "A block of text stored in a commit or tag, made with the signer's private key. It proves who made the commit and that nothing in it was changed since. A commit that has one is called a signed commit."
+    lessons: [signing]
+  - id: key-pair
+    term: key pair
+    meaning: "Two matching keys made together: a private key that you keep secret and sign with, and a public key that you hand out so others can check your signatures."
+    lessons: [signing]
+  - id: signing-key
+    term: signing key
+    meaning: "The key Git signs your commits and tags with, named by the setting `user.signingkey`. It is a GPG key ID or the path of an SSH public key file."
+    lessons: [signing]
+  - id: gpg
+    term: GPG
+    meaning: "GNU Privacy Guard, a free program for encrypting and signing. It is the signing tool Pro Git uses; Git can also sign with an SSH key."
+    lessons: [signing]
+  - id: allowed-signers-file
+    term: allowed signers file
+    meaning: "A text file that lists whose SSH key is whose: an email and a public key on each line. Git needs it, through `gpg.ssh.allowedSignersFile`, to check SSH signatures."
+    lessons: [signing]
+  - id: verified-badge
+    term: Verified badge
+    meaning: "The label GitHub shows next to a commit or tag whose signature it could check against a key on the committer's account."
+    lessons: [signing]
+  - id: vigilant-mode
+    term: vigilant mode
+    meaning: "A GitHub account setting that marks every commit carrying your name without your signature as \"Unverified\", so fakes stand out."
+    lessons: [signing]
+  - id: gitattributes
+    term: .gitattributes
+    meaning: "A file of patterns and attributes that tells Git how to treat the files it tracks: which are binary, which line endings they get, how they are merged or exported. An attribute is a label Git puts on every file a pattern matches."
+    lessons: [attributes]
+  - id: binary-file
+    term: binary file
+    meaning: "A file that is not made of readable lines of text, like an image or a compiled program. Git stores it, but cannot show a line-by-line diff of it or merge two people's changes to it."
+    lessons: [attributes]
+  - id: merge-driver
+    term: merge driver
+    meaning: "A program Git runs to combine two versions of one file during a merge, in place of its normal line-by-line merge. A `merge=<name>` attribute picks it per file, and a `merge.<name>.driver` setting defines it."
+    lessons: [attributes]
+  - id: clean-smudge-filter
+    term: clean and smudge filters
+    meaning: "A pair of programs Git runs on a file's content: clean when the file is staged, smudge when it is checked out. A `filter=<name>` attribute picks them per file. Git LFS works this way."
+    lessons: [attributes]
+  - id: gui
+    term: GUI
+    meaning: "A graphical user interface: a program you use by clicking, like the Git panel in VS Code or GitHub Desktop. Its buttons run the same Git commands you type on the command line."
+    lessons: [git-in-your-tools]
+  - id: shell-prompt
+    term: prompt
+    meaning: "The text your terminal prints before each command you type, like `$`. A Git-aware prompt also shows the current branch, and marks for uncommitted changes."
+    lessons: [git-in-your-tools]
+  - id: tab-completion
+    term: tab completion
+    meaning: "You type the start of a command, option or branch name and press the Tab key, and the shell finishes the word. Git ships completion scripts for Bash and Zsh."
+    lessons: [git-in-your-tools]
+  - id: diff-tool
+    term: diff tool
+    meaning: "A program that shows two versions of a file side by side. `git difftool` opens the one named in `diff.tool`; a merge tool (`git mergetool`, `merge.tool`) does the same for a conflict."
+    lessons: [git-in-your-tools]
+  - id: submodule
+    term: submodule
+    meaning: "A Git repository kept in a subfolder of another Git repository. The outer project records the inner one's address and one exact commit, not its files."
+    lessons: [submodules]
+  - id: superproject
+    term: superproject
+    meaning: "The outer repository that contains a submodule. Also called the main project."
+    lessons: [submodules]
+  - id: gitlink
+    term: gitlink
+    meaning: "The entry a project keeps for a submodule: a folder name with the ID of one commit of the other repository, stored with mode `160000`. This is the pointer that pins the submodule."
+    lessons: [submodules]
+  - id: shallow-clone
+    term: shallow clone
+    meaning: "A clone whose history is cut short, made with `git clone --depth 1`. It holds the newest commit (or the newest few) with all of its files, and leaves older commits on the server."
+    lessons: [large-repos]
+  - id: partial-clone
+    term: partial clone
+    meaning: "A clone that holds every commit but downloads a file's contents only when a command needs them, made with `git clone --filter=blob:none`. Also called a blobless clone."
+    lessons: [large-repos]
+  - id: sparse-checkout
+    term: sparse checkout
+    meaning: "A working tree that holds only the folders you chose with `git sparse-checkout set`. The other files stay tracked and stay in every commit; they are just not written to your disk."
+    lessons: [large-repos]
+  - id: git-lfs
+    term: Git LFS
+    meaning: "Git Large File Storage: a separate program that keeps big files, like pictures and videos, outside the repository. Git commits a small text file, a pointer, in place of each one."
+    lessons: [large-repos]
+  - id: bundle
+    term: bundle
+    meaning: "One ordinary file that holds commits, made with `git bundle create`. You can carry it on a USB stick or email it, and clone or fetch from it when there is no network."
+    lessons: [large-repos]
+  - id: loose-object
+    term: loose object
+    meaning: "An object stored as its own file under `.git/objects`. Every new object starts this way; later Git moves it into a packfile."
+    lessons: [packfiles-gc]
+  - id: delta
+    term: delta
+    meaning: "An object stored inside a packfile as the difference from a similar object, called its base. Git rebuilds the full object whenever you read it."
+    lessons: [packfiles-gc]
+  - id: pack-index
+    term: pack index
+    meaning: "The `.idx` file beside a packfile: a table that says where in the packfile each object starts, so Git can jump straight to it."
+    lessons: [packfiles-gc]
+  - id: cruft-pack
+    term: cruft pack
+    meaning: "A separate packfile where `git gc` keeps objects that nothing leads to any more, until they are old enough to delete."
+    lessons: [packfiles-gc]

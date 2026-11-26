@@ -1,0 +1,149 @@
+# All three challenges start from the same project: a weather station's log with five commits.
+# The medium and hard challenges repeat the first challenge's setup lines and add their own
+# (a YAML list cannot be extended through an alias).
+# Every answer is a count of objects. Counts depend only on the files and the number of
+# commits, never on who commits or when, so they are the same on every computer.
+# The base project holds 16 objects: 5 commits, 6 trees and 5 blobs.
+challenges:
+  - id: count-loose-objects
+    title: How many loose objects?
+    level: easy
+    brief: "Before anyone tidies the weather station's repository, your teammate wants a number for her notes: how many objects are stored as loose objects right now? Write the number into answer.txt, for example with: echo 5 > answer.txt"
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo answer.txt >> .git/info/exclude
+      - printf "# Weather station\n\nOne line per day from the roof sensor.\n" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - 'for day in $(seq 1 400); do echo "Day $day: $((day * 7919 % 31)) degrees, wind $((day * 6151 % 67)) km/h, humidity $((day * 3571 % 59 + 30)) percent"; done > weather.txt'
+      - git add weather.txt
+      - git commit -q -m "Add the weather log"
+      - 'echo "Day 401: 19 degrees, wind 20 km/h, humidity 71 percent" >> weather.txt'
+      - git commit -q -am "Log day 401"
+      - 'echo "Day 402: 18 degrees, wind 25 km/h, humidity 80 percent" >> weather.txt'
+      - git commit -q -am "Log day 402"
+      - mkdir docs
+      - echo "Roof sensor, model TX-7. Checked every spring." > docs/sensor.txt
+      - git add docs
+      - git commit -q -m "Describe the sensor"
+    goal:
+      - check: answer-is
+        answer: "16"
+        label: "answer.txt holds the number of loose objects"
+    hints:
+      - "One command counts the objects in .git/objects for you. Its plain form prints one line; with -v it prints a list of fields, one per line."
+      - "Run git count-objects -v. Two fields count objects: one counts loose objects, the other counts objects inside packfiles. Which is which?"
+      - "The count line is the number of loose objects. Run git count-objects -v, read the number after count, then write it with echo, like: echo 5 > answer.txt"
+    solution:
+      - git count-objects -v | grep "^count" | cut -d" " -f2 > answer.txt
+
+  - id: pack-everything
+    title: Commit, pack, and count the pack
+    level: medium
+    brief: "This copy of the weather station was packed last week, and work went on afterwards. Day 404 is typed into weather.txt but not committed yet. Commit it with the message \"Log day 404\", then pack the whole repository so that no loose object is left, and write the number of objects that are now inside packfiles into answer.txt."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo answer.txt >> .git/info/exclude
+      - printf "# Weather station\n\nOne line per day from the roof sensor.\n" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - 'for day in $(seq 1 400); do echo "Day $day: $((day * 7919 % 31)) degrees, wind $((day * 6151 % 67)) km/h, humidity $((day * 3571 % 59 + 30)) percent"; done > weather.txt'
+      - git add weather.txt
+      - git commit -q -m "Add the weather log"
+      - 'echo "Day 401: 19 degrees, wind 20 km/h, humidity 71 percent" >> weather.txt'
+      - git commit -q -am "Log day 401"
+      - 'echo "Day 402: 18 degrees, wind 25 km/h, humidity 80 percent" >> weather.txt'
+      - git commit -q -am "Log day 402"
+      - mkdir docs
+      - echo "Roof sensor, model TX-7. Checked every spring." > docs/sensor.txt
+      - git add docs
+      - git commit -q -m "Describe the sensor"
+      # Last week's tidy-up: the 16 objects so far go into one packfile.
+      - git gc -q
+      # Work after the tidy-up: one commit (3 loose objects) and one line not committed yet.
+      - 'echo "Day 403: 17 degrees, wind 9 km/h, humidity 66 percent" >> weather.txt'
+      - git commit -q -am "Log day 403"
+      - 'echo "Day 404: 22 degrees, wind 14 km/h, humidity 58 percent" >> weather.txt'
+    goal:
+      - check: commit-exists
+        message: "Log day 404"
+        label: "Day 404 is committed as \"Log day 404\""
+      - check: working-folder-clean
+        label: "git status shows nothing left to do"
+      - check: answer-is
+        answer: "22"
+        label: "answer.txt holds the number of objects in packs after git gc"
+    hints:
+      - "Three steps, in this order: commit, pack, count. Packing first would leave the new commit's objects loose."
+      - "git commit -am commits the changed weather.txt. git gc packs the loose objects and joins the packs into one. After that, git count-objects -v shows count 0 and a larger in-pack."
+      - "Run git commit -am \"Log day 404\", then git gc, then git count-objects -v. Write the in-pack number into answer.txt with echo."
+    solution:
+      - git commit -q -am "Log day 404"
+      - git gc -q
+      - git count-objects -v | grep "^in-pack" | cut -d" " -f2 > answer.txt
+
+  - id: remove-for-real
+    title: Remove an abandoned commit for real
+    level: hard
+    brief: "Someone tried a new log format in a commit, \"Try a new log format\", and then reset main back to drop it. The repository was packed afterwards, and the abandoned commit is still inside the pack: the picture still shows it, off the main line. Remove it from the repository for real, so that no command can ever bring it back, and leave main as it is. Then write the number of objects that are left inside packfiles into answer.txt."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo answer.txt >> .git/info/exclude
+      - printf "# Weather station\n\nOne line per day from the roof sensor.\n" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - 'for day in $(seq 1 400); do echo "Day $day: $((day * 7919 % 31)) degrees, wind $((day * 6151 % 67)) km/h, humidity $((day * 3571 % 59 + 30)) percent"; done > weather.txt'
+      - git add weather.txt
+      - git commit -q -m "Add the weather log"
+      - 'echo "Day 401: 19 degrees, wind 20 km/h, humidity 71 percent" >> weather.txt'
+      - git commit -q -am "Log day 401"
+      - 'echo "Day 402: 18 degrees, wind 25 km/h, humidity 80 percent" >> weather.txt'
+      - git commit -q -am "Log day 402"
+      - mkdir docs
+      - echo "Roof sensor, model TX-7. Checked every spring." > docs/sensor.txt
+      - git add docs
+      - git commit -q -m "Describe the sensor"
+      - 'echo "Day 403: 17 degrees, wind 9 km/h, humidity 66 percent" >> weather.txt'
+      - git commit -q -am "Log day 403"
+      # The experiment: one commit with one new file (3 objects), remembered by a tag,
+      # then reset away. The reflog and the tag both still lead to it.
+      - printf "day,degrees,wind,humidity\n1,14,54,61\n2,28,41,33\n" > weather.csv
+      - git add weather.csv
+      - git commit -q -m "Try a new log format"
+      - git tag backup-try
+      - git reset -q --hard HEAD~1
+      - git gc -q
+    goal:
+      - check: tag-is-missing
+        tag: backup-try
+        label: "No tag leads to the abandoned commit"
+      - check: answer-is
+        answer: "19"
+        label: "answer.txt holds the number of objects in packs once the commit is really gone"
+      - check: branch-is-at-commit
+        branch: main
+        message: "Log day 403"
+        label: "main still ends at \"Log day 403\""
+      - check: commit-is-gone
+        message: "Try a new log format"
+        label: "\"Try a new log format\" is not part of main"
+      - check: working-folder-clean
+        label: "git status shows nothing left to do"
+    hints:
+      - "A plain git gc deletes nothing here. Read \"What git gc deletes, and what stands in the way\" in Under the hood: an object stays as long as anything leads to it. List everything that still leads to the abandoned commit: run git reflog, and look at what the picture shows on that commit."
+      - "Two things protect the commit: reflog lines and the tag backup-try. Remove both, then run a garbage collection that does not wait two weeks. Check with git count-objects -v: in-pack must drop by 3 (one commit, one tree, one blob)."
+      - "Run git tag -d backup-try, then git reflog expire --expire=now --all, then git gc --prune=now, then git count-objects -v. Write the in-pack number into answer.txt with echo."
+    solution:
+      - git tag -d backup-try
+      - git reflog expire --expire=now --all
+      - git gc -q --prune=now
+      - git count-objects -v | grep "^in-pack" | cut -d" " -f2 > answer.txt

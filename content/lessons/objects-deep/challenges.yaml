@@ -1,0 +1,104 @@
+challenges:
+  - id: blob-id-of-text
+    title: The ID of a line of text
+    level: easy
+    brief: "A teammate says their file holds one line, version 1, and that Git stored it as the blob 83baae6. Check it yourself: compute the blob ID of the text version 1 and write the full 40-character ID into answer.txt."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo answer.txt >> .git/info/exclude
+    goal:
+      - check: answer-is
+        answer: 83baae61804e65cc73a7201a7252750c76066a30
+        label: "answer.txt holds the full blob ID of the text version 1"
+    hints:
+      - "One plumbing command prints the ID that some content gets. It can read the content from standard input, so you need no file."
+      - "Send the text with echo 'version 1' and a pipe into git hash-object --stdin. You do not need -w: the job is to compute the ID, not to store the blob."
+      - "Run: echo 'version 1' | git hash-object --stdin > answer.txt (the > writes the output into the file). Then cat answer.txt shows the 40 characters."
+    solution:
+      - echo 'version 1' | git hash-object --stdin > answer.txt
+
+  - id: tree-of-a-commit
+    title: Which tree did that commit record?
+    level: medium
+    brief: "The field-notes project has three commits. Find the tree that the commit \"Add the guide\" points at, and write the tree's full 40-character ID into answer.txt."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo answer.txt >> .git/info/exclude
+      - echo "# Field notes" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - mkdir docs
+      - echo "Write one note per day." > docs/guide.txt
+      - git add docs
+      - git commit -q -m "Add the guide"
+      - 'echo "Day 1: the river is high." > notes.txt'
+      - git add notes.txt
+      - git commit -q -m "Add the first note"
+    goal:
+      - check: answer-is
+        answer: bb208380c689e11cd4bbe573d01e68d7fca79c72
+        label: "answer.txt holds the full ID of the tree of \"Add the guide\""
+      - check: commit-count-is
+        count: 3
+        label: "The history still has its three commits"
+    hints:
+      - "Run git log --oneline to find the commit. It is not the newest one. Which line of a commit object names its tree?"
+      - "Print the commit with git cat-file -p <commit ID> and read the line that starts with tree. Or ask for it by name: <commit>^{tree}."
+      - "Run: git log --oneline, then git cat-file -p <ID of \"Add the guide\">, and copy the 40 characters after the word tree: echo <tree ID> > answer.txt. In one step: git rev-parse 'HEAD~1^{tree}' > answer.txt"
+    solution:
+      - git rev-parse 'HEAD~1^{tree}' > answer.txt
+
+  - id: commit-by-hand
+    title: A commit made with plumbing only
+    level: hard
+    brief: "Without git add, git commit, git branch or git switch, make a new commit on top of main's newest commit. It adds a file hand.txt (any text you like), its message is \"Made by hand\", and a new branch named plumbing points at it. main must not move, you stay on main, and git status must be clean when you are done."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo answer.txt >> .git/info/exclude
+      - echo "# Field notes" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - mkdir docs
+      - echo "Write one note per day." > docs/guide.txt
+      - git add docs
+      - git commit -q -m "Add the guide"
+      - 'echo "Day 1: the river is high." > notes.txt'
+      - git add notes.txt
+      - git commit -q -m "Add the first note"
+    goal:
+      - check: branch-exists
+        branch: plumbing
+        label: "The branch plumbing exists"
+      - check: branch-is-at-commit
+        branch: plumbing
+        message: "Made by hand"
+        label: "plumbing points at the commit \"Made by hand\""
+      - check: branch-contains-commit
+        branch: plumbing
+        message: "Add the first note"
+        label: "The new commit has main's newest commit as its parent"
+      - check: head-is-on-branch
+        branch: main
+        label: "You are still on main"
+      - check: commit-count-is
+        count: 3
+        label: "main still has its three commits"
+      - check: working-folder-clean
+        label: "git status has nothing to report"
+    hints:
+      - "Five steps, one plumbing command each: store a blob, list it in the staging area, write the staging area as a tree, make a commit from the tree with a parent, point a branch at the commit. The staging area already holds main's files, so the new tree keeps them."
+      - "hash-object -w --stdin stores the text. update-index --add --cacheinfo 100644,<blob ID>,hand.txt stages it. write-tree prints a tree ID. commit-tree <tree> -p main makes the commit (give the message with echo or -m). update-ref wants the full ref name, refs/heads/plumbing. Then git status still shows hand.txt as staged: the Advanced part \"Put the staging area back\" has the fix."
+      - "Run: echo 'Made with plumbing' | git hash-object -w --stdin, then git update-index --add --cacheinfo 100644,<blob ID>,hand.txt, then git write-tree, then echo 'Made by hand' | git commit-tree <tree ID> -p main, then git update-ref refs/heads/plumbing <commit ID>, and last git read-tree HEAD"
+    solution:
+      - git update-index --add --cacheinfo 100644,$(echo 'Made with plumbing' | git hash-object -w --stdin),hand.txt
+      - git update-ref refs/heads/plumbing $(echo 'Made by hand' | git commit-tree $(git write-tree) -p main)
+      - git read-tree HEAD
