@@ -88,6 +88,8 @@ mod tests {
             author_name: "Student".to_string(),
             authored_at: "2026-11-26T10:00:00+00:00".to_string(),
             is_reachable: true,
+            is_signed: false,
+            changed_paths: Vec::new(),
         }
     }
 

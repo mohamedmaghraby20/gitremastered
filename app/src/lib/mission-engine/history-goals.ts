@@ -45,6 +45,16 @@ export function isHistoryGoalMet(goalCheck: HistoryGoalCheck, snapshot: RepoSnap
 			return isSameText(snapshot.answer, goalCheck.answer);
 		case 'answer-is-commit':
 			return doesAnswerNameCommit(snapshot, goalCheck.message);
+		case 'history-is-linear':
+			return headHistory.every((commit) => commit.parentIds.length <= 1);
+		case 'commit-comes-before':
+			return doesCommitComeBefore(snapshot, goalCheck.message, goalCheck.later);
+		case 'config-is-unset':
+			return !snapshot.localConfig.some(
+				(entry) => entry.key.toLowerCase() === goalCheck.key.toLowerCase()
+			);
+		case 'latest-commit-is-signed':
+			return findHeadCommit(snapshot)?.isSigned ?? false;
 	}
 }
 
@@ -86,4 +96,26 @@ function doesAnswerNameCommit(snapshot: RepoSnapshot, message: string): boolean 
 	return snapshot.commits.some(
 		(commit) => isSameText(commit.message, message) && commit.id.startsWith(answer)
 	);
+}
+
+/**
+ * Tells whether, on HEAD's history, one commit comes before (is an ancestor of) another.
+ * Used for "reorder these commits" challenges.
+ * @param snapshot - the repo state
+ * @param earlierMessage - text in the message of the commit that should come first
+ * @param laterMessage - text in the message of the commit that should come after it
+ * @returns true if both are on HEAD's history and the first is an ancestor of the second
+ */
+function doesCommitComeBefore(
+	snapshot: RepoSnapshot,
+	earlierMessage: string,
+	laterMessage: string
+): boolean {
+	const headHistory = findHistory(snapshot, snapshot.head.commitId);
+	const laterCommit = headHistory.find((commit) => messageContains(commit, laterMessage));
+	if (laterCommit === undefined) {
+		return false;
+	}
+	const historyBeforeLater = findHistory(snapshot, laterCommit.id).slice(1);
+	return historyBeforeLater.some((commit) => messageContains(commit, earlierMessage));
 }

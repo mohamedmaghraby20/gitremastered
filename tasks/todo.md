@@ -900,10 +900,12 @@ Every lesson task follows `docs/writing-lessons.md` exactly as in phase 5: four 
 **Description:** Add what wave A's lessons need to check, in one step (as task 47 did): file contents, every path any commit ever held, linked worktrees, submodules, signed commits. New checks: `file-contains`, `file-lacks`, `committed-file-contains`, `committed-file-lacks`, `file-is-in-no-commit`, `history-is-linear`, `commit-comes-before`, `config-is-unset`, `worktree-exists`, `submodule-exists`, `latest-commit-is-signed`.
 
 **Acceptance criteria:**
-- [ ] Rust and TypeScript shapes match; the JSON-name test covers the new fields
-- [ ] File texts are capped (8 KB per file, 40 files), so the snapshot stays small and fast
-- [ ] Every new check has a passing and a failing test; real-Git tests for worktrees, submodules, signing and history paths
-- [ ] SPEC 3.4 and `docs/writing-lessons.md` list the new fields and checks
+- [x] Rust and TypeScript shapes match; the JSON-name test covers the new fields
+- [x] File texts are capped (8 KB per file, 40 files), so the snapshot stays small and fast
+- [x] Every new check has a passing and a failing test; real-Git tests for worktrees, submodules, file texts and changed paths
+- [x] SPEC 3.4 and `docs/writing-lessons.md` list the new fields and checks
+
+**Result (2026-11-27):** 11 new checks (48 in all). File texts cost no Git process for files without a pending change: their committed text is the text on disk; one `git cat-file --batch` reads the rest. Changed paths and signatures come from the existing log call (`--name-only -z`, `%G?`). Worktrees and submodules are read from files.
 
 **Verification:** Rust tests, goal-checker tests · **Files:** `models/`, `repo_inspector/`, `mission-engine/`, `types/` · **Scope:** M
 

@@ -21,7 +21,9 @@ const twoCommitSnapshot: RepoSnapshot = {
 			parentIds: [firstId],
 			authorName: 'Student',
 			authoredAt: '2026-11-25T10:05:00+00:00',
-			isReachable: true
+			isReachable: true,
+			isSigned: false,
+			changedPaths: []
 		},
 		{
 			id: firstId,
@@ -29,7 +31,9 @@ const twoCommitSnapshot: RepoSnapshot = {
 			parentIds: [],
 			authorName: 'Student',
 			authoredAt: '2026-11-25T10:00:00+00:00',
-			isReachable: true
+			isReachable: true,
+			isSigned: false,
+			changedPaths: []
 		}
 	],
 	branches: [
@@ -46,7 +50,11 @@ const twoCommitSnapshot: RepoSnapshot = {
 	stashes: [],
 	remotes: [],
 	localConfig: [],
-	answer: null
+	answer: null,
+	workingFileTexts: [],
+	committedFileTexts: [],
+	worktrees: [],
+	submodules: []
 };
 
 describe('HistoryMap', () => {
@@ -91,7 +99,9 @@ describe('HistoryMap', () => {
 			parentIds: [firstId],
 			authorName: 'Student',
 			authoredAt: '2026-11-25T10:03:00+00:00',
-			isReachable: false
+			isReachable: false,
+			isSigned: false,
+			changedPaths: []
 		};
 		const amended = { ...twoCommitSnapshot, commits: [lostCommit, ...twoCommitSnapshot.commits] };
 		await render(HistoryMap, { snapshot: amended });

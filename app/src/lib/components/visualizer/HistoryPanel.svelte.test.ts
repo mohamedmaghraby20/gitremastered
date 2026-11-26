@@ -26,7 +26,9 @@ function snapshotWithCommits(commitCount: number): RepoSnapshot {
 			parentIds: index === 0 ? [] : [String(index - 1).padStart(40, '0')],
 			authorName: 'Student',
 			authoredAt: '2026-11-26T10:00:00+00:00',
-			isReachable: true
+			isReachable: true,
+			isSigned: false,
+			changedPaths: []
 		});
 	}
 	const headId = commits[0].id;
@@ -46,7 +48,11 @@ function snapshotWithCommits(commitCount: number): RepoSnapshot {
 		stashes: [],
 		remotes: [],
 		localConfig: [],
-		answer: null
+		answer: null,
+		workingFileTexts: [],
+		committedFileTexts: [],
+		worktrees: [],
+		submodules: []
 	};
 }
 

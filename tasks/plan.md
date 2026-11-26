@@ -166,7 +166,7 @@ Scope approved 2026-11-26: modules 0–4, offline. Run in one go; you review the
 Decisions made 2026-11-27 (todo.md, "Phase 6 decisions"). Run in one go; you review the whole app at the end.
 
 **Wave A: Git only**
-- [ ] Task 76: Snapshot version 3 and the goal checks for wave A
+- [x] Task 76: Snapshot version 3 and the goal checks for wave A
 - [ ] Tasks 77–82: modules 5 (Git part), 6, 7, 9, 10 and 11 (24 lessons)
 - [ ] Task 83: Wave A checkpoints, paths, glossary and links
 

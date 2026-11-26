@@ -28,6 +28,10 @@ function snapshotWith(changes: Partial<RepoSnapshot>): RepoSnapshot {
 		remotes: [],
 		localConfig: [],
 		answer: null,
+		workingFileTexts: [],
+		committedFileTexts: [],
+		worktrees: [],
+		submodules: [],
 		...changes
 	};
 }
@@ -39,7 +43,9 @@ const oneCommit: RepoSnapshot['commits'] = [
 		parentIds: [],
 		authorName: 'Student',
 		authoredAt: '2026-11-25T10:00:00+00:00',
-		isReachable: true
+		isReachable: true,
+		isSigned: false,
+		changedPaths: []
 	}
 ];
 

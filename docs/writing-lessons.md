@@ -140,6 +140,16 @@ Every goal has a `check`, a `label` (the sentence in the checklist) and the extr
 | `file-is-missing` | `file` | The file is not in the working tree |
 | `working-folder-clean` | none | `git status` has nothing to report |
 
+**File contents** (files up to 8 KB, at most 40 per repository; the text match is exact and letter case counts)
+
+| Goal check | Extra fields | Met when |
+|---|---|---|
+| `file-contains` | `file`, `text` | The file in the working tree contains the text |
+| `file-lacks` | `file`, `text` | The file is in the working tree and does not contain the text (a deleted file never passes) |
+| `committed-file-contains` | `file`, `text` | The file as it is in the latest commit contains the text |
+| `committed-file-lacks` | `file`, `text` | The file is in the latest commit and does not contain the text |
+| `file-is-in-no-commit` | `file` | No commit that a branch, tag or HEAD reaches added or changed the file (commits only the reflog remembers do not count) |
+
 **History, settings and answers** ("history" means the commits you reach from HEAD)
 
 | Goal check | Extra fields | Met when |
@@ -155,6 +165,10 @@ Every goal has a `check`, a `label` (the sentence in the checklist) and the extr
 | `config-is` | `key`, `value` | The repository's own settings (`git config --local`) hold that value |
 | `answer-is` | `answer` | The first line of `answer.txt` is that text (letter case and outer spaces ignored) |
 | `answer-is-commit` | `message` | The first line of `answer.txt` is the ID, short or full, of the commit with exactly that message |
+| `history-is-linear` | none | No commit in the history is a merge commit (after a rebase, for example) |
+| `commit-comes-before` | `message`, `later` | Both commits are in the history and the first is an ancestor of the second (for reordering) |
+| `config-is-unset` | `key` | The repository's own settings do not hold the key |
+| `latest-commit-is-signed` | none | Git verified a signature on the commit HEAD is on (`git log --format=%G?` is not `N`; SSH signatures need `gpg.ssh.allowedSignersFile`) |
 
 **Branches** (a `branch` may be local, like `main`, or remote-tracking, like `origin/main`, unless noted)
 
@@ -183,6 +197,13 @@ Every goal has a `check`, a `label` (the sentence in the checklist) and the extr
 | `tag-is-annotated` | `tag` | The tag exists and is annotated |
 | `tag-is-on-commit` | `tag`, `message` | The tag points at a commit with that message |
 | `remote-has-tag` | `tag` | The tag exists on the practice remote (it was pushed) |
+
+**Worktrees and submodules** (the picture follows `project/` only)
+
+| Goal check | Extra fields | Met when |
+|---|---|---|
+| `worktree-exists` | `branch` | A linked worktree (`git worktree add`) has that branch checked out |
+| `submodule-exists` | `path` | `.gitmodules` lists a submodule at that path and its files are checked out |
 
 **Answer challenges.** Some skills only read: finding a commit, reading a diff. Their challenges ask the student to write what they found into `answer.txt` (`echo 3 > answer.txt`, or `git rev-parse --short HEAD~2 > answer.txt`), and a goal checks the answer. Say exactly what form the answer takes ("the short commit ID", "a number", "the file name"). Add `echo answer.txt >> .git/info/exclude` to the setup, so the answer file stays out of `git status`.
 

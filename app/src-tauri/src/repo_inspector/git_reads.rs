@@ -31,13 +31,16 @@ const STATUS_ARGUMENTS: [&str; 5] = [
 /// Every commit a branch, tag or remote branch reaches, plus (`--reflog`) every commit the
 /// reflog still remembers: where HEAD and the branches pointed before. That is how commits
 /// "lost" by an amend or a reset stay visible. An empty repo simply prints nothing.
-const LOG_ARGUMENTS: [&str; 7] = [
+/// `--name-only -z` adds the files each commit changed, ended by zero bytes.
+const LOG_ARGUMENTS: [&str; 9] = [
     "log",
     "--branches",
     "--tags",
     "--remotes",
     "--reflog",
     "--date-order",
+    "--name-only",
+    "-z",
     LOG_FORMAT,
 ];
 

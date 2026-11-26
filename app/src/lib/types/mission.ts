@@ -16,6 +16,14 @@ export type FileGoalCheck =
 	| { check: 'file-is-missing'; file: string }
 	| { check: 'working-folder-clean' };
 
+/** Goals about what a file says, in the working tree or in the latest commit, and its whole history. */
+export type ContentGoalCheck =
+	| { check: 'file-contains'; file: string; text: string }
+	| { check: 'file-lacks'; file: string; text: string }
+	| { check: 'committed-file-contains'; file: string; text: string }
+	| { check: 'committed-file-lacks'; file: string; text: string }
+	| { check: 'file-is-in-no-commit'; file: string };
+
 /** Goals about the history HEAD is on, settings, and written answers. */
 export type HistoryGoalCheck =
 	| { check: 'commit-count-at-least'; count: number }
@@ -28,7 +36,11 @@ export type HistoryGoalCheck =
 	| { check: 'stash-count-is'; count: number }
 	| { check: 'config-is'; key: string; value: string }
 	| { check: 'answer-is'; answer: string }
-	| { check: 'answer-is-commit'; message: string };
+	| { check: 'answer-is-commit'; message: string }
+	| { check: 'history-is-linear' }
+	| { check: 'commit-comes-before'; message: string; later: string }
+	| { check: 'config-is-unset'; key: string }
+	| { check: 'latest-commit-is-signed' };
 
 /** Goals about branches and where HEAD is. */
 export type BranchGoalCheck =
@@ -54,11 +66,21 @@ export type RemoteGoalCheck =
 	| { check: 'tag-is-on-commit'; tag: string; message: string }
 	| { check: 'remote-has-tag'; tag: string };
 
+/** Goals about other folders that share or hold the repository: worktrees and submodules. */
+export type WorkspaceGoalCheck =
+	{ check: 'worktree-exists'; branch: string } | { check: 'submodule-exists'; path: string };
+
 /**
  * One goal the student must reach, checked against the repo snapshot.
  * "check" names the kind of test; the other fields depend on it.
  */
-export type GoalCheck = FileGoalCheck | HistoryGoalCheck | BranchGoalCheck | RemoteGoalCheck;
+export type GoalCheck =
+	| FileGoalCheck
+	| ContentGoalCheck
+	| HistoryGoalCheck
+	| BranchGoalCheck
+	| RemoteGoalCheck
+	| WorkspaceGoalCheck;
 
 /** The name of a goal check, like "file-is-committed". */
 export type GoalCheckKind = GoalCheck['check'];
@@ -77,6 +99,11 @@ export const goalCheckFields: Record<GoalCheckKind, readonly string[]> = {
 	'file-exists': ['file'],
 	'file-is-missing': ['file'],
 	'working-folder-clean': [],
+	'file-contains': ['file', 'text'],
+	'file-lacks': ['file', 'text'],
+	'committed-file-contains': ['file', 'text'],
+	'committed-file-lacks': ['file', 'text'],
+	'file-is-in-no-commit': ['file'],
 	'commit-count-at-least': ['count'],
 	'commit-count-is': ['count'],
 	'latest-commit-message-contains': ['text'],
@@ -88,6 +115,10 @@ export const goalCheckFields: Record<GoalCheckKind, readonly string[]> = {
 	'config-is': ['key', 'value'],
 	'answer-is': ['answer'],
 	'answer-is-commit': ['message'],
+	'history-is-linear': [],
+	'commit-comes-before': ['message', 'later'],
+	'config-is-unset': ['key'],
+	'latest-commit-is-signed': [],
 	'branch-exists': ['branch'],
 	'branch-is-missing': ['branch'],
 	'head-is-on-branch': ['branch'],
@@ -105,7 +136,9 @@ export const goalCheckFields: Record<GoalCheckKind, readonly string[]> = {
 	'tag-is-missing': ['tag'],
 	'tag-is-annotated': ['tag'],
 	'tag-is-on-commit': ['tag', 'message'],
-	'remote-has-tag': ['tag']
+	'remote-has-tag': ['tag'],
+	'worktree-exists': ['branch'],
+	'submodule-exists': ['path']
 };
 
 /** The names of every kind of goal check, used to reject unknown ones. */

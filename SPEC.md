@@ -113,10 +113,20 @@ type RepoSnapshot = {
   remotes: Remote[];
   localConfig: { key: string; value: string }[];  // git config --local
   answer: string | null;       // first line of answer.txt, for "find out and write it down" challenges
+  // Version 3 (phase 6):
+  workingFileTexts: FileText[];    // small text files (up to 8 KB, at most 40) as they are on disk
+  committedFileTexts: FileText[];  // the same, as they are in the latest commit
+  worktrees: Worktree[];           // linked worktrees
+  submodules: Submodule[];         // submodules listed in .gitmodules
 };
 
 /** One commit. isReachable is false for a commit only the reflog remembers (after amend or reset). */
-type Commit = { id: string; message: string; parentIds: string[]; authorName: string; authoredAt: string; isReachable: boolean };
+type Commit = { id: string; message: string; parentIds: string[]; authorName: string; authoredAt: string; isReachable: boolean;
+  isSigned: boolean; changedPaths: string[] };  // version 3: signature verified; files the commit changed
+
+type FileText = { path: string; text: string };
+type Worktree = { path: string; branch: string | null };
+type Submodule = { path: string; isInitialized: boolean };
 
 /** A local ("main") or remote-tracking ("origin/main") branch, with the branch it follows. */
 type Branch = { name: string; commitId: string; isRemote: boolean; upstream: string | null; ahead: number; behind: number };
@@ -134,7 +144,7 @@ type HeadState =
 type FileChange = { path: string; changeKind: "added" | "modified" | "deleted" | "renamed"; oldPath: string | null };
 ```
 
-Approved 2026-11-25 as version 1. Fields are added when a lesson needs them. Version 2 (2026-11-26, phase 5) added the fields for undo, branching and remote lessons in one step: lost commits, conflicts, an operation in progress, stashes, upstreams with ahead/behind, remotes, local settings and the answer file.
+Approved 2026-11-25 as version 1. Fields are added when a lesson needs them. Version 2 (2026-11-26, phase 5) added the fields for undo, branching and remote lessons in one step: lost commits, conflicts, an operation in progress, stashes, upstreams with ahead/behind, remotes, local settings and the answer file. Version 3 (2026-11-27, phase 6) added small file texts (on disk and in the latest commit), the files each commit changed, signed commits, linked worktrees and submodules.
 
 ### 3.5 Data flow (one command)
 

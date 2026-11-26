@@ -22,7 +22,11 @@ export const emptySnapshot: RepoSnapshot = {
 	stashes: [],
 	remotes: [],
 	localConfig: [],
-	answer: null
+	answer: null,
+	workingFileTexts: [],
+	committedFileTexts: [],
+	worktrees: [],
+	submodules: []
 };
 
 /**
@@ -54,7 +58,9 @@ export function sampleCommit(
 		parentIds,
 		authorName: 'Student',
 		authoredAt: '2026-11-25T10:00:00+00:00',
-		isReachable
+		isReachable,
+		isSigned: false,
+		changedPaths: []
 	};
 }
 

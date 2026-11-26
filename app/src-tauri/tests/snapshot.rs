@@ -306,3 +306,63 @@ fn local_settings_and_the_answer_file_are_read() {
     assert_eq!(editor.value, "nano");
     assert_eq!(snapshot.answer.as_deref(), Some("3"));
 }
+
+/// Version 3: a committed file with a pending change has two texts, the one on disk and the
+/// one in the latest commit; each commit lists the files it changed.
+#[test]
+fn file_texts_on_disk_and_in_the_latest_commit() {
+    let (_temporary, folder) = practice_repo(&[
+        "git config core.autocrlf false",
+        "printf 'Tea\n' > menu.txt",
+        "git add menu.txt",
+        "git commit -q -m 'Add menu'",
+        "printf 'Coffee\n' >> menu.txt",
+        "printf 'draft\n' > notes.txt",
+    ]);
+
+    let snapshot = read_snapshot(&folder).expect("snapshot");
+
+    let working_menu = snapshot
+        .working_file_texts
+        .iter()
+        .find(|file| file.path == "menu.txt")
+        .expect("menu.txt on disk");
+    assert_eq!(working_menu.text, "Tea\nCoffee\n");
+    assert!(
+        snapshot
+            .working_file_texts
+            .iter()
+            .any(|file| file.path == "notes.txt")
+    );
+    assert_eq!(snapshot.committed_file_texts.len(), 1);
+    assert_eq!(snapshot.committed_file_texts[0].text, "Tea\n");
+    assert_eq!(
+        snapshot.commits[0].changed_paths,
+        vec!["menu.txt".to_string()]
+    );
+    assert!(!snapshot.commits[0].is_signed);
+}
+
+/// Version 3: a linked worktree and an initialized submodule are listed.
+#[test]
+fn worktrees_and_submodules_are_listed() {
+    let (_temporary, folder) = practice_repo(&[
+        "git config core.autocrlf false",
+        "echo hi > README.md",
+        "git add README.md",
+        "git commit -q -m 'Add README'",
+        "git worktree add -q -b hotfix ../hotfix",
+        "git init -q -b main ../library",
+        "git -C ../library -c user.name=T -c user.email=t@example.com commit -q --allow-empty -m 'Start'",
+        "git -c protocol.file.allow=always submodule --quiet add ../library vendor/library",
+    ]);
+
+    let snapshot = read_snapshot(&folder).expect("snapshot");
+
+    assert_eq!(snapshot.worktrees.len(), 1);
+    assert_eq!(snapshot.worktrees[0].branch, Some("hotfix".to_string()));
+    assert!(snapshot.worktrees[0].path.ends_with("hotfix"));
+    assert_eq!(snapshot.submodules.len(), 1);
+    assert_eq!(snapshot.submodules[0].path, "vendor/library");
+    assert!(snapshot.submodules[0].is_initialized);
+}

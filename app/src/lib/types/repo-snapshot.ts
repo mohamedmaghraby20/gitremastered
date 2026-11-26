@@ -20,6 +20,11 @@ export type RepoSnapshot = {
 	remotes: Remote[];
 	localConfig: ConfigEntry[]; // the repository's own settings (git config --local)
 	answer: string | null; // the first line of answer.txt, for "find out and write it down" challenges
+	// Version 3 (phase 6):
+	workingFileTexts: FileText[]; // small text files in the working tree, as they are on disk
+	committedFileTexts: FileText[]; // small text files as they are in the latest commit (HEAD)
+	worktrees: Worktree[]; // linked worktrees (git worktree add), not the main one
+	submodules: Submodule[]; // submodules listed in .gitmodules
 };
 
 /** One commit. */
@@ -30,6 +35,8 @@ export type Commit = {
 	authorName: string;
 	authoredAt: string; // ISO 8601 date and time
 	isReachable: boolean; // false for a commit only the reflog remembers (after amend or reset)
+	isSigned: boolean; // true when Git verified a signature on it (git log %G? is not "N")
+	changedPaths: string[]; // the files this commit added, changed or deleted (none for a merge)
 };
 
 /** One branch, local ("main") or remote-tracking ("origin/main"). */
@@ -81,4 +88,25 @@ export type Remote = {
 export type ConfigEntry = {
 	key: string; // lower case, like "user.name"
 	value: string;
+};
+
+/**
+ * One small text file and its contents. Only files up to 8 KB are read, and at most 40 of
+ * them, so the snapshot stays small; a file left out is simply missing from the list.
+ */
+export type FileText = {
+	path: string;
+	text: string;
+};
+
+/** A linked worktree: another folder with its own checked-out branch, sharing this repository. */
+export type Worktree = {
+	path: string; // the folder, as Git recorded it
+	branch: string | null; // the branch checked out there, like "hotfix"; null when detached
+};
+
+/** A submodule: another repository kept inside this one at a fixed commit. */
+export type Submodule = {
+	path: string; // where it lives in the working tree, like "vendor/library"
+	isInitialized: boolean; // true once its files are checked out (git submodule update --init)
 };

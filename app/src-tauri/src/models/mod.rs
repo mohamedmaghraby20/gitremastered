@@ -5,3 +5,4 @@
 
 pub mod repo_snapshot;
 pub mod working_state;
+pub mod workspace;

@@ -28,7 +28,9 @@
 				parentIds: [firstId],
 				authorName: 'Student',
 				authoredAt: '2026-11-25T10:05:00+00:00',
-				isReachable: true
+				isReachable: true,
+				isSigned: false,
+				changedPaths: []
 			},
 			{
 				id: firstId,
@@ -36,7 +38,9 @@
 				parentIds: [],
 				authorName: 'Student',
 				authoredAt: '2026-11-25T10:00:00+00:00',
-				isReachable: true
+				isReachable: true,
+				isSigned: false,
+				changedPaths: []
 			}
 		],
 		branches: [
@@ -53,7 +57,11 @@
 		stashes: [],
 		remotes: [],
 		localConfig: [],
-		answer: null
+		answer: null,
+		workingFileTexts: [],
+		committedFileTexts: [],
+		worktrees: [],
+		submodules: []
 	};
 
 	const featureId = 'c4e81aa'.padEnd(40, '0');

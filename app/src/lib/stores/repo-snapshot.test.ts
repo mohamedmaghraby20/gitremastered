@@ -32,7 +32,11 @@ function snapshotWithUntracked(untrackedCount: number): RepoSnapshot {
 		stashes: [],
 		remotes: [],
 		localConfig: [],
-		answer: null
+		answer: null,
+		workingFileTexts: [],
+		committedFileTexts: [],
+		worktrees: [],
+		submodules: []
 	};
 }
 

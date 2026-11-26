@@ -6,6 +6,8 @@
  *   history-goals.ts  commits on HEAD's history, work in progress, settings, answers
  *   branch-goals.ts   branches and where HEAD is
  *   remote-goals.ts   remotes, upstreams and tags
+ *   content-goals.ts  what a file says, now or in the latest commit, and its history
+ *   workspace-goals.ts linked worktrees and submodules
  * Everything is a pure function: no screen code, no Git, so every goal kind is tested with
  * sample snapshots.
  */
@@ -13,9 +15,11 @@
 import type { GoalCheck } from '$lib/types/mission';
 import type { RepoSnapshot } from '$lib/types/repo-snapshot';
 import { isBranchGoalMet } from './branch-goals';
+import { isContentGoalMet } from './content-goals';
 import { isFileGoalMet } from './file-goals';
 import { isHistoryGoalMet } from './history-goals';
 import { isRemoteGoalMet } from './remote-goals';
+import { isWorkspaceGoalMet } from './workspace-goals';
 
 /**
  * Checks one goal against the repo snapshot.
@@ -37,6 +41,12 @@ export function isGoalMet(goalCheck: GoalCheck, repoSnapshot: RepoSnapshot | nul
 		case 'file-is-missing':
 		case 'working-folder-clean':
 			return isFileGoalMet(goalCheck, repoSnapshot);
+		case 'file-contains':
+		case 'file-lacks':
+		case 'committed-file-contains':
+		case 'committed-file-lacks':
+		case 'file-is-in-no-commit':
+			return isContentGoalMet(goalCheck, repoSnapshot);
 		case 'commit-count-at-least':
 		case 'commit-count-is':
 		case 'latest-commit-message-contains':
@@ -48,6 +58,10 @@ export function isGoalMet(goalCheck: GoalCheck, repoSnapshot: RepoSnapshot | nul
 		case 'config-is':
 		case 'answer-is':
 		case 'answer-is-commit':
+		case 'history-is-linear':
+		case 'commit-comes-before':
+		case 'config-is-unset':
+		case 'latest-commit-is-signed':
 			return isHistoryGoalMet(goalCheck, repoSnapshot);
 		case 'branch-exists':
 		case 'branch-is-missing':
@@ -69,6 +83,9 @@ export function isGoalMet(goalCheck: GoalCheck, repoSnapshot: RepoSnapshot | nul
 		case 'tag-is-on-commit':
 		case 'remote-has-tag':
 			return isRemoteGoalMet(goalCheck, repoSnapshot);
+		case 'worktree-exists':
+		case 'submodule-exists':
+			return isWorkspaceGoalMet(goalCheck, repoSnapshot);
 	}
 }
 

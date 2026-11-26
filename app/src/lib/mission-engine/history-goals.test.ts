@@ -97,3 +97,50 @@ describe('isHistoryGoalMet', () => {
 		expect(isHistoryGoalMet(goal, answered('aa'))).toBe(false);
 	});
 });
+
+describe('isHistoryGoalMet, version 3 checks', () => {
+	const mergeId = 'd'.repeat(40);
+	const sideId = 'e'.repeat(40);
+	/** main: Add README, then a side commit merged back in. */
+	const withMerge = snapshotWith({
+		commits: [
+			sampleCommit(mergeId, 'Merge branch side', [secondId, sideId]),
+			sampleCommit(sideId, 'Side work', [firstId]),
+			sampleCommit(secondId, 'Fix typo in README', [firstId]),
+			sampleCommit(firstId, 'Add README')
+		],
+		head: { kind: 'branch', branchName: 'main', commitId: mergeId }
+	});
+
+	it('history-is-linear fails as soon as HEAD reaches a merge commit', () => {
+		expect(isHistoryGoalMet({ check: 'history-is-linear' }, twoCommits)).toBe(true);
+		expect(isHistoryGoalMet({ check: 'history-is-linear' }, withMerge)).toBe(false);
+	});
+
+	it('commit-comes-before follows parent links on HEAD history', () => {
+		const goal = {
+			check: 'commit-comes-before' as const,
+			message: 'Add README',
+			later: 'Fix typo'
+		};
+		expect(isHistoryGoalMet(goal, twoCommits)).toBe(true);
+		const reversed = { ...goal, message: 'Fix typo', later: 'Add README' };
+		expect(isHistoryGoalMet(reversed, twoCommits)).toBe(false);
+	});
+
+	it('config-is-unset passes only when the key is not set locally', () => {
+		const goal = { check: 'config-is-unset' as const, key: 'core.editor' };
+		const withEditor = snapshotWith({ localConfig: [{ key: 'core.editor', value: 'vim' }] });
+		expect(isHistoryGoalMet(goal, snapshotWith({}))).toBe(true);
+		expect(isHistoryGoalMet(goal, withEditor)).toBe(false);
+	});
+
+	it('latest-commit-is-signed reads the commit HEAD is on', () => {
+		const signed = snapshotWith({
+			commits: [{ ...sampleCommit(firstId, 'Add README'), isSigned: true }],
+			head: { kind: 'branch', branchName: 'main', commitId: firstId }
+		});
+		expect(isHistoryGoalMet({ check: 'latest-commit-is-signed' }, signed)).toBe(true);
+		expect(isHistoryGoalMet({ check: 'latest-commit-is-signed' }, twoCommits)).toBe(false);
+	});
+});

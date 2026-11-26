@@ -4,16 +4,20 @@
 //!
 //! Never writes to the repo.
 
-use crate::git_runner::practice_folder::PracticeFolder;
-use crate::models::repo_snapshot::{Branch, HeadState, Remote, RepoSnapshot, Tag};
+use std::collections::{BTreeSet, HashSet};
 
+use crate::git_runner::practice_folder::PracticeFolder;
+use crate::models::repo_snapshot::{Branch, FileText, HeadState, Remote, RepoSnapshot, Tag};
+
+use super::committed_texts::read_committed_texts;
 use super::git_reads::run_reads_at_once;
 use super::parse_config::{parse_config, remotes_from_config};
 use super::parse_log::parse_log;
 use super::parse_refs::parse_refs;
-use super::parse_status::parse_status;
+use super::parse_status::{StatusSummary, parse_status};
 use super::reachability::mark_reachability;
 use super::repo_files::{find_operation, read_answer, read_remote_tag_names};
+use super::workspace_files::{read_submodules, read_working_texts, read_worktrees};
 
 /// One stash entry: the commit Git made for it, and its message.
 struct StashEntry {
@@ -39,6 +43,8 @@ pub fn read_snapshot(folder: &PracticeFolder) -> Result<RepoSnapshot, String> {
         .map(|entry| entry.commit_id.clone())
         .collect();
     let commits = mark_reachability(parse_log(&readings.log?), &tip_ids, &stash_ids);
+    let (working_file_texts, committed_file_texts) =
+        read_file_texts(folder, &status, &committed_files);
 
     Ok(RepoSnapshot {
         commits,
@@ -58,7 +64,43 @@ pub fn read_snapshot(folder: &PracticeFolder) -> Result<RepoSnapshot, String> {
         remotes: remotes_with_tags(folder, remotes_from_config(&local_config)),
         local_config,
         answer: read_answer(folder.path()),
+        working_file_texts,
+        committed_file_texts,
+        worktrees: read_worktrees(folder.path()),
+        submodules: read_submodules(folder.path()),
     })
+}
+
+/// Reads the texts of small files, on disk and in the latest commit.
+///
+/// Inputs: the practice folder, the status, and the files in the latest commit.
+/// Output: the working-tree texts and the committed texts.
+fn read_file_texts(
+    folder: &PracticeFolder,
+    status: &StatusSummary,
+    committed_files: &[String],
+) -> (Vec<FileText>, Vec<FileText>) {
+    let staged_paths = status.staged_files.iter().map(|change| change.path.clone());
+    let working_paths: BTreeSet<String> = committed_files
+        .iter()
+        .cloned()
+        .chain(status.untracked_files.iter().cloned())
+        .chain(staged_paths.clone())
+        .collect();
+    let working_paths: Vec<String> = working_paths.into_iter().collect();
+    let working_texts = read_working_texts(folder.path(), &working_paths);
+    let changed_paths: HashSet<String> = staged_paths
+        .chain(
+            status
+                .modified_files
+                .iter()
+                .map(|change| change.path.clone()),
+        )
+        .chain(status.conflicted_files.iter().cloned())
+        .collect();
+    let committed_texts =
+        read_committed_texts(folder, committed_files, &working_texts, &changed_paths);
+    (working_texts, committed_texts)
 }
 
 /// Lists the commits that count as "the end of a line of work": where each branch and tag

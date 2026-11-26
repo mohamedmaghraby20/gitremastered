@@ -6,6 +6,7 @@
 use serde::{Deserialize, Serialize};
 
 pub use super::working_state::{ChangeKind, ConfigEntry, FileChange, Operation, Remote};
+pub use super::workspace::{FileText, Submodule, Worktree};
 
 /// The state of the practice repository at one moment.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -41,6 +42,14 @@ pub struct RepoSnapshot {
     /// The first line of `answer.txt` in the working folder, for challenges that ask the
     /// student to find something out and write it down. `None` without the file.
     pub answer: Option<String>,
+    /// Small text files in the working tree, as they are on disk (version 3, phase 6).
+    pub working_file_texts: Vec<FileText>,
+    /// Small text files as they are in the latest commit (HEAD).
+    pub committed_file_texts: Vec<FileText>,
+    /// Linked worktrees (not the main one).
+    pub worktrees: Vec<Worktree>,
+    /// Submodules listed in `.gitmodules`.
+    pub submodules: Vec<Submodule>,
 }
 
 /// One commit.
@@ -60,6 +69,10 @@ pub struct Commit {
     /// True when a branch, a tag or HEAD reaches this commit. False for a commit that lost
     /// its branch (after an amend or a reset) and lives on only in the reflog.
     pub is_reachable: bool,
+    /// True when Git verified a signature on the commit (`%G?` is not `N`).
+    pub is_signed: bool,
+    /// The files this commit added, changed or deleted (none for a merge commit).
+    pub changed_paths: Vec<String>,
 }
 
 /// One branch, local (`main`) or remote-tracking (`origin/main`).
@@ -134,6 +147,8 @@ mod tests {
                 author_name: "Student".to_string(),
                 authored_at: "2026-11-25T10:00:00+00:00".to_string(),
                 is_reachable: true,
+                is_signed: true,
+                changed_paths: vec!["notes.txt".to_string()],
             }],
             branches: vec![Branch {
                 name: "main".to_string(),
@@ -169,6 +184,19 @@ mod tests {
                 value: "Student".to_string(),
             }],
             answer: Some("42".to_string()),
+            working_file_texts: vec![FileText {
+                path: "notes.txt".to_string(),
+                text: "hello".to_string(),
+            }],
+            committed_file_texts: vec![],
+            worktrees: vec![Worktree {
+                path: "/work/hotfix".to_string(),
+                branch: Some("hotfix".to_string()),
+            }],
+            submodules: vec![Submodule {
+                path: "vendor/library".to_string(),
+                is_initialized: true,
+            }],
         }
     }
 
@@ -192,6 +220,12 @@ mod tests {
         assert_eq!(snapshot_json["stashes"][0], "WIP on main: a1b2c3 Add notes");
         assert_eq!(snapshot_json["localConfig"][0]["key"], "user.name");
         assert_eq!(snapshot_json["answer"], "42");
+        assert_eq!(snapshot_json["commits"][0]["isSigned"], true);
+        assert_eq!(snapshot_json["commits"][0]["changedPaths"][0], "notes.txt");
+        assert_eq!(snapshot_json["workingFileTexts"][0]["text"], "hello");
+        assert_eq!(snapshot_json["committedFileTexts"], json!([]));
+        assert_eq!(snapshot_json["worktrees"][0]["branch"], "hotfix");
+        assert_eq!(snapshot_json["submodules"][0]["isInitialized"], true);
     }
 
     /// HEAD carries a "kind" tag, so the screens can tell a branch from a detached HEAD.
