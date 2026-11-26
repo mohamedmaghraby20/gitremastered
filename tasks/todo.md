@@ -672,8 +672,8 @@ Goal: modules 0–4 of the Pro path written and playable: Orientation, Your dail
 **Description:** Pilot finding 4. Git Bash's two-line prompt with the full practice path loses the first key after Ctrl C and stalls after a resize. Start the shell with our own small start file: the prompt becomes `practice-folder (branch) $` on one line.
 
 **Acceptance criteria:**
-- [ ] The prompt is one line: folder name, branch in brackets, `$`
-- [ ] Git Bash's own settings (colors, aliases, PATH) still load
+- [x] The prompt is one line: folder name, branch in brackets, `$`
+- [x] Git Bash's own settings (colors, aliases, PATH) still load (set through `PROMPT_COMMAND`, no start file needed)
 
 **Verification:** Rust unit tests, driver check in the desktop app · **Files:** `git_runner/shell_choice.rs`, a new start-file module · **Scope:** S
 

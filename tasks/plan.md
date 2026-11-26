@@ -142,7 +142,7 @@ Full details for each task (acceptance criteria, verification, files) are in `ta
 ### Phase 5: Core course
 Scope approved 2026-11-26: modules 0–4, offline. Run in one go; you review the whole app at the end.
 
-- [ ] Task 45: A short shell prompt
+- [x] Task 45: A short shell prompt
 - [ ] Task 46: The `predict` and `graph` lesson blocks
 - [ ] Task 47: Goal checks for the first three modules
 - [ ] Tasks 48–50: Orientation (`what-is-git`, `setup`, `first-look-inside`)

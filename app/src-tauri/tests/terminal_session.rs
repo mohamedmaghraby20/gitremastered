@@ -113,6 +113,29 @@ fn runs_git_version_in_the_practice_folder() {
     sessions.close(&session_id).expect("close works");
 }
 
+/// Git Bash shows our short one-line prompt: the folder's name, not its full path
+/// (pilot review, finding 4).
+#[cfg(windows)]
+#[test]
+fn shows_a_short_prompt() {
+    let sessions = TerminalSessions::new();
+    let (_folder, session_id, events) = start_session(&sessions);
+
+    let output = wait_for_output(
+        &sessions,
+        &session_id,
+        &events,
+        "terminal-test",
+        Duration::from_secs(20),
+    );
+    assert!(
+        !output.contains("practice/terminal-test"),
+        "the prompt still shows the full path: {output:?}"
+    );
+
+    sessions.close(&session_id).expect("close works");
+}
+
 /// Closing a session stops the shell and removes the session.
 #[test]
 fn closing_stops_the_shell() {

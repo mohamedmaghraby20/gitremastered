@@ -32,6 +32,19 @@ pub struct ShellLaunch {
     pub removed_environment: Vec<String>,
 }
 
+/// What Git Bash runs before it draws each prompt (bash's `PROMPT_COMMAND`): it sets the
+/// prompt to one short line, like `three-areas (main) $`.
+///
+/// Why: Git Bash's own prompt is two lines with the full practice path. After Ctrl C or a
+/// resize, redrawing it lost the first typed key or stalled the output (pilot review,
+/// finding 4). Setting it here, and not in a start file, keeps the student's own Git Bash
+/// settings (aliases, colors, PATH) loading as usual.
+///
+/// The parts: `\W` is the current folder's name; `__git_ps1` is Git's own helper that prints
+/// the branch (or the commit, when HEAD is detached); `\[\e[36m\]` colors it cyan.
+const SHORT_PROMPT_COMMAND: &str =
+    r#"PS1='\W\[\e[36m\]$(__git_ps1 " (%s)" 2>/dev/null)\[\e[0m\] \$ '"#;
+
 /// Chooses the shell for the terminal: Git Bash on Windows, the user's own shell elsewhere.
 ///
 /// Inputs: none. Output: how to start the shell, or a readable error.
@@ -44,6 +57,10 @@ pub fn terminal_shell() -> Result<ShellLaunch, String> {
     ];
     if cfg!(windows) {
         environment.push(("MSYSTEM".to_string(), "MINGW64".to_string()));
+        environment.push((
+            "PROMPT_COMMAND".to_string(),
+            SHORT_PROMPT_COMMAND.to_string(),
+        ));
         return Ok(ShellLaunch {
             program: find_git_bash()?,
             arguments: vec!["--login".to_string(), "-i".to_string()],
