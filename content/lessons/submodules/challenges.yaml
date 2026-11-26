@@ -1,0 +1,159 @@
+challenges:
+  - id: add-the-library
+    title: Add the library as a submodule
+    level: easy
+    brief: "Your weather dashboard needs Lina's unit converter, a separate repository at ../library.git. Add it as a submodule in the folder vendor/library and commit it. The library's server is a folder here, so put -c protocol.file.allow=always right after git in the submodule command."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Weather dashboard" > README.md
+      - echo "Show the temperature and the wind." > plan.txt
+      - git add README.md plan.txt
+      - git commit -q -m "Start the weather dashboard"
+      # The main project's "server", for the lesson's clone Try-it.
+      - git init -q --bare -b main ../app.git
+      - git remote add origin ../app.git
+      - git push -q -u origin main
+      # Lina's clone of the library, and the library's "server".
+      - git init -q -b main ../library-author
+      - git -C ../library-author config core.autocrlf false
+      - git -C ../library-author config user.name "Lina (library author)"
+      - git -C ../library-author config user.email "lina@example.com"
+      - echo "# Unit converter" > ../library-author/README.md
+      - echo "celsius to fahrenheit = times 1.8, plus 32" > ../library-author/convert.txt
+      - git -C ../library-author add README.md convert.txt
+      - git -C ../library-author commit -q -m "Add the unit converter"
+      - echo "km/h to m/s = divide by 3.6" >> ../library-author/convert.txt
+      - git -C ../library-author commit -q -am "Add wind speed conversion"
+      - git init -q --bare -b main ../library.git
+      - git -C ../library-author remote add origin ../library.git
+      - git -C ../library-author push -q -u origin main
+    goal:
+      - check: submodule-exists
+        path: vendor/library
+        label: "vendor/library is a submodule and its files are checked out"
+      - check: file-is-committed
+        file: .gitmodules
+        label: ".gitmodules is saved in a commit"
+      - check: working-folder-clean
+        label: "git status shows nothing left to commit"
+    hints:
+      - "git submodule add takes the address, then the folder you want. Without a folder, Git would name it library, not vendor/library."
+      - "The command stages two entries: .gitmodules and vendor/library. Look at them with git status, then commit. If Git says \"transport 'file' not allowed\", the -c setting is missing."
+      - "Run: git -c protocol.file.allow=always submodule add ../library.git vendor/library, then git commit -m \"Add the unit converter as a submodule\""
+    solution:
+      - git -c protocol.file.allow=always submodule add -q ../library.git vendor/library
+      - git commit -q -m "Add the unit converter as a submodule"
+
+  - id: clone-with-a-submodule
+    title: Clone a project that has a submodule
+    level: medium
+    brief: "You join the weather dashboard team. Their repository is at ../app.git and it uses the unit converter as a submodule at vendor/library. Clone it so that this folder itself becomes the repository, and make sure the library's files are really there. The servers are folders here, so a submodule command that downloads needs -c protocol.file.allow=always right after git."
+    setup:
+      - git init -q -b main ../library-author
+      - git -C ../library-author config core.autocrlf false
+      - git -C ../library-author config user.name "Lina (library author)"
+      - git -C ../library-author config user.email "lina@example.com"
+      - echo "# Unit converter" > ../library-author/README.md
+      - echo "celsius to fahrenheit = times 1.8, plus 32" > ../library-author/convert.txt
+      - git -C ../library-author add README.md convert.txt
+      - git -C ../library-author commit -q -m "Add the unit converter"
+      - echo "km/h to m/s = divide by 3.6" >> ../library-author/convert.txt
+      - git -C ../library-author commit -q -am "Add wind speed conversion"
+      - git init -q --bare -b main ../library.git
+      - git -C ../library-author remote add origin ../library.git
+      - git -C ../library-author push -q -u origin main
+      # The team's project, built in a seed folder and pushed to its "server".
+      - git init -q -b main ../app-seed
+      - git -C ../app-seed config core.autocrlf false
+      - git -C ../app-seed config user.name "Omar (teammate)"
+      - git -C ../app-seed config user.email "omar@example.com"
+      - echo "# Weather dashboard" > ../app-seed/README.md
+      - echo "Show the temperature and the wind." > ../app-seed/plan.txt
+      - git -C ../app-seed add README.md plan.txt
+      - git -C ../app-seed commit -q -m "Start the weather dashboard"
+      - git init -q --bare -b main ../app.git
+      - git -C ../app-seed remote add origin ../app.git
+      - git -C ../app-seed -c protocol.file.allow=always submodule add -q ../library.git vendor/library
+      - git -C ../app-seed commit -q -m "Add the unit converter as a submodule"
+      - git -C ../app-seed push -q -u origin main
+      - rm -rf ../app-seed ../library-author
+    goal:
+      - check: remote-exists
+        remote: origin
+        label: "This folder is a clone that remembers its source as origin"
+      - check: commit-exists
+        message: "Add the unit converter as a submodule"
+        label: "The team's commits are here"
+      - check: submodule-exists
+        path: vendor/library
+        label: "vendor/library is filled: the library's files are checked out"
+      - check: working-folder-clean
+        label: "git status shows nothing to commit"
+    hints:
+      - "Clone into this folder with a dot at the end, as in the lesson \"Start or clone a repository\". Then run ls vendor/library. What is in it?"
+      - "A plain clone leaves the submodule's folder empty; git submodule status shows a - in front of it. One submodule command registers it and downloads it."
+      - "Run: git clone ../app.git . (with the dot), then git -c protocol.file.allow=always submodule update --init. One command does both: git -c protocol.file.allow=always clone --recurse-submodules ../app.git ."
+    solution:
+      - git clone -q ../app.git .
+      - git -c protocol.file.allow=always submodule update -q --init
+
+  - id: update-the-library
+    title: Take the library's new commits
+    level: hard
+    brief: "Lina pushed new commits to the unit converter. Your dashboard still uses the old one at vendor/library. Move the submodule to the library's newest commit and commit the new pointer with a message that contains \"Update the unit converter\". Also write into answer.txt how many new library commits the update brings in, as a number. A submodule command that downloads needs -c protocol.file.allow=always right after git."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo answer.txt >> .git/info/exclude
+      - echo "# Weather dashboard" > README.md
+      - echo "Show the temperature and the wind." > plan.txt
+      - git add README.md plan.txt
+      - git commit -q -m "Start the weather dashboard"
+      - git init -q -b main ../library-author
+      - git -C ../library-author config core.autocrlf false
+      - git -C ../library-author config user.name "Lina (library author)"
+      - git -C ../library-author config user.email "lina@example.com"
+      - echo "# Unit converter" > ../library-author/README.md
+      - echo "celsius to fahrenheit = times 1.8, plus 32" > ../library-author/convert.txt
+      - git -C ../library-author add README.md convert.txt
+      - git -C ../library-author commit -q -m "Add the unit converter"
+      - echo "km/h to m/s = divide by 3.6" >> ../library-author/convert.txt
+      - git -C ../library-author commit -q -am "Add wind speed conversion"
+      - git init -q --bare -b main ../library.git
+      - git -C ../library-author remote add origin ../library.git
+      - git -C ../library-author push -q -u origin main
+      - git -c protocol.file.allow=always submodule add -q ../library.git vendor/library
+      - git commit -q -m "Add the unit converter as a submodule"
+      # Lina keeps working after you pinned her library:
+      - echo "hPa to mmHg = times 0.75" >> ../library-author/convert.txt
+      - git -C ../library-author commit -q -am "Add pressure conversion"
+      - echo "mph to km/h = times 1.61" >> ../library-author/convert.txt
+      - git -C ../library-author commit -q -am "Add mph conversion"
+      - git -C ../library-author push -q
+      - rm -rf ../library-author
+    goal:
+      - check: answer-is
+        answer: "2"
+        label: "answer.txt holds the number of new library commits"
+      - check: latest-commit-message-contains
+        text: "Update the unit converter"
+        label: "The latest commit is \"Update the unit converter\""
+      - check: submodule-exists
+        path: vendor/library
+        label: "vendor/library is still a submodule with its files"
+      - check: working-folder-clean
+        label: "git status shows nothing left: the new pointer is committed"
+    hints:
+      - "git status says the project is clean, because the pointer still names the old commit. Which form of git submodule update asks the library's server for its newest commit?"
+      - "After the update, git status shows \"modified: vendor/library (new commits)\". Before you commit, read \"Read submodule changes as commits\" in Advanced: git diff --submodule lists the new library commits, one per line. Then stage the folder's entry like any change."
+      - "Run: git -c protocol.file.allow=always submodule update --remote, then git diff --submodule and count the > lines, then echo 2 > answer.txt, then git add vendor/library, then git commit -m \"Update the unit converter\""
+    solution:
+      - git -c protocol.file.allow=always submodule update -q --remote
+      - git diff --submodule | grep -c ">" > answer.txt
+      - git add vendor/library
+      - git commit -q -m "Update the unit converter"

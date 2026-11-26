@@ -1,0 +1,40 @@
+questions:
+  - question: "Your project folder is on main. A linked worktree in ../hotfix has the branch hotfix checked out. In the project folder you run git switch hotfix. What happens?"
+    answers:
+      - text: "Both folders are now on hotfix and show the same files"
+        explanation: "Git never lets two worktrees check out the same branch. A commit in one would leave the other folder's files out of step with its branch."
+      - text: "Git refuses: hotfix is already used by the worktree at ../hotfix"
+        correct: true
+        explanation: "A branch can be checked out in one worktree only. You do not need it here anyway: you can merge hotfix or read its log from main."
+      - text: "Git moves the worktree's files into the project folder"
+        explanation: "git switch never touches another folder. It only changes the folder you are in, and here it refuses to do even that."
+
+  - question: "In ../hotfix you commit a fix. Your teammate asks: \"When can I see that commit in your project folder with git log hotfix?\""
+    answers:
+      - text: "At once: both folders use the same repository"
+        correct: true
+        explanation: "Commits and branches are shared by all worktrees. Only the files, HEAD and the staging area belong to one folder."
+      - text: "After you push from ../hotfix and fetch in the project folder"
+        explanation: "That is how two clones exchange commits. Worktrees are not clones: there is one repository and nothing to exchange."
+      - text: "After you merge hotfix into main"
+        explanation: "A merge brings the fix into main's files and history. The commit itself is visible on the hotfix branch from every worktree before any merge."
+
+  - question: "In the project folder you create notes.txt and run git add notes.txt. Then you run git status in the linked worktree ../hotfix. What does it say about notes.txt?"
+    answers:
+      - text: "It lists notes.txt as staged, because the staging area belongs to the repository"
+        explanation: "Each worktree has its own staging area (its own index file under .git/worktrees/). Only commits, branches, the stash and settings are shared."
+      - text: "It lists notes.txt as untracked"
+        explanation: "The file was created in the project folder. It does not exist in ../hotfix at all, so there is nothing to list there."
+      - text: "Nothing: each worktree has its own files and its own staging area"
+        correct: true
+        explanation: "Staging in one folder changes that folder's staging area only. The other worktree neither has the file nor sees that it was staged."
+
+  - question: "You deleted the folder ../hotfix in the file explorer. Now git branch -d hotfix says the branch is \"used by worktree\". What is the right fix?"
+    answers:
+      - text: "git branch -D hotfix, which forces the deletion"
+        explanation: "-D only skips the \"is it merged?\" check. Git still refuses to delete a branch that a worktree record says is checked out."
+      - text: "git worktree prune, then git branch -d hotfix"
+        correct: true
+        explanation: "The folder is gone but Git's record of the worktree is not. prune deletes records whose folder is missing, and then the branch is free."
+      - text: "git worktree add ../hotfix hotfix, to make the folder again"
+        explanation: "Git refuses that too: it says the path is a missing but already registered worktree, and tells you to prune or remove it first."

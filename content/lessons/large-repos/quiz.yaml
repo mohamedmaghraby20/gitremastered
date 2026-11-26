@@ -1,0 +1,40 @@
+questions:
+  - question: "A build machine clones your project for every push, runs the tests and deletes the clone. The project has 80,000 commits and the clone takes six minutes. What do you change?"
+    answers:
+      - text: "Clone with --depth 1: the tests need the newest files, not the history"
+        correct: true
+        explanation: "A shallow clone downloads one commit and every file in it. The machine never runs git log or git blame, so it loses nothing."
+      - text: "Run git sparse-checkout set on the build machine"
+        explanation: "A sparse checkout only chooses which folders are written into the working tree. The clone still downloads all 80,000 commits first."
+      - text: "Run git maintenance start on the build machine"
+        explanation: "Maintenance keeps a repository you use for months tidy. This clone lives for a few minutes, and the slow part is the download."
+
+  - question: "You made a clone with --filter=blob:none. On a plane with no network, you run git log, and then git switch --detach on a commit from last year. What happens?"
+    answers:
+      - text: "Both work: a partial clone holds everything, only compressed harder"
+        explanation: "It does not hold everything. The contents of old file versions stayed on the server until a command needs them."
+      - text: "git log works, because every commit is there; the switch fails, because the old file contents were never downloaded"
+        correct: true
+        explanation: "A blobless clone has all commits, and fetches old file contents on demand. Without a network there is no one to ask."
+      - text: "Neither works: a partial clone has only the newest commit"
+        explanation: "That describes a shallow clone (--depth 1). A partial clone keeps the whole history."
+
+  - question: "A teammate runs git sparse-checkout set docs, edits docs/levels.md, commits and pushes. They ask you, worried: \"The art and src folders are gone from my disk. Did my push delete them for everyone?\""
+    answers:
+      - text: "Yes: a commit records the working tree, and theirs holds only docs"
+        explanation: "A commit is built from the staging area, and the staging area still lists every tracked file. Files left out by a sparse checkout stay in it, marked skip-worktree."
+      - text: "No: the folders only left their working tree. Their commit still contains art and src, unchanged"
+        correct: true
+        explanation: "A sparse checkout changes what is written to disk, nothing else. git sparse-checkout disable brings the folders back."
+      - text: "No, but only because Git refused the push from a sparse checkout"
+        explanation: "Git pushes from a sparse checkout like from any other. Nothing was at risk in the first place."
+
+  - question: "Your game's repository grew to 6 GB because the artists commit a new version of large pictures every day. The team sets up Git LFS for *.png today. What changes?"
+    answers:
+      - text: "The repository shrinks to a few megabytes at once, because Git LFS moves the old pictures out"
+        explanation: "Setting up LFS does not touch pictures already in the history. Moving them out means rewriting history."
+      - text: "Pictures committed from now on are stored as small pointers, with the real files in LFS storage; the old 6 GB stay in the history"
+        correct: true
+        explanation: "LFS works for files added after the rule is in place. Everyone on the team also needs Git LFS installed, or they get pointer files and no pictures."
+      - text: "Nothing, until every developer deletes their clone and runs git gc"
+        explanation: "New pictures go to LFS as soon as the rule in .gitattributes is committed. git gc has nothing to do with it."

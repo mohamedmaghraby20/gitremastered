@@ -1,0 +1,285 @@
+challenges:
+  - id: newest-commit-only
+    title: Clone only the newest commit
+    level: easy
+    brief: "The build machine must test the newest version of the Star game, and nothing older. The team's repository is at ../game.git and holds ten commits. Clone it so that this folder itself becomes the repository, with only the newest commit in its history."
+    setup:
+      - git init -q -b main ../seed
+      - git -C ../seed config core.autocrlf false
+      - git -C ../seed config user.name "Mona (teammate)"
+      - git -C ../seed config user.email "mona@example.com"
+      - mkdir ../seed/src ../seed/docs ../seed/art
+      - echo "# Star game" > ../seed/README.md
+      - git -C ../seed add .
+      - git -C ../seed commit -q -m "Add README"
+      - echo "print('Star game')" > ../seed/src/game.py
+      - git -C ../seed add .
+      - git -C ../seed commit -q -m "Start the game"
+      - echo "Arrow keys move the ship." > ../seed/docs/controls.md
+      - git -C ../seed add .
+      - git -C ../seed commit -q -m "Describe the controls"
+      # The pictures are 300 KB of random bytes: big enough to see in the clone's size.
+      - head -c 300000 /dev/urandom > ../seed/art/ship.png
+      - git -C ../seed add .
+      - git -C ../seed commit -q -m "Add the ship picture"
+      - echo "speed = 5" > ../seed/src/player.py
+      - git -C ../seed add .
+      - git -C ../seed commit -q -m "Add the player"
+      - head -c 300000 /dev/urandom > ../seed/art/ship.png
+      - git -C ../seed add .
+      - git -C ../seed commit -q -m "Redraw the ship"
+      - echo "Level 1 has ten stars." > ../seed/docs/levels.md
+      - git -C ../seed add .
+      - git -C ../seed commit -q -m "Add the level guide"
+      - head -c 300000 /dev/urandom > ../seed/art/stars.png
+      - git -C ../seed add .
+      - git -C ../seed commit -q -m "Add a star background"
+      - echo "score = 0" > ../seed/src/score.py
+      - git -C ../seed add .
+      - git -C ../seed commit -q -m "Keep the score"
+      - head -c 300000 /dev/urandom > ../seed/art/ship.png
+      - git -C ../seed add .
+      - git -C ../seed commit -q -m "Brighten the ship"
+      # The "server": a folder beside the project. allowFilter lets it serve partial clones.
+      - git clone -q --bare ../seed ../game.git
+      - git -C ../game.git config uploadpack.allowFilter true
+      - rm -rf ../seed
+    goal:
+      - check: remote-exists
+        remote: origin
+        label: "This folder is a clone that remembers its source as origin"
+      - check: commit-count-is
+        count: 1
+        label: "The history holds exactly one commit"
+      - check: latest-commit-message-contains
+        text: "Brighten the ship"
+        label: "That commit is the newest one, \"Brighten the ship\""
+      - check: file-exists
+        file: src/game.py
+        label: "The project's files are here, for example src/game.py"
+    hints:
+      - "A plain git clone brings all ten commits. Which option of git clone cuts the history, and what number do you give it?"
+      - "--depth 1 keeps one commit. The practice server is a folder, and Git ignores --depth for a folder unless you add --no-local. The dot at the end sends the files into this folder."
+      - "Run: git clone --depth 1 --no-local ../game.git . (with the dot at the end). If you already cloned into a subfolder, remove it first with rm -rf game."
+    solution:
+      - git clone -q --depth 1 --no-local ../game.git .
+
+  - id: manual-only
+    title: Check out only the docs folder
+    level: medium
+    brief: "You write the Star game's manual. You never open the pictures in art/ or the code in src/, and you do not want them in your way. Clone ../game.git into this folder with its full history, then make your working tree hold only the docs folder (the files at the top level, like README.md, stay)."
+    setup:
+      - git init -q -b main ../seed
+      - git -C ../seed config core.autocrlf false
+      - git -C ../seed config user.name "Mona (teammate)"
+      - git -C ../seed config user.email "mona@example.com"
+      - mkdir ../seed/src ../seed/docs ../seed/art
+      - echo "# Star game" > ../seed/README.md
+      - git -C ../seed add .
+      - git -C ../seed commit -q -m "Add README"
+      - echo "print('Star game')" > ../seed/src/game.py
+      - git -C ../seed add .
+      - git -C ../seed commit -q -m "Start the game"
+      - echo "Arrow keys move the ship." > ../seed/docs/controls.md
+      - git -C ../seed add .
+      - git -C ../seed commit -q -m "Describe the controls"
+      # The pictures are 300 KB of random bytes: big enough to see in the clone's size.
+      - head -c 300000 /dev/urandom > ../seed/art/ship.png
+      - git -C ../seed add .
+      - git -C ../seed commit -q -m "Add the ship picture"
+      - echo "speed = 5" > ../seed/src/player.py
+      - git -C ../seed add .
+      - git -C ../seed commit -q -m "Add the player"
+      - head -c 300000 /dev/urandom > ../seed/art/ship.png
+      - git -C ../seed add .
+      - git -C ../seed commit -q -m "Redraw the ship"
+      - echo "Level 1 has ten stars." > ../seed/docs/levels.md
+      - git -C ../seed add .
+      - git -C ../seed commit -q -m "Add the level guide"
+      - head -c 300000 /dev/urandom > ../seed/art/stars.png
+      - git -C ../seed add .
+      - git -C ../seed commit -q -m "Add a star background"
+      - echo "score = 0" > ../seed/src/score.py
+      - git -C ../seed add .
+      - git -C ../seed commit -q -m "Keep the score"
+      - head -c 300000 /dev/urandom > ../seed/art/ship.png
+      - git -C ../seed add .
+      - git -C ../seed commit -q -m "Brighten the ship"
+      # The "server": a folder beside the project. allowFilter lets it serve partial clones.
+      - git clone -q --bare ../seed ../game.git
+      - git -C ../game.git config uploadpack.allowFilter true
+      - rm -rf ../seed
+    goal:
+      - check: remote-exists
+        remote: origin
+        label: "This folder is a clone of ../game.git"
+      - check: commit-count-is
+        count: 10
+        label: "The history is complete: ten commits"
+      - check: config-is
+        key: extensions.worktreeconfig
+        value: "true"
+        label: "Sparse checkout is set up in this repository"
+      - check: file-contains
+        file: docs/controls.md
+        text: "Arrow keys"
+        label: "docs/controls.md is in your working tree"
+      - check: file-is-missing
+        file: art/ship.png
+        label: "art/ship.png is left out of your working tree"
+      - check: file-is-missing
+        file: src/game.py
+        label: "src/game.py is left out of your working tree"
+      - check: file-exists
+        file: README.md
+        label: "README.md at the top is still there (cone mode keeps top-level files)"
+      - check: working-folder-clean
+        label: "git status has nothing to report"
+    hints:
+      - "Two steps. First an ordinary clone into this folder; ls then shows art, docs and src. Which command chooses the folders your working tree holds?"
+      - "git sparse-checkout set <folder> keeps that folder and the top-level files, and takes every other folder out of the working tree. Nothing is deleted from the repository."
+      - "Run: git clone ../game.git . (with the dot), then git sparse-checkout set docs. Check with ls: only README.md and docs are left."
+    solution:
+      - git clone -q ../game.git .
+      - git sparse-checkout set --cone docs
+
+  - id: full-history-again
+    title: Bring back the missing history
+    level: medium
+    brief: "A teammate set this clone up for a quick build, so its history holds only the newest commit. You need to know which commit first added the ship picture, art/ship.png, and git log cannot tell you yet. Bring in the rest of the history, then write that commit's short ID into answer.txt."
+    setup:
+      - git init -q -b main ../seed
+      - git -C ../seed config core.autocrlf false
+      - git -C ../seed config user.name "Mona (teammate)"
+      - git -C ../seed config user.email "mona@example.com"
+      - mkdir ../seed/src ../seed/docs ../seed/art
+      - echo "# Star game" > ../seed/README.md
+      - git -C ../seed add .
+      - git -C ../seed commit -q -m "Add README"
+      - echo "print('Star game')" > ../seed/src/game.py
+      - git -C ../seed add .
+      - git -C ../seed commit -q -m "Start the game"
+      - echo "Arrow keys move the ship." > ../seed/docs/controls.md
+      - git -C ../seed add .
+      - git -C ../seed commit -q -m "Describe the controls"
+      # The pictures are 300 KB of random bytes: big enough to see in the clone's size.
+      - head -c 300000 /dev/urandom > ../seed/art/ship.png
+      - git -C ../seed add .
+      - git -C ../seed commit -q -m "Add the ship picture"
+      - echo "speed = 5" > ../seed/src/player.py
+      - git -C ../seed add .
+      - git -C ../seed commit -q -m "Add the player"
+      - head -c 300000 /dev/urandom > ../seed/art/ship.png
+      - git -C ../seed add .
+      - git -C ../seed commit -q -m "Redraw the ship"
+      - echo "Level 1 has ten stars." > ../seed/docs/levels.md
+      - git -C ../seed add .
+      - git -C ../seed commit -q -m "Add the level guide"
+      - head -c 300000 /dev/urandom > ../seed/art/stars.png
+      - git -C ../seed add .
+      - git -C ../seed commit -q -m "Add a star background"
+      - echo "score = 0" > ../seed/src/score.py
+      - git -C ../seed add .
+      - git -C ../seed commit -q -m "Keep the score"
+      - head -c 300000 /dev/urandom > ../seed/art/ship.png
+      - git -C ../seed add .
+      - git -C ../seed commit -q -m "Brighten the ship"
+      # The "server": a folder beside the project. allowFilter lets it serve partial clones.
+      - git clone -q --bare ../seed ../game.git
+      - git -C ../game.git config uploadpack.allowFilter true
+      - git clone -q --depth 1 --no-local -c core.autocrlf=false ../game.git .
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo answer.txt >> .git/info/exclude
+      - rm -rf ../seed
+    goal:
+      - check: commit-count-is
+        count: 10
+        label: "The history is complete: ten commits"
+      - check: answer-is-commit
+        message: "Add the ship picture"
+        label: "answer.txt holds the ID of the commit that first added art/ship.png"
+      - check: working-folder-clean
+        label: "git status has nothing to report"
+    hints:
+      - "Run git log --oneline. One commit, marked (grafted): this is a shallow clone. The older commits are still on the server. Which form of git fetch asks for all of them?"
+      - "git fetch --unshallow downloads the rest of the history. After it, git log --oneline -- art/ship.png lists the commits that changed the picture; the one at the bottom added it."
+      - "Run: git fetch --unshallow, then git log --oneline -- art/ship.png. Copy the ID on the last line, \"Add the ship picture\", and run: echo <that ID> > answer.txt"
+    solution:
+      - git fetch -q --unshallow
+      - git log --diff-filter=A --format=%h -- art/ship.png > answer.txt
+
+  - id: work-from-a-usb-stick
+    title: Take in commits from a bundle
+    level: hard
+    brief: "Mona finished two commits on a train with no network, so she could not push them. She saved them in a bundle file and handed you the USB stick: ../usb/latest.bundle. Check that the bundle fits your repository, then get her two commits into your main branch."
+    setup:
+      - git init -q -b main ../seed
+      - git -C ../seed config core.autocrlf false
+      - git -C ../seed config user.name "Mona (teammate)"
+      - git -C ../seed config user.email "mona@example.com"
+      - mkdir ../seed/src ../seed/docs ../seed/art
+      - echo "# Star game" > ../seed/README.md
+      - git -C ../seed add .
+      - git -C ../seed commit -q -m "Add README"
+      - echo "print('Star game')" > ../seed/src/game.py
+      - git -C ../seed add .
+      - git -C ../seed commit -q -m "Start the game"
+      - echo "Arrow keys move the ship." > ../seed/docs/controls.md
+      - git -C ../seed add .
+      - git -C ../seed commit -q -m "Describe the controls"
+      # The pictures are 300 KB of random bytes: big enough to see in the clone's size.
+      - head -c 300000 /dev/urandom > ../seed/art/ship.png
+      - git -C ../seed add .
+      - git -C ../seed commit -q -m "Add the ship picture"
+      - echo "speed = 5" > ../seed/src/player.py
+      - git -C ../seed add .
+      - git -C ../seed commit -q -m "Add the player"
+      - head -c 300000 /dev/urandom > ../seed/art/ship.png
+      - git -C ../seed add .
+      - git -C ../seed commit -q -m "Redraw the ship"
+      - echo "Level 1 has ten stars." > ../seed/docs/levels.md
+      - git -C ../seed add .
+      - git -C ../seed commit -q -m "Add the level guide"
+      - head -c 300000 /dev/urandom > ../seed/art/stars.png
+      - git -C ../seed add .
+      - git -C ../seed commit -q -m "Add a star background"
+      # The "server": a folder beside the project. allowFilter lets it serve partial clones.
+      - git clone -q --bare ../seed ../game.git
+      - git -C ../game.git config uploadpack.allowFilter true
+      - git clone -q -c core.autocrlf=false ../game.git .
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - git config pull.rebase false
+      # Mona's two new commits never reach the server: they travel in a bundle.
+      - echo "score = 0" > ../seed/src/score.py
+      - git -C ../seed add .
+      - git -C ../seed commit -q -m "Keep the score"
+      - head -c 300000 /dev/urandom > ../seed/art/ship.png
+      - git -C ../seed add .
+      - git -C ../seed commit -q -m "Brighten the ship"
+      - mkdir ../usb
+      - git -C ../seed bundle create -q ../usb/latest.bundle main~2..main
+      - rm -rf ../seed
+    goal:
+      - check: commit-count-is
+        count: 10
+        label: "Your history holds ten commits: the eight you had and Mona's two"
+      - check: branch-is-at-commit
+        branch: main
+        message: "Brighten the ship"
+        label: "main is on Mona's newest commit, \"Brighten the ship\""
+      - check: file-exists
+        file: src/score.py
+        label: "Her new file src/score.py is in your working tree"
+      - check: working-folder-clean
+        label: "git status has nothing to report"
+    hints:
+      - "The server does not have her commits, so git pull finds nothing new. A bundle is a file that Git can read like a remote. The Advanced layer, \"Send only the new commits\", shows how to check one and fetch from it."
+      - "git bundle verify ../usb/latest.bundle says which branch the bundle holds and which commit it needs you to have already. Then the file's path goes where a remote's name would go in git fetch or git pull."
+      - "Run: git bundle verify ../usb/latest.bundle, then git pull ../usb/latest.bundle main (or git fetch ../usb/latest.bundle main:mona-main, then git merge mona-main)."
+    solution:
+      - git bundle verify -q ../usb/latest.bundle
+      - git pull -q ../usb/latest.bundle main

@@ -1,0 +1,40 @@
+questions:
+  - question: "Your project pins a library as a submodule. The library's authors push ten new commits to their server. You run git pull in your main project; no teammate changed anything. Which library version is your project using now?"
+    answers:
+      - text: "The same commit as before: the pointer in your project did not change"
+        correct: true
+        explanation: "The main project records one library commit ID. It moves only when someone runs git submodule update --remote (or checks out another commit in the folder) and commits the new pointer."
+      - text: "The newest one: git pull updates submodules to their latest commit"
+        explanation: "A pull never moves a submodule past the pointer. Following the library's newest commit is a separate, deliberate step: git submodule update --remote."
+      - text: "It depends on which branch the library's server has as default"
+        explanation: "The default branch matters only for git submodule update --remote. Without that command the pinned commit stays."
+
+  - question: "A new teammate clones the project and reports that the build fails: the folder vendor/library exists but is empty. What happened?"
+    answers:
+      - text: "The clone is broken; they should delete it and clone again"
+        explanation: "A second plain clone gives the same empty folder. Nothing is broken."
+      - text: "A plain clone does not download submodules; they need git submodule update --init"
+        correct: true
+        explanation: "The clone brought the pointer and .gitmodules. --init registers the address, and update downloads the library and checks out the pinned commit. git clone --recurse-submodules does it all at once."
+      - text: "You forgot to commit the library's files to the main project"
+        explanation: "The main project never holds the library's files, only its address and one commit ID."
+
+  - question: "You run git pull. A teammate had updated the library pointer. Now git status shows \"modified: vendor/library (new commits)\", though you changed nothing. What do you do?"
+    answers:
+      - text: "git commit -am \"Update library\", to record the change"
+        explanation: "Your folder is still on the old library commit. Committing now records the old commit as the pointer again and undoes your teammate's update."
+      - text: "git submodule update, so the folder checks out the commit the pointer now names"
+        correct: true
+        explanation: "The pull moved the pointer but not the folder. git submodule update (without --remote) makes the folder match the pointer, and git status is clean again."
+      - text: "git submodule update --remote, to get the newest library commit"
+        explanation: "--remote goes to the server's newest commit, which may be ahead of what your teammate tested and pinned. You would end up with a different pointer change of your own."
+
+  - question: "You fix a bug inside vendor/library, commit it there, then commit the new pointer in the main project and push the main project. A teammate pulls and gets \"upload-pack: not our ref\". Why?"
+    answers:
+      - text: "Their Git is too old for submodules"
+        explanation: "The message says the library's server does not have the commit that was asked for. The Git version is not the problem."
+      - text: "The pointer names a library commit that exists only on your machine: you never pushed the library"
+        correct: true
+        explanation: "The main project stores only the commit's ID. The commit itself must be on the library's server. Push from inside the submodule, and use git push --recurse-submodules=check to catch this next time."
+      - text: ".gitmodules was not committed"
+        explanation: "Without .gitmodules their Git would not know the submodule's address at all. Here it found the server and asked for the commit; the server did not have it."

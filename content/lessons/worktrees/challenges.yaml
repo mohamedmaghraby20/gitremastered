@@ -1,0 +1,137 @@
+challenges:
+  - id: second-folder
+    title: A second folder for the fix
+    level: easy
+    brief: "You are writing a sale banner in index.html and it is not ready for a commit. A customer reports a wrong price, and the fix cannot wait. Make a worktree in the folder ../hotfix, on a new branch named hotfix. Do not fix anything yet, and leave your banner work exactly as it is."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "<h1>Pedal Bike Shop</h1>" > index.html
+      - git add index.html
+      - git commit -q -m "Add homepage"
+      - "printf 'Tune-up: 400\\nFlat tyre: 15\\n' > prices.txt"
+      - git add prices.txt
+      - git commit -q -m "Add price list"
+      - 'echo "Email: hello@pedal.example" > contact.txt'
+      - git add contact.txt
+      - git commit -q -m "Add contact page"
+      - 'echo "<p>Spring sale: TODO write the offer</p>" >> index.html'
+    goal:
+      - check: worktree-exists
+        branch: hotfix
+        label: "A linked worktree has the branch hotfix checked out"
+      - check: head-is-on-branch
+        branch: main
+        label: "The project folder is still on main"
+      - check: file-is-modified
+        file: index.html
+        label: "Your banner work in index.html is still there, uncommitted"
+    hints:
+      - "You need a new folder and a new branch at the same time. Which git worktree subcommand makes a worktree?"
+      - "git worktree add takes the folder first. The option -b makes a new branch and checks it out in that folder."
+      - "Run: git worktree add ../hotfix -b hotfix"
+    solution:
+      - git worktree add -q ../hotfix -b hotfix
+
+  - id: fix-beside-your-work
+    title: Fix the price beside your work
+    level: medium
+    brief: "You are on the branch sale-banner, with one commit on it and more banner work that is not committed. In prices.txt a tune-up costs 400; it should be 40. Make a worktree in ../hotfix on a new branch hotfix that starts at main, not at sale-banner. Fix the price in that folder and commit it there with a message that contains \"Fix tune-up price\". Your project folder stays on sale-banner with its uncommitted work."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "<h1>Pedal Bike Shop</h1>" > index.html
+      - git add index.html
+      - git commit -q -m "Add homepage"
+      - "printf 'Tune-up: 400\\nFlat tyre: 15\\n' > prices.txt"
+      - git add prices.txt
+      - git commit -q -m "Add price list"
+      - 'echo "Email: hello@pedal.example" > contact.txt'
+      - git add contact.txt
+      - git commit -q -m "Add contact page"
+      - git switch -q -c sale-banner
+      - 'echo "<p>Spring sale: TODO write the offer</p>" >> index.html'
+      - git commit -q -am "Start the sale banner"
+      - 'echo "<p>TODO: add the end date</p>" >> index.html'
+    goal:
+      - check: worktree-exists
+        branch: hotfix
+        label: "A linked worktree has the branch hotfix checked out"
+      - check: branch-contains-commit
+        branch: hotfix
+        message: Fix tune-up price
+        label: "hotfix has a commit \"Fix tune-up price\""
+      - check: branch-lacks-commit
+        branch: hotfix
+        message: Start the sale banner
+        label: "hotfix started at main: it does not contain the banner commit"
+      - check: head-is-on-branch
+        branch: sale-banner
+        label: "The project folder is still on sale-banner"
+      - check: file-is-modified
+        file: index.html
+        label: "Your banner work in index.html is still there, uncommitted"
+      - check: branch-lacks-commit
+        branch: sale-banner
+        message: Fix tune-up price
+        label: "The fix was committed on hotfix, not on sale-banner"
+    hints:
+      - "A new branch starts where you are unless you say otherwise. Where does git worktree add take a starting point?"
+      - "Put the starting point at the end: git worktree add ../hotfix -b hotfix main. Then edit ../hotfix/prices.txt and commit in that folder, either after cd ../hotfix or with git -C ../hotfix."
+      - "Run: git worktree add ../hotfix -b hotfix main, then sed -i 's/400/40/' ../hotfix/prices.txt, then git -C ../hotfix commit -am \"Fix tune-up price\""
+    solution:
+      - git worktree add -q ../hotfix -b hotfix main
+      - sed -i 's/400/40/' ../hotfix/prices.txt
+      - git -C ../hotfix commit -q -am "Fix tune-up price"
+
+  - id: ship-and-tidy
+    title: Ship the fix and tidy up
+    level: hard
+    brief: "The price fix is committed on hotfix, in the worktree ../hotfix, and it is tested. Bring it into main, then remove the worktree and delete the hotfix branch. The worktree will not go quietly: someone locked it for a test run that has ended, and the run left a log file behind. Your banner work in index.html must survive all of it."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "<h1>Pedal Bike Shop</h1>" > index.html
+      - git add index.html
+      - git commit -q -m "Add homepage"
+      - "printf 'Tune-up: 400\\nFlat tyre: 15\\n' > prices.txt"
+      - git add prices.txt
+      - git commit -q -m "Add price list"
+      - 'echo "Email: hello@pedal.example" > contact.txt'
+      - git add contact.txt
+      - git commit -q -m "Add contact page"
+      - git worktree add -q ../hotfix -b hotfix
+      - sed -i 's/400/40/' ../hotfix/prices.txt
+      - git -C ../hotfix commit -q -am "Fix tune-up price"
+      - echo "price test passed" > ../hotfix/test-run.log
+      - git worktree lock --reason "Price test running" ../hotfix
+      - 'echo "<p>Spring sale: TODO write the offer</p>" >> index.html'
+    goal:
+      - check: branch-contains-commit
+        branch: main
+        message: Fix tune-up price
+        label: "main has the price fix"
+      - check: branch-is-missing
+        branch: hotfix
+        label: "The hotfix branch is deleted (Git allows that only once no worktree uses it)"
+      - check: head-is-on-branch
+        branch: main
+        label: "The project folder is on main"
+      - check: file-is-modified
+        file: index.html
+        label: "Your banner work in index.html is still there, uncommitted"
+    hints:
+      - "Three jobs, in this order: merge, remove the worktree, delete the branch. Start with the merge, then try git worktree remove ../hotfix and read what Git answers."
+      - "git worktree list -v shows why the worktree is locked. The Advanced part \"Lock a worktree\" has the command that takes a lock off. After that, Git still refuses because of the log file, which is in no commit: \"When it goes wrong\" shows the option for that."
+      - "Run: git merge hotfix, then git worktree unlock ../hotfix, then git worktree remove --force ../hotfix, then git branch -d hotfix"
+    solution:
+      - git merge -q hotfix
+      - git worktree unlock ../hotfix
+      - git worktree remove --force ../hotfix
+      - git branch -q -d hotfix
