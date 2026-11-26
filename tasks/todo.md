@@ -553,8 +553,8 @@ Goal: home, course map (both paths), search, command index and settings work for
 **Description:** The format for the command index (SPEC §4 lists `reference/` and `glossary.yaml`): one Markdown page per command with frontmatter (command, group, usage, bookSection, bookUrl, lessons) and the usual blocks; `glossary.yaml` for terms (term, meaning, lessons). Loader and content check; write the pages for the pilot's commands (status, add, commit, restore, check-ignore, rm --cached) and their terms.
 
 **Acceptance criteria:**
-- [ ] Unknown lesson IDs and missing fields fail the content check
-- [ ] Format written into SPEC §4 and `docs/writing-lessons.md`
+- [x] Unknown lesson IDs and missing fields fail the content check
+- [x] Format written into SPEC §4 and `docs/writing-lessons.md`
 
 **Verification:** unit tests · **Files:** `content/reference/`, `content/glossary.yaml`, `content/parse-reference.ts` · **Scope:** M
 

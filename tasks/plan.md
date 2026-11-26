@@ -125,7 +125,7 @@ Full details for each task (acceptance criteria, verification, files) are in `ta
 - [x] Task 32: Remember where the student is
 - [x] Task 33: Home screen
 - [x] Task 34: Course map screen
-- [ ] Task 35: Command and glossary content
+- [x] Task 35: Command and glossary content
 - [ ] Task 36: Command index screen
 - [ ] Task 37: Search, with a Ctrl K quick search panel (in-memory index, approved)
 - [ ] Task 38: Settings screen, complete

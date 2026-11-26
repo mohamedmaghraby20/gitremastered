@@ -5,7 +5,14 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { courseContent, getLesson, getLessonCard } from './course-content.ts';
+import {
+	courseContent,
+	getCommandPage,
+	getLesson,
+	getLessonCard,
+	listCommandPages,
+	listGlossaryTerms
+} from './course-content.ts';
 import { findReadingMinutes, findSourceLabel } from './lesson-facts.ts';
 
 /**
@@ -53,6 +60,22 @@ describe('courseContent', () => {
 		expect(pilotCard?.numberLabel).toBe('01');
 		expect(pilotCard?.sourceLabel).toBe('Pro Git 2.2');
 		expect(getLessonCard('no-such-lesson')).toBeUndefined();
+	});
+
+	it('has a command page for every command the first two lessons teach, and their terms', () => {
+		const commandIds = listCommandPages().map((commandPage) => commandPage.id);
+		for (const commandId of [
+			'git-status',
+			'git-add',
+			'git-commit',
+			'git-restore',
+			'git-check-ignore',
+			'git-rm'
+		]) {
+			expect(commandIds).toContain(commandId);
+		}
+		expect(getCommandPage('git-status')?.lessonIds).toEqual(['three-areas']);
+		expect(listGlossaryTerms().map((term) => term.id)).toContain('staging-area');
 	});
 
 	it('lists the pilot in the pro path', () => {

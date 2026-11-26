@@ -152,8 +152,9 @@ content/
 ├── paths/
 │   ├── pro-path.yaml  ordered lesson ids, grouped by module
 │   └── book-path.yaml lesson ids in Pro Git order
-├── reference/<page-id>.md
-└── glossary.yaml
+├── commands/<command-id>.md one page per command, for the command index
+├── reference/<page-id>.md short pages for Pro Git sections without a lesson
+└── glossary.yaml          terms with a plain meaning, for the command index
 ```
 
 `lesson.md` holds frontmatter, then the lede (one sentence), then four sections written as `## Must know`, `## Under the hood`, `## Advanced`, `## Recap`, in that order:
@@ -230,6 +231,30 @@ chapters:
 ```
 
 Lists show two facts per lesson, computed by `app/src/lib/content/lesson-facts.ts`, never written by hand: reading time (words of "Must know" plus the mission brief, at 200 words a minute, rounded, at least 1) and source label ("Pro Git 2.2" from `bookSection`, or "Beyond the book" when `bookUrl` is not a Pro Git link).
+
+Command pages (`commands/<command-id>.md`): frontmatter, then the explanation in Markdown with the usual lesson blocks. The `id` must match the file name, and every lesson in `lessons` must exist.
+
+```yaml
+# frontmatter of content/commands/git-status.md
+id: git-status
+command: git status
+group: Daily loop
+summary: Shows which files changed, which are staged, and which Git does not track yet.
+usage: ["git status", "git status -s"]
+bookSection: "2.2 Recording Changes to the Repository"
+bookUrl: https://git-scm.com/book/en/v2/Git-Basics-Recording-Changes-to-the-Repository#_checking_status
+lessons: [three-areas]
+```
+
+The glossary (`glossary.yaml`): a list of terms, each with a unique `id` (used in links), the `term`, a plain `meaning` (one or two sentences, Markdown) and the `lessons` that teach it.
+
+```yaml
+terms:
+  - id: staging-area
+    term: staging area
+    meaning: "The changes you picked for the next commit. Also called the index."
+    lessons: [three-areas]
+```
 
 The loader (`app/src/lib/content/`) rejects a broken file with `<file>: <problem>`. `pnpm build` runs `pnpm content:check` first, so a broken lesson stops the build.
 

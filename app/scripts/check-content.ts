@@ -18,7 +18,8 @@ function checkContent(): void {
 		const courseContent = buildCourseContent(readContentFiles());
 		console.log(
 			`Content OK: ${courseContent.lessons.size} lessons, ${courseContent.paths.size} paths` +
-				(courseContent.bookPath === null ? '' : ', the Book path')
+				(courseContent.bookPath === null ? '' : ', the Book path') +
+				`, ${courseContent.commands.size} command pages, ${courseContent.glossary.length} glossary terms`
 		);
 	} catch (error) {
 		if (error instanceof ContentError) {

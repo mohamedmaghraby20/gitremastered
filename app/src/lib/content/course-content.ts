@@ -11,15 +11,18 @@ import { findLessonPlace, formatLessonNumber, type LessonPlace } from './lesson-
 import { findReadingMinutes, findSourceLabel } from './lesson-facts.ts';
 import type { BookPath } from '../types/book-path.ts';
 import type { LearningPath } from '../types/learning-path.ts';
+import type { CommandPage, GlossaryTerm } from '../types/reference.ts';
 
 /**
- * Every lesson file and path file, as text, keyed by Vite's relative path
+ * Every lesson, path, command page and glossary file, as text, keyed by Vite's relative path
  * (e.g. "../../../../content/lessons/three-areas/lesson.md").
  */
 const filesByImportPath = import.meta.glob<string>(
 	[
 		'../../../../content/lessons/*/*.{md,yaml}',
 		'../../../../content/paths/*.yaml',
+		'../../../../content/commands/*.md',
+		'../../../../content/glossary.yaml',
 		// coverage.md is for course reviewers, not students: it stays out of the app.
 		'!../../../../content/lessons/*/coverage.md'
 	],
@@ -118,4 +121,29 @@ export function getProPath(): LearningPath | undefined {
  */
 export function getBookPath(): BookPath | null {
 	return courseContent.bookPath;
+}
+
+/**
+ * Looks up one command page.
+ * @param commandId - e.g. "git-status"
+ * @returns the page, or undefined if there is none with this ID
+ */
+export function getCommandPage(commandId: string): CommandPage | undefined {
+	return courseContent.commands.get(commandId);
+}
+
+/**
+ * Lists every command page, in file-name order.
+ * @returns the pages
+ */
+export function listCommandPages(): CommandPage[] {
+	return [...courseContent.commands.values()];
+}
+
+/**
+ * Lists every glossary term, in file order.
+ * @returns the terms
+ */
+export function listGlossaryTerms(): GlossaryTerm[] {
+	return courseContent.glossary;
 }

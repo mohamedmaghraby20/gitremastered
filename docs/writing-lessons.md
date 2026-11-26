@@ -141,6 +141,15 @@ questions:
         explanation: ".gitignore never removes anything."
 ```
 
+## Command pages and the glossary
+
+The command index reads `content/commands/<command-id>.md` (one page per command) and `content/glossary.yaml` (terms). SPEC §4 has the exact format.
+
+- **When:** a lesson that teaches a command adds its page; a lesson that introduces a word adds its term. List the lesson in `lessons`.
+- **A command page** is a reference, not a lesson: the job in one sentence, one real example with its output, then the options people use, as a table when there are several. Add a `:::careful` block for anything that throws work away, and a `:::compare` block when Pro Git shows an older command.
+- **A glossary meaning** is one or two plain sentences a beginner understands without the lesson. Name the other words people use for it ("also called the index").
+- The teaching rules below apply here too: book names first, no word before it is explained, real Git output.
+
 ## Style
 
 - Follow `CLAUDE.md`: short, plain words, one idea per paragraph.

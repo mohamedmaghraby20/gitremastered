@@ -1,6 +1,6 @@
 /**
  * read-content-files.ts
- * Reads the lesson and path files of the repo's content/ folder from disk, keyed like
+ * Reads the lesson, path, command and glossary files of the repo's content/ folder from disk, keyed like
  * "lessons/three-areas/lesson.md". Used by Node scripts and tests (the app itself gets the
  * files from Vite instead, in course-content.ts).
  */
@@ -14,7 +14,7 @@ import type { ContentFiles } from '../src/lib/content/load-lessons.ts';
 export const contentFolderPath = fileURLToPath(new URL('../../content', import.meta.url));
 
 /**
- * Reads every lesson file and path file.
+ * Reads every content file the app loads.
  * @param folderPath - the content folder (the repo's content/ by default)
  * @returns the files' texts, keyed by their path inside content/
  */
@@ -29,7 +29,9 @@ export function readContentFiles(folderPath: string = contentFolderPath): Conten
 		const contentPath = relative(folderPath, fullPath).split(sep).join('/');
 		const isLessonFile = /^lessons\/[^/]+\/[^/]+\.(md|yaml)$/.test(contentPath);
 		const isPathFile = /^paths\/[^/]+\.yaml$/.test(contentPath);
-		if (isLessonFile || isPathFile) {
+		const isCommandFile = /^commands\/[^/]+\.md$/.test(contentPath);
+		const isGlossaryFile = contentPath === 'glossary.yaml';
+		if (isLessonFile || isPathFile || isCommandFile || isGlossaryFile) {
 			contentFiles[contentPath] = readFileSync(fullPath, 'utf8');
 		}
 	}

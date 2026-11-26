@@ -15,6 +15,27 @@ modules:
     lessons: [sample-lesson]
 `;
 
+const commandPageText = `---
+id: git-status
+command: git status
+group: Daily loop
+summary: Shows which files changed and which are staged.
+usage: ["git status"]
+bookSection: "2.2 Recording Changes to the Repository"
+bookUrl: https://git-scm.com/book/en/v2/Git-Basics-Recording-Changes-to-the-Repository
+lessons: [sample-lesson]
+---
+
+Lists your files by area.
+`;
+
+const glossaryText = `terms:
+  - id: staging-area
+    term: staging area
+    meaning: The changes picked for the next commit.
+    lessons: [sample-lesson]
+`;
+
 const bookPathText = `id: book-path
 title: Book path
 chapters:
@@ -100,6 +121,37 @@ describe('buildCourseContent', () => {
 		contentFiles['paths/book-path.yaml'] = bookPathText.replace('sample-lesson', 'ghost-lesson');
 		expect(() => buildCourseContent(contentFiles)).toThrow(
 			'content/paths/book-path.yaml: unknown lesson "ghost-lesson" in section "2.2"'
+		);
+	});
+
+	it('loads command pages and the glossary, and checks the lessons they name', () => {
+		const contentFiles = sampleContentFiles();
+		contentFiles['commands/git-status.md'] = commandPageText;
+		contentFiles['glossary.yaml'] = glossaryText;
+		const courseContent = buildCourseContent(contentFiles);
+		expect(courseContent.commands.get('git-status')?.command).toBe('git status');
+		expect(courseContent.glossary[0].term).toBe('staging area');
+
+		contentFiles['glossary.yaml'] = glossaryText.replace('[sample-lesson]', '[ghost-lesson]');
+		expect(() => buildCourseContent(contentFiles)).toThrow(
+			'content/glossary.yaml: unknown lesson "ghost-lesson" in term "staging-area"'
+		);
+	});
+
+	it('rejects a command page whose id does not match its file name', () => {
+		const contentFiles = sampleContentFiles();
+		contentFiles['commands/git-stat.md'] = commandPageText;
+		expect(() => buildCourseContent(contentFiles)).toThrow(
+			'the id "git-status" must match the file name "git-stat"'
+		);
+	});
+
+	it('rejects a glossary that uses one term id twice', () => {
+		const contentFiles = sampleContentFiles();
+		const termLines = glossaryText.slice('terms:\n'.length);
+		contentFiles['glossary.yaml'] = glossaryText + termLines;
+		expect(() => buildCourseContent(contentFiles)).toThrow(
+			'the term id "staging-area" is used twice'
 		);
 	});
 

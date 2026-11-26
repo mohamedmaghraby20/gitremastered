@@ -55,7 +55,7 @@ export function parseLessonText(fileText: string, fileName: string): LessonText 
  * @param fileName - for error messages
  * @returns the frontmatter YAML and the Markdown body
  */
-function splitFrontmatter(
+export function splitFrontmatter(
 	unixText: string,
 	fileName: string
 ): { frontmatterText: string; bodyText: string } {
@@ -90,7 +90,7 @@ function readFrontmatter(reader: FieldReader): LessonFrontmatter {
  * @param reader - a reader for the frontmatter YAML
  * @returns the link
  */
-function readBookUrl(reader: FieldReader): string {
+export function readBookUrl(reader: FieldReader): string {
 	const bookUrl = reader.text('bookUrl');
 	const isOnAllowedSite = allowedBookSites.some((site) => bookUrl.startsWith(site));
 	if (!isOnAllowedSite) {

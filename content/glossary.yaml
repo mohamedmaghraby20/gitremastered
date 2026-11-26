@@ -1,0 +1,43 @@
+# The course's glossary: one plain meaning per term, and the lessons that teach it.
+# Shown in the command index (Terms), and later in the hover cards of links between lessons.
+terms:
+  - id: working-tree
+    term: working tree
+    meaning: "The files you see and edit in your project folder. Pro Git also calls it the working directory."
+    lessons: [three-areas]
+  - id: staging-area
+    term: staging area
+    meaning: "The changes you picked for the next commit, each one a photo of the file at the moment you ran `git add`. Also called the index."
+    lessons: [three-areas]
+  - id: repository
+    term: repository
+    meaning: "The `.git` folder: every commit you saved, plus what Git needs to track your project."
+    lessons: [three-areas]
+  - id: commit
+    term: commit
+    meaning: "A saved snapshot of your project, with a message, an author and a date. Made from the staging area by `git commit`."
+    lessons: [three-areas]
+  - id: tracked-file
+    term: tracked file
+    meaning: "A file Git already follows, because it was in the last commit or is staged. Tracked files are unmodified, modified or staged."
+    lessons: [three-areas]
+  - id: untracked-file
+    term: untracked file
+    meaning: "A file Git has never saved and does not follow yet. `git add` starts tracking it."
+    lessons: [three-areas, ignoring-files]
+  - id: head
+    term: HEAD
+    meaning: "Git's pointer to where you are: normally the branch you are on, and so its latest commit."
+    lessons: [three-areas]
+  - id: branch
+    term: branch
+    meaning: "A named line of commits, like `main`. Each new commit moves the branch you are on forward."
+    lessons: [three-areas]
+  - id: gitignore
+    term: .gitignore
+    meaning: "A file of patterns that tells Git which untracked files to leave alone, like build output, logs and secrets."
+    lessons: [ignoring-files]
+  - id: glob-pattern
+    term: glob pattern
+    meaning: "A short rule that matches file names with wildcards: `*` for any characters, `?` for one, `[abc]` for one character from a list."
+    lessons: [ignoring-files]
