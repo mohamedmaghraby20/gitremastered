@@ -638,7 +638,8 @@ Ctrl K from any screen opens a **quick search panel** over the current screen, l
 **Description:** Decided 2026-11-26. The single "mission" becomes at least three **challenges** per lesson, from easy to hard. The student picks any of them. Challenges test the skill in a realistic situation; the quiz tests understanding. In the lesson, "Challenges" comes after the text and before the quiz.
 - Content: `challenges.yaml` replaces `mission.yaml`: a list of 3 or more, each with a level (easy, medium, hard), a brief, its own setup, goals, hints and solution.
 - Choosing one rebuilds the practice project in that challenge's starting state ("Start this challenge"), so Try-its and challenges never mix.
-- Where the goals show while you work: to be decided with you (see the walkthrough notes).
+- Where the goals show while you work: in the lesson column, under the "Challenges" heading (decided 2026-11-26). The terminal stays as it is.
+- After release, test the other option as an experiment: a thin goals strip inside the terminal window, between its title bar and the screen, folding to one line.
 
 **Acceptance criteria:**
 - [ ] Both lessons have 3 challenges, easy to hard; `pnpm test:missions` runs every one

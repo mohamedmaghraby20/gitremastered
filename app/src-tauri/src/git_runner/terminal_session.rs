@@ -73,6 +73,9 @@ impl TerminalSessions {
         for (name, value) in &shell.environment {
             shell_command.env(name, value);
         }
+        for name in &shell.removed_environment {
+            shell_command.env_remove(name);
+        }
         let mut shell_process = pty_pair
             .slave
             .spawn_command(shell_command)

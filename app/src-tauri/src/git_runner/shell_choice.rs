@@ -28,6 +28,8 @@ pub struct ShellLaunch {
     pub arguments: Vec<String>,
     /// Extra environment variables for the shell.
     pub environment: Vec<(String, String)>,
+    /// Variables the app inherited that must not reach the shell.
+    pub removed_environment: Vec<String>,
 }
 
 /// Chooses the shell for the terminal: Git Bash on Windows, the user's own shell elsewhere.
@@ -46,6 +48,7 @@ pub fn terminal_shell() -> Result<ShellLaunch, String> {
             program: find_git_bash()?,
             arguments: vec!["--login".to_string(), "-i".to_string()],
             environment,
+            removed_environment: inherited_variables_to_remove(),
         });
     }
     let user_shell = std::env::var("SHELL").unwrap_or_else(|_| "bash".to_string());
@@ -53,7 +56,33 @@ pub fn terminal_shell() -> Result<ShellLaunch, String> {
         program: PathBuf::from(user_shell),
         arguments: vec!["-l".to_string(), "-i".to_string()],
         environment,
+        removed_environment: inherited_variables_to_remove(),
     })
+}
+
+/// Lists inherited variables that would change what the student sees in the terminal.
+///
+/// Tools that launch programs (code editors, AI assistants, build scripts) often set
+/// `GIT_EDITOR=true` so Git never waits for an editor. If the app was started by such a
+/// tool, the student's `git commit` without `-m` would quietly abort instead of opening an
+/// editor, unlike a real terminal. A real editor choice (`code --wait`, `nano`) is kept.
+///
+/// Input: none (reads the app's own environment). Output: the variable names to remove.
+fn inherited_variables_to_remove() -> Vec<String> {
+    let inherited_editor = std::env::var("GIT_EDITOR").unwrap_or_default();
+    if is_do_nothing_editor(&inherited_editor) {
+        vec!["GIT_EDITOR".to_string()]
+    } else {
+        Vec::new()
+    }
+}
+
+/// Tells whether an editor command does nothing, so Git would get an empty message.
+///
+/// Input: the editor command. Output: true for `true` and `:` (shell commands that do nothing).
+fn is_do_nothing_editor(editor_command: &str) -> bool {
+    let command = editor_command.trim();
+    command == "true" || command == ":"
 }
 
 /// Finds Git Bash next to the installed Git for Windows.
@@ -87,7 +116,7 @@ pub fn find_bash_above(start_folder: &Path) -> Option<PathBuf> {
 
 #[cfg(test)]
 mod tests {
-    use super::find_bash_above;
+    use super::{find_bash_above, is_do_nothing_editor};
     use std::fs;
 
     /// A fake Git layout: Git/mingw64/libexec/git-core, with Git/bin/bash.exe.
@@ -108,5 +137,14 @@ mod tests {
     fn finds_nothing_without_bash() {
         let empty_folder = tempfile::tempdir().expect("temporary folder");
         assert_eq!(find_bash_above(empty_folder.path()), None);
+    }
+
+    /// `true` and `:` do nothing; a real editor command is kept.
+    #[test]
+    fn spots_editors_that_do_nothing() {
+        assert!(is_do_nothing_editor("true"));
+        assert!(is_do_nothing_editor(" : "));
+        assert!(!is_do_nothing_editor("code --wait"));
+        assert!(!is_do_nothing_editor(""));
     }
 }
