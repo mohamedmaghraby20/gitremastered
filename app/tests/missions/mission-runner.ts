@@ -27,7 +27,7 @@ export type MissionRunResult = {
  * Environment for the steps: a fixed identity (CI machines have none) and no prompts.
  * A mission's own `git config` steps still win, because repo settings beat these defaults.
  */
-const stepEnvironment = {
+export const stepEnvironment = {
 	...process.env,
 	GIT_TERMINAL_PROMPT: '0',
 	GIT_EDITOR: 'true',
@@ -86,7 +86,7 @@ export function buildSnapshotPrinter(): void {
  * @param practiceFolder - the repo folder inside it
  * @returns the snapshot
  */
-function readSnapshot(practiceRoot: string, practiceFolder: string): RepoSnapshot {
+export function readSnapshot(practiceRoot: string, practiceFolder: string): RepoSnapshot {
 	const snapshotJson = execFileSync(
 		'cargo',
 		['run', '--quiet', '--example', 'print_snapshot', '--', practiceRoot, practiceFolder],
@@ -99,7 +99,7 @@ function readSnapshot(practiceRoot: string, practiceFolder: string): RepoSnapsho
  * Finds bash: Git Bash next to Git on Windows (like the app), "bash" elsewhere.
  * @returns the program to run
  */
-function findBashProgram(): string {
+export function findBashProgram(): string {
 	if (process.platform !== 'win32') {
 		return 'bash';
 	}

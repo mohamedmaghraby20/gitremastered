@@ -16,6 +16,7 @@
 		"test": "vitest run",
 		"test:watch": "vitest",
 		"test:missions": "vitest run --config vitest.missions.config.ts",
+		"test:github": "vitest run --config vitest.github.config.ts",
 		"review:build": "tauri build --no-bundle --config \"{\\\"identifier\\\":\\\"io.github.mohamedmaghraby20.gitremastered.review\\\"}\"",
 		"review:terminal": "node scripts/student-driver/check-terminal.ts",
 		"review:measure": "node scripts/student-driver/measure.ts",

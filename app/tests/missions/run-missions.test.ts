@@ -22,11 +22,16 @@ const draft = readDraftFromEnvironment();
 const courseContent = buildCourseContent(
 	draft === null ? readContentFiles() : readDraftContentFiles(draft)
 );
-/** Every challenge (or only the draft lesson's), labelled like "three-areas / release-notes". */
+/**
+ * Every local challenge (or only the draft lesson's), labelled like "three-areas / release-notes".
+ * GitHub challenges need an account and run in `pnpm test:github` instead (assumption A7).
+ */
 const challenges = [...courseContent.lessons.values()]
 	.filter((lesson) => draft === null || lesson.id === draft.lessonId)
 	.flatMap((lesson) =>
-		lesson.challenges.map((challenge) => [`${lesson.id} / ${challenge.id}`, challenge] as const)
+		lesson.challenges
+			.filter((challenge) => challenge.github === null)
+			.map((challenge) => [`${lesson.id} / ${challenge.id}`, challenge] as const)
 	);
 
 /** The pilot's easy challenge, used by the wrong-solution tests below. */
