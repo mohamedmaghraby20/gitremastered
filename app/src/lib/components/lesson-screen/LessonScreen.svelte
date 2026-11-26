@@ -10,7 +10,10 @@
 <script lang="ts">
 	import type { Lesson } from '$lib/types/lesson';
 	import type { LessonPlace } from '$lib/content/lesson-navigation';
+	import { get } from 'svelte/store';
 	import { PracticeSession } from '$lib/mission-engine/practice-session.svelte';
+	import { GitHubWatch } from '$lib/mission-engine/github-watch.svelte';
+	import { getGitHubState } from '$lib/tauri/commands';
 	import {
 		clearRepoSnapshot,
 		currentRepoSnapshot,
@@ -27,6 +30,8 @@
 		saveLayerRead,
 		saveLessonOpened,
 		progress,
+		saveChallengeStartedAt,
+		saveGitHubConsent,
 		savePanelSizes,
 		saveQuizResult
 	} from '$lib/stores/progress';
@@ -45,7 +50,46 @@
 
 	// Created once per lesson: the page wraps this component in {#key lesson.id}.
 	// svelte-ignore state_referenced_locally
-	const session = new PracticeSession(lesson.id, activeChallenge.setup);
+	const session = new PracticeSession(lesson.id, activeChallenge.setup, activeChallenge.github, {
+		hasConsent: () => get(progress).hasGitHubConsent,
+		onChallengeStarted: (startedAt) => void saveChallengeStartedAt(lesson.id, startedAt)
+	});
+
+	/** The active GitHub challenge's view of its repository on GitHub; null for a local one. */
+	let gitHubWatch: GitHubWatch | null = $state(null);
+
+	/** When nothing was saved, every pull request and issue counts (the start of time). */
+	const unknownStart = new Date(0).toISOString();
+
+	// A GitHub challenge reads its repository once its folder is built, until it closes.
+	$effect(() => {
+		const github = activeChallenge.github;
+		const isBuilt = session.practiceFolderPath !== null;
+		if (github === null || !isBuilt) {
+			return;
+		}
+		const startedAt = get(progress).challengeStartedAt[lesson.id] ?? unknownStart;
+		const watch = new GitHubWatch(github.repo, startedAt, getGitHubState);
+		gitHubWatch = watch;
+		void watch.readNow();
+		return () => {
+			watch.stop();
+			gitHubWatch = null;
+		};
+	});
+
+	// A local change (a push, say) may have changed GitHub too: read it again soon.
+	$effect(() => {
+		if ($currentRepoSnapshot !== null) {
+			gitHubWatch?.noticeLocalChange();
+		}
+	});
+
+	/** Saves the student's yes on the consent screen and builds the GitHub challenge. */
+	async function acceptGitHubConsent(): Promise<void> {
+		await saveGitHubConsent(true);
+		await session.buildAfterConsent();
+	}
 
 	/**
 	 * Starts a challenge: remembers it and rebuilds the practice project in its starting state.
@@ -57,7 +101,7 @@
 			return;
 		}
 		void saveActiveChallenge(lesson.id, challengeId);
-		void session.startChallenge(challenge.setup);
+		void session.startChallenge(challenge.setup, challenge.github);
 	}
 
 	/**
@@ -167,6 +211,9 @@
 				onstart={startChallenge}
 				onreset={() => session.reset()}
 				oncomplete={finishChallenge}
+				{gitHubWatch}
+				needsGitHubConsent={session.needsGitHubConsent}
+				onGitHubConsent={acceptGitHubConsent}
 			/>
 			<Quiz quiz={lesson.quiz} onfinish={saveQuizScore} />
 		{/snippet}

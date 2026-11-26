@@ -6,11 +6,14 @@
 
   Inputs: challenges (the lesson's, easy to hard), activeChallengeId, finishedChallengeIds,
           snapshot (live repo state or null), onstart (start a challenge by ID),
-          onreset (rebuild the practice folder), oncomplete (the active challenge is done).
+          onreset (rebuild the practice folder), oncomplete (the active challenge is done),
+          gitHubWatch (a GitHub challenge's view of GitHub, or null), needsGitHubConsent,
+          onGitHubConsent (the student accepted the consent screen).
 -->
 <script lang="ts">
 	import type { Challenge } from '$lib/types/mission';
 	import type { RepoSnapshot } from '$lib/types/repo-snapshot';
+	import type { GitHubWatch } from '$lib/mission-engine/github-watch.svelte';
 	import PartHeading from '$lib/components/lesson-reader/PartHeading.svelte';
 	import MissionPanel from '$lib/components/mission-panel/MissionPanel.svelte';
 	import ChallengeCard from './ChallengeCard.svelte';
@@ -22,7 +25,10 @@
 		snapshot,
 		onstart,
 		onreset,
-		oncomplete
+		oncomplete,
+		gitHubWatch = null,
+		needsGitHubConsent = false,
+		onGitHubConsent = async () => {}
 	}: {
 		challenges: Challenge[];
 		activeChallengeId: string;
@@ -31,6 +37,9 @@
 		onstart: (challengeId: string) => void;
 		onreset: () => Promise<void>;
 		oncomplete: (challengeId: string) => void;
+		gitHubWatch?: GitHubWatch | null;
+		needsGitHubConsent?: boolean;
+		onGitHubConsent?: () => Promise<void>;
 	} = $props();
 
 	const activeIndex = $derived(
@@ -80,6 +89,9 @@
 			{snapshot}
 			onReset={onreset}
 			onComplete={completeActiveChallenge}
+			{gitHubWatch}
+			{needsGitHubConsent}
+			{onGitHubConsent}
 		/>
 	{/key}
 </section>

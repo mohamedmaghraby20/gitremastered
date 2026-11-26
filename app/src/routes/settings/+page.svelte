@@ -13,6 +13,7 @@
 	import LessonTextSizeRow from '$lib/components/settings/LessonTextSizeRow.svelte';
 	import ReduceMotionRow from '$lib/components/settings/ReduceMotionRow.svelte';
 	import GitVersionStatus from '$lib/components/settings/GitVersionStatus.svelte';
+	import GitHubSection from '$lib/components/settings/GitHubSection.svelte';
 	import ResetProgress from '$lib/components/settings/ResetProgress.svelte';
 	import AboutSection from '$lib/components/settings/AboutSection.svelte';
 	import { saveThemeChoice } from '$lib/stores/progress';
@@ -66,6 +67,8 @@
 		<h2 id="progress-heading" class="type-h3 m-0 border-b px-5 py-3.5">Progress</h2>
 		<ResetProgress />
 	</section>
+
+	<GitHubSection />
 
 	<AboutSection />
 </div>

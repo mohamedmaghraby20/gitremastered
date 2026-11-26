@@ -7,7 +7,9 @@
 
   Inputs:  mission (the challenge's mission fields), heading (e.g. "Challenge 2 · Medium"),
            snapshot (live repo state or null), onReset (rebuilds the practice folder),
-           onComplete (called once when every goal is met).
+           onComplete (called once when every goal is met), and for a GitHub challenge:
+           gitHubWatch (its view of GitHub, or null), needsGitHubConsent, onGitHubConsent.
+  A GitHub challenge also shows the GitHub panel: consent, connection, "Check GitHub now".
 -->
 <script lang="ts">
 	import type { Mission } from '$lib/types/mission';
@@ -22,19 +24,27 @@
 		revealNextHint
 	} from '$lib/mission-engine/mission-session';
 	import GoalRow from './GoalRow.svelte';
+	import GitHubChallengePanel from './GitHubChallengePanel.svelte';
+	import type { GitHubWatch } from '$lib/mission-engine/github-watch.svelte';
 
 	let {
 		mission,
 		heading,
 		snapshot,
 		onReset,
-		onComplete = () => {}
+		onComplete = () => {},
+		gitHubWatch = null,
+		needsGitHubConsent = false,
+		onGitHubConsent = async () => {}
 	}: {
 		mission: Mission;
 		heading: string;
 		snapshot: RepoSnapshot | null;
 		onReset: () => Promise<void>;
 		onComplete?: () => void;
+		gitHubWatch?: GitHubWatch | null;
+		needsGitHubConsent?: boolean;
+		onGitHubConsent?: () => Promise<void>;
 	} = $props();
 
 	// svelte-ignore state_referenced_locally
@@ -43,7 +53,15 @@
 	let isResetting = $state(false);
 	let hasReportedCompletion = false;
 
-	const goalResults = $derived(checkGoals(mission.goals, snapshot));
+	const goalResults = $derived(checkGoals(mission.goals, snapshot, gitHubWatch?.context ?? null));
+	/** True while a goal that reads GitHub is not met yet: GitHub is then read every 20 s. */
+	const hasOpenGitHubGoal = $derived(
+		mission.goals.some((goal, index) => goal.check.startsWith('github-') && !goalResults[index])
+	);
+
+	$effect(() => {
+		gitHubWatch?.keepReadingWhile(hasOpenGitHubGoal);
+	});
 	const metCount = $derived(goalResults.filter((isMet) => isMet).length);
 	const isComplete = $derived(metCount === mission.goals.length);
 
@@ -78,6 +96,14 @@
 	</header>
 
 	<div class="flex flex-col gap-3.5 px-5 pt-4 pb-5">
+		{#if mission.github !== null}
+			<GitHubChallengePanel
+				repoName={mission.github.repo}
+				watch={gitHubWatch}
+				needsConsent={needsGitHubConsent}
+				onConsent={onGitHubConsent}
+			/>
+		{/if}
 		<p
 			class="m-0 font-serif text-[length:var(--type-lede-size)] leading-[var(--type-lesson-line-height)]"
 		>

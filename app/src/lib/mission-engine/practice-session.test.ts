@@ -45,10 +45,12 @@ describe('PracticeSession', () => {
 		await session.start();
 
 		await session.startChallenge(['git init', 'echo two > two.txt']);
-		expect(commands.openPracticeRepo).toHaveBeenLastCalledWith('three-areas', [
-			'git init',
-			'echo two > two.txt'
-		]);
+		expect(commands.openPracticeRepo).toHaveBeenLastCalledWith(
+			'three-areas',
+			['git init', 'echo two > two.txt'],
+			null,
+			false
+		);
 
 		await session.startChallenge(['git init', 'echo two > two.txt']);
 		expect(commands.resetPracticeRepo).toHaveBeenCalledWith('three-areas', null, false);

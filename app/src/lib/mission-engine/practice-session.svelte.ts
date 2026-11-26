@@ -151,6 +151,24 @@ export class PracticeSession {
 	}
 
 	/**
+	 * Builds the active GitHub challenge right after the student accepted the consent screen.
+	 * Inputs: none. Output: none.
+	 */
+	async buildAfterConsent(): Promise<void> {
+		if (!this.commands.isDesktopApp()) {
+			return;
+		}
+		await this.buildFolder('Setting up the challenge…', true, () =>
+			this.commands.openPracticeRepo(
+				this.missionId,
+				this.setupSteps,
+				this.github,
+				this.githubHooks.hasConsent()
+			)
+		);
+	}
+
+	/**
 	 * Remembers a command line typed in the terminal, if it is a Git command we can explain.
 	 * @param commandLine - the line, e.g. "git add notes.txt"
 	 */
