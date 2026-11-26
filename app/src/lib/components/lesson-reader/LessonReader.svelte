@@ -5,11 +5,12 @@
 
   Inputs:  lesson (the loaded lesson), place (its number and neighbours in the path, or null),
            afterText (optional: content shown under the recap on the "Must know" tab only,
-           like the mission and the quiz).
+           like the mission and the quiz), onLayerChange (optional: called with the layer the
+           student switches to, so it can be saved).
 -->
 <script lang="ts">
 	import type { Snippet } from 'svelte';
-	import type { Lesson, LessonSections } from '$lib/types/lesson';
+	import type { Lesson, LessonLayerId } from '$lib/types/lesson';
 	import { formatLessonNumber, type LessonPlace } from '$lib/content/lesson-navigation';
 	import { renderInlineMarkdown } from '$lib/content/render-markdown';
 	import LayerTabs from './LayerTabs.svelte';
@@ -21,26 +22,32 @@
 	let {
 		lesson,
 		place,
-		afterText
-	}: { lesson: Lesson; place: LessonPlace | null; afterText?: Snippet } = $props();
+		afterText,
+		onLayerChange = () => {}
+	}: {
+		lesson: Lesson;
+		place: LessonPlace | null;
+		afterText?: Snippet;
+		onLayerChange?: (layerId: LessonLayerId) => void;
+	} = $props();
 
 	/** The three reading layers; the recap is always shown, so it is not a tab. */
-	type LayerId = Exclude<keyof LessonSections, 'recap'>;
-	const layers: readonly { id: LayerId; label: string }[] = [
+	const layers: readonly { id: LessonLayerId; label: string }[] = [
 		{ id: 'mustKnow', label: 'Must know' },
 		{ id: 'underTheHood', label: 'Under the hood' },
 		{ id: 'advanced', label: 'Advanced' }
 	];
 	const panelIdPrefix = 'lesson-layer';
 
-	let activeLayerId: LayerId = $state('mustKnow');
+	let activeLayerId: LessonLayerId = $state('mustKnow');
 
 	/**
 	 * Shows another layer.
 	 * @param layerId - the layer the student picked
 	 */
-	function showLayer(layerId: LayerId): void {
+	function showLayer(layerId: LessonLayerId): void {
 		activeLayerId = layerId;
+		onLayerChange(layerId);
 	}
 
 	const lessonNumber = $derived(place === null ? null : formatLessonNumber(place.lessonNumber));

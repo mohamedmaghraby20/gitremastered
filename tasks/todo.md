@@ -526,8 +526,8 @@ Goal: home, course map (both paths), search, command index and settings work for
 **Description:** Save the last opened lesson and the furthest layer read, next to finished missions and quiz results. Pure functions for "continue learning", "up next" (the next unfinished lessons in the chosen path) and path progress (done / total for the core modules and the whole course).
 
 **Acceptance criteria:**
-- [ ] Opening a lesson and switching layers is saved and survives a restart
-- [ ] Progress numbers match the path files
+- [x] Opening a lesson and switching layers is saved and survives a restart
+- [x] Progress numbers match the path files
 
 **Verification:** unit tests over sample progress · **Files:** `stores/progress.ts`, `progress/learning-summary.ts` · **Scope:** M
 

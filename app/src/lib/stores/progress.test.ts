@@ -11,6 +11,8 @@ import {
 	markMissionFinished,
 	progress,
 	resetProgress,
+	saveLayerRead,
+	saveLessonOpened,
 	saveQuizResult,
 	saveTerminalFontSize,
 	saveThemeChoice
@@ -24,7 +26,9 @@ describe('progress', () => {
 			quizResults: {},
 			theme: 'system',
 			terminalFontSize: null,
-			isFilesDeskFolded: false
+			isFilesDeskFolded: false,
+			lastOpenedLessonId: null,
+			furthestLayers: {}
 		});
 	});
 
@@ -45,8 +49,24 @@ describe('progress', () => {
 			quizResults: { 'three-areas': { correctCount: 2, questionCount: 3 } },
 			theme: 'dark',
 			terminalFontSize: 16,
-			isFilesDeskFolded: false
+			isFilesDeskFolded: false,
+			lastOpenedLessonId: null,
+			furthestLayers: {}
 		});
+	});
+
+	it('remembers the last opened lesson and the furthest layer read, across sessions', async () => {
+		const storage = createMemoryStorage();
+		await loadProgress(storage);
+
+		await saveLessonOpened('three-areas');
+		await saveLayerRead('three-areas', 'underTheHood');
+		await saveLayerRead('three-areas', 'mustKnow');
+		await saveLessonOpened('ignoring-files');
+
+		const reloaded = await loadProgress(storage);
+		expect(reloaded.lastOpenedLessonId).toBe('ignoring-files');
+		expect(reloaded.furthestLayers).toEqual({ 'three-areas': 'underTheHood' });
 	});
 
 	it('writes to disk (save) after every change', async () => {
@@ -59,8 +79,10 @@ describe('progress', () => {
 		expect(saveSpy).toHaveBeenCalledOnce();
 	});
 
-	it('resets missions and quizzes but keeps the theme and text size', async () => {
+	it('resets missions, quizzes and reading places but keeps the theme and text size', async () => {
 		await loadProgress(createMemoryStorage());
+		await saveLessonOpened('three-areas');
+		await saveLayerRead('three-areas', 'advanced');
 		await saveThemeChoice('dark');
 		await saveTerminalFontSize(16);
 		await markMissionFinished('three-areas');
@@ -72,7 +94,9 @@ describe('progress', () => {
 			quizResults: {},
 			theme: 'dark',
 			terminalFontSize: 16,
-			isFilesDeskFolded: false
+			isFilesDeskFolded: false,
+			lastOpenedLessonId: null,
+			furthestLayers: {}
 		});
 	});
 });

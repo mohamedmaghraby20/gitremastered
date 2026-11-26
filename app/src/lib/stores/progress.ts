@@ -1,14 +1,18 @@
 /**
  * progress.ts
  * The one module that saves and loads the student's progress: finished missions, quiz
- * results, the chosen theme, the terminal's text size and whether the files desk is folded. In the desktop app it uses the Tauri store plugin (a small
- * JSON file in the app's data folder); in a plain browser it keeps progress in memory only.
+ * results, the last opened lesson and the furthest layer read in each, plus screen choices
+ * (theme, terminal text size, folded files desk). In the desktop app it uses the Tauri store
+ * plugin (a small JSON file in the app's data folder); in a plain browser it keeps progress in
+ * memory only.
  * Screens read the `progress` store and call the functions below; nothing else touches storage.
  */
 
 import { writable, get, type Readable } from 'svelte/store';
 import { isTauri } from '@tauri-apps/api/core';
 import type { ThemeChoice } from '$lib/theme/theme';
+import type { LessonLayerId } from '$lib/types/lesson';
+import { isFurtherLayer } from '$lib/progress/learning-summary';
 
 /** One saved quiz result. */
 export type QuizResult = { correctCount: number; questionCount: number };
@@ -20,6 +24,8 @@ export type ProgressData = {
 	theme: ThemeChoice;
 	terminalFontSize: number | null; // pixels, chosen with Ctrl + / -; null = the design's size
 	isFilesDeskFolded: boolean; // the student folded the visualizer's files desk away
+	lastOpenedLessonId: string | null; // for "Pick up where you left off"; null before the first lesson
+	furthestLayers: Record<string, LessonLayerId>; // by lesson ID, the deepest layer opened
 };
 
 /** The few storage actions this module needs (the Tauri store has them; tests pass a fake). */
@@ -41,7 +47,9 @@ export const emptyProgress: ProgressData = {
 	quizResults: {},
 	theme: 'system',
 	terminalFontSize: null,
-	isFilesDeskFolded: false
+	isFilesDeskFolded: false,
+	lastOpenedLessonId: null,
+	furthestLayers: {}
 };
 
 const progressStore = writable<ProgressData>(emptyProgress);
@@ -110,7 +118,35 @@ export async function saveFilesDeskFolded(isFolded: boolean): Promise<void> {
 	await saveProgress({ ...get(progressStore), isFilesDeskFolded: isFolded });
 }
 
-/** Forgets finished missions and quiz results (screen choices like the theme stay). */
+/**
+ * Remembers the lesson the student opened last, for "Pick up where you left off".
+ * @param lessonId - the lesson on screen
+ */
+export async function saveLessonOpened(lessonId: string): Promise<void> {
+	const current = get(progressStore);
+	if (current.lastOpenedLessonId === lessonId) {
+		return;
+	}
+	await saveProgress({ ...current, lastOpenedLessonId: lessonId });
+}
+
+/**
+ * Remembers that a reading layer was opened, if it is deeper than any opened before.
+ * @param lessonId - the lesson
+ * @param layerId - the layer just opened
+ */
+export async function saveLayerRead(lessonId: string, layerId: LessonLayerId): Promise<void> {
+	const current = get(progressStore);
+	if (!isFurtherLayer(layerId, current.furthestLayers[lessonId])) {
+		return;
+	}
+	await saveProgress({
+		...current,
+		furthestLayers: { ...current.furthestLayers, [lessonId]: layerId }
+	});
+}
+
+/** Forgets missions, quiz results and reading places (screen choices like the theme stay). */
 export async function resetProgress(): Promise<void> {
 	const current = get(progressStore);
 	await saveProgress({

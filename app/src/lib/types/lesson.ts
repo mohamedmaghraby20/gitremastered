@@ -14,6 +14,12 @@ export type LessonSections = {
 	recap: string; // "Recap": the short summary card (Markdown)
 };
 
+/** The three reading layers, in the order a student goes deeper (the recap is not a layer). */
+export const lessonLayerIds = ['mustKnow', 'underTheHood', 'advanced'] as const;
+
+/** One reading layer: "mustKnow", "underTheHood" or "advanced". */
+export type LessonLayerId = (typeof lessonLayerIds)[number];
+
 /** The data at the top of lesson.md, between the two "---" lines. */
 export type LessonFrontmatter = {
 	id: string; // also the folder name, e.g. "three-areas"

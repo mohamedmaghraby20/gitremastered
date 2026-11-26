@@ -22,7 +22,13 @@
 	import PartHeading from '$lib/components/lesson-reader/PartHeading.svelte';
 	import Quiz from '$lib/components/quiz/Quiz.svelte';
 	import type { QuizScore } from '$lib/quiz/score-quiz';
-	import { markMissionFinished, saveQuizResult } from '$lib/stores/progress';
+	import type { LessonLayerId } from '$lib/types/lesson';
+	import {
+		markMissionFinished,
+		saveLayerRead,
+		saveLessonOpened,
+		saveQuizResult
+	} from '$lib/stores/progress';
 	import PracticeColumn from './PracticeColumn.svelte';
 
 	let { lesson, place }: { lesson: Lesson; place: LessonPlace | null } = $props();
@@ -64,6 +70,20 @@
 		});
 	}
 
+	/**
+	 * Saves that the student opened a reading layer of this lesson.
+	 * @param layerId - the layer on screen
+	 */
+	function rememberLayer(layerId: LessonLayerId): void {
+		void saveLayerRead(lesson.id, layerId);
+	}
+
+	// Opening the lesson makes it the one "Pick up where you left off" continues.
+	$effect(() => {
+		void saveLessonOpened(lesson.id);
+		rememberLayer('mustKnow');
+	});
+
 	$effect(() => {
 		clearRepoSnapshot();
 		const stopFollowing = followSnapshots();
@@ -77,7 +97,7 @@
      content height and push the terminal out of sight. In a narrow window the practice column
      wraps below the lesson and the screen scrolls (overflow-y-auto). -->
 <div class="flex h-full flex-wrap overflow-y-auto">
-	<LessonReader {lesson} {place}>
+	<LessonReader {lesson} {place} onLayerChange={rememberLayer}>
 		{#snippet afterText()}
 			<section aria-labelledby="mission-heading" class="flex flex-col gap-3">
 				<PartHeading

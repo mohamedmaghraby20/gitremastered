@@ -5,7 +5,7 @@
  */
 
 import { page, userEvent } from 'vitest/browser';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { createRawSnippet } from 'svelte';
 import { render } from 'vitest-browser-svelte';
 import { sampleLesson } from '../../../../tests/fixtures/sample-lesson-object.ts';
@@ -47,6 +47,15 @@ describe('LessonReader', () => {
 		await page.getByRole('tab', { name: /Under the hood/ }).click();
 		await expect.element(page.getByText('Under the hood text.')).toBeVisible();
 		await expect.element(page.getByText(/Must know text with/)).not.toBeInTheDocument();
+	});
+
+	it('reports the layer the student switches to, so it can be saved', async () => {
+		const onLayerChange = vi.fn();
+		await render(LessonReader, { lesson: sampleLesson, place: samplePlace, onLayerChange });
+
+		await page.getByRole('tab', { name: /Advanced/ }).click();
+
+		expect(onLayerChange).toHaveBeenCalledWith('advanced');
 	});
 
 	it('moves between tabs with the arrow keys', async () => {
