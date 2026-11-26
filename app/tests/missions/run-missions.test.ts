@@ -3,18 +3,31 @@
  * `pnpm test:missions`: every challenge of every lesson, run for real. Its setup and reference
  * solution must reach every goal. A deliberately wrong solution must fail, naming the goal it
  * missed.
+ *
+ * With the DRAFT_LESSON environment variable set (by `pnpm lesson:check`), only that lesson's
+ * challenges run, on the committed content plus the draft's own files.
  */
 
 import { beforeAll, describe, expect, it } from 'vitest';
 import { buildCourseContent } from '../../src/lib/content/load-lessons.ts';
 import { readContentFiles } from '../../scripts/read-content-files.ts';
+import {
+	readDraftContentFiles,
+	readDraftFromEnvironment
+} from '../../scripts/read-draft-content.ts';
 import { buildSnapshotPrinter, runMission } from './mission-runner.ts';
 
-const courseContent = buildCourseContent(readContentFiles());
-/** Every challenge, labelled like "three-areas / release-notes". */
-const challenges = [...courseContent.lessons.values()].flatMap((lesson) =>
-	lesson.challenges.map((challenge) => [`${lesson.id} / ${challenge.id}`, challenge] as const)
+/** The one lesson being written, when `pnpm lesson:check` started this run; otherwise null. */
+const draft = readDraftFromEnvironment();
+const courseContent = buildCourseContent(
+	draft === null ? readContentFiles() : readDraftContentFiles(draft)
 );
+/** Every challenge (or only the draft lesson's), labelled like "three-areas / release-notes". */
+const challenges = [...courseContent.lessons.values()]
+	.filter((lesson) => draft === null || lesson.id === draft.lessonId)
+	.flatMap((lesson) =>
+		lesson.challenges.map((challenge) => [`${lesson.id} / ${challenge.id}`, challenge] as const)
+	);
 
 /** The pilot's easy challenge, used by the wrong-solution tests below. */
 const pilotChallenge = courseContent.lessons.get('three-areas')?.challenges[0];
@@ -33,7 +46,7 @@ describe('every challenge', () => {
 	);
 });
 
-describe('a wrong solution', () => {
+describe.skipIf(draft !== null)('a wrong solution', () => {
 	it('fails, naming the goal it missed', () => {
 		if (pilotChallenge === undefined) {
 			throw new Error('The pilot lesson three-areas is missing');
@@ -50,7 +63,7 @@ describe('a wrong solution', () => {
 	});
 });
 
-describe('a shortcut that saves nothing', () => {
+describe.skipIf(draft !== null)('a shortcut that saves nothing', () => {
 	it('does not count as committing the file (pilot review finding)', () => {
 		if (pilotChallenge === undefined) {
 			throw new Error('The pilot lesson three-areas is missing');
@@ -67,7 +80,7 @@ describe('a shortcut that saves nothing', () => {
 	});
 });
 
-describe('the re-include trap', () => {
+describe.skipIf(draft !== null)('the re-include trap', () => {
 	it('fails when the folder itself is ignored: Git never looks inside it', () => {
 		const keepOneFile = courseContent.lessons
 			.get('ignoring-files')

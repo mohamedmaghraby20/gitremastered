@@ -41,3 +41,143 @@ terms:
     term: glob pattern
     meaning: "A short rule that matches file names with wildcards: `*` for any characters, `?` for one, `[abc]` for one character from a list."
     lessons: [ignoring-files]
+  - id: version-control
+    term: version control
+    meaning: "A system that records how files change over time, so you can go back to any earlier version and see who changed what. Git is a version control system."
+    lessons: []
+  - id: snapshot
+    term: snapshot
+    meaning: "A picture of all your project's files at one moment. Every commit holds one; Git stores snapshots, not lists of changes."
+    lessons: []
+  - id: checksum
+    term: checksum
+    meaning: "A code Git computes from content, like a fingerprint: the same content always gives the same code. Git's checksums are 40-character SHA-1 hashes, and they are the IDs of commits and files."
+    lessons: []
+  - id: commit-id
+    term: commit ID
+    meaning: "The unique name of a commit: a 40-character checksum like `ca82a6d…`. The first 7 characters are usually enough to name it. Also called a hash or SHA."
+    lessons: []
+  - id: object
+    term: object
+    meaning: "One item in Git's storage, named by the checksum of its content. There are four kinds: blob, tree, commit and annotated tag."
+    lessons: []
+  - id: blob
+    term: blob
+    meaning: "The object that holds one file's content, with no name attached. Two files with the same content share one blob."
+    lessons: []
+  - id: tree
+    term: tree
+    meaning: "The object that holds one folder's listing: file names, each pointing at a blob or at another tree."
+    lessons: []
+  - id: ref
+    term: ref
+    meaning: "A name that points at a commit, kept as a small file under `.git/refs`. Branches and tags are refs. Short for reference."
+    lessons: []
+  - id: plumbing
+    term: plumbing
+    meaning: "Git's low-level commands, made for scripts and for looking inside, like `git cat-file`. The everyday commands (`git add`, `git commit`) are called porcelain."
+    lessons: []
+  - id: config
+    term: configuration
+    meaning: "Git's settings, such as your name and your editor. They live at three levels: the whole computer (system), your user account (global) and one repository (local). The closest level wins."
+    lessons: []
+  - id: clone
+    term: clone
+    meaning: "A full copy of a repository, with its whole history, made by `git clone`. It remembers where it came from as the remote `origin`."
+    lessons: []
+  - id: diff
+    term: diff
+    meaning: "The line-by-line difference between two versions of your files: lines removed start with `-`, lines added start with `+`."
+    lessons: []
+  - id: hunk
+    term: hunk
+    meaning: "One block of changed lines in a diff, with a few unchanged lines around it. It starts with a header like `@@ -1,3 +1,4 @@`."
+    lessons: []
+  - id: amend
+    term: amend
+    meaning: "To replace your last commit with a corrected one, using `git commit --amend`. The old commit is not edited: a new one takes its place."
+    lessons: []
+  - id: revert
+    term: revert
+    meaning: "To undo an earlier commit by adding a new commit that makes the opposite change. History stays intact, so it is safe for shared branches."
+    lessons: []
+  - id: reset
+    term: reset
+    meaning: "To move the current branch to another commit with `git reset`. Depending on the option, the staging area and the working tree follow or stay as they are."
+    lessons: []
+  - id: reflog
+    term: reflog
+    meaning: "Git's private diary of where HEAD and each branch pointed before. It keeps commits findable for a while after no branch reaches them."
+    lessons: []
+  - id: detached-head
+    term: detached HEAD
+    meaning: "The state where HEAD points straight at a commit, not at a branch. You can look around and even commit, but no branch remembers those commits."
+    lessons: []
+  - id: merge
+    term: merge
+    meaning: "To bring the work of another branch into the branch you are on, with `git merge`."
+    lessons: []
+  - id: fast-forward
+    term: fast-forward
+    meaning: "The simplest merge: your branch has no commits of its own since the other branch started, so Git only moves its label forward. No merge commit is made."
+    lessons: []
+  - id: merge-commit
+    term: merge commit
+    meaning: "A commit with two parents, made when Git joins two branches that both have new commits."
+    lessons: []
+  - id: merge-conflict
+    term: merge conflict
+    meaning: "What happens when two branches changed the same lines differently. Git stops, marks the spot in the file, and waits for you to choose."
+    lessons: []
+  - id: merge-base
+    term: merge base
+    meaning: "The last commit two branches have in common. Git compares both branches against it to work out a merge."
+    lessons: []
+  - id: stash
+    term: stash
+    meaning: "A shelf for unfinished changes. `git stash` puts them away and gives you a clean working tree; `git stash pop` brings them back."
+    lessons: []
+  - id: remote
+    term: remote
+    meaning: "A short name for another copy of your repository, usually on a server, like `origin`. You fetch from it and push to it."
+    lessons: []
+  - id: origin
+    term: origin
+    meaning: "The default name Git gives the remote you cloned from. It is only a name; you can have other remotes beside it."
+    lessons: []
+  - id: bare-repository
+    term: bare repository
+    meaning: "A repository with no working tree, only Git's stored data. Servers keep repositories this way, in a folder ending in `.git`."
+    lessons: []
+  - id: remote-tracking-branch
+    term: remote-tracking branch
+    meaning: "Your local bookmark for where a branch was on a remote the last time you talked to it, like `origin/main`. It moves only when you fetch, pull or push."
+    lessons: []
+  - id: upstream
+    term: upstream branch
+    meaning: "The remote-tracking branch your local branch follows, like `origin/main` for `main`. `git pull` and `git push` use it when you name nothing. A branch with one is called a tracking branch."
+    lessons: []
+  - id: fetch
+    term: fetch
+    meaning: "To download new commits from a remote and update your remote-tracking branches, without touching your own branches or files."
+    lessons: []
+  - id: pull
+    term: pull
+    meaning: "A fetch followed by merging the fetched work into the branch you are on."
+    lessons: []
+  - id: push
+    term: push
+    meaning: "To upload your commits to a remote and move its branch to match yours."
+    lessons: []
+  - id: refspec
+    term: refspec
+    meaning: "A rule that maps refs on one side to refs on the other when you fetch or push, written `source:destination`, like `refs/heads/*:refs/remotes/origin/*`."
+    lessons: []
+  - id: tag
+    term: tag
+    meaning: "A fixed name for one commit, usually a release like `v1.0`. Unlike a branch, it never moves."
+    lessons: []
+  - id: annotated-tag
+    term: annotated tag
+    meaning: "A tag stored as its own object, with a message, the tagger's name and a date. Use it for releases. A tag without these is called lightweight."
+    lessons: []

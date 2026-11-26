@@ -8,7 +8,9 @@ How to add a lesson to GitRemastered. A lesson is three files in one folder; no 
 2. Create `content/lessons/<id>/` with `lesson.md`, `challenges.yaml`, `quiz.yaml` and `coverage.md`.
 3. Add the ID to a module in `content/paths/pro-path.yaml`.
 4. Run `pnpm content:check` (from `app/`). It names the file and the problem if something is wrong.
-5. Run `pnpm test:missions`. It runs your mission's setup and solution with real Git and checks every goal.
+5. Run `pnpm test:missions`. It runs every challenge's setup and solution with real Git and checks every goal.
+
+   While you are still writing, `pnpm lesson:check <lesson-id> [command-id ...]` does both for your lesson alone: it loads the committed content plus your lesson folder and the command pages you name, so someone else's half-written lesson cannot fail your check. Example: `pnpm lesson:check start-a-repo git-init git-clone`.
 6. Open the lesson in the app and play it once as a student.
 
 ## lesson.md
