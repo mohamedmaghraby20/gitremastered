@@ -4,6 +4,7 @@
 //! wrappers in `app/src/lib/tauri/commands.ts`.
 
 pub mod git_info;
+pub mod github;
 pub mod practice;
 pub mod snapshot;
 pub mod terminal;

@@ -8,6 +8,9 @@ use tauri::{AppHandle, Emitter, Manager, Runtime, State};
 
 use crate::git_runner::practice_folder::{PracticeFolder, PracticeRoot};
 use crate::git_runner::terminal_session::TerminalSessions;
+use crate::github::challenge_setup::{
+    GitHubChallenge, finish_github_challenge, prepare_github_challenge,
+};
 use crate::repo_inspector::snapshot::read_snapshot;
 use crate::repo_inspector::watcher::{ActiveRepoWatcher, RepoWatcher};
 
@@ -28,7 +31,11 @@ pub fn open_practice_root<R: Runtime>(app: &AppHandle<R>) -> Result<PracticeRoot
 /// Opens a mission's practice folder as the student left it, or builds it from its setup
 /// steps if there is none yet (or the steps changed).
 ///
-/// Inputs: the mission ID and setup steps (from mission.yaml). Output: the folder's path.
+/// A GitHub challenge (one with a `github` field) also prepares its practice repository on
+/// GitHub when the folder is rebuilt, and only with the student's consent.
+///
+/// Inputs: the mission ID, setup steps (from challenges.yaml), the GitHub field (if any)
+/// and the consent. Output: the folder's path.
 #[tauri::command]
 pub async fn open_practice_repo<R: Runtime>(
     app: AppHandle<R>,
@@ -36,34 +43,56 @@ pub async fn open_practice_repo<R: Runtime>(
     terminal_sessions: State<'_, TerminalSessions>,
     mission_id: String,
     setup_steps: Vec<String>,
+    github: Option<GitHubChallenge>,
+    github_consent: Option<bool>,
 ) -> Result<String, String> {
     let practice_root = open_practice_root(&app)?;
     // Stop watching and stop the shells first: the folder may be deleted and built again.
     active_watcher.replace(None);
     terminal_sessions.close_all()?;
-    let folder = practice_root
-        .open_or_create(&mission_id, &setup_steps)
+    let is_kept = practice_root
+        .is_built_with(&mission_id, &setup_steps)
         .map_err(|error| error.to_string())?;
+    let folder = match github {
+        Some(challenge) if !is_kept => {
+            build_github_challenge(&challenge, github_consent.unwrap_or(false), |environment| {
+                practice_root.create_with_environment(&mission_id, &setup_steps, environment)
+            })?
+        }
+        _ => practice_root
+            .open_or_create(&mission_id, &setup_steps)
+            .map_err(|error| error.to_string())?,
+    };
     watch_and_announce(&app, &active_watcher, &folder)?;
     Ok(folder.path().display().to_string())
 }
 
 /// Deletes a mission's practice folder and builds it again from its saved setup steps.
 ///
-/// Input: the mission ID. Output: the folder's path.
+/// Inputs: the mission ID, and for a GitHub challenge its GitHub field and the consent.
+/// Output: the folder's path.
 #[tauri::command]
 pub async fn reset_practice_repo<R: Runtime>(
     app: AppHandle<R>,
     active_watcher: State<'_, ActiveRepoWatcher>,
     terminal_sessions: State<'_, TerminalSessions>,
     mission_id: String,
+    github: Option<GitHubChallenge>,
+    github_consent: Option<bool>,
 ) -> Result<String, String> {
     let practice_root = open_practice_root(&app)?;
     active_watcher.replace(None);
     terminal_sessions.close_all()?;
-    let folder = practice_root
-        .reset(&mission_id)
-        .map_err(|error| error.to_string())?;
+    let folder = match github {
+        Some(challenge) => {
+            build_github_challenge(&challenge, github_consent.unwrap_or(false), |environment| {
+                practice_root.reset_with_environment(&mission_id, environment)
+            })?
+        }
+        None => practice_root
+            .reset(&mission_id)
+            .map_err(|error| error.to_string())?,
+    };
     watch_and_announce(&app, &active_watcher, &folder)?;
     Ok(folder.path().display().to_string())
 }
@@ -82,6 +111,27 @@ pub async fn find_practice_repo<R: Runtime>(
         .find(&mission_id)
         .map_err(|error| error.to_string())?;
     Ok(folder.map(|found| found.path().display().to_string()))
+}
+
+/// Builds a GitHub challenge's folder: prepares the practice repository on GitHub, runs the
+/// local build with `PRACTICE_GITHUB_URL` set, then the teammate steps.
+///
+/// Inputs: the GitHub field, the consent, and the local build (given the environment).
+/// Output: the folder, or a readable error.
+fn build_github_challenge(
+    challenge: &GitHubChallenge,
+    has_consent: bool,
+    build_locally: impl FnOnce(
+        &[(String, String)],
+    ) -> Result<
+        PracticeFolder,
+        crate::git_runner::practice_folder::PracticeError,
+    >,
+) -> Result<PracticeFolder, String> {
+    let (repo, environment) = prepare_github_challenge(challenge, has_consent)?;
+    let folder = build_locally(&environment).map_err(|error| error.to_string())?;
+    finish_github_challenge(&repo, challenge)?;
+    Ok(folder)
 }
 
 /// Starts watching a folder, sends its first snapshot, and keeps the watcher as the active one.

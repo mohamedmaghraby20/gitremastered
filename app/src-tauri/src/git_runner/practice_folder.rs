@@ -130,12 +130,38 @@ impl PracticeRoot {
         mission_id: &str,
         setup_steps: &[String],
     ) -> Result<PracticeFolder, PracticeError> {
+        self.create_with_environment(mission_id, setup_steps, &[])
+    }
+
+    /// Like `create`, with extra environment variables for the setup steps (a GitHub
+    /// challenge's steps reach the practice repository through `PRACTICE_GITHUB_URL`).
+    ///
+    /// Inputs: the mission ID, its setup steps and the variables. Output: the new folder.
+    pub fn create_with_environment(
+        &self,
+        mission_id: &str,
+        setup_steps: &[String],
+        environment: &[(String, String)],
+    ) -> Result<PracticeFolder, PracticeError> {
         let folder = self.folder_for(mission_id)?;
         let saved_steps = serde_json::to_string(setup_steps)
             .map_err(|error| PracticeError::FileSystem(error.to_string()))?;
         fs::write(self.saved_setup_path(mission_id), saved_steps).map_err(file_system_error)?;
-        self.rebuild(mission_id, &folder, setup_steps)?;
+        self.rebuild(mission_id, &folder, setup_steps, environment)?;
         Ok(folder)
+    }
+
+    /// Tells whether the mission's folder is built and was built from these setup steps, so
+    /// `open_or_create` would keep it as the student left it.
+    ///
+    /// Inputs: the mission ID and its setup steps. Output: true if it would be kept.
+    pub fn is_built_with(
+        &self,
+        mission_id: &str,
+        setup_steps: &[String],
+    ) -> Result<bool, PracticeError> {
+        let is_built = self.find(mission_id)?.is_some();
+        Ok(is_built && self.read_saved_steps(mission_id).as_deref() == Some(setup_steps))
     }
 
     /// Opens a mission's practice folder as the student left it, or builds it if there is none.
@@ -176,11 +202,22 @@ impl PracticeRoot {
     ///
     /// Input: the mission ID. Output: the rebuilt folder, or an error if it was never created.
     pub fn reset(&self, mission_id: &str) -> Result<PracticeFolder, PracticeError> {
+        self.reset_with_environment(mission_id, &[])
+    }
+
+    /// Like `reset`, with extra environment variables for the setup steps.
+    ///
+    /// Inputs: the mission ID and the variables. Output: the rebuilt folder.
+    pub fn reset_with_environment(
+        &self,
+        mission_id: &str,
+        environment: &[(String, String)],
+    ) -> Result<PracticeFolder, PracticeError> {
         let folder = self.folder_for(mission_id)?;
         let setup_steps = self
             .read_saved_steps(mission_id)
             .ok_or_else(|| PracticeError::NoSavedSetup(mission_id.to_string()))?;
-        self.rebuild(mission_id, &folder, &setup_steps)?;
+        self.rebuild(mission_id, &folder, &setup_steps, environment)?;
         Ok(folder)
     }
 
@@ -197,13 +234,14 @@ impl PracticeRoot {
     /// and runs the steps inside it. The "ready" marker is written last, so a build that
     /// stopped halfway is never mistaken for a finished one.
     ///
-    /// Inputs: a mission ID that was already checked, its folder and the steps.
-    /// Output: nothing, or the first error.
+    /// Inputs: a mission ID that was already checked, its folder, the steps and their extra
+    /// environment variables. Output: nothing, or the first error.
     fn rebuild(
         &self,
         mission_id: &str,
         folder: &PracticeFolder,
         setup_steps: &[String],
+        environment: &[(String, String)],
     ) -> Result<(), PracticeError> {
         let ready_marker_path = self.ready_marker_path(mission_id);
         if ready_marker_path.exists() {
@@ -211,7 +249,7 @@ impl PracticeRoot {
         }
         remove_folder_with_retries(&self.workspace_path(mission_id))?;
         fs::create_dir_all(folder.path()).map_err(file_system_error)?;
-        run_setup_steps(folder, setup_steps)?;
+        run_setup_steps(folder, setup_steps, environment)?;
         fs::write(ready_marker_path, "").map_err(file_system_error)
     }
 

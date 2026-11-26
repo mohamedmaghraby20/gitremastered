@@ -69,7 +69,7 @@ pub struct Commit {
     /// True when a branch, a tag or HEAD reaches this commit. False for a commit that lost
     /// its branch (after an amend or a reset) and lives on only in the reflog.
     pub is_reachable: bool,
-    /// True when Git verified a signature on the commit (`%G?` is not `N`).
+    /// True when Git verified a good signature on the commit (`%G?` is `G` or `U`).
     pub is_signed: bool,
     /// The files this commit added, changed or deleted (none for a merge commit).
     pub changed_paths: Vec<String>,

@@ -9,10 +9,12 @@ use super::shell_choice::find_bash_program;
 
 /// Runs each setup step in order, stopping at the first one that fails.
 ///
-/// Inputs: the practice folder and the steps. Output: nothing, or the failed step and its output.
+/// Inputs: the practice folder, the steps, and extra environment variables (a GitHub
+/// challenge gets `PRACTICE_GITHUB_URL`). Output: nothing, or the failed step and its output.
 pub fn run_setup_steps(
     folder: &PracticeFolder,
     setup_steps: &[String],
+    environment: &[(String, String)],
 ) -> Result<(), PracticeError> {
     if setup_steps.is_empty() {
         return Ok(());
@@ -26,6 +28,9 @@ pub fn run_setup_steps(
             // Never wait for a password or an editor while setting up.
             .env("GIT_TERMINAL_PROMPT", "0")
             .env("GIT_EDITOR", "true")
+            // Never open a sign-in window of the Git Credential Manager while setting up.
+            .env("GCM_INTERACTIVE", "never")
+            .envs(environment.iter().map(|(name, value)| (name, value)))
             .output()
             .map_err(|error| PracticeError::StepFailed {
                 step: step.clone(),

@@ -8,7 +8,7 @@
 use crate::models::repo_snapshot::Commit;
 
 /// The `--format` for `git log`: ID, parent IDs, author name, ISO date, signature check
-/// (`%G?`: `N` for none), first message line. The changed files follow the last 0x1F.
+/// (`%G?`: `G` or `U` for a good one), first message line. The changed files follow the last 0x1F.
 pub const LOG_FORMAT: &str = "--format=%x1e%H%x1f%P%x1f%an%x1f%aI%x1f%G?%x1f%s%x1f";
 
 /// Reads every commit from the log output.
@@ -47,7 +47,9 @@ fn parse_commit_record(record: &str) -> Option<Commit> {
         authored_at,
         // Every commit starts as reachable; `reachability` marks the lost ones afterwards.
         is_reachable: true,
-        is_signed: signature_check.trim() != "N",
+        // G: good signature; U: good signature from a key of unknown trust. Anything else
+        // (none, bad, expired, unverifiable) does not count as signed.
+        is_signed: matches!(signature_check.trim(), "G" | "U"),
         changed_paths,
     })
 }

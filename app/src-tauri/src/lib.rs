@@ -4,6 +4,7 @@
 
 pub mod commands;
 pub mod git_runner;
+pub mod github;
 pub mod models;
 pub mod repo_inspector;
 
@@ -23,6 +24,10 @@ pub fn run() {
         .manage(repo_inspector::watcher::ActiveRepoWatcher::new())
         .invoke_handler(tauri::generate_handler![
             commands::git_info::get_git_version,
+            commands::github::get_github_connection,
+            commands::github::get_github_state,
+            commands::github::list_practice_repositories,
+            commands::github::delete_practice_repositories,
             commands::practice::open_practice_repo,
             commands::practice::find_practice_repo,
             commands::practice::reset_practice_repo,
