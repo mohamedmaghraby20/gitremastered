@@ -14,6 +14,7 @@
 	import { PracticeSession } from '$lib/mission-engine/practice-session.svelte';
 	import { GitHubWatch } from '$lib/mission-engine/github-watch.svelte';
 	import { getGitHubState } from '$lib/tauri/commands';
+	import { sharedRepoName } from '$lib/types/github';
 	import {
 		clearRepoSnapshot,
 		currentRepoSnapshot,
@@ -69,7 +70,7 @@
 			return;
 		}
 		const startedAt = get(progress).challengeStartedAt[lesson.id] ?? unknownStart;
-		const watch = new GitHubWatch(github.repo, startedAt, getGitHubState);
+		const watch = new GitHubWatch(sharedRepoName(github), startedAt, getGitHubState);
 		gitHubWatch = watch;
 		void watch.readNow();
 		return () => {

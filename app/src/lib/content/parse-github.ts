@@ -25,13 +25,31 @@ export function readGitHubChallenge(githubReader: FieldReader | null): GitHubCha
 	if (githubReader === null) {
 		return null;
 	}
-	const repo = githubReader.text('repo');
-	const hasSafeName = /^[a-z0-9-]+$/.test(repo) && repo.startsWith(practiceRepoPrefix);
-	if (!hasSafeName) {
-		githubReader.fail(`"repo" must start with ${practiceRepoPrefix} and use only a-z, 0-9 and -`);
+	const repo = readRepoName(githubReader, 'repo');
+	const upstream =
+		githubReader.optionalText('upstream') === null ? null : readRepoName(githubReader, 'upstream');
+	if (upstream === repo) {
+		githubReader.fail('"upstream" must be another repository than "repo"');
 	}
 	const teammate = githubReader.optionalRecordList('teammate', 'step').map(readTeammateStep);
-	return { repo, teammate };
+	return { repo, upstream, teammate };
+}
+
+/**
+ * Reads a practice repository's name and checks it is a safe practice name.
+ * @param githubReader - the `github` field's reader
+ * @param fieldName - "repo" or "upstream"
+ * @returns the name
+ */
+function readRepoName(githubReader: FieldReader, fieldName: string): string {
+	const name = githubReader.text(fieldName);
+	const hasSafeName = /^[a-z0-9-]+$/.test(name) && name.startsWith(practiceRepoPrefix);
+	if (!hasSafeName) {
+		githubReader.fail(
+			`"${fieldName}" must start with ${practiceRepoPrefix} and use only a-z, 0-9 and -`
+		);
+	}
+	return name;
 }
 
 /**

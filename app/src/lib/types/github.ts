@@ -24,8 +24,19 @@ export type TeammateStep =
 /** A challenge's `github` field: its practice repository and the teammate's steps. */
 export type GitHubChallenge = {
 	repo: string; // always starts with "gitremastered-practice"
+	upstream: string | null; // fork lessons: the shared project; teammate steps and goals use it
 	teammate: TeammateStep[];
 };
+
+/**
+ * The repository the teammate acts on and the GitHub goals read: the upstream when the
+ * challenge has one (fork lessons, assumption A4), otherwise its own repository.
+ * @param github - a challenge's GitHub field
+ * @returns the repository's name
+ */
+export function sharedRepoName(github: GitHubChallenge): string {
+	return github.upstream ?? github.repo;
+}
 
 /** One pull request on GitHub. */
 export type PullRequest = {

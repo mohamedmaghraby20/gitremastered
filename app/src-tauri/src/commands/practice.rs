@@ -128,9 +128,9 @@ fn build_github_challenge(
         crate::git_runner::practice_folder::PracticeError,
     >,
 ) -> Result<PracticeFolder, String> {
-    let (repo, environment) = prepare_github_challenge(challenge, has_consent)?;
-    let folder = build_locally(&environment).map_err(|error| error.to_string())?;
-    finish_github_challenge(&repo, challenge)?;
+    let prepared = prepare_github_challenge(challenge, has_consent)?;
+    let folder = build_locally(&prepared.environment).map_err(|error| error.to_string())?;
+    finish_github_challenge(&prepared, challenge)?;
     Ok(folder)
 }
 

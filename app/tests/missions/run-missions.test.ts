@@ -41,7 +41,8 @@ beforeAll(() => {
 	buildSnapshotPrinter();
 });
 
-describe('every challenge', () => {
+// A lesson whose challenges all run on GitHub has nothing to run here.
+describe.skipIf(challenges.length === 0)('every challenge', () => {
 	it.each(challenges)(
 		'%s: the reference solution reaches every goal',
 		(challengeLabel, challenge) => {

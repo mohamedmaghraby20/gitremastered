@@ -6,7 +6,8 @@
 //! - `prepare`: `{"repo": "...", "teammate": [...]}` → creates and resets the practice
 //!   repository, prints `{"PRACTICE_GITHUB_URL": "..."}` (the setup's environment).
 //! - `finish`: the same request → makes `main` the default branch, runs the teammate steps.
-//! - `state`: `{"repo": "..."}` → prints the repository's state as JSON.
+//! - `state`: the same request → prints the state of the shared repository (the upstream, if
+//!   the challenge has one) as JSON.
 //!
 //! Consent: running this program by hand is the consent (it is a developer tool).
 
@@ -14,7 +15,7 @@ use std::io::Read;
 use std::process::ExitCode;
 
 use gitremastered_lib::github::challenge_setup::{
-    GitHubChallenge, finish_github_challenge, prepare_github_challenge,
+    GitHubChallenge, PreparedChallenge, finish_github_challenge, prepare_github_challenge,
 };
 use gitremastered_lib::github::connection::require_login;
 use gitremastered_lib::github::practice_repo::PracticeRepo;
@@ -50,21 +51,31 @@ fn run_action(action: &str, request_text: &str) -> Result<String, String> {
         serde_json::from_str(request_text).map_err(|error| format!("bad request: {error}"))?;
     match action {
         "prepare" => {
-            let (_repo, environment) = prepare_github_challenge(&challenge, true)?;
-            let variables: serde_json::Map<String, serde_json::Value> = environment
+            let prepared = prepare_github_challenge(&challenge, true)?;
+            let variables: serde_json::Map<String, serde_json::Value> = prepared
+                .environment
                 .into_iter()
                 .map(|(name, value)| (name, serde_json::Value::String(value)))
                 .collect();
             Ok(serde_json::Value::Object(variables).to_string())
         }
         "finish" => {
-            let repo = guarded_repo(&challenge.repo)?;
-            finish_github_challenge(&repo, &challenge)?;
+            let prepared = PreparedChallenge {
+                repo: guarded_repo(&challenge.repo)?,
+                upstream: challenge
+                    .upstream
+                    .as_deref()
+                    .map(guarded_repo)
+                    .transpose()?,
+                environment: Vec::new(),
+            };
+            finish_github_challenge(&prepared, &challenge)?;
             Ok("{}".to_string())
         }
         "state" => {
-            let repo = guarded_repo(&challenge.repo)?;
-            let state = read_state(&repo)?;
+            // The goals read the shared project: the upstream, if the challenge has one.
+            let shared_name = challenge.upstream.as_deref().unwrap_or(&challenge.repo);
+            let state = read_state(&guarded_repo(shared_name)?)?;
             serde_json::to_string(&state).map_err(|error| error.to_string())
         }
         _ => Err("usage: github_practice prepare|finish|state < request.json".to_string()),
