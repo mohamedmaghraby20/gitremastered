@@ -37,3 +37,12 @@ The user is learning software engineering through this project and must be able 
 - Follow the professional conventions of the chosen tech stack (its official style guide and folder layout). Don't invent structure; don't put code just anywhere.
 - Performance and low memory use matter (terminal, visualizer, lessons, navigation), but never at the cost of readability without a comment explaining why.
 - Explain new code to the user in simple terms when it is introduced. The user follows along, not autopilot.
+
+## Agents and models
+
+Helper agents live in `.claude/agents/`; each file sets its own model.
+
+1. Lessons go to `lesson-writer`. Routine UI goes to `ui-builder`. Rust and hard UI (stores, mission engine, visualizer, terminal, course map, design changes) stay with the main session (Opus). If `ui-builder` fails review twice on the same task, Opus takes over.
+2. Helpers never commit. The main session reviews their work, explains it to the user, then commits.
+3. After each phase: run `code-reviewer` on the code changes, and `lesson-tester` on changed lessons. Also run `accessibility-auditor` when the phase adds or changes screens, and `security-auditor` when it touches Rust, Tauri commands or file access.
+4. Fix every real finding, re-run the failed check, then mark the phase done.
