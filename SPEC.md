@@ -25,7 +25,7 @@ A free, open-source desktop app that turns Pro Git into an interactive course. E
 | Terminal | xterm.js (screen) + Rust `portable-pty` (real shell) |
 | Shell | Git Bash on Windows; system bash/zsh on macOS and Linux |
 | Git | The student's own installed Git; course targets the latest Git at release |
-| Visualizer | Svelte Flow + ELK layout |
+| Visualizer | Svelte Flow, with our own lane layout (`lane-layout.ts`; ELK was replaced in phase 5) |
 | Lesson text | Markdown with frontmatter |
 | Missions, quizzes, paths | YAML |
 | Search | Own small in-memory index over the loaded content (approved 2026-11-26, replaces Pagefind: our content is already in memory) |

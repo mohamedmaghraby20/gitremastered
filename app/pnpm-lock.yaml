@@ -212,9 +212,6 @@ importers:
       '@xyflow/svelte':
         specifier: ^2.0.3
         version: 2.0.3(svelte@5.59.1(@typescript-eslint/types@8.74.0))
-      elkjs:
-        specifier: ^0.12.1
-        version: 0.12.1
       marked:
         specifier: ^18.3.0
         version: 18.3.0
@@ -1047,9 +1044,6 @@ packages:
 
   devalue@5.9.4:
     resolution: {integrity: sha512-sPAT4pztbu6586/hrhOnMKS17IJrvg12mXiSPSS3W5qDeN2RGgvZ0diZCm31dBbnevfVmujNO3IM2wrS4Y2Rhg==}
-
-  elkjs@0.12.1:
-    resolution: {integrity: sha512-IhMYKHE4S2vtx0QrhBP3lYOIKDeIiJXBrdq9MGYkuB8ZHqhrBnHNfSUndjXFewrX1CPK8chwq+2NA0K0hliYuw==}
 
   enhanced-resolve@5.27.0:
     resolution: {integrity: sha512-Do6BB2xzlcc/odFg+XEYyneAx4T/WfywO71yw9ePS2tVfRsf7JVR4mUeELadIeHzixkzbG5DpluiEFPi2WGfYQ==}
@@ -2490,8 +2484,6 @@ snapshots:
   detect-libc@2.1.2: {}
 
   devalue@5.9.4: {}
-
-  elkjs@0.12.1: {}
 
   enhanced-resolve@5.27.0:
     dependencies:

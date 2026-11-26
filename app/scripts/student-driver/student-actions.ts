@@ -23,10 +23,14 @@ export class StudentActions {
 	}
 
 	/**
-	 * Opens a lesson by clicking its link in the sidebar, like a student would.
+	 * Opens a lesson like a student would: through the course map, which lists every lesson
+	 * (the sidebar only lists the lessons of the current module).
 	 * @param lessonId - the lesson ID, e.g. "three-areas"
 	 */
 	async openLesson(lessonId: string): Promise<void> {
+		await this.waitUntil(`document.querySelector('a[href$="/course-map"]') !== null`, 20_000);
+		await this.connection.evaluate(`document.querySelector('a[href$="/course-map"]').click()`);
+		await this.waitUntil(`location.pathname.endsWith('/course-map')`);
 		await this.waitUntil(`document.querySelector('a[href$="/lessons/${lessonId}"]') !== null`);
 		await this.connection.evaluate(
 			`document.querySelector('a[href$="/lessons/${lessonId}"]').click()`

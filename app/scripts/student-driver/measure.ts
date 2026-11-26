@@ -105,6 +105,10 @@ async function measure(): Promise<void> {
 		const student = new StudentActions(connection);
 		await student.openLesson('three-areas');
 		await student.waitForPrompt();
+		// Start from a fresh practice folder: an earlier run may have left its files committed.
+		await student.clickButton('Reset practice');
+		await pause(3_000);
+		await student.waitForPrompt(30_000);
 		await student.waitUntil(`${stagingText} !== undefined`);
 		await pause(2_000);
 		if (appProcess.pid !== undefined) {

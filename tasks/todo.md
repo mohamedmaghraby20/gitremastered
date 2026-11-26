@@ -798,7 +798,60 @@ Goal: modules 0–4 of the Pro path written and playable: Orientation, Your dail
 
 **Verification:** driver run in the desktop app · **Scope:** M
 
+**Result (2026-11-26):** `pnpm review:course` (new) plays every challenge in the real desktop app: it opens the lesson from the course map, starts the challenge, types the reference solution into the terminal and waits for the goals. 83 of 83 pass, and five of them also check the picture (the faded commit after an amend, two rows after a merge, the Stash shelf, "level with origin/main", the tag label). The first run found one real bug: pushing a tag changed only the practice "server", which the app did not watch, so the goal never ticked. The app now watches the whole workspace. Delay: median 251–266 ms, slowest 286 ms. Memory: 250–261 MB private. `elkjs` removed. Phase 6 is outlined below.
+
 ## Checkpoint F: Core course
-- [ ] All 24 lessons of modules 0–4 are playable in the desktop app
-- [ ] All tests pass; measurements within SPEC targets
+- [x] All 23 lessons of modules 0–4 and the 4 checkpoints are playable in the desktop app (driver run, 83 challenges)
+- [x] All tests pass; measurements within SPEC targets (memory is at the ~250 MB mark)
 - [ ] You review the whole app
+
+---
+
+## Phase 6: Full course (outline, written at the end of phase 5)
+
+Goal: the remaining 39 lessons of the Pro path (modules 5 to 12 and `github-account-ssh`) and the 3 capstones. Planning stays rolling-wave: wave A below is ready to break into tasks; waves B to D need three decisions from you first.
+
+**How phase 5 went, and what phase 6 keeps:**
+- Lessons were written side by side, one writer per lesson, each checked alone with `pnpm lesson:check`, then merged in one pass (paths, glossary, `pnpm lesson:link`). A lesson took a few minutes to draft; the review is yours at the end.
+- `pnpm review:course` plays every challenge in the real desktop app. Run it after each wave.
+- The snapshot and goal checks were extended once, before the lessons. Do the same per wave.
+
+### Wave A: the lessons that need only Git (26 lessons)
+
+No GitHub account needed, so this wave can start right away.
+
+| Module | Lessons | New engine pieces |
+|---|---|---|
+| 5 Working in a team (Git-only part) | `team-workflows`, `commit-craft`, `rebasing`, `integrating-work` | Rebase on the map (the banner exists); a goal check for "branch was rebased onto" |
+| 6 History mastery | `revision-selection`, `clean-up-history`, `partial-staging`, `search-blame-bisect`, `advanced-merging`, `force-push-safely` | Interactive rebase needs an editor: test it in the practice terminal (Vim works since task "Esc goes to the shell"); a bisect banner (exists); goal checks for commit order and for file content (`file-contains`), which conflict lessons already miss |
+| 7 Recovery and incidents | `rescue-lost-work`, `incident-playbook`, `remove-sensitive-data` | The faded "no branch" stations are the teaching tool; a goal check for "commit is reachable again" (`branch-contains-commit` covers it) |
+| 9 Make Git yours | `config-pro`, `git-in-your-tools`, `hooks`, `attributes`, `signing` | `config-is-unset`; hooks run in the practice folder (check the practice folder safety rule still holds) |
+| 10 Large repos and modern Git | `worktrees`, `submodules`, `large-repos` | Worktrees and submodules put more repositories in the workspace: the picture follows `project/` only, so decide what it shows |
+| 11 Under the hood | `objects-deep`, `refs-deep`, `packfiles-gc`, `plumbing-toolkit` | None expected: answer challenges |
+
+Each module ends with a checkpoint, as in phase 5.
+
+### Wave B: connect a real GitHub account (design first)
+
+Direction already decided: the student connects their own GitHub account, and GitHub lessons run on a real repository of theirs. Open, and yours to decide:
+
+1. **How the app signs in.** Options: (a) the `gh` CLI the student installs and logs in to themselves (the app only checks `gh auth status`; no token ever touches the app); (b) GitHub's device flow with our own OAuth app (smoother, but the app then holds a token and needs secure storage); (c) a personal access token pasted by the student. Recommendation: (a). It teaches a real tool, and the app never stores a secret.
+2. **Who creates the practice repository.** Options: the student, by hand, following the lesson (slower, teaches more); or the lesson's setup through `gh repo create` (faster, needs clear consent each time). Recommendation: the lesson asks, shows the exact command, and the student runs it.
+3. **Teammates on GitHub.** Pull-request review and merge lessons need a second person. Options: a second account of the student's; a public "practice partner" repository we maintain; or scripted steps through `gh` that play the teammate from the student's own account. Recommendation: scripted teammate steps first, a partner repository later if the lessons feel thin.
+
+Also to settle in the design: what the app never does on a real account without a click (create, delete, push), how a GitHub challenge is reset, and goal checks that read GitHub state (through `gh api`, with a time limit, never on every snapshot).
+
+### Wave C: the GitHub lessons (13 lessons)
+
+`github-account-ssh`, `github-flow-prs`, `code-review`, `team-contributing`, `pr-merge-strategies`, the GitHub-release half of `tags-and-releases`, and module 8: `maintaining-github-repo`, `orgs-teams-permissions`, `branch-protection-codeowners`, `github-actions-ci`, `gh-cli-and-api`, `issues-projects-security`.
+
+### Wave D: the three capstones
+
+`capstone-solo-rescue` needs only Git and can move to wave A. `capstone-team-release` and `capstone-open-source` need waves B and C.
+
+### Carried over from phase 5
+
+- Goal checks cannot read file content, so a conflict can be "resolved" by keeping the wrong side and still pass. Add `file-contains` in wave A and tighten the conflict challenges.
+- `remote-has-tag` only sees a tag's name on the practice remote, not which commit it is on.
+- Mission tests have only run on Windows locally; watch the first Linux CI run (a plain `git pull` of diverged branches needs `pull.rebase` set, which the remote setups do).
+- The picture shows nothing while `project/` is not a repository yet; it could say "no repository here yet" instead of "waiting".

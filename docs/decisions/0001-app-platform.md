@@ -7,7 +7,7 @@ Status: accepted, 2026-11-24. Approved stack:
 | App shell | Tauri 2 (Rust core, system web view) |
 | Screens | SvelteKit (static mode) + Svelte 5 + TypeScript |
 | Terminal | xterm.js (screen) + Rust `portable-pty` (real shell, real Git) |
-| Visualizer | Svelte Flow + ELK layout; data from real Git commands run by Rust |
+| Visualizer | Svelte Flow + ELK layout; data from real Git commands run by Rust. (Phase 5: ELK was replaced by our own small lane layout, `lane-layout.ts`: the same placement every time, no layout library to load) |
 | Lessons | Markdown (text) + YAML (missions, quizzes) |
 | Search | Pagefind |
 | Progress | Tauri store plugin (local JSON) |

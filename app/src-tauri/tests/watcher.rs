@@ -117,3 +117,25 @@ fn a_burst_of_changes_gives_one_update() {
     assert_eq!(update.untracked_files.len(), 21);
     assert_eq!(extra_count, 0, "a burst sent more than one update");
 }
+
+/// Pushing a tag changes only the "server" beside the practice folder. The snapshot lists the
+/// server's tags, so the push must still give an update.
+#[test]
+fn a_change_on_the_local_server_is_noticed() {
+    let (_temporary, folder, _watcher, updates) = watched_repo();
+    run_git(
+        &folder,
+        &["init", "-q", "--bare", "-b", "main", "../origin.git"],
+    );
+    run_git(&folder, &["remote", "add", "origin", "../origin.git"]);
+    run_git(&folder, &["push", "-q", "-u", "origin", "main"]);
+    run_git(&folder, &["tag", "v1.0"]);
+    // Let the updates from the steps above arrive, then drop them.
+    std::thread::sleep(std::time::Duration::from_millis(800));
+    while updates.try_recv().is_ok() {}
+
+    run_git(&folder, &["push", "-q", "origin", "v1.0"]);
+
+    let (snapshot, _extras) = next_update_and_extras(&updates);
+    assert_eq!(snapshot.remotes[0].tag_names, vec!["v1.0".to_string()]);
+}

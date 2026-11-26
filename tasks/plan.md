@@ -46,7 +46,7 @@ Approving this plan approves these. Anything not listed is asked about separatel
 | App | `tailwindcss` (+ `@tailwindcss/vite`), `shadcn-svelte` (with its `bits-ui` base and helpers `tailwind-variants`, `cn`, `tw-animate-css`) | Styling and accessible building blocks |
 | App | `@fontsource/jetbrains-mono`, `@fontsource/source-serif-4`, `@fontsource/ibm-plex-sans` | Bundled fonts |
 | App | `@xterm/xterm`, `@xterm/addon-fit` | The terminal on screen |
-| App | `@xyflow/svelte` (Svelte Flow), `elkjs` | The history map in the visualizer |
+| App | `@xyflow/svelte` (Svelte Flow) | The history map in the visualizer (`elkjs` was removed in phase 5: the map uses our own lane layout) |
 | App | `yaml`, `marked` | Reading missions, quizzes and lesson Markdown |
 | App | `@tauri-apps/plugin-store` | Saving progress |
 | Dev | `vitest`, `eslint`, `prettier`, `svelte-check`, their Svelte/TypeScript/Tailwind plugins | Tests and code checks |
@@ -156,10 +156,11 @@ Scope approved 2026-11-26: modules 0–4, offline. Run in one go; you review the
 - [x] Tasks 68–72: Remotes (`how-git-talks`, `remotes`, `remote-branches`, `refspecs`, `tags-and-releases`)
 - [x] Task 73: Module checkpoints
 - [x] Task 74: Link pass, paths and coverage
-- [ ] Task 75: Measure again and plan phase 6
+- [x] Task 75: Measure again and plan phase 6
 
 ### Checkpoint F: Core course
-- [ ] All 24 lessons of modules 0–4 playable; tests pass; measurements within targets; you review the whole app
+- [x] All 23 lessons of modules 0–4 and the 4 checkpoints playable (83 challenges played in the desktop app); tests pass; measurements within targets
+- [ ] You review the whole app
 
 ## Risks and mitigations
 

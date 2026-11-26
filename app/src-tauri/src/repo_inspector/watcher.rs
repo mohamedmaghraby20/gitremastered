@@ -1,4 +1,9 @@
-//! Watches a whole practice folder and reports a fresh snapshot after every change.
+//! Watches a practice folder's whole workspace and reports a fresh snapshot after every
+//! change.
+//!
+//! Why the workspace (the folder above the practice folder): a remote lesson keeps its
+//! "server" there (`../origin.git`). Pushing a tag changes only the server, and the snapshot
+//! lists the server's tags, so that change must be noticed too.
 //!
 //! Why the whole folder and not only `.git`: editing a file changes nothing inside `.git`,
 //! so watching `.git` alone would miss "modified" files.
@@ -63,9 +68,11 @@ impl RepoWatcher {
             .with_notify_config(watcher_config);
         let mut debouncer = new_debouncer_opt(debouncer_config, handle_changes)
             .map_err(|error| format!("Could not watch the practice folder ({error})"))?;
+        // A practice folder always sits inside its workspace; the fallback is the folder itself.
+        let watched_path = folder.path().parent().unwrap_or(folder.path());
         debouncer
             .watcher()
-            .watch(folder.path(), RecursiveMode::Recursive)
+            .watch(watched_path, RecursiveMode::Recursive)
             .map_err(|error| format!("Could not watch the practice folder ({error})"))?;
         Ok(Self {
             _debouncer: debouncer,

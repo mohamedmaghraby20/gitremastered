@@ -7,7 +7,11 @@
 //! Nothing here writes to the repo. `git status` normally refreshes the index file as a side
 //! effect; `GIT_OPTIONAL_LOCKS=0` turns that off (Git docs: "git status --no-optional-locks").
 
+use std::collections::HashMap;
+use std::path::PathBuf;
+use std::sync::{Mutex, OnceLock};
 use std::thread;
+use std::time::SystemTime;
 
 use crate::git_runner::hidden_command::hidden_command;
 use crate::git_runner::practice_folder::PracticeFolder;
@@ -76,8 +80,8 @@ pub fn run_reads_at_once(folder: &PracticeFolder) -> GitReadings {
         let log = scope.spawn(|| run_read_only_git(folder, &LOG_ARGUMENTS));
         let refs = scope.spawn(|| run_read_only_git(folder, &REFS_ARGUMENTS));
         let tree = scope.spawn(|| run_read_only_git(folder, &TREE_ARGUMENTS));
-        let config = scope.spawn(|| run_read_only_git(folder, &CONFIG_ARGUMENTS));
-        let stash = scope.spawn(|| run_read_only_git(folder, &STASH_ARGUMENTS));
+        let config = scope.spawn(|| read_config(folder));
+        let stash = scope.spawn(|| read_stash_list(folder));
         GitReadings {
             status: finish_thread(status.join()),
             log: finish_thread(log.join()),
@@ -87,6 +91,53 @@ pub fn run_reads_at_once(folder: &PracticeFolder) -> GitReadings {
             stash: finish_thread(stash.join()),
         }
     })
+}
+
+/// The last settings read per repository: when `.git/config` was changed, and what Git printed.
+type ConfigCache = Mutex<HashMap<PathBuf, (SystemTime, String)>>;
+
+/// Remembers each repository's settings between snapshots.
+static CONFIG_CACHE: OnceLock<ConfigCache> = OnceLock::new();
+
+/// Reads the repository's own settings, starting Git only when `.git/config` changed.
+///
+/// Settings change rarely, but a snapshot is read after every command. Remembering the last
+/// answer, together with the file's change time, saves one Git process (~35 ms on Windows)
+/// on almost every snapshot.
+///
+/// Input: the practice folder. Output: the settings in `git config -z` form, or Git's error.
+fn read_config(folder: &PracticeFolder) -> Result<String, String> {
+    let config_path = folder.path().join(".git/config");
+    let changed_at = std::fs::metadata(&config_path)
+        .and_then(|metadata| metadata.modified())
+        .ok();
+    let cache = CONFIG_CACHE.get_or_init(|| Mutex::new(HashMap::new()));
+    if let (Some(changed_at), Ok(remembered)) = (changed_at, cache.lock())
+        && let Some((remembered_at, output)) = remembered.get(&config_path)
+        && *remembered_at == changed_at
+    {
+        return Ok(output.clone());
+    }
+    let output = run_read_only_git(folder, &CONFIG_ARGUMENTS)?;
+    if let (Some(changed_at), Ok(mut remembered)) = (changed_at, cache.lock()) {
+        remembered.insert(config_path, (changed_at, output.clone()));
+    }
+    Ok(output)
+}
+
+/// Lists the stash entries, starting Git only when there is a stash at all.
+///
+/// Most of the time nothing is stashed, and every Git process costs ~35 ms on Windows (more
+/// when several start together). Git keeps the stash's history in `.git/logs/refs/stash`;
+/// without that file the list is empty, and no process is needed.
+///
+/// Input: the practice folder. Output: the stash list in our format, or Git's error.
+fn read_stash_list(folder: &PracticeFolder) -> Result<String, String> {
+    let stash_log_path = folder.path().join(".git/logs/refs/stash");
+    if !stash_log_path.exists() {
+        return Ok(String::new());
+    }
+    run_read_only_git(folder, &STASH_ARGUMENTS)
 }
 
 /// Turns a finished reader thread into its result; a thread that panicked becomes an error.

@@ -22,6 +22,7 @@
 		"review:play": "node scripts/student-driver/play-pilot.ts",
 		"review:fixes": "node scripts/student-driver/check-review-fixes.ts",
 		"review:home": "node scripts/student-driver/check-home.ts",
+		"review:course": "node scripts/student-driver/play-course.ts",
 		"lint": "svelte-kit sync && prettier --check . && eslint .",
 		"format": "prettier --write .",
 		"tauri": "tauri",
@@ -38,7 +39,6 @@
 		"@xterm/addon-fit": "^0.11.0",
 		"@xterm/xterm": "^6.0.0",
 		"@xyflow/svelte": "^2.0.3",
-		"elkjs": "^0.12.1",
 		"marked": "^18.3.0",
 		"yaml": "^2.9.1"
 	},
