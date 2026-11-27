@@ -183,15 +183,15 @@ Decisions made 2026-11-27 (todo.md, "Phase 6 decisions"). Run in one go; you rev
 - [x] Task 90: Module 5 GitHub part and `force-push-safely`
 - [x] Task 91: The GitHub-release half of `tags-and-releases`
 - [x] Task 92: Module 8, Professional GitHub (6 lessons)
-- [ ] Task 93: Wave C checkpoints, paths, glossary and links
+- [x] Task 93: Wave C checkpoints, paths, glossary and links
 
 **Wave D: capstones**
 - [x] Task 94: `capstone-solo-rescue`
 - [x] Task 95: `capstone-team-release`, `capstone-open-source`
-- [ ] Task 96: Finish phase 6: measure, review, push
+- [x] Task 96: Finish phase 6: measure, review, push
 
 ### Checkpoint G: Full course
-- [ ] All 62 lessons, every module checkpoint and the 3 capstones playable; tests pass; measurements within targets
+- [x] All 62 lessons, every module checkpoint and the 3 capstones written; all 186 local challenge tests and all 46 GitHub challenges pass; 176 of 176 local and 47 of 53 GitHub challenges pass in the desktop app; delay under target, memory over (A13)
 - [ ] You review the whole app
 
 ## Risks and mitigations

@@ -167,6 +167,20 @@ async function typeSolution(student: StudentActions, challenge: Challenge): Prom
 }
 
 /**
+ * Reads the last lines the practice terminal shows, so a failure says what the terminal was
+ * doing (a question waiting for an answer, an error).
+ * @param student - the student actions
+ * @returns the last non-empty lines, joined by " | "
+ */
+async function readTerminalTail(student: StudentActions): Promise<string> {
+	const terminalLines = `[...document.querySelectorAll('.xterm-rows > div')].map((row) => row.innerText.trimEnd()).filter((line) => line !== '')`;
+	return student
+		.evaluate<string[]>(terminalLines)
+		.then((lines) => lines.slice(-8).join(' | '))
+		.catch(() => 'the terminal could not be read');
+}
+
+/**
  * Plays one challenge and reports what happened.
  * @param student - the student actions
  * @param lesson - the lesson (already open)
@@ -194,10 +208,11 @@ async function playChallenge(
 		const ticketText = await student
 			.evaluate<string>(`${ticket}?.innerText ?? 'no ticket on screen'`)
 			.catch(() => 'the page did not answer');
+		const terminalText = await readTerminalTail(student);
 		return {
 			label,
 			hasPassed: false,
-			note: `${String(error)}\n      ${ticketText.replaceAll('\n', ' | ')}`
+			note: `${String(error)}\n      ${ticketText.replaceAll('\n', ' | ')}\n      terminal: ${terminalText}`
 		};
 	}
 }

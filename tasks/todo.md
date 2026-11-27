@@ -988,4 +988,6 @@ Checkpoints for modules 5 and 8; both path files; `pnpm lesson:link`; `pnpm test
 | 95 | `capstone-team-release`, `capstone-open-source` (GitHub) |
 
 ### Task 96: Finish phase 6
+**Result (2026-11-27):** 73 lessons load (59 lessons, 11 checkpoints, 3 capstones). `pnpm test:missions`: 186 of 186. `pnpm test:github` on the real account: 46 of 46 (one GitHub server error, passed on re-run). Desktop playthrough (`pnpm review:course`): 176 of 176 local challenges; GitHub lessons 47 of 53 after one re-run. Still failing in the app only (they pass in `test:github`): `github-account-ssh/push-with-gh`, `github-account-ssh/switch-to-ssh`, `team-contributing/rebase-and-open-pr`, and the three `capstone-open-source` challenges (the last two follow from the first). Likely cause: the app's terminal is a real terminal, where `gh` may ask which repository is the base when two remotes exist. Left for the review. Delay median 236–237 ms; memory 274–279 MB (A13). Reviews: code-reviewer, security-auditor and accessibility-auditor findings fixed.
+
 Measure again (`pnpm review:measure`), run `code-reviewer`, `lesson-tester`, `accessibility-auditor` and `security-auditor`, fix every real finding, delete the practice repositories (or list them, A1), update `docs/measurements.md` and `tasks/plan.md`, push to `main`, confirm CI.
