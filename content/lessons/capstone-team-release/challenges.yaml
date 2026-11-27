@@ -1,0 +1,394 @@
+challenges:
+  - id: sprint-day-one
+    title: "Day one: catch up, open a pull request, squash it"
+    level: easy
+    brief: "This challenge runs on a practice repository in your own GitHub account. You are on your branch add-races with two commits that are not on GitHub yet. Since you started, Tariq's change \"Move the Thursday run to 19:00\" landed on main on GitHub. The team's rules: a branch sits on top of the newest main before review, with no merge commit of its own, and a pull request lands on main as one commit. Bring add-races up to date, push it, open a pull request with the title \"Add race calendar\", merge it the way the rules ask, and finish on main, level with GitHub. Do not delete add-races on your computer: two goals read it to see how you brought it up to date."
+    github:
+      repo: gitremastered-practice-capstone-team-release
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - git config pull.rebase false
+      - printf '# Riverside Runners\nThe website of a running club by the river.\n\nPages:\n- schedule.txt, the weekly training\n- fees.txt, the membership fees\n' > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - printf 'Tuesday 18:30 intervals\nThursday 18:30 easy run\nSunday 9:00 long run\n' > schedule.txt
+      - git add schedule.txt
+      - git commit -q -m "Add training schedule"
+      - printf 'Adults 40 per year\nStudents 20 per year\n' > fees.txt
+      - git add fees.txt
+      - git commit -q -m "Add membership fees"
+      - git remote add origin "$PRACTICE_GITHUB_URL"
+      - git push -q --force --mirror origin
+      - git fetch -q origin
+      - git branch -q -u origin/main main
+      # Tariq's change lands on main on GitHub; you have not fetched it:
+      - git clone -q -c core.autocrlf=false "$PRACTICE_GITHUB_URL" ../teammate
+      - git -C ../teammate config user.name "Tariq (teammate)"
+      - git -C ../teammate config user.email "tariq@example.com"
+      - sed -i -e 's/^Thursday 18:30 easy run$/Thursday 19:00 easy run/' ../teammate/schedule.txt
+      - git -C ../teammate commit -q -am "Move the Thursday run to 19:00"
+      - git -C ../teammate push -q
+      # Your own work, not pushed yet:
+      - git switch -q -c add-races
+      - echo "April 12, Spring 5k" > races.txt
+      - echo "- races.txt, the race calendar" >> README.md
+      - git add races.txt README.md
+      - git commit -q -m "Add race calendar"
+      - echo "October 4, River 10k" >> races.txt
+      - git commit -q -am "Add the autumn race"
+    goal:
+      - check: github-pull-request-is-merged
+        head: add-races
+        label: "The pull request from add-races is merged on GitHub"
+      - check: head-is-on-branch
+        branch: main
+        label: "You are on main"
+      - check: branch-is-in-sync
+        branch: main
+        label: "main is level with GitHub"
+      - check: commit-exists
+        message: "Move the Thursday run to 19:00"
+        label: "main holds Tariq's commit"
+      - check: commit-exists
+        message: "Add race calendar"
+        label: "main holds a commit \"Add race calendar\""
+      - check: commit-is-gone
+        message: "Add the autumn race"
+        label: "Your second commit is not on main by itself: the pull request was squashed"
+      - check: commit-count-is
+        count: 5
+        label: "main has five commits: three old ones, Tariq's, and one for your pull request"
+      - check: history-is-linear
+        label: "main has no merge commit"
+      - check: committed-file-contains
+        file: races.txt
+        text: "October 4, River 10k"
+        label: "races.txt on main lists both races"
+      - check: branch-contains-commit
+        branch: add-races
+        message: "Move the Thursday run to 19:00"
+        label: "Your local add-races sits on top of Tariq's commit"
+      - check: branch-lacks-commit
+        branch: add-races
+        message: "Merge"
+        label: "add-races was brought up to date without a merge commit"
+    solution:
+      - git fetch -q
+      - git rebase -q origin/main
+      - git push -q -u origin add-races
+      - gh pr create --title "Add race calendar" --body "Adds races.txt with the spring and autumn races, and lists the page in the README."
+      - gh pr merge --squash
+      - git switch -q main
+      - git pull -q
+
+  - id: shared-branch-conflict
+    title: "Day two: a shared branch, two conflicts, a merge commit"
+    level: medium
+    brief: "This challenge runs on a practice repository in your own GitHub account. Your pull request \"Say when fees are due\" (branch update-fees) is open. Two things happened on GitHub since your last fetch. Tariq pushed a commit to your branch, \"Add family membership\", and he builds on that branch too, so its commits must keep their IDs: do not rebase it. And his own pull request was merged into main: it raised the adult fee to 45 and reworded the intro line of the README, the two places your branch also changed. Get Tariq's commit, bring the newest main into update-fees and settle both conflicts. In fees.txt keep both changes: the adult fee is 45, and all three lines still end with \", paid in January\". In README.md, main's version of the file wins. Keep the merge message Git proposes. Push, merge the pull request with a merge commit, delete update-fees on GitHub and on your computer, and finish on main, level with GitHub."
+    github:
+      repo: gitremastered-practice-capstone-team-release
+      teammate:
+        - action: open-pull-request
+          head: raise-adult-fee
+          base: main
+          title: "Raise the adult fee and reword the intro"
+          body: "The board agreed on 45 per year for adults. Also a friendlier intro line."
+        - action: merge-pull-request
+          head: raise-adult-fee
+          method: merge
+        - action: open-pull-request
+          head: update-fees
+          base: main
+          title: "Say when fees are due"
+          body: "Members keep asking when to pay. Every fee line now says it."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - git config pull.rebase false
+      - printf '# Riverside Runners\nThe website of a running club by the river.\n\nPages:\n- schedule.txt, the weekly training\n- fees.txt, the membership fees\n' > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - printf 'Tuesday 18:30 intervals\nThursday 19:00 easy run\nSunday 9:00 long run\n' > schedule.txt
+      - git add schedule.txt
+      - git commit -q -m "Add training schedule"
+      - printf 'Adults 40 per year\nStudents 20 per year\n' > fees.txt
+      - git add fees.txt
+      - git commit -q -m "Add membership fees"
+      - printf 'April 12, Spring 5k\nOctober 4, River 10k\n' > races.txt
+      - echo "- races.txt, the race calendar" >> README.md
+      - git add races.txt README.md
+      - git commit -q -m "Add race calendar"
+      # Your branch, with the commit your pull request shows:
+      - git switch -q -c update-fees
+      - printf 'Adults 40 per year, paid in January\nStudents 20 per year, paid in January\n' > fees.txt
+      - sed -i -e 's/^The website of a running club by the river\.$/The website of a running club by the river. Fees are due in January./' README.md
+      - git commit -q -am "Say when fees are due"
+      - git switch -q main
+      - git remote add origin "$PRACTICE_GITHUB_URL"
+      - git push -q --force --mirror origin
+      - git fetch -q origin
+      - git branch -q -u origin/main main
+      - git branch -q -u origin/update-fees update-fees
+      # Tariq pushes a commit to your branch, and a branch of his own:
+      - git clone -q -c core.autocrlf=false "$PRACTICE_GITHUB_URL" ../teammate
+      - git -C ../teammate config user.name "Tariq (teammate)"
+      - git -C ../teammate config user.email "tariq@example.com"
+      - git -C ../teammate switch -q update-fees
+      - echo "Families 90 per year, paid in January" >> ../teammate/fees.txt
+      - git -C ../teammate commit -q -am "Add family membership"
+      - git -C ../teammate push -q
+      - git -C ../teammate switch -q -c raise-adult-fee origin/main
+      - sed -i -e 's/^Adults 40 per year$/Adults 45 per year/' ../teammate/fees.txt
+      - sed -i -e 's/^The website of a running club by the river\.$/The website of Riverside Runners, a running club for every pace./' ../teammate/README.md
+      - git -C ../teammate commit -q -am "Raise the adult fee and reword the intro"
+      - git -C ../teammate push -q -u origin raise-adult-fee
+    goal:
+      - check: github-pull-request-is-merged
+        head: update-fees
+        label: "The pull request from update-fees is merged on GitHub"
+      - check: github-branch-is-missing
+        branch: update-fees
+        label: "update-fees is deleted on GitHub"
+      - check: branch-is-missing
+        branch: update-fees
+        label: "update-fees is deleted on your computer"
+      - check: head-is-on-branch
+        branch: main
+        label: "You are on main"
+      - check: branch-is-in-sync
+        branch: main
+        label: "main is level with GitHub"
+      - check: head-commit-is-merge
+        label: "main ends with the pull request's merge commit"
+      - check: commit-exists
+        message: "Add family membership"
+        label: "main holds Tariq's commit from your shared branch"
+      - check: commit-exists
+        message: "into update-fees"
+        label: "The history holds your merge of main into update-fees: the shared branch was merged, not rebased"
+      - check: committed-file-contains
+        file: fees.txt
+        text: "Adults 45 per year, paid in January"
+        label: "fees.txt: adults pay 45, in January"
+      - check: committed-file-contains
+        file: fees.txt
+        text: "Students 20 per year, paid in January"
+        label: "fees.txt: the student line still says when to pay"
+      - check: committed-file-contains
+        file: fees.txt
+        text: "Families 90 per year, paid in January"
+        label: "fees.txt: Tariq's family line is kept"
+      - check: committed-file-lacks
+        file: fees.txt
+        text: "Adults 40"
+        label: "fees.txt: the old adult fee is gone"
+      - check: committed-file-contains
+        file: README.md
+        text: "The website of Riverside Runners, a running club for every pace."
+        label: "README.md has main's intro line"
+      - check: committed-file-lacks
+        file: README.md
+        text: "Fees are due in January"
+        label: "README.md no longer has your intro line"
+      - check: committed-file-lacks
+        file: fees.txt
+        text: "<<<<<<<"
+        label: "No conflict markers are left in fees.txt"
+      - check: committed-file-lacks
+        file: README.md
+        text: "<<<<<<<"
+        label: "No conflict markers are left in README.md"
+      - check: no-operation-in-progress
+        label: "No merge is waiting"
+      - check: working-folder-clean
+        label: "git status shows nothing left to do"
+    solution:
+      - git fetch -q
+      - git switch -q update-fees
+      - git pull -q
+      - git merge origin/main || true
+      - printf 'Adults 45 per year, paid in January\nStudents 20 per year, paid in January\nFamilies 90 per year, paid in January\n' > fees.txt
+      - git restore --theirs README.md
+      - git add fees.txt README.md
+      - git commit -q --no-edit
+      - git push -q
+      # GitHub needs a few seconds after the push before it knows the conflicts are gone:
+      - for attempt in 1 2 3 4 5 6 7 8 9 10 11 12; do gh pr view --json mergeable --jq .mergeable | grep -q MERGEABLE && break; sleep 5; done
+      - gh pr merge --merge
+      - git switch -q main
+      - git pull -q
+      - git push -q origin --delete update-fees
+      - git branch -q -d update-fees
+
+  - id: release-day
+    title: "Release day: clean up, rebase, merge, tag, publish"
+    level: hard
+    brief: "This challenge runs on a practice repository in your own GitHub account. Version 1.0 ships today, and it waits for your pull request \"Add results page\" (branch add-results, yours alone, already on GitHub). The branch has four commits: \"Add results page\", \"WIP results\", \"fix typo\" and \"Add 10k results and pace group\". Meanwhile Tariq's pull request landed on main as one commit, and it touches two places you touched. The team's rules for main: one straight line, every commit worth reading, pull requests merged with the rebase method. So reshape add-results into two commits on top of the newest main: \"Add results page\" (with the WIP and typo commits folded in) and \"Add 10k results and pace group\". The rebase stops twice. In README.md keep both new lines of the page list, Tariq's routes line first. In schedule.txt the Sunday line must read \"Sunday 8:30 long run, with a 10k pace group\". Publish the rewritten branch without a bare --force, merge the pull request with the rebase method, delete add-results on GitHub and on your computer, and bring main level with GitHub. Then release: an annotated tag v1.0 on the newest commit of main, pushed to GitHub, and a published GitHub release for it."
+    github:
+      repo: gitremastered-practice-capstone-team-release
+      teammate:
+        - action: open-pull-request
+          head: add-routes
+          base: main
+          title: "Add routes and move the Sunday run"
+          body: "The river loop is the new Sunday route, and the group asked for an earlier start."
+        - action: merge-pull-request
+          head: add-routes
+          method: squash
+        - action: open-pull-request
+          head: add-results
+          base: main
+          title: "Add results page"
+          body: "Race results for the 5k and the 10k, and a 10k pace group on Sundays."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - git config pull.rebase false
+      - printf '# Riverside Runners\nThe website of a running club by the river.\n\nPages:\n- schedule.txt, the weekly training\n- fees.txt, the membership fees\n' > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - printf 'Tuesday 18:30 intervals\nThursday 19:00 easy run\nSunday 9:00 long run\n' > schedule.txt
+      - git add schedule.txt
+      - git commit -q -m "Add training schedule"
+      - printf 'Adults 45 per year, paid in January\nStudents 20 per year, paid in January\nFamilies 90 per year, paid in January\n' > fees.txt
+      - git add fees.txt
+      - git commit -q -m "Add membership fees"
+      - printf 'April 12, Spring 5k\nOctober 4, River 10k\n' > races.txt
+      - echo "- races.txt, the race calendar" >> README.md
+      - git add races.txt README.md
+      - git commit -q -m "Add race calendar"
+      # Your branch: four commits, two of them noise.
+      - git switch -q -c add-results
+      - printf 'Race resluts\n\n5k, Lina 21.40\n' > results.txt
+      - echo "- results.txt, the race results" >> README.md
+      - git add results.txt README.md
+      - git commit -q -m "Add results page"
+      - echo "5k, Omar 23.05" >> results.txt
+      - git commit -q -am "WIP results"
+      - sed -i -e 's/resluts/results/' results.txt
+      - git commit -q -am "fix typo"
+      - echo "10k, Sara 47.12" >> results.txt
+      - sed -i -e 's/^Sunday 9:00 long run$/Sunday 9:00 long run, with a 10k pace group/' schedule.txt
+      - git commit -q -am "Add 10k results and pace group"
+      - git switch -q main
+      - git remote add origin "$PRACTICE_GITHUB_URL"
+      - git push -q --force --mirror origin
+      - git fetch -q origin
+      - git branch -q -u origin/main main
+      - git branch -q -u origin/add-results add-results
+      # Tariq's branch; the teammate steps open and squash-merge its pull request:
+      - git clone -q -c core.autocrlf=false "$PRACTICE_GITHUB_URL" ../teammate
+      - git -C ../teammate config user.name "Tariq (teammate)"
+      - git -C ../teammate config user.email "tariq@example.com"
+      - git -C ../teammate switch -q -c add-routes
+      - echo "Sunday, river loop, 12 km" > ../teammate/routes.txt
+      - echo "- routes.txt, the running routes" >> ../teammate/README.md
+      - sed -i -e 's/^Sunday 9:00 long run$/Sunday 8:30 long run/' ../teammate/schedule.txt
+      - git -C ../teammate add routes.txt README.md schedule.txt
+      - git -C ../teammate commit -q -m "Add routes and move the Sunday run"
+      - git -C ../teammate push -q -u origin add-routes
+    goal:
+      - check: github-pull-request-is-merged
+        head: add-results
+        label: "The pull request from add-results is merged on GitHub"
+      - check: github-branch-is-missing
+        branch: add-results
+        label: "add-results is deleted on GitHub"
+      - check: branch-is-missing
+        branch: add-results
+        label: "add-results is deleted on your computer"
+      - check: head-is-on-branch
+        branch: main
+        label: "You are on main"
+      - check: branch-is-in-sync
+        branch: main
+        label: "main is level with GitHub"
+      - check: history-is-linear
+        label: "main is one straight line, with no merge commit"
+      - check: commit-count-is
+        count: 7
+        label: "main has seven commits: four old ones, Tariq's, and your two"
+      - check: commit-is-gone
+        message: "WIP"
+        label: "No WIP commit is on main"
+      - check: commit-is-gone
+        message: "fix typo"
+        label: "No \"fix typo\" commit is on main"
+      - check: commit-comes-before
+        message: "Add routes and move the Sunday run"
+        later: "Add results page"
+        label: "\"Add results page\" sits on top of Tariq's commit"
+      - check: commit-comes-before
+        message: "Add results page"
+        later: "Add 10k results and pace group"
+        label: "\"Add 10k results and pace group\" comes after \"Add results page\""
+      - check: committed-file-contains
+        file: results.txt
+        text: "Race results"
+        label: "results.txt has the typo fixed"
+      - check: committed-file-contains
+        file: results.txt
+        text: "5k, Omar 23.05"
+        label: "results.txt still has the line from the WIP commit"
+      - check: committed-file-contains
+        file: README.md
+        text: "- routes.txt, the running routes\n- results.txt, the race results"
+        label: "README.md lists routes.txt, then results.txt"
+      - check: committed-file-lacks
+        file: README.md
+        text: "<<<<<<<"
+        label: "No conflict markers are left in README.md"
+      - check: committed-file-contains
+        file: schedule.txt
+        text: "Sunday 8:30 long run, with a 10k pace group"
+        label: "schedule.txt: Sunday at 8:30, with the pace group"
+      - check: committed-file-lacks
+        file: schedule.txt
+        text: "Sunday 9:00"
+        label: "schedule.txt: the old Sunday time is gone"
+      - check: committed-file-lacks
+        file: schedule.txt
+        text: "<<<<<<<"
+        label: "No conflict markers are left in schedule.txt"
+      - check: tag-is-annotated
+        tag: v1.0
+        label: "v1.0 is an annotated tag in your repository"
+      - check: tag-is-on-commit
+        tag: v1.0
+        message: "Add 10k results and pace group"
+        label: "v1.0 sits on the newest commit of main"
+      - check: github-release-exists
+        tag: v1.0
+        label: "GitHub shows a published release for v1.0"
+      - check: no-operation-in-progress
+        label: "No rebase is waiting"
+      - check: working-folder-clean
+        label: "git status shows nothing left to do"
+    solution:
+      - git fetch -q
+      - git switch -q add-results
+      - GIT_SEQUENCE_EDITOR="sed -i -e '2,3s/^pick/fixup/'" git rebase -i origin/main || true
+      - printf '# Riverside Runners\nThe website of a running club by the river.\n\nPages:\n- schedule.txt, the weekly training\n- fees.txt, the membership fees\n- races.txt, the race calendar\n- routes.txt, the running routes\n- results.txt, the race results\n' > README.md
+      - git add README.md
+      - git rebase --continue || true
+      - printf 'Tuesday 18:30 intervals\nThursday 19:00 easy run\nSunday 8:30 long run, with a 10k pace group\n' > schedule.txt
+      - git add schedule.txt
+      - git rebase --continue
+      - git push -q --force-with-lease
+      # GitHub needs a few seconds after a force push before it knows the pull request can merge:
+      - for attempt in 1 2 3 4 5 6 7 8 9 10 11 12; do gh pr view --json mergeable --jq .mergeable | grep -q MERGEABLE && break; sleep 5; done
+      - gh pr merge --rebase
+      - git switch -q main
+      - git pull -q
+      - git push -q origin --delete add-results
+      - git branch -q -D add-results
+      - git tag -a v1.0 -m "Version 1.0"
+      - git push -q origin v1.0
+      - gh release create v1.0 --title "Version 1.0" --notes "The first release, with the schedule, fees, race calendar, routes and results."

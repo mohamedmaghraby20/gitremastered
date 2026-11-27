@@ -1,0 +1,277 @@
+challenges:
+  - id: first-contribution
+    title: Catch up, then send your first contribution
+    level: easy
+    brief: "The trail guide is an open-source project, and origin is your own copy of it. Your copy is behind: the project got new commits since you made it. The project's address is your origin's address with -upstream added to the repository's name; add it as a remote named upstream. Bring your main level with the project's main and push it to origin. Then contribute: forest-path.md is written but not committed. Commit it on a topic branch named add-forest-path with the message \"Add forest path\", push that branch to upstream, and open a pull request there from add-forest-path into main. Your own main must not get the new commit. (A real fork would take the branch on origin; these two repositories are not linked, so the branch goes to upstream.)"
+    github:
+      repo: gitremastered-practice-capstone-open-source
+      upstream: gitremastered-practice-capstone-open-source-upstream
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - git config pull.rebase false
+      - echo "# City trail guide" > README.md
+      - echo "Walks near the city, written by the people who walk them." >> README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - printf 'Lake loop\nDistance, 6 km\nStart at the boat house and keep the water on your left.\n' > lake-loop.md
+      - git add lake-loop.md
+      - git commit -q -m "Add lake loop"
+      # The project and your copy of it start out the same:
+      - git push -q --force --mirror "$PRACTICE_GITHUB_UPSTREAM_URL"
+      - git remote add origin "$PRACTICE_GITHUB_URL"
+      - git push -q --force --mirror origin
+      - git fetch -q origin
+      - git branch -q --set-upstream-to=origin/main main
+      # The project's maintainer adds two commits you do not have:
+      - git clone -q -c core.autocrlf=false "$PRACTICE_GITHUB_UPSTREAM_URL" ../maintainer
+      - git -C ../maintainer config user.name "Salma (maintainer)"
+      - git -C ../maintainer config user.email "salma@example.com"
+      - printf 'Ridge walk\nDistance, 9 km\nSteep for the first hour, then flat along the ridge.\n' > ../maintainer/ridge-walk.md
+      - git -C ../maintainer add ridge-walk.md
+      - git -C ../maintainer commit -q -m "Add ridge walk"
+      - printf '\nTrails so far, lake loop and ridge walk.\n' >> ../maintainer/README.md
+      - git -C ../maintainer commit -q -am "List the trails in the README"
+      - git -C ../maintainer push -q
+      # Your contribution, written but not committed:
+      - printf 'Forest path\nDistance, 4 km\nShady all the way, good for hot days.\n' > forest-path.md
+    goal:
+      - check: remote-exists
+        remote: upstream
+        label: "A remote named upstream is set up"
+      - check: branch-contains-commit
+        branch: origin/main
+        message: "List the trails in the README"
+        label: "Your copy on GitHub (origin) has the project's newest commit"
+      - check: commit-comes-before
+        message: "List the trails in the README"
+        later: "Add forest path"
+        label: "\"Add forest path\" sits on top of the project's newest commit"
+      - check: head-is-on-branch
+        branch: add-forest-path
+        label: "You are on the topic branch add-forest-path"
+      - check: branch-lacks-commit
+        branch: main
+        message: "Add forest path"
+        label: "Your main does not hold the contribution"
+      - check: working-folder-clean
+        label: "git status shows nothing left to do"
+      - check: github-pull-request-is-open
+        head: add-forest-path
+        label: "A pull request from add-forest-path is open on the project"
+    solution:
+      - git remote add upstream "$(git remote get-url origin | sed 's/\.git$/-upstream.git/')"
+      - git fetch -q upstream
+      - git merge -q upstream/main
+      - git push -q origin main
+      - git switch -q -c add-forest-path
+      - git add forest-path.md
+      - git commit -q -m "Add forest path"
+      - git push -q -u upstream add-forest-path
+      - gh pr create --base main --head add-forest-path --title "Add forest path" --body "A short, shady walk for hot days."
+
+  - id: answer-the-review
+    title: Answer the review and get merged
+    level: medium
+    brief: "Your pull request from add-forest-path is open on the project (upstream), and the maintainer, Salma, commented on it: the distance in forest-path.md must be 4 km, not 40 km, and the project's main moved on, so she wants the branch rebased. Read her comment with gh pr view add-forest-path --comments. Fix the distance in a new commit with the message \"Fix the distance of the forest path\", rebase the branch on the project's current main, update the branch on upstream, and reply on the pull request. Salma then tells you to merge it yourself (in this practice you own the project too): the project keeps a straight history with every commit, so merge with the rebase method. Finish like a tidy contributor: your main and origin level with the project's main, you on main, and add-forest-path deleted on upstream and on your computer."
+    github:
+      repo: gitremastered-practice-capstone-open-source
+      upstream: gitremastered-practice-capstone-open-source-upstream
+      teammate:
+        - action: open-pull-request
+          head: add-forest-path
+          base: main
+          title: "Add forest path"
+          body: "A short, shady walk for hot days."
+        - action: comment-pull-request
+          head: add-forest-path
+          body: "Thanks for the trail! Two things before this goes in. The distance must be 4 km, not 40 km. And main got a new commit since you started, so please rebase your branch on it."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - git config pull.rebase false
+      - echo "# City trail guide" > README.md
+      - echo "Walks near the city, written by the people who walk them." >> README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - printf 'Lake loop\nDistance, 6 km\nStart at the boat house and keep the water on your left.\n' > lake-loop.md
+      - git add lake-loop.md
+      - git commit -q -m "Add lake loop"
+      - git push -q --force --mirror "$PRACTICE_GITHUB_UPSTREAM_URL"
+      - git remote add origin "$PRACTICE_GITHUB_URL"
+      - git push -q --force --mirror origin
+      - git fetch -q origin
+      - git branch -q --set-upstream-to=origin/main main
+      - git remote add upstream "$PRACTICE_GITHUB_UPSTREAM_URL"
+      - git fetch -q upstream
+      # Your contribution, already pushed to the project (the teammate steps open its pull request):
+      - git switch -q -c add-forest-path
+      - printf 'Forest path\nDistance, 40 km\nShady all the way, good for hot days.\n' > forest-path.md
+      - git add forest-path.md
+      - git commit -q -m "Add forest path"
+      - git push -q -u upstream add-forest-path
+      # The maintainer moves the project's main on:
+      - git clone -q -c core.autocrlf=false "$PRACTICE_GITHUB_UPSTREAM_URL" ../maintainer
+      - git -C ../maintainer config user.name "Salma (maintainer)"
+      - git -C ../maintainer config user.email "salma@example.com"
+      - printf 'Ridge walk\nDistance, 9 km\nSteep for the first hour, then flat along the ridge.\n' > ../maintainer/ridge-walk.md
+      - git -C ../maintainer add ridge-walk.md
+      - git -C ../maintainer commit -q -m "Add ridge walk"
+      - git -C ../maintainer push -q
+    goal:
+      - check: github-pull-request-is-merged
+        head: add-forest-path
+        label: "The pull request from add-forest-path is merged on the project"
+      - check: github-branch-is-missing
+        branch: add-forest-path
+        label: "add-forest-path is deleted on the project"
+      - check: head-is-on-branch
+        branch: main
+        label: "You are on main"
+      - check: committed-file-contains
+        file: forest-path.md
+        text: "Distance, 4 km"
+        label: "main has the forest path with the right distance"
+      - check: commit-comes-before
+        message: "Add ridge walk"
+        later: "Fix the distance of the forest path"
+        label: "Your two commits sit on top of the maintainer's \"Add ridge walk\""
+      - check: history-is-linear
+        label: "The history is a straight line (no merge commit)"
+      - check: branch-contains-commit
+        branch: origin/main
+        message: "Fix the distance of the forest path"
+        label: "Your copy on GitHub (origin) has the merged work"
+      - check: branch-is-in-sync
+        branch: main
+        label: "main is level with origin/main"
+      - check: branch-is-missing
+        branch: add-forest-path
+        label: "The local branch add-forest-path is deleted"
+    solution:
+      - gh pr view add-forest-path --comments
+      - git fetch -q upstream
+      - sed -i 's/40 km/4 km/' forest-path.md
+      - git commit -q -am "Fix the distance of the forest path"
+      - git rebase -q upstream/main
+      - git push -q --force-with-lease upstream add-forest-path
+      - 'gh pr comment add-forest-path -b "Done: the distance is 4 km now, and the branch is rebased on the current main."'
+      - gh pr merge add-forest-path --rebase
+      - git switch -q main
+      - git pull -q upstream main
+      - git push -q origin main
+      - git push -q upstream --delete add-forest-path
+      - git branch -q -D add-forest-path
+
+  - id: maintainer-day
+    title: Your day as the maintainer
+    level: hard
+    brief: "Today you maintain the trail guide: the project (upstream) is yours to run. A contributor, Nour, opened the pull request \"Add the river trail\" from the branch add-river-trail. (1) Look at her work on your computer, then submit a review on the pull request with a comment; GitHub does not let you approve here, because the practice pull request was opened from your own account. (2) Her branch has two commits and the second only fixes a typo: merge the pull request so that main gets one commit, and delete her branch on the project. (3) Give the project its rules through a pull request of your own, from a branch named project-rules: a CONTRIBUTING.md that contains the sentence \"One trail per pull request.\", and a .github/CODEOWNERS file that makes you the owner of every file (one line: a star, a space, then @ and your GitHub user name; gh api user --jq .login prints the name). Merge that pull request too. (4) End on main, with your main and origin level with the project's main."
+    github:
+      repo: gitremastered-practice-capstone-open-source
+      upstream: gitremastered-practice-capstone-open-source-upstream
+      teammate:
+        - action: open-pull-request
+          head: add-river-trail
+          base: main
+          title: "Add the river trail"
+          body: "My favourite evening walk. First contribution, tell me if something is off!"
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - git config pull.rebase false
+      - echo "# City trail guide" > README.md
+      - echo "Walks near the city, written by the people who walk them." >> README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - printf 'Lake loop\nDistance, 6 km\nStart at the boat house and keep the water on your left.\n' > lake-loop.md
+      - git add lake-loop.md
+      - git commit -q -m "Add lake loop"
+      - printf 'Ridge walk\nDistance, 9 km\nSteep for the first hour, then flat along the ridge.\n' > ridge-walk.md
+      - git add ridge-walk.md
+      - git commit -q -m "Add ridge walk"
+      - git push -q --force --mirror "$PRACTICE_GITHUB_UPSTREAM_URL"
+      - git remote add origin "$PRACTICE_GITHUB_URL"
+      - git push -q --force --mirror origin
+      - git fetch -q origin
+      - git branch -q --set-upstream-to=origin/main main
+      - git remote add upstream "$PRACTICE_GITHUB_UPSTREAM_URL"
+      - git fetch -q upstream
+      # A contributor pushes a branch (in a real project it would sit in her fork);
+      # the teammate step above then opens its pull request.
+      - git clone -q -c core.autocrlf=false "$PRACTICE_GITHUB_UPSTREAM_URL" ../contributor
+      - git -C ../contributor config user.name "Nour (contributor)"
+      - git -C ../contributor config user.email "nour@example.com"
+      - git -C ../contributor switch -q -c add-river-trail
+      - printf 'River trail\nDistance, 5 km\nFlat and wide, follow the rivr to the old mill.\n' > ../contributor/river-trail.md
+      - git -C ../contributor add river-trail.md
+      - git -C ../contributor commit -q -m "Add river trail"
+      - sed -i 's/rivr/river/' ../contributor/river-trail.md
+      - git -C ../contributor commit -q -am "Fix a typo in the river trail"
+      - git -C ../contributor push -q -u origin add-river-trail
+    goal:
+      - check: github-pull-request-has-review
+        head: add-river-trail
+        label: "Nour's pull request has your review"
+      - check: github-pull-request-is-merged
+        head: add-river-trail
+        label: "Nour's pull request is merged"
+      - check: github-branch-is-missing
+        branch: add-river-trail
+        label: "add-river-trail is deleted on the project"
+      - check: committed-file-contains
+        file: river-trail.md
+        text: "follow the river"
+        label: "main has the river trail"
+      - check: branch-lacks-commit
+        branch: main
+        message: "Fix a typo in the river trail"
+        label: "Her typo fix did not land as a commit of its own (one commit for the trail)"
+      - check: github-pull-request-is-merged
+        head: project-rules
+        label: "Your pull request from project-rules is merged"
+      - check: committed-file-contains
+        file: CONTRIBUTING.md
+        text: "One trail per pull request."
+        label: "main has CONTRIBUTING.md with the rule"
+      - check: committed-file-contains
+        file: .github/CODEOWNERS
+        text: "* @"
+        label: "main has .github/CODEOWNERS with an owner for every file"
+      - check: head-is-on-branch
+        branch: main
+        label: "You are on main"
+      - check: branch-is-in-sync
+        branch: main
+        label: "main is level with origin/main"
+      - check: working-folder-clean
+        label: "git status shows nothing left to do"
+    solution:
+      - git fetch -q upstream
+      - gh pr checkout add-river-trail
+      - git log --oneline main..HEAD
+      - git diff main...HEAD
+      - 'gh pr review add-river-trail --comment -b "Thanks, Nour. I read both commits and the file, and the distance and directions are right. I will squash the typo fix into one commit."'
+      - git switch -q main
+      - gh pr merge add-river-trail --squash
+      - git push -q upstream --delete add-river-trail
+      - git pull -q upstream main
+      - git switch -q -c project-rules
+      - printf 'How to contribute\n\nOne trail per pull request.\nWork on a topic branch, never on main.\n' > CONTRIBUTING.md
+      - mkdir -p .github
+      - echo "* @$(gh api user --jq .login)" > .github/CODEOWNERS
+      - git add CONTRIBUTING.md .github/CODEOWNERS
+      - git commit -q -m "Add contributing guide and code owners"
+      - git push -q -u upstream project-rules
+      - gh pr create --base main --head project-rules --title "Add contributing guide and code owners" --body "The project's rules, and who reviews what."
+      - gh pr merge project-rules --squash
+      - git push -q upstream --delete project-rules
+      - git switch -q main
+      - git pull -q upstream main
+      - git push -q origin main

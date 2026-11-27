@@ -1,0 +1,48 @@
+questions:
+  - question: "Your branch add-map is on GitHub with an open pull request. Yesterday Lina pushed two commits to it and started a branch of her own on top of them. Today main has moved, and the pull request must take in the newest main. What do you run?"
+    answers:
+      - text: "git pull, then git merge origin/main, then git push"
+        correct: true
+        explanation: "Lina has the branch's commits and builds on them, so they must keep their IDs. A merge adds one commit on top and changes none, and a normal push is enough."
+      - text: "git rebase origin/main, then git push --force-with-lease"
+        explanation: "The rebase replaces every commit of the branch with a copy, Lina's two included. Her own branch still sits on the old ones, so her next pull request shows the same work twice. The lease only checks that nobody pushed since your fetch; it does not make rewriting a shared branch safe."
+      - text: "git rebase origin/main, then git pull, then git push"
+        explanation: "The pull merges the old commits back into the rebased branch, so every commit is in the history twice, once with each ID."
+      - text: "Nothing: GitHub updates the branch when the pull request is merged"
+        explanation: "If main and the branch changed the same lines, GitHub cannot merge the pull request at all. And the team wants the two tested together before the merge, not after."
+
+  - question: "A pull request has six commits: two that matter and four named \"WIP\" and \"fix\". The team wants main to stay one straight line where every commit is worth reading, and wants the two real commits kept apart. What gets you there?"
+    answers:
+      - text: "Fold the four into the two with git rebase -i, push with --force-with-lease, then merge with the rebase method"
+        correct: true
+        explanation: "The interactive rebase leaves two clean commits, and a rebase merge adds each of them to main with no merge commit."
+      - text: "Merge with the squash method"
+        explanation: "The line stays straight, but squash makes one commit of everything, so the two real commits are no longer apart."
+      - text: "Merge with a merge commit"
+        explanation: "All six commits land on main, the four noisy ones too, and the merge commit makes main split and join."
+      - text: "Merge with the rebase method, without touching the branch"
+        explanation: "A rebase merge copies every commit as it is. The four WIP and fix commits would be on main for good."
+
+  - question: "Your pull request was squash-merged. You run git switch main, git pull, then git branch -d add-races, and Git answers \"the branch 'add-races' is not fully merged\". What happened?"
+    answers:
+      - text: "The squash made one new commit on main, so the branch's own commits are not in main's history, only their changes. Compare with git diff main add-races, then delete with -D"
+        correct: true
+        explanation: "-d looks for the branch's commits in main, and a squash merge never puts them there. The check with git diff shows that the content arrived."
+      - text: "The pull request did not really merge; open it again"
+        explanation: "GitHub shows it as merged, and main holds the changes. Only the commit IDs differ from your branch."
+      - text: "Your main is out of date; another git pull fixes it"
+        explanation: "You just pulled. However often you pull, main will hold the squash commit and never your branch's commits."
+      - text: "You must delete the branch on GitHub first"
+        explanation: "The -d check does not look at whether GitHub still has the branch. It only asks whether the branch's commits can be reached from where you are."
+
+  - question: "Release day. Your pull request is not merged yet, and the team merges with the rebase method. To save time you want to run git tag -a v1.0 on your branch's newest commit now, and merge afterwards. What is wrong with that?"
+    answers:
+      - text: "The rebase merge puts new copies of your commits on main, so v1.0 would sit on a commit that is not on main"
+        correct: true
+        explanation: "GitHub's rebase merge always writes new commit IDs. A tag marks one exact commit, so tag after the merge: pull main, then tag its newest commit."
+      - text: "Nothing: the tag moves to main with the commits when the pull request is merged"
+        explanation: "A tag never moves by itself. It stays on the commit it was made on, and that commit stays on your branch."
+      - text: "An annotated tag can only be made on main"
+        explanation: "Git lets you tag any commit on any branch. The problem is which commit this tag would mark."
+      - text: "The tag would block the merge on GitHub"
+        explanation: "GitHub merges the pull request without looking at tags. The merge works, and the tag is left on the old commit."

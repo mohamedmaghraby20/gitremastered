@@ -1,0 +1,40 @@
+questions:
+  - question: "You forked a project last month and cloned your fork. Today the project has ten new commits. You run git pull on main and Git says \"Already up to date.\" Why?"
+    answers:
+      - text: "main follows origin/main, your fork, and nothing copied the project's commits into the fork"
+        correct: true
+        explanation: "A fork does not follow the project by itself. Fetch from the project (git fetch upstream), merge upstream/main, then push main to origin."
+      - text: "The project's maintainer has to approve the ten commits for your fork first"
+        explanation: "The commits are public and nobody has to approve anything. They simply have not been fetched from the project yet."
+      - text: "git pull only works on topic branches, never on main"
+        explanation: "git pull works on any branch that follows another one. Here it asked the fork, which has nothing new."
+
+  - question: "The maintainer asks for one small change on your open pull request. What is the usual way to deliver it?"
+    answers:
+      - text: "Close the pull request and open a new one with the corrected work"
+        explanation: "That throws the conversation away. A pull request follows its branch, so there is no need for a second one."
+      - text: "Commit the change on the same topic branch and push it; the pull request updates"
+        correct: true
+        explanation: "GitHub shows whatever the head branch holds now. A new push appears on the same page, under the maintainer's comment."
+      - text: "Commit the change on your main and push that"
+        explanation: "The pull request offers the topic branch, not main. And your main should only follow the project."
+
+  - question: "The maintainer squash-merged your pull request from add-map. You sync main, then git branch -d add-map says the branch is not fully merged. What happened?"
+    answers:
+      - text: "The merge failed on GitHub and your work is not in the project"
+        explanation: "The pull request page says merged, and the change is in main. Only the commit IDs differ."
+      - text: "Your main is still behind the project, so sync it again"
+        explanation: "You synced already. No number of syncs brings your original commits into main, because the squash made a new one."
+      - text: "A squash puts one new commit on main, so your original commits are not in main's history"
+        correct: true
+        explanation: "git branch -d only checks whether the branch's newest commit is reachable. The work is in, under a new ID, so git branch -D add-map is safe here."
+
+  - question: "You run a project and want one rule: whenever a pull request changes a file under docs/, GitHub asks Nour to review it. Where does that go?"
+    answers:
+      - text: "In CONTRIBUTING.md: \"docs changes are reviewed by Nour\""
+        explanation: "CONTRIBUTING.md is for people to read. GitHub links to it, but takes no action from its text."
+      - text: "In .github/CODEOWNERS: a line with docs/ and her user name, @nour"
+        correct: true
+        explanation: "Each line maps a path pattern to owners, and GitHub requests a review from them when a pull request changes a matching file."
+      - text: "In .gitignore, so that nobody except Nour can change docs/"
+        explanation: ".gitignore tells Git which untracked files to leave alone. It has nothing to do with reviews or permissions."
