@@ -1,0 +1,170 @@
+challenges:
+  - id: first-workflow
+    title: Give the shop its first CI
+    level: easy
+    github:
+      repo: gitremastered-practice-github-actions-ci
+    brief: "The shop project is on GitHub, and it has a test script, test.sh, that nobody remembers to run. Make GitHub run it on every push: add a workflow file, .github/workflows/ci.yml, whose name is exactly CI, that checks out the repository and runs sh test.sh. Commit it, push it, and watch the run until it succeeds. (Starting this challenge resets your practice repository gitremastered-practice-github-actions-ci on GitHub. A run takes about half a minute.)"
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Shop app" > README.md
+      - printf '%s\n' "Coffee 3" "Bread 2" > menu.txt
+      - |-
+        printf '%s\n' '#!/bin/sh' 'if grep -q "TODO" menu.txt' 'then' '  echo "test: menu.txt still has a TODO line"' '  exit 1' 'fi' 'echo "test: menu.txt is ready"' > test.sh
+      - git add README.md menu.txt test.sh
+      - git commit -q -m "Add README, the menu and the test script"
+      - git remote add origin "$PRACTICE_GITHUB_URL"
+      - git push -q --force --mirror origin
+      - git push -q -u origin main
+    goal:
+      - check: file-is-committed
+        file: .github/workflows/ci.yml
+        label: ".github/workflows/ci.yml is committed"
+      - check: committed-file-contains
+        file: .github/workflows/ci.yml
+        text: "sh test.sh"
+        label: "The workflow runs sh test.sh"
+      - check: branch-is-in-sync
+        branch: main
+        label: "main is pushed: nothing ahead of origin/main, nothing behind"
+      - check: github-workflow-succeeded
+        workflow: CI
+        label: "On GitHub, a run of the workflow named CI succeeded"
+    hints:
+      - "Run sh test.sh to see what the test does here. GitHub looks for workflows in one folder only, and the file needs five things: a name, an event, a job, a runner and steps."
+      - "Make the folder with mkdir -p .github/workflows. The file starts with name: CI and on: push. Its one job needs runs-on: ubuntu-latest and two steps: uses: actions/checkout@v7, then run: sh test.sh. Indent with spaces, two per level. After the push, gh run watch follows the run."
+      - "Run: mkdir -p .github/workflows, then printf '%s\\n' 'name: CI' 'on: push' 'jobs:' '  test:' '    runs-on: ubuntu-latest' '    steps:' '      - uses: actions/checkout@v7' '      - run: sh test.sh' > .github/workflows/ci.yml, then git add .github/workflows/ci.yml, then git commit -m \"Add the CI workflow\", then git push, then gh run watch."
+    solution:
+      - mkdir -p .github/workflows
+      - |-
+        printf '%s\n' 'name: CI' 'on: push' 'jobs:' '  test:' '    runs-on: ubuntu-latest' '    steps:' '      - uses: actions/checkout@v7' '      - run: sh test.sh' > .github/workflows/ci.yml
+      - git add .github/workflows/ci.yml
+      - git commit -q -m "Add the CI workflow"
+      - git push -q
+
+  - id: repair-red-main
+    title: Turn a red main green again
+    level: medium
+    github:
+      repo: gitremastered-practice-github-actions-ci
+    brief: "The shop already has a workflow named Tests that runs sh test.sh on every push. Your teammate Tariq just pushed \"Add tea to the menu\", and the run for that commit failed. Read the failed run to find out why, fix the file so the test passes (keep Tariq's tea line), check it on your own computer first, then commit and push so a new run of Tests succeeds. Do not change the workflow or the test. (Starting this challenge resets your practice repository on GitHub; give the first run half a minute to fail.)"
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Shop app" > README.md
+      - printf '%s\n' "Coffee 3" "Bread 2" > menu.txt
+      - |-
+        printf '%s\n' '#!/bin/sh' 'if grep -q "TODO" menu.txt' 'then' '  echo "test: menu.txt still has a TODO line"' '  exit 1' 'fi' 'echo "test: menu.txt is ready"' > test.sh
+      - git add README.md menu.txt test.sh
+      - git commit -q -m "Add README, the menu and the test script"
+      - mkdir -p .github/workflows
+      - |-
+        printf '%s\n' 'name: Tests' 'on: push' 'jobs:' '  test:' '    runs-on: ubuntu-latest' '    steps:' '      - uses: actions/checkout@v7' '      - run: sh test.sh' > .github/workflows/tests.yml
+      - git add .github/workflows/tests.yml
+      - git commit -q -m "Add the Tests workflow"
+      - printf '%s\n' "Tea 2" "TODO price for juice" >> menu.txt
+      - git -c user.name="Tariq (teammate)" -c user.email="tariq@example.com" commit -q -am "Add tea to the menu"
+      - git remote add origin "$PRACTICE_GITHUB_URL"
+      - git push -q --force --mirror origin
+      - git push -q -u origin main
+    goal:
+      - check: github-workflow-failed
+        workflow: Tests
+        label: "On GitHub, the run of Tests for Tariq's commit failed (wait for it, then read it)"
+      - check: committed-file-lacks
+        file: menu.txt
+        text: "TODO"
+        label: "The committed menu.txt has no TODO line"
+      - check: committed-file-contains
+        file: menu.txt
+        text: "Tea 2"
+        label: "Tariq's tea line is still in menu.txt"
+      - check: committed-file-contains
+        file: .github/workflows/tests.yml
+        text: "sh test.sh"
+        label: "The workflow still runs sh test.sh"
+      - check: branch-is-in-sync
+        branch: main
+        label: "main is pushed: nothing ahead of origin/main, nothing behind"
+      - check: github-workflow-succeeded
+        workflow: Tests
+        label: "On GitHub, a new run of Tests succeeded"
+    hints:
+      - "Run gh run list. The newest run has an X. Which command shows the lines the failed step printed?"
+      - "gh run view --log-failed, with the run's ID from the list, prints the failed step's output: the test names the file and the problem. Fix that file, then run sh test.sh here until it prints that the menu is ready. Only then commit and push."
+      - "Run: gh run list, then gh run view <ID> --log-failed. Open menu.txt (nano menu.txt) and replace the TODO line with: Juice 4. Run sh test.sh, then git commit -am \"Set the juice price\", then git push, then gh run watch."
+    solution:
+      - sed -i -e 's/^TODO price for juice$/Juice 4/' menu.txt
+      - sh test.sh
+      - git commit -q -am "Set the juice price"
+      - git push -q
+
+  - id: pull-request-check
+    title: Check a pull request before it merges
+    level: hard
+    github:
+      repo: gitremastered-practice-github-actions-ci
+    brief: "New team rule: every change reaches main through a pull request, and a workflow named exactly PR checks runs sh test.sh on each pull request. You are on the branch add-tea, which is not finished: menu.txt still has a TODO line. On add-tea, add the workflow as .github/workflows/pr-checks.yml (event: pull_request), finish the menu, push the branch and open a pull request into main. Wait until its check passes, merge the pull request, then bring your local main up to date and stay on it. (Starting this challenge resets your practice repository on GitHub.)"
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Shop app" > README.md
+      - printf '%s\n' "Coffee 3" "Bread 2" > menu.txt
+      - |-
+        printf '%s\n' '#!/bin/sh' 'if grep -q "TODO" menu.txt' 'then' '  echo "test: menu.txt still has a TODO line"' '  exit 1' 'fi' 'echo "test: menu.txt is ready"' > test.sh
+      - git add README.md menu.txt test.sh
+      - git commit -q -m "Add README, the menu and the test script"
+      - git remote add origin "$PRACTICE_GITHUB_URL"
+      - git push -q --force --mirror origin
+      - git push -q -u origin main
+      - git switch -q -c add-tea
+      - printf '%s\n' "Tea 2" "TODO price for juice" >> menu.txt
+      - git commit -q -am "Add tea to the menu"
+    goal:
+      - check: github-workflow-succeeded
+        workflow: PR checks
+        label: "On GitHub, a run of the workflow named PR checks succeeded"
+      - check: github-pull-request-is-merged
+        head: add-tea
+        label: "The pull request from add-tea is merged"
+      - check: head-is-on-branch
+        branch: main
+        label: "You are on main"
+      - check: committed-file-contains
+        file: .github/workflows/pr-checks.yml
+        text: "pull_request"
+        label: "Your main has the workflow, and it runs on pull_request"
+      - check: committed-file-contains
+        file: menu.txt
+        text: "Tea 2"
+        label: "Your main has the tea line"
+      - check: committed-file-lacks
+        file: menu.txt
+        text: "TODO"
+        label: "Your main's menu.txt has no TODO line"
+    hints:
+      - "The workflow does not have to be on main first. Under the hood explains which copy of a workflow file GitHub reads for a pull request: a workflow added on the branch runs for that branch's own pull request."
+      - "On add-tea: write .github/workflows/pr-checks.yml with name: PR checks and on: pull_request, replace the TODO line in menu.txt, run sh test.sh, commit both files, then git push -u origin add-tea. Open the pull request with gh pr create. gh pr checks --watch follows its check; if it says no checks are reported yet, wait a few seconds and run it again. Merge with gh pr merge."
+      - "Run: mkdir -p .github/workflows, then printf '%s\\n' 'name: PR checks' 'on: pull_request' 'jobs:' '  test:' '    runs-on: ubuntu-latest' '    steps:' '      - uses: actions/checkout@v7' '      - run: sh test.sh' > .github/workflows/pr-checks.yml. Replace the TODO line in menu.txt with: Juice 4. Then git add .github/workflows/pr-checks.yml menu.txt, git commit -m \"Add PR checks and the juice price\", git push -u origin add-tea, gh pr create --fill, gh pr checks --watch, gh pr merge --merge --delete-branch, git switch main, git pull."
+    solution:
+      - mkdir -p .github/workflows
+      - |-
+        printf '%s\n' 'name: PR checks' 'on: pull_request' 'jobs:' '  test:' '    runs-on: ubuntu-latest' '    steps:' '      - uses: actions/checkout@v7' '      - run: sh test.sh' > .github/workflows/pr-checks.yml
+      - sed -i -e 's/^TODO price for juice$/Juice 4/' menu.txt
+      - sh test.sh
+      - git add .github/workflows/pr-checks.yml menu.txt
+      - git commit -q -m "Add PR checks and the juice price"
+      - git push -q -u origin add-tea
+      - gh pr create --base main --head add-tea --title "Add tea and juice to the menu" --body "Adds two drinks and the PR checks workflow."
+      - sleep 15
+      - for attempt in 1 2 3 4 5 6; do gh pr checks --watch && break; sleep 10; done
+      - gh pr merge --merge --delete-branch
+      - git switch -q main
+      - git pull -q

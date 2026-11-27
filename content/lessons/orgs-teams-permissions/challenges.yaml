@@ -1,0 +1,120 @@
+challenges:
+  - id: who-owns-it
+    title: Find out what kind of account owns a repository
+    level: easy
+    brief: "A new teammate asks whether the trail-map repository on GitHub belongs to a person or to an organization. Ask GitHub with gh api, and write the owner's type into answer.txt, exactly as GitHub prints it (one word)."
+    github:
+      repo: gitremastered-practice-orgs-teams-permissions
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo answer.txt >> .git/info/exclude
+      - echo "# Trail map" > README.md
+      - echo "Walks around the lake, with distances and opening hours." >> README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - git remote add origin "$PRACTICE_GITHUB_URL"
+      - git push -q --force --mirror origin
+    goal:
+      - check: answer-is
+        answer: "User"
+        label: "answer.txt holds the owner's type, as GitHub prints it"
+    hints:
+      - "GitHub's answer for a repository has a part called owner. One of its fields says what kind of account the owner is."
+      - "gh api repos/{owner}/{repo} asks about the repository your origin points at: gh fills in {owner} and {repo} for you. Add --jq and a path to print one field."
+      - "Run: gh api repos/{owner}/{repo} --jq .owner.type > answer.txt"
+    solution:
+      - gh api repos/{owner}/{repo} --jq .owner.type > answer.txt
+
+  - id: may-i-change-settings
+    title: Read your own permissions on a repository
+    level: medium
+    brief: "Before the team asks you to turn on a setting in the trail-map repository, check that your account may change this repository's settings and manage who has access. Read your permissions with gh api, find the one permission that covers this, and write its value (true or false) into answer.txt."
+    github:
+      repo: gitremastered-practice-orgs-teams-permissions
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo answer.txt >> .git/info/exclude
+      - echo "# Trail map" > README.md
+      - echo "Walks around the lake, with distances and opening hours." >> README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - echo "Lake loop, 4 km" > trails.txt
+      - git add trails.txt
+      - git commit -q -m "Add the lake loop"
+      - git remote add origin "$PRACTICE_GITHUB_URL"
+      - git push -q --force --mirror origin
+    goal:
+      - check: answer-is
+        answer: "true"
+        label: "answer.txt holds the value of the permission that covers settings and access"
+    hints:
+      - "Which of the five repository roles may change a repository's settings and manage access? Look at the roles table in Must know."
+      - "gh api repos/{owner}/{repo} --jq .permissions prints one true or false per role. Read the one named after the role you found."
+      - "Run: gh api repos/{owner}/{repo} --jq .permissions.admin > answer.txt"
+    solution:
+      - gh api repos/{owner}/{repo} --jq .permissions.admin > answer.txt
+
+  - id: teams-own-the-code
+    title: Name two teams as code owners
+    level: hard
+    brief: "Next week this repository moves into the company's organization, octo-org. TEAMS.md says which team looks after which folder. Write the file .github/CODEOWNERS so that each of the two folders names its team with a team mention, commit it on main and push."
+    github:
+      repo: gitremastered-practice-orgs-teams-permissions
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Trail map" > README.md
+      - mkdir web guides
+      - echo "<h1>Trail map</h1>" > web/index.html
+      - echo "How to read the map" > guides/reading-the-map.md
+      - git add README.md web guides
+      - git commit -q -m "Add the site and the guides"
+      - echo "# Who looks after what" > TEAMS.md
+      - echo "" >> TEAMS.md
+      - echo "Organization on GitHub - octo-org" >> TEAMS.md
+      - echo "" >> TEAMS.md
+      - echo "- The folder web/ belongs to the Frontend team (team name on GitHub - frontend)." >> TEAMS.md
+      - echo "- The folder guides/ belongs to the Writers team (team name on GitHub - writers)." >> TEAMS.md
+      - git add TEAMS.md
+      - git commit -q -m "List the teams"
+      - git remote add origin "$PRACTICE_GITHUB_URL"
+      - git push -q --force --mirror origin
+      - git fetch -q origin
+      - git branch -q --set-upstream-to=origin/main main
+    goal:
+      - check: committed-file-contains
+        file: .github/CODEOWNERS
+        text: "@octo-org/frontend"
+        label: "The committed CODEOWNERS file mentions the Frontend team"
+      - check: committed-file-contains
+        file: .github/CODEOWNERS
+        text: "@octo-org/writers"
+        label: "The committed CODEOWNERS file mentions the Writers team"
+      - check: committed-file-contains
+        file: .github/CODEOWNERS
+        text: "guides/"
+        label: "The file has a line for the guides/ folder"
+      - check: working-folder-clean
+        label: "Nothing is left uncommitted"
+      - check: branch-is-in-sync
+        branch: main
+        label: "main is pushed: level with origin/main"
+    hints:
+      - "Read TEAMS.md with cat TEAMS.md. A team mention is built from two names in that file. The part \"Teams as code owners\" in Advanced shows the form of a CODEOWNERS line."
+      - "A team mention is @organization/team-name, so the Frontend team is @octo-org/frontend. A CODEOWNERS line is a path, a space, then the owner. The file lives in the folder .github, which you must create first."
+      - "Run: mkdir .github, then echo \"web/ @octo-org/frontend\" > .github/CODEOWNERS, then echo \"guides/ @octo-org/writers\" >> .github/CODEOWNERS, then git add .github, git commit -m \"Add code owners\" and git push"
+    solution:
+      - mkdir .github
+      - echo "web/ @octo-org/frontend" > .github/CODEOWNERS
+      - echo "guides/ @octo-org/writers" >> .github/CODEOWNERS
+      - git add .github
+      - git commit -q -m "Add code owners"
+      - git push -q

@@ -1,0 +1,134 @@
+challenges:
+  - id: report-a-bug
+    title: Report the wrong closing time
+    level: easy
+    brief: "The Corner Bakery site says the shop closes at 17:00 on Friday. It really closes at 19:00. Nobody has time to fix it today, so write it down where the team will see it: open an issue titled \"Wrong closing time on Friday\" with the label bug."
+    github:
+      repo: gitremastered-practice-issues-projects-security
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Corner Bakery" > README.md
+      - printf 'Monday to Thursday 07:00 to 17:00\nFriday 07:00 to 17:00\n' > hours.txt
+      - git add README.md hours.txt
+      - git commit -q -m "Start the bakery site"
+      - git remote add origin "$PRACTICE_GITHUB_URL"
+      - git push -q --force --mirror origin
+      - git fetch -q origin
+      - git branch -q --set-upstream-to=origin/main main
+    goal:
+      - check: github-issue-exists
+        title: "Wrong closing time on Friday"
+        label: "An issue titled \"Wrong closing time on Friday\" is on GitHub"
+      - check: github-issue-has-label
+        title: "Wrong closing time on Friday"
+        labelName: bug
+        label: "The issue has the label bug"
+    hints:
+      - "An issue is opened on GitHub, not in a commit. Which gh command makes one?"
+      - "gh issue create takes the title, the text and the label on the command line: --title, --body and --label. With all three given, gh asks no questions."
+      - "Run: gh issue create --title \"Wrong closing time on Friday\" --body \"hours.txt says 17:00. The shop closes at 19:00.\" --label bug"
+    solution:
+      - gh issue create --title "Wrong closing time on Friday" --body "hours.txt says 17:00. The shop closes at 19:00." --label bug
+
+  - id: close-from-a-commit
+    title: Close a teammate's issue from your commit
+    level: medium
+    brief: "Your teammate Salma opened an issue: \"Saturday hours are missing\". Add the line \"Saturday 08:00 to 14:00\" to hours.txt, and let your commit close her issue when it reaches main on GitHub. Do not close the issue by hand: find its number and name it in the commit message."
+    github:
+      repo: gitremastered-practice-issues-projects-security
+      teammate:
+        - action: create-issue
+          title: "Saturday hours are missing"
+          body: "hours.txt stops at Friday. We are open on Saturday from 08:00 to 14:00."
+          labels: [documentation]
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Corner Bakery" > README.md
+      - printf 'Monday to Thursday 07:00 to 17:00\nFriday 07:00 to 19:00\n' > hours.txt
+      - git add README.md hours.txt
+      - git commit -q -m "Start the bakery site"
+      - git remote add origin "$PRACTICE_GITHUB_URL"
+      - git push -q --force --mirror origin
+      - git fetch -q origin
+      - git branch -q --set-upstream-to=origin/main main
+    goal:
+      - check: committed-file-contains
+        file: hours.txt
+        text: "Saturday 08:00 to 14:00"
+        label: "hours.txt in the latest commit has the Saturday line"
+      - check: branch-is-in-sync
+        branch: main
+        label: "main is pushed: level with origin/main"
+      - check: github-issue-is-closed
+        title: "Saturday hours are missing"
+        label: "The issue \"Saturday hours are missing\" is closed on GitHub"
+    hints:
+      - "Issue numbers grow with every issue and pull request, so you cannot guess this one. Which gh command lists the open issues with their numbers?"
+      - "Run gh issue list and read the number in the first column. A commit message that says Fixes, then # and that number, closes the issue once the commit is on the default branch on GitHub."
+      - "Run: echo \"Saturday 08:00 to 14:00\" >> hours.txt, then git commit -am \"Add Saturday hours\" -m \"Fixes #N\" with the number from gh issue list in place of N, then git push."
+    solution:
+      - echo "Saturday 08:00 to 14:00" >> hours.txt
+      - "git commit -q -am \"Add Saturday hours\" -m \"Fixes #$(gh issue list --json number,title --jq '.[] | select(.title == \"Saturday hours are missing\") | .number')\""
+      - git push -q
+
+  - id: dependabot-and-policy
+    title: Turn on version updates and add a security policy
+    level: hard
+    brief: "The bakery site uses one npm package, listed in package.json, and nobody checks it for new versions. Add .github/dependabot.yml so Dependabot checks npm once a week and keeps at most 3 of its pull requests open. Then add a SECURITY.md that asks people to report security problems privately to security@corner-bakery.example. Commit both files and push."
+    github:
+      repo: gitremastered-practice-issues-projects-security
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Corner Bakery" > README.md
+      - printf 'Monday to Thursday 07:00 to 17:00\nFriday 07:00 to 19:00\n' > hours.txt
+      - 'printf ''{\n  "name": "corner-bakery",\n  "private": true,\n  "dependencies": {\n    "marked": "^12.0.0"\n  }\n}\n'' > package.json'
+      - git add README.md hours.txt package.json
+      - git commit -q -m "Start the bakery site"
+      - git remote add origin "$PRACTICE_GITHUB_URL"
+      - git push -q --force --mirror origin
+      - git fetch -q origin
+      - git branch -q --set-upstream-to=origin/main main
+    goal:
+      - check: committed-file-contains
+        file: .github/dependabot.yml
+        text: "version: 2"
+        label: ".github/dependabot.yml is committed and has version: 2"
+      - check: committed-file-contains
+        file: .github/dependabot.yml
+        text: "npm"
+        label: "It names the npm package ecosystem"
+      - check: committed-file-contains
+        file: .github/dependabot.yml
+        text: "weekly"
+        label: "It checks once a week"
+      - check: committed-file-contains
+        file: .github/dependabot.yml
+        text: "open-pull-requests-limit: 3"
+        label: "It keeps at most 3 Dependabot pull requests open"
+      - check: committed-file-contains
+        file: SECURITY.md
+        text: "security@corner-bakery.example"
+        label: "SECURITY.md is committed and gives the private address"
+      - check: branch-is-in-sync
+        branch: main
+        label: "main is pushed: level with origin/main"
+    hints:
+      - "Two new files, one commit, one push. The Dependabot file must sit in the .github folder, which does not exist yet. The limit on open pull requests is an option from the Advanced part."
+      - "dependabot.yml starts with version: 2, then an updates list. The entry needs package-ecosystem, directory, and schedule with an interval; add open-pull-requests-limit: 3 at the same depth as directory. Write the files in an editor: nano .github/dependabot.yml"
+      - "Run mkdir .github, then write .github/dependabot.yml with the example from the lesson (npm, weekly) plus the line open-pull-requests-limit: 3. Write SECURITY.md with the address security@corner-bakery.example. Then git add .github/dependabot.yml SECURITY.md, git commit -m \"Add Dependabot updates and a security policy\", git push."
+    solution:
+      - mkdir -p .github
+      - 'printf ''version: 2\nupdates:\n  - package-ecosystem: "npm"\n    directory: "/"\n    schedule:\n      interval: "weekly"\n    open-pull-requests-limit: 3\n'' > .github/dependabot.yml'
+      - printf '# Security policy\n\nPlease do not open a public issue for a security problem.\nReport it privately to security@corner-bakery.example.\n' > SECURITY.md
+      - git add .github/dependabot.yml SECURITY.md
+      - git commit -q -m "Add Dependabot updates and a security policy"
+      - git push -q

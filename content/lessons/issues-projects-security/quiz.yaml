@@ -1,0 +1,44 @@
+questions:
+  - question: "You commit a fix with the message \"Fix the menu link. Fixes #12\" on the branch menu-fix and push that branch. Issue #12 is still open. Why?"
+    answers:
+      - text: "The commit is not on the default branch yet; the issue closes when the commit is merged into main"
+        correct: true
+        explanation: "GitHub acts on a closing keyword only when the commit reaches the default branch. Until then the issue only shows a link to the commit."
+      - text: "Closing keywords work only in a pull request's description, never in a commit message"
+        explanation: "They work in both. In a commit message, the issue closes when the commit lands on the default branch."
+      - text: "\"Fixes\" is not a closing keyword; only \"Closes\" is"
+        explanation: "fix, fixes, fixed, close, closes, closed, resolve, resolves and resolved all work."
+      - text: "The push failed without saying so"
+        explanation: "A failed push always prints an error. This push worked; it just went to a branch that is not the default one."
+
+  - question: "git push stops with a block from push protection: a commit you made an hour ago, three commits back, contains an access token for a payment service. What is the right way out?"
+    answers:
+      - text: "Open the link in the message and choose \"It's used in tests\", so the push goes through"
+        explanation: "That lets a real secret reach a repository other people can read. The bypass is for strings that are truly harmless."
+      - text: "Make a new commit that deletes the token, then push again"
+        explanation: "The old commit still holds the token, and a push sends every commit. GitHub blocks it again."
+      - text: "Rewrite the commit that added the token so no commit holds it, push again, and rotate the token if it could have reached anyone"
+        correct: true
+        explanation: "The block names the commit and the line. The token never reached GitHub, so rewriting your local commits is enough for the repository; rotating covers any other place it may have gone."
+      - text: "Add the file to .gitignore and push again"
+        explanation: ".gitignore only affects untracked files. The token is already inside a commit."
+
+  - question: "A stranger finds a way to read other customers' orders in your open-source shop. Your repository has a SECURITY.md. What should it have told them to do?"
+    answers:
+      - text: "Open a public issue with the label bug, so it is fixed fast"
+        explanation: "A public issue tells every attacker how to do it before a fix exists."
+      - text: "Report it privately, through the address or the private reporting form the policy names"
+        correct: true
+        explanation: "A security policy exists to give a private way in. The maintainers fix the problem first and publish the details afterwards, in a security advisory."
+      - text: "Open a pull request with the fix straight away"
+        explanation: "A pull request on a public repository is public too. The fix shows the hole to everyone before it is released."
+
+  - question: "Your team added .github/dependabot.yml with the npm ecosystem and a weekly interval. A month later a serious vulnerability is announced in a package you use. Which statement is true?"
+    answers:
+      - text: "Nothing warns you until next Monday's version check"
+        explanation: "Alerts do not follow the schedule in dependabot.yml. They come when the vulnerability is added to the GitHub Advisory Database."
+      - text: "dependabot.yml also turns on Dependabot alerts, so you are covered"
+        explanation: "The file only configures version updates. Alerts are a separate feature with their own switch in the repository's settings."
+      - text: "Dependabot alerts, if they are on for the repository, warn you about it; the weekly version updates are a separate job that keeps packages current"
+        correct: true
+        explanation: "Version updates open pull requests for any newer version on a schedule. Alerts watch for known vulnerabilities in the versions you use, whenever one is published."

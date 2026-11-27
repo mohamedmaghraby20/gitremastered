@@ -1,0 +1,44 @@
+questions:
+  - question: "A stranger opened pull request 12 from their fork. You run git fetch origin, then git branch -r, and their branch is not in the list. Why, and how do you get their commits?"
+    answers:
+      - text: "Their branch lives in their fork, and a normal fetch copies only your repository's branches. Fetch the pull request's own ref: git fetch origin pull/12/head:pr-12"
+        correct: true
+        explanation: "GitHub keeps refs/pull/12/head on your repository for exactly this. It sits outside refs/heads/, so you must name it yourself."
+      - text: "The fetch failed without saying so. Run git fetch origin again until the branch appears"
+        explanation: "The fetch worked. It follows the rule refs/heads/*, and the fork's branch is not under your repository's refs/heads/."
+      - text: "You must add the stranger as a collaborator first, so that Git may read their work"
+        explanation: "A collaborator is someone who may push to your repository. Reading a pull request needs no invitation: its ref is already on your repository."
+      - text: "You must merge the pull request on GitHub first, then pull"
+        explanation: "That puts untested work on main. The pull request ref lets you test before you decide."
+
+  - question: "You fetched pull request 8 into a branch pr-8, ran the tests there, and they pass. You are back on main. What is in main now?"
+    answers:
+      - text: "Nothing new: main has not changed, on your computer or on GitHub"
+        correct: true
+        explanation: "A fetched pull request is a separate branch. main moves only when you merge, for example with gh pr merge 8 --merge followed by git pull."
+      - text: "The pull request's commits, because fetching a pull request merges it"
+        explanation: "A fetch only stores commits and writes a ref. It never merges."
+      - text: "The pull request's commits on your computer, but not yet on GitHub"
+        explanation: "Your local main did not move either. You tested on pr-8, and switching back to main changes nothing in main."
+
+  - question: "A pull request adds a feature your project does not want. What is the best thing to do as the maintainer?"
+    answers:
+      - text: "Close it with a comment: thank the author, say why it does not fit, and say what you would accept"
+        correct: true
+        explanation: "The author is notified when a pull request is closed. A reason keeps them willing to contribute again, and gh pr close --comment does both steps at once."
+      - text: "Leave it open and unanswered, so that nobody feels rejected"
+        explanation: "Silence is worse than a clear no: the author waits, and the list of open pull requests fills with work nobody will merge."
+      - text: "Close it without a word; the closed state says enough"
+        explanation: "The author gets a notification with no reason in it. They cannot fix what they do not know about."
+      - text: "Merge it, then remove the feature in a commit of your own"
+        explanation: "That puts unwanted code in main's history and tells the author the change was welcome."
+
+  - question: "You wrote a pull request template on a branch named templates and pushed it. Contributors open new pull requests, and the description box is still empty. What is missing?"
+    answers:
+      - text: "The template must be on the default branch: merge the templates branch into main"
+        correct: true
+        explanation: "GitHub reads templates and the other community health files from the default branch only."
+      - text: "Each contributor must fetch the templates branch before they open a pull request"
+        explanation: "GitHub fills the box on the website from your repository. What contributors have on their computers plays no part."
+      - text: "Templates work only for collaborators, not for contributors from forks"
+        explanation: "A template is shown to everyone who opens a pull request against your repository."

@@ -1,0 +1,40 @@
+questions:
+  - question: "Your workflow starts with `on: push`. You open a pull request from your branch `add-tea`, and a teammate asks: \"Did the tests run on what main will look like after the merge?\" What is the honest answer?"
+    answers:
+      - text: "Yes, every run tests the merged result"
+        explanation: "A push run tests the commit you pushed, alone. Only a pull_request run tests the trial merge of your branch into the base branch."
+      - text: "No: the push run tested your branch's newest commit, not the merge with main"
+        correct: true
+        explanation: "A push run checks out exactly the pushed commit. Add the pull_request event: its run checks out a trial merge of the branch into main, so it also catches a change on main that breaks your work."
+      - text: "No run happened at all, because pull requests need their own workflow file"
+        explanation: "The push to add-tea did start a run. One file can list several events; no second file is needed."
+
+  - question: "A run failed with an X on the step \"Run sh test.sh\". The step before it, the checkout, has a check mark. Where is the problem most likely?"
+    answers:
+      - text: "In the project: the test script found something wrong and ended with a non-zero exit code"
+        correct: true
+        explanation: "The runner did its part: it got the files and ran the script. A step fails when its command ends with an exit code other than 0, so read what the script printed with gh run view --log-failed, then repeat the command on your own computer."
+      - text: "In GitHub: the runner could not get the repository's files"
+        explanation: "Getting the files is the checkout step's job, and that step succeeded."
+      - text: "In the workflow file: its YAML is broken"
+        explanation: "A broken workflow file fails before any step runs. That run is listed under the file's path instead of the workflow's name and has no steps to show."
+
+  - question: "A pull request shows a failing check, and the repository has no rules about checks. A teammate presses Merge anyway. What happens?"
+    answers:
+      - text: "GitHub refuses: a red check always blocks the merge"
+        explanation: "A check only reports. It blocks nothing until the repository owner marks it as a required status check in a branch protection rule or ruleset."
+      - text: "The merge goes through, and main now holds a commit whose test fails"
+        correct: true
+        explanation: "Without a rule, a check is advice. To make it a gate, the owner makes it a required status check, as the Branch protection lesson shows."
+      - text: "The merge goes through, and GitHub reverts it when the next run fails"
+        explanation: "GitHub never reverts for you. A failing run on main only shows an X; someone has to push the fix."
+
+  - question: "A workflow needs a password to upload the shop's site. Where does the password go?"
+    answers:
+      - text: "In the workflow file, since only the team reads it"
+        explanation: "The workflow file is committed. On a public repository everyone can read it, and it stays in the history for good."
+      - text: "In a file that .gitignore hides"
+        explanation: "An ignored file never leaves your computer, so the runner, a fresh machine on GitHub's side, would not have it."
+      - text: "In the repository's Actions secrets, read in the workflow as secrets.NAME"
+        correct: true
+        explanation: "GitHub stores a secret encrypted, hands it to the run only where the workflow asks for it, and masks it in the logs."

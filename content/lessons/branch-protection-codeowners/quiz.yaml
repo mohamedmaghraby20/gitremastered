@@ -1,0 +1,40 @@
+questions:
+  - question: "You own a public repository and created a ruleset on main with one rule, \"Require a pull request before merging\", and an empty bypass list. You commit on main and run git push. What happens?"
+    answers:
+      - text: "The push goes through, because the owner of a repository is never bound by its rules"
+        explanation: "That is how a classic branch protection rule treats admins by default. A ruleset binds everyone who is not on its bypass list, the owner included."
+      - text: "GitHub refuses with GH013 and \"Changes must be made through a pull request\"; you push the commit on a branch and open a pull request"
+        correct: true
+        explanation: "The ruleset applies to you too. Your commit is still in your repository: make a branch at it, push the branch, open the pull request and merge it."
+      - text: "Git refuses with \"! [rejected] (fetch first)\"; you run git pull and push again"
+        explanation: "That message means the server has commits you lack. Here the server's own rule said no, which shows as \"[remote rejected]\", and pulling changes nothing."
+
+  - question: "A CODEOWNERS file has three lines, in this order: \"* @maya-k\", then \"*.md @cafe/writers\", then \"/docs/ @cafe/docs-team\". A pull request changes only docs/menu.md. Who does GitHub ask to review?"
+    answers:
+      - text: "All three owners, because all three lines match the file"
+        explanation: "Owners do not add up across lines. Only one line counts for each file."
+      - text: "@maya-k, because the first matching line wins"
+        explanation: "It is the other way round: the last matching line wins, so general lines go first and specific ones last."
+      - text: "@cafe/docs-team, because the last matching line wins"
+        correct: true
+        explanation: "All three lines match docs/menu.md, and the last one replaces the others."
+
+  - question: "You work alone on a repository and set required_approving_review_count to 1 in the pull request rule. You open a pull request. What now?"
+    answers:
+      - text: "You approve it yourself, then merge"
+        explanation: "GitHub never lets the author of a pull request approve it: \"Can not approve your own pull request\"."
+      - text: "The pull request cannot be merged until someone else with write access approves it, or you lower the count to 0"
+        correct: true
+        explanation: "With no second person, the rule locks you out. Alone, keep the count at 0: the pull request is still required, an approval is not."
+      - text: "GitHub sees that you are alone and skips the rule"
+        explanation: "GitHub does not guess. The rule stays in force, and the merge is refused with \"the base branch policy prohibits the merge\"."
+
+  - question: "A repository has a ruleset that asks for 1 approving review on main, and an older classic branch protection rule that asks for 2 reviews and a linear history. What does a pull request into main need?"
+    answers:
+      - text: "1 review: rulesets are newer, so they replace classic rules"
+        explanation: "Neither feature replaces the other. They run side by side and every rule is enforced."
+      - text: "2 reviews and a linear history: all rules add up, and the stricter version of a shared rule applies"
+        correct: true
+        explanation: "GitHub layers the rules from every ruleset and from classic protection. When you cannot tell why a push is refused, gh ruleset check main lists what applies."
+      - text: "It cannot be merged, because the two rules conflict"
+        explanation: "Different numbers are not a conflict. GitHub takes the stricter one."

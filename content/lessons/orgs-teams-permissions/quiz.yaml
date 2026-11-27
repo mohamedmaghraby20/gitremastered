@@ -1,0 +1,40 @@
+questions:
+  - question: "You are a member of octo-org. Base permissions are Read. Your team, frontend, has Write on the repository website. You try to push a fix to billing-service and GitHub refuses. What is going on?"
+    answers:
+      - text: "You have only Read on billing-service: no team of yours has a higher role there. Ask to be added to the team that works on it"
+        correct: true
+        explanation: "Your role on a repository is the highest of base permissions, your teams and your direct role. On billing-service that is the base, Read, and Read cannot push."
+      - text: "Members can push to every repository of their organization, so GitHub must be having a problem"
+        explanation: "Being a member only puts you in the group. What you may do in each repository comes from repository roles."
+      - text: "Your Write role on website was lowered to Read by the base permissions"
+        explanation: "A base permission never pulls a higher role down. You still have Write on website; billing-service is another repository."
+
+  - question: "A consultant must work on one private repository of your organization for three months, and must see nothing else. What does the organization do?"
+    answers:
+      - text: "Invite them as a member and put them on a team"
+        explanation: "A member gets the base permissions on every repository and can see the visible teams. That is more than this person needs."
+      - text: "Add them to that repository as an outside collaborator with the Write role"
+        correct: true
+        explanation: "An outside collaborator has a role only on the repositories they were added to. Base permissions do not apply, and they cannot join a team."
+      - text: "Let them use a colleague's account for the three months"
+        explanation: "Then the audit log shows the colleague's name for everything the consultant does, and the consultant has all of the colleague's access."
+
+  - question: "The team engineering has two child teams, frontend and backend. In a pull request you write a comment that mentions @octo-org/engineering. Who gets a notification?"
+    answers:
+      - text: "Only the people who are direct members of engineering"
+        explanation: "A mention of a parent team also reaches the members of its child teams."
+      - text: "The members of engineering, and the members of frontend and backend"
+        correct: true
+        explanation: "Child teams inherit from their parent: its access, and its mentions. Mentioning a child team works the other way and notifies only that child."
+      - text: "Every member of octo-org"
+        explanation: "A team mention reaches that team and its child teams, not the whole organization."
+
+  - question: "In a clone of your team's repository, gh api repos/{owner}/{repo} --jq .permissions prints admin false, maintain false, pull true, push true, triage true. You are asked to change the branch protection rules. Can you?"
+    answers:
+      - text: "Yes: push is true, and pushing is the highest right in a repository"
+        explanation: "push means the Write role. Maintain and Admin are above it, and managing branch protection rules needs Admin."
+      - text: "No: you have the Write role. You can push and merge pull requests, but the rules need Admin, so ask a repository admin"
+        correct: true
+        explanation: "Your role is the highest name that is true: push, which is Write. Settings, access and branch protection rules belong to Admin."
+      - text: "No: with admin false you can only read the repository"
+        explanation: "The values are a staircase. pull, triage and push are true, so you have Write: much more than Read, but below Admin."

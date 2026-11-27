@@ -1,0 +1,44 @@
+questions:
+  - question: "A repository has 4 open issues and 1 open pull request. You run gh api \"repos/{owner}/{repo}/issues\" --jq length. What does it print, and why?"
+    answers:
+      - text: "5, because the REST API treats every pull request as an issue too"
+        correct: true
+        explanation: "The issues endpoint returns issues and pull requests together. A pull request in that list carries a pull_request key, so a script can filter it out; gh issue list already does."
+      - text: "4, because the endpoint is called issues"
+        explanation: "The name misleads. On GitHub a pull request is an issue with code attached, and the REST list of issues returns both."
+      - text: "30, because that is the page size"
+        explanation: "30 is the most items one page holds, not the number you get. With 5 items in the list, the page holds 5."
+      - text: "An error, because {owner} and {repo} were not filled in"
+        explanation: "gh fills in both placeholders itself, from the origin remote of the folder you are in."
+
+  - question: "A script counts the open issues of a big project with gh api \"repos/{owner}/{repo}/issues\" --jq length. It always reports 30, although the website shows 212. What is wrong?"
+    answers:
+      - text: "The API answers one page of 30 items at a time; the script needs --paginate, or it reads only the first page"
+        correct: true
+        explanation: "Without --paginate, gh makes one request and gets one page. With it, gh keeps asking for the next page until none is left. --jq then runs on each page separately, so print one line per issue and count the lines."
+      - text: "The script hit the rate limit after 30 requests"
+        explanation: "It made one request, not 30. A rate limit also gives an error (HTTP 403 or 429), not a smaller list."
+      - text: "The token is missing, so only public issues are counted"
+        explanation: "gh sends its token on every request. A missing token gives an error on private data, not a list cut at 30."
+
+  - question: "A teammate wants a nightly script on the build server that labels stale issues. They ask you to paste your personal access token into the script and commit it, \"so it just works\". What do you answer?"
+    answers:
+      - text: "No: a token in a file is a password in a file. The script should call gh, or read the token from an environment variable or the server's secret store"
+        correct: true
+        explanation: "Anyone who can read the repository could then act as you, and the commit keeps the token forever. gh reads a token from the GH_TOKEN environment variable, and GitHub Actions hands each run its own short-lived token."
+      - text: "Fine, as long as the repository is private"
+        explanation: "Private repositories get cloned, forked, backed up and made public later. A committed token must be treated as leaked and replaced."
+      - text: "Fine, if the token is deleted from the file in a later commit"
+        explanation: "The old commit still holds it, and anyone with a clone can read it. Deleting a line does not remove it from the history."
+      - text: "No: scripts cannot use the API at all without a browser"
+        explanation: "They can. A token is exactly how a script proves who it is; the question is only where the token is kept."
+
+  - question: "Your team wants a message in the chat room each time someone opens a pull request. Which tool fits?"
+    answers:
+      - text: "A webhook for the pull_request event: GitHub sends your service a request the moment it happens"
+        correct: true
+        explanation: "A webhook is GitHub calling you. Your service does nothing until an event arrives, and it checks the signature made with the webhook's secret before it trusts the payload."
+      - text: "A script that runs gh pr list every five seconds"
+        explanation: "That is polling: it spends your rate limit on answers that are almost always \"nothing new\", and it is still up to five seconds late."
+      - text: "gh alias set"
+        explanation: "An alias is a short name for a gh command you type yourself. It does not react to events on GitHub."

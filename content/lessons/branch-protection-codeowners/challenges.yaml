@@ -1,0 +1,141 @@
+challenges:
+  - id: docs-owners
+    title: Give the docs folder an owner
+    level: easy
+    brief: "The cafe guide keeps its pages in docs/, and the docs team should be asked to review every change there. Add a CODEOWNERS file in the .github folder that gives everything under /docs/ to the team @cafe/docs-team, commit it with CODEOWNERS in the message, and push it to main on GitHub. (@cafe/docs-team is a made-up team: the file's syntax is what counts here.)"
+    github:
+      repo: gitremastered-practice-branch-protection-codeowners
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Cafe guide" > README.md
+      - mkdir docs
+      - echo "Open 8 to 18, closed on Mondays" > docs/hours.md
+      - echo "Espresso, flat white, mint tea" > docs/menu.md
+      - git add README.md docs
+      - git commit -q -m "Add README and docs"
+      - git remote add origin "$PRACTICE_GITHUB_URL"
+      - git push -q --force --mirror origin
+      - git fetch -q origin
+      - git branch -q --set-upstream-to=origin/main main
+    goal:
+      - check: committed-file-contains
+        file: .github/CODEOWNERS
+        text: "/docs/"
+        label: "The latest commit has .github/CODEOWNERS with a rule for /docs/"
+      - check: committed-file-contains
+        file: .github/CODEOWNERS
+        text: "@cafe/docs-team"
+        label: "The rule names @cafe/docs-team as the owner"
+      - check: branch-contains-commit
+        branch: origin/main
+        message: "CODEOWNERS"
+        label: "A commit with CODEOWNERS in its message is on GitHub's main"
+      - check: branch-is-in-sync
+        branch: main
+        label: "main is level with origin/main"
+    hints:
+      - "A CODEOWNERS line is a path pattern, a space, then one or more owners. Which pattern means \"everything inside the docs folder at the top of the repository\"?"
+      - "The file is named CODEOWNERS, in capitals and with no extension, and here it lives in a folder named .github. The line you need is: /docs/ @cafe/docs-team"
+      - "Run: mkdir .github, then echo \"/docs/ @cafe/docs-team\" > .github/CODEOWNERS, then git add .github/CODEOWNERS, git commit -m \"Add CODEOWNERS for the docs\" and git push."
+    solution:
+      - mkdir .github
+      - echo "/docs/ @cafe/docs-team" > .github/CODEOWNERS
+      - git add .github/CODEOWNERS
+      - git commit -q -m "Add CODEOWNERS for the docs"
+      - git push -q
+
+  - id: protect-main
+    title: Protect main with a ruleset
+    level: medium
+    brief: "Last week someone pushed a half-finished page straight to main. From now on, every change to the cafe guide's main branch must arrive through a pull request, and nobody may delete main. The file ruleset.json in your project is a ruleset with no rules yet. Add the two rules to it, then create the ruleset on GitHub with gh api."
+    github:
+      repo: gitremastered-practice-branch-protection-codeowners
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Cafe guide" > README.md
+      - echo "Open 8 to 18, closed on Mondays" > hours.md
+      - git add README.md hours.md
+      - git commit -q -m "Add README and opening hours"
+      - git remote add origin "$PRACTICE_GITHUB_URL"
+      - git push -q --force --mirror origin
+      - git fetch -q origin
+      - git branch -q --set-upstream-to=origin/main main
+      - echo ruleset.json >> .git/info/exclude
+      - >-
+        printf '%s\n' '{' '  "name": "protect-main",' '  "target": "branch",' '  "enforcement": "active",' '  "conditions": {"ref_name": {"include": ["~DEFAULT_BRANCH"], "exclude": []}},' '  "rules": []' '}' > ruleset.json
+    goal:
+      - check: github-default-branch-has-rule
+        rule: pull_request
+        label: "On GitHub, main requires a pull request"
+      - check: github-default-branch-has-rule
+        rule: deletion
+        label: "On GitHub, main cannot be deleted"
+    hints:
+      - "Open ruleset.json. The list after \"rules\" is empty. Each rule is an object with a \"type\"; the lesson's table of common rules gives the type names."
+      - "The two types are deletion and pull_request. Neither needs anything more: a pull_request rule with no \"parameters\" asks for a pull request and for no approvals, which is what you want when you work alone."
+      - "Make the rules line read \"rules\": [{\"type\": \"deletion\"}, {\"type\": \"pull_request\"}] and save the file. Then run: gh api -X POST repos/{owner}/{repo}/rulesets --input ruleset.json"
+    solution:
+      - >-
+        printf '%s\n' '{"name": "protect-main", "target": "branch", "enforcement": "active", "conditions": {"ref_name": {"include": ["~DEFAULT_BRANCH"], "exclude": []}}, "rules": [{"type": "deletion"}, {"type": "pull_request"}]}' > ruleset.json
+      - gh api -X POST repos/{owner}/{repo}/rulesets --input ruleset.json --silent
+
+  - id: blocked-push
+    title: Get a blocked commit into main
+    level: hard
+    brief: "You committed the weekend hours on main, as you always did. Today the team turns on the ruleset in ruleset.json: main accepts changes only through a pull request. Create the ruleset on GitHub, then get your commit \"Add weekend hours\" into GitHub's main the way the rule allows: from a branch named weekend-hours, through a pull request that you merge. Finish on main, level with origin/main."
+    github:
+      repo: gitremastered-practice-branch-protection-codeowners
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - git config pull.rebase false
+      - echo "# Cafe guide" > README.md
+      - echo "Open 8 to 18, closed on Mondays" > hours.md
+      - git add README.md hours.md
+      - git commit -q -m "Add README and opening hours"
+      - git remote add origin "$PRACTICE_GITHUB_URL"
+      - git push -q --force --mirror origin
+      - git fetch -q origin
+      - git branch -q --set-upstream-to=origin/main main
+      - echo ruleset.json >> .git/info/exclude
+      - >-
+        printf '%s\n' '{' '  "name": "protect-main",' '  "target": "branch",' '  "enforcement": "active",' '  "conditions": {"ref_name": {"include": ["~DEFAULT_BRANCH"], "exclude": []}},' '  "rules": [' '    {"type": "deletion"},' '    {"type": "non_fast_forward"},' '    {"type": "pull_request", "parameters": {"required_approving_review_count": 0, "dismiss_stale_reviews_on_push": false, "require_code_owner_review": false, "require_last_push_approval": false, "required_review_thread_resolution": false}}' '  ]' '}' > ruleset.json
+      - echo "Saturday and Sunday 9 to 14" >> hours.md
+      - git commit -q -am "Add weekend hours"
+    goal:
+      - check: github-default-branch-has-rule
+        rule: pull_request
+        label: "On GitHub, main requires a pull request"
+      - check: github-pull-request-is-merged
+        head: weekend-hours
+        label: "A pull request from weekend-hours is merged"
+      - check: branch-contains-commit
+        branch: origin/main
+        message: "Add weekend hours"
+        label: "GitHub's main has your commit \"Add weekend hours\""
+      - check: head-is-on-branch
+        branch: main
+        label: "You are on main"
+      - check: branch-is-in-sync
+        branch: main
+        label: "main is level with origin/main"
+    hints:
+      - "Create the ruleset first (the lesson's part \"Create a ruleset from the terminal\" has the command), then try git push and read the lines that start with \"remote:\". They say which rule stopped you."
+      - "Your commit is fine; only its road is closed. A branch is a pointer, so a new branch made right here points at the same commit. Push that branch, open a pull request from it and merge it. \"When it goes wrong\" and \"Under the hood\" in the lesson walk through this."
+      - "Run: gh api -X POST repos/{owner}/{repo}/rulesets --input ruleset.json, then git switch -c weekend-hours, git push -u origin weekend-hours, gh pr create --fill --base main, gh pr merge --merge, and last git switch main and git pull."
+    solution:
+      - gh api -X POST repos/{owner}/{repo}/rulesets --input ruleset.json --silent
+      - git switch -q -c weekend-hours
+      - git push -q -u origin weekend-hours
+      - gh pr create --fill --base main --head weekend-hours
+      - gh pr merge weekend-hours --merge
+      - git switch -q main
+      - git pull -q

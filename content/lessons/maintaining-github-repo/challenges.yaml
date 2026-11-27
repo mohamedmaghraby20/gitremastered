@@ -1,0 +1,205 @@
+challenges:
+  - id: welcome-contributors
+    title: Tell contributors how to help
+    level: easy
+    brief: "Your recipe box is public on GitHub, and strangers have started to send changes that skip the project's check. Add a CONTRIBUTING.md file that tells them to run sh check.sh first, and a pull request template at .github/pull_request_template.md. Commit both and push them to GitHub."
+    github:
+      repo: gitremastered-practice-maintaining-github-repo
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - git config pull.rebase false
+      - echo "# Recipe box" > README.md
+      - echo "Quick recipes from the neighbourhood. One line per recipe, with its cooking time." >> README.md
+      - echo "Pancakes (20 min)" > recipes.txt
+      - echo "Fried rice (15 min)" >> recipes.txt
+      - echo 'if grep -v "min)$" recipes.txt; then echo "FAIL. These recipes have no cooking time."; exit 1; fi' > check.sh
+      - echo 'echo "OK. Every recipe has a cooking time."' >> check.sh
+      - git add README.md recipes.txt check.sh
+      - git commit -q -m "Add README, two recipes and the check"
+      - git remote add origin "$PRACTICE_GITHUB_URL"
+      - git push -q --force --mirror origin
+      - git fetch -q origin
+      - git branch -q --set-upstream-to=origin/main main
+    goal:
+      - check: file-is-committed
+        file: CONTRIBUTING.md
+        label: "CONTRIBUTING.md is in your latest commit"
+      - check: committed-file-contains
+        file: CONTRIBUTING.md
+        text: "check.sh"
+        label: "CONTRIBUTING.md names the check, check.sh"
+      - check: file-is-committed
+        file: .github/pull_request_template.md
+        label: "The pull request template is committed in the .github folder"
+      - check: branch-is-in-sync
+        branch: main
+        label: "main is pushed: level with origin/main"
+    hints:
+      - "GitHub looks for these files by name. CONTRIBUTING.md goes in the top folder; the template goes in a folder named .github. Which command makes a folder?"
+      - "Write the files with your editor or with echo, for example: echo \"Run sh check.sh before you open a pull request.\" > CONTRIBUTING.md. Then stage both, commit, and push. Run git status at the end: it must say your branch is up to date with 'origin/main'."
+      - "Run: echo \"Run sh check.sh before you open a pull request.\" > CONTRIBUTING.md, then mkdir .github, then echo \"What does this change, and did sh check.sh pass?\" > .github/pull_request_template.md, then git add CONTRIBUTING.md .github, then git commit -m \"Add contributing guide and pull request template\", then git push"
+    solution:
+      - echo "Run sh check.sh before you open a pull request." > CONTRIBUTING.md
+      - mkdir .github
+      - echo "What does this change, and did sh check.sh pass?" > .github/pull_request_template.md
+      - git add CONTRIBUTING.md .github
+      - git commit -q -m "Add contributing guide and pull request template"
+      - git push -q
+
+  - id: test-a-pull-request
+    title: Try a contributor's pull request before you merge it
+    level: medium
+    brief: "Lina opened a pull request that adds a lentil soup to your recipe box. Do not merge it blind. Find its number, fetch it by its pull request ref into a local branch named pr-review, and run sh check.sh there. The check passes, so merge the pull request on GitHub, then bring main up to date on your computer."
+    github:
+      repo: gitremastered-practice-maintaining-github-repo
+      teammate:
+        - action: open-pull-request
+          head: add-lentil-soup
+          base: main
+          title: "Add lentil soup"
+          body: "A quick soup for cold days. I ran sh check.sh and it passes."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - git config pull.rebase false
+      - echo "# Recipe box" > README.md
+      - echo "Quick recipes from the neighbourhood. One line per recipe, with its cooking time." >> README.md
+      - echo "Pancakes (20 min)" > recipes.txt
+      - echo "Fried rice (15 min)" >> recipes.txt
+      - echo 'if grep -v "min)$" recipes.txt; then echo "FAIL. These recipes have no cooking time."; exit 1; fi' > check.sh
+      - echo 'echo "OK. Every recipe has a cooking time."' >> check.sh
+      - echo "Run sh check.sh before you open a pull request." > CONTRIBUTING.md
+      - git add README.md recipes.txt check.sh CONTRIBUTING.md
+      - git commit -q -m "Add README, two recipes and the check"
+      - git remote add origin "$PRACTICE_GITHUB_URL"
+      - git push -q --force --mirror origin
+      - git fetch -q origin
+      - git branch -q --set-upstream-to=origin/main main
+      # Lina, a contributor, pushes a branch. The teammate step then opens her pull request.
+      - git clone -q -c core.autocrlf=false "$PRACTICE_GITHUB_URL" ../teammate
+      - git -C ../teammate config user.name "Lina (contributor)"
+      - git -C ../teammate config user.email "lina@example.com"
+      - git -C ../teammate switch -q -c add-lentil-soup
+      - echo "Lentil soup (35 min)" >> ../teammate/recipes.txt
+      - git -C ../teammate commit -q -am "Add lentil soup"
+      - git -C ../teammate push -q -u origin add-lentil-soup
+    goal:
+      - check: branch-exists
+        branch: pr-review
+        label: "A local branch pr-review exists"
+      - check: branch-is-at-commit
+        branch: pr-review
+        message: "Add lentil soup"
+        label: "pr-review holds Lina's commit \"Add lentil soup\""
+      - check: github-pull-request-is-merged
+        head: add-lentil-soup
+        label: "Lina's pull request is merged on GitHub"
+      - check: branch-contains-commit
+        branch: main
+        message: "Add lentil soup"
+        label: "Your local main has Lina's commit"
+      - check: branch-is-in-sync
+        branch: main
+        label: "main is level with origin/main"
+    hints:
+      - "Every pull request has a number, and GitHub keeps a ref for it on the server. gh pr list shows the number. Which ref name is built from it?"
+      - "The ref is refs/pull/<number>/head, and git fetch can copy it into a local branch: git fetch origin pull/<number>/head:pr-review. Switch to pr-review, run sh check.sh, and switch back to main. Merging on GitHub is gh pr merge; after it, your local main is one pull behind."
+      - "Run: gh pr list (read the number, say 7), then git fetch origin pull/7/head:pr-review, then git switch pr-review, then sh check.sh, then git switch main, then gh pr merge 7 --merge, then git pull"
+    solution:
+      - git fetch -q origin "pull/$(gh pr list --head add-lentil-soup --json number --jq '.[0].number')/head:pr-review"
+      - git switch -q pr-review
+      - sh check.sh
+      - git switch -q main
+      - gh pr merge add-lentil-soup --merge
+      - git pull -q
+
+  - id: merge-one-close-one
+    title: "Two pull requests: merge one, turn one down"
+    level: hard
+    brief: "Two pull requests wait on your recipe box: Sana's adds an iced tea, Yusuf's adds a bean chili. CONTRIBUTING.md says every change must pass sh check.sh. Test both without merging anything on your computer. Merge the one that passes on GitHub. Close the other one with a comment that tells its author why, then bring your main up to date."
+    github:
+      repo: gitremastered-practice-maintaining-github-repo
+      teammate:
+        - action: open-pull-request
+          head: add-iced-tea
+          base: main
+          title: "Add iced tea"
+          body: "Perfect for summer."
+        - action: open-pull-request
+          head: add-bean-chili
+          base: main
+          title: "Add bean chili"
+          body: "Slow, but worth it."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - git config pull.rebase false
+      - echo "# Recipe box" > README.md
+      - echo "Quick recipes from the neighbourhood. One line per recipe, with its cooking time." >> README.md
+      - echo "Pancakes (20 min)" > recipes.txt
+      - echo "Fried rice (15 min)" >> recipes.txt
+      - echo 'if grep -v "min)$" recipes.txt; then echo "FAIL. These recipes have no cooking time."; exit 1; fi' > check.sh
+      - echo 'echo "OK. Every recipe has a cooking time."' >> check.sh
+      - echo "Run sh check.sh before you open a pull request." > CONTRIBUTING.md
+      - git add README.md recipes.txt check.sh CONTRIBUTING.md
+      - git commit -q -m "Add README, two recipes and the check"
+      - git remote add origin "$PRACTICE_GITHUB_URL"
+      - git push -q --force --mirror origin
+      - git fetch -q origin
+      - git branch -q --set-upstream-to=origin/main main
+      # Two contributors push a branch each. The teammate steps then open their pull requests.
+      - git clone -q -c core.autocrlf=false "$PRACTICE_GITHUB_URL" ../teammate
+      - git -C ../teammate config user.name "Yusuf (contributor)"
+      - git -C ../teammate config user.email "yusuf@example.com"
+      - git -C ../teammate switch -q -c add-bean-chili
+      - echo "Bean chili (45 min)" >> ../teammate/recipes.txt
+      - git -C ../teammate commit -q -am "Add bean chili"
+      - git -C ../teammate push -q -u origin add-bean-chili
+      - git -C ../teammate config user.name "Sana (contributor)"
+      - git -C ../teammate config user.email "sana@example.com"
+      - git -C ../teammate switch -q -c add-iced-tea main
+      - echo "Iced tea" >> ../teammate/recipes.txt
+      - git -C ../teammate commit -q -am "Add iced tea"
+      - git -C ../teammate push -q -u origin add-iced-tea
+    goal:
+      - check: github-pull-request-is-merged
+        head: add-bean-chili
+        label: "The pull request that passes the check is merged on GitHub"
+      - check: github-pull-request-is-closed
+        head: add-iced-tea
+        label: "The pull request that fails the check is closed without merging"
+      - check: github-pull-request-has-comment
+        head: add-iced-tea
+        label: "The closed pull request has a comment that explains why"
+      - check: branch-contains-commit
+        branch: main
+        message: "Add bean chili"
+        label: "Your local main has the merged recipe"
+      - check: branch-lacks-commit
+        branch: main
+        message: "Add iced tea"
+        label: "Your local main does not have the failing recipe"
+      - check: branch-is-in-sync
+        branch: main
+        label: "main is level with origin/main"
+    hints:
+      - "You cannot tell which one fails from the titles. Get each pull request's commits onto your computer in a branch of its own, and run sh check.sh there. Under the hood shows the ref GitHub keeps for each pull request."
+      - "gh pr list gives the two numbers. git fetch origin pull/<number>/head:<branch> copies one pull request into a local branch without touching main. After the tests: gh pr merge for the good one, gh pr close with --comment for the other, then git pull on main."
+      - "Run: gh pr list (say iced tea is 8 and bean chili is 9), then git fetch origin pull/8/head:pr-tea pull/9/head:pr-chili, then git switch pr-tea and sh check.sh (FAIL), then git switch pr-chili and sh check.sh (OK), then git switch main, then gh pr merge 9 --merge, then gh pr close 8 --comment \"Thanks! sh check.sh fails: the iced tea has no cooking time. Please add one and open a new pull request.\", then git pull"
+    solution:
+      - git fetch -q origin "pull/$(gh pr list --head add-bean-chili --json number --jq '.[0].number')/head:pr-chili" "pull/$(gh pr list --head add-iced-tea --json number --jq '.[0].number')/head:pr-tea"
+      - git switch -q pr-chili
+      - sh check.sh
+      - git switch -q pr-tea
+      - sh check.sh || true
+      - git switch -q main
+      - gh pr merge add-bean-chili --merge
+      - gh pr close add-iced-tea --comment "Thanks! sh check.sh fails because the iced tea has no cooking time. Please add one and open a new pull request."
+      - git pull -q

@@ -1,0 +1,161 @@
+challenges:
+  - id: count-open-issues
+    title: Count the open issues
+    level: easy
+    brief: "Your team lead asks before the stand-up: how many issues are open on the trail-map repository right now? Find out from the terminal, without opening the website, and write the number into answer.txt."
+    github:
+      repo: gitremastered-practice-gh-cli-and-api
+      teammate:
+        - action: create-issue
+          title: "Ridge walk distance is wrong"
+          body: "The list says 12 km. The sign at the car park says 14 km."
+          labels: [bug]
+        - action: create-issue
+          title: "Add the lake loop"
+          body: "A flat 5 km walk around the lake. Good for families."
+          labels: [enhancement]
+        - action: create-issue
+          title: "Map legend is missing"
+          body: "Nobody can tell what the dotted lines mean."
+          labels: [bug]
+        - action: create-issue
+          title: "Ridge walk shows the wrong distance"
+          body: "12 km cannot be right."
+          labels: [duplicate]
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo answer.txt >> .git/info/exclude
+      - echo "# Trail map" > README.md
+      - echo "Ridge walk, 12 km" > trails.txt
+      - echo "Forest path, 6 km" >> trails.txt
+      - git add README.md trails.txt
+      - git commit -q -m "Add README and trail list"
+      - git remote add origin "$PRACTICE_GITHUB_URL"
+      - git push -q --force --mirror origin
+    goal:
+      - check: answer-is
+        answer: "4"
+        label: "answer.txt holds the number of open issues"
+    hints:
+      - "One everyday gh command lists the open issues of the repository your folder points at. Count its rows."
+      - "To get a number and nothing else, ask the API for the list and let --jq count it: the jq word for \"how many items\" is length."
+      - "Run: gh issue list, count the rows, then echo 4 > answer.txt. Or in one line: gh api \"repos/{owner}/{repo}/issues\" --jq length > answer.txt"
+    solution:
+      - gh issue list --json number --jq length > answer.txt
+
+  - id: file-a-bug-with-the-api
+    title: File a bug through the API
+    level: medium
+    brief: "A walker reports that the coast path is closed in winter, and the trail list does not say so. File it as an issue titled \"Coast path is closed in winter\" with the label bug. Use gh api with a POST request, the way a script would, not gh issue create."
+    github:
+      repo: gitremastered-practice-gh-cli-and-api
+      teammate:
+        - action: create-issue
+          title: "Ridge walk distance is wrong"
+          body: "The list says 12 km. The sign at the car park says 14 km."
+          labels: [bug]
+        - action: create-issue
+          title: "Add the lake loop"
+          body: "A flat 5 km walk around the lake. Good for families."
+          labels: [enhancement]
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Trail map" > README.md
+      - echo "Ridge walk, 12 km" > trails.txt
+      - echo "Forest path, 6 km" >> trails.txt
+      - echo "Coast path, 9 km" >> trails.txt
+      - git add README.md trails.txt
+      - git commit -q -m "Add README and trail list"
+      - git remote add origin "$PRACTICE_GITHUB_URL"
+      - git push -q --force --mirror origin
+    goal:
+      - check: github-issue-exists
+        title: "Coast path is closed in winter"
+        label: "An issue titled \"Coast path is closed in winter\" exists on GitHub"
+      - check: github-issue-has-label
+        title: "Coast path is closed in winter"
+        labelName: bug
+        label: "The issue has the label bug"
+    hints:
+      - "Creating something is a POST request to the list it will join. Which endpoint lists the issues of a repository?"
+      - "Each -f adds one field to the request. The title is a plain field. labels is a list, and a list field is written with [] after its name."
+      - "Run: gh api -X POST \"repos/{owner}/{repo}/issues\" -f title=\"Coast path is closed in winter\" -f \"labels[]=bug\""
+    solution:
+      - gh api -X POST "repos/{owner}/{repo}/issues" -f title="Coast path is closed in winter" -f "labels[]=bug" --silent
+
+  - id: close-the-duplicates
+    title: Close every duplicate, then report
+    level: hard
+    brief: "Triage day. Close every open issue that carries the label duplicate, with one small loop around gh api (not one by one by hand), and leave every other issue open. Then report: write the number of issues that are still open into answer.txt. A pull request is open too, and a pull request is not an issue."
+    github:
+      repo: gitremastered-practice-gh-cli-and-api
+      teammate:
+        - action: create-issue
+          title: "Ridge walk distance is wrong"
+          body: "The list says 12 km. The sign at the car park says 14 km."
+          labels: [bug]
+        - action: create-issue
+          title: "Add the lake loop"
+          body: "A flat 5 km walk around the lake. Good for families."
+          labels: [enhancement]
+        - action: create-issue
+          title: "Map legend is missing"
+          body: "Nobody can tell what the dotted lines mean."
+          labels: [bug]
+        - action: create-issue
+          title: "Wrong distance for the ridge walk"
+          body: "12 km cannot be right."
+          labels: [duplicate]
+        - action: create-issue
+          title: "No legend on the map"
+          body: "What do the dotted lines mean?"
+          labels: [duplicate]
+        - action: open-pull-request
+          head: add-lake-loop
+          base: main
+          title: "Add the lake loop to the trail list"
+          body: "Adds the 5 km lake loop."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo answer.txt >> .git/info/exclude
+      - echo "# Trail map" > README.md
+      - echo "Ridge walk, 12 km" > trails.txt
+      - echo "Forest path, 6 km" >> trails.txt
+      - git add README.md trails.txt
+      - git commit -q -m "Add README and trail list"
+      - git switch -q -c add-lake-loop
+      - echo "Lake loop, 5 km" >> trails.txt
+      - git commit -q -am "Add the lake loop"
+      - git switch -q main
+      - git remote add origin "$PRACTICE_GITHUB_URL"
+      - git push -q --force --mirror origin
+    goal:
+      - check: github-issue-is-closed
+        title: "Wrong distance for the ridge walk"
+        label: "The duplicate \"Wrong distance for the ridge walk\" is closed"
+      - check: github-issue-is-closed
+        title: "No legend on the map"
+        label: "The duplicate \"No legend on the map\" is closed"
+      - check: github-issue-exists
+        title: "Ridge walk distance is wrong"
+        label: "The issue \"Ridge walk distance is wrong\" is still there"
+      - check: answer-is
+        answer: "3"
+        label: "answer.txt holds the number of issues that are still open"
+    hints:
+      - "Two steps. First get the numbers of the issues labelled duplicate, one per line. Then send one request per number that changes that issue's state."
+      - "gh issue list --json number,labels gives each open issue with its labels as JSON, and --jq can keep the ones you want: select(.labels[].name == \"duplicate\"), the same select as in \"Pull requests hide in the issues list\". Changing an existing issue is a PATCH request to repos/{owner}/{repo}/issues/NUMBER with the field state=closed."
+      - "For the count: the REST list of issues also holds pull requests (see \"Pull requests hide in the issues list\"). gh issue list leaves them out, and so does the GraphQL field issues(states: OPEN) { totalCount } from the Advanced part."
+      - "Run: for number in $(gh issue list --json number,labels --jq '.[] | select(.labels[].name == \"duplicate\") | .number'); do gh api -X PATCH \"repos/{owner}/{repo}/issues/$number\" -f state=closed --silent; done   Then: gh issue list --json number --jq length > answer.txt"
+    solution:
+      - for number in $(gh issue list --json number,labels --jq '.[] | select(.labels[].name == "duplicate") | .number'); do gh api -X PATCH "repos/{owner}/{repo}/issues/$number" -f state=closed -f state_reason=duplicate --silent; done
+      - "gh api graphql -f query='query($owner: String!, $name: String!) { repository(owner: $owner, name: $name) { issues(states: OPEN) { totalCount } } }' -F owner='{owner}' -F name='{repo}' --jq '.data.repository.issues.totalCount' > answer.txt"
