@@ -15,8 +15,9 @@ use tauri_plugin_dialog::{DialogExt, MessageDialogButtons, MessageDialogKind};
 use super::practice::app_data_folder;
 use crate::github::connection::{read_connection, require_login};
 use crate::github::consent::{consent_dialog_text, has_consent, remove_consent, save_consent};
+use crate::github::gh_command::run_gh;
 use crate::github::practice_repo::{PracticeRepo, is_practice_name};
-use crate::github::repo_writes::{delete_repository, read_api};
+use crate::github::repo_writes::delete_repository;
 use crate::github::state::read_state;
 use crate::models::github::{GitHubConnection, GitHubState};
 
@@ -150,14 +151,21 @@ fn ask_before_deleting<R: Runtime>(app: &AppHandle<R>, names: &[String]) -> bool
 ///
 /// Inputs: none. Output: the names, sorted.
 fn list_practice_names() -> Result<Vec<String>, String> {
-    let listing = read_api("user/repos?affiliation=owner&per_page=100")?;
+    // Every page, not only the first 100 repositories (code review finding 9): gh follows
+    // the pages and prints one name per line.
+    let arguments = [
+        "api",
+        "--paginate",
+        "user/repos?affiliation=owner&per_page=100",
+        "--jq",
+        ".[].name",
+    ];
+    let listing = run_gh(&arguments, None).map_err(|error| error.to_string())?;
     let mut names: Vec<String> = listing
-        .as_array()
-        .cloned()
-        .unwrap_or_default()
-        .iter()
-        .filter_map(|repo| repo["name"].as_str().map(str::to_string))
+        .lines()
+        .map(str::trim)
         .filter(|name| is_practice_name(name))
+        .map(str::to_string)
         .collect();
     names.sort();
     Ok(names)

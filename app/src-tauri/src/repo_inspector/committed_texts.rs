@@ -52,8 +52,9 @@ pub fn read_committed_texts(
 
 /// Tells whether Git may convert line ends in this repository, so a file on disk can differ
 /// from the commit with nothing pending: a `.gitattributes` file at the top, or a local
-/// `core.autocrlf` other than `false` in `.git/config`. (A global setting is not looked at:
-/// practice setups set `core.autocrlf false` locally.)
+/// `core.autocrlf` other than `false` in `.git/config`. A global or system setting (Git for
+/// Windows sets `core.autocrlf true` system-wide) is not looked at; then the disk text is used,
+/// which differs only in line ends, and the goal checks compare line ends as equal anyway.
 ///
 /// Input: the repository's top folder. Output: true when the disk cannot be trusted.
 fn may_convert_line_ends(repo_folder: &Path) -> bool {
