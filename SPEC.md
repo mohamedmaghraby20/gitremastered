@@ -95,7 +95,7 @@ Events (core announces, screens react):
 | `repo_changed` | `RepoSnapshot` | stores → visualizer, mission-engine |
 | `terminal_exited` | session id, exit code | terminal-view |
 
-Changing this contract needs the user's approval (see Boundaries). The phase 6 commands were added under decision 11 in `tasks/todo.md`.
+Changing this contract needs the user's approval (see Boundaries). The GitHub commands were added in phase 6.
 
 ### 3.4 Shared data shapes
 
@@ -329,7 +329,7 @@ tools/                         content checks: content:check, lesson:check, less
 scripts/                       design tokens, student driver (drives the built app)
 tests/missions/                runs every mission's setup + solution against real Git
 tests/github/                  runs every GitHub challenge against a real account
-content/  docs/  vendor/progit2/  tasks/  (see README)
+content/  docs/  vendor/progit2/  (see README)
 ```
 
 Code imports the engine by package name, for example `@gitremastered/course-engine/content/load-lessons`.

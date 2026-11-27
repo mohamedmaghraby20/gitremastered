@@ -52,3 +52,9 @@ desktop.ini
 
 # macOS folder settings.
 .DS_Store
+
+# --- Local work notes ---
+
+# Plans, todo lists and briefs used while building the app (the /plan and /build commands read them).
+# Kept on the maintainer's disk only; contributors plan with GitHub issues instead.
+tasks/

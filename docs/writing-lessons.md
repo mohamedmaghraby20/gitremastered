@@ -219,7 +219,7 @@ Every goal has a `check`, a `label` (the sentence in the checklist) and the extr
 | `github-default-branch-has-rule` | `rule` | A rule of that type protects the default branch, like `pull_request` or `deletion` |
 | `github-workflow-succeeded` / `github-workflow-failed` | `workflow` | A run of the workflow with that `name:` finished with success, or failure |
 
-**GitHub challenges.** A challenge that runs on the student's own GitHub account (see "Phase 6 decisions" in `tasks/todo.md`) adds a `github` field:
+**GitHub challenges.** A challenge that runs on the student's own GitHub account adds a `github` field:
 
 ```yaml
     github:

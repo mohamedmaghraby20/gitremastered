@@ -60,7 +60,7 @@ At the release, each idea becomes a GitHub issue labelled `idea` or `after-1.0`,
 
 ## F5. Repository docs cleanup
 
-- **Problem:** work notes (`tasks/`) and some documents in `docs/` were written for building the app, not for contributors.
+- **Problem:** some documents were written for building the app, not for contributors. The work notes in `tasks/` are already local only (git-ignored).
 - **Why later:** the slash commands and helper agents still read them during development (`/plan` and `/build` use `tasks/`, `/spec` uses `SPEC.md`). Moving them now would break that workflow.
 - **Idea, once development settles:**
   - Fold the lesson rules from the phase briefs into `docs/writing-lessons.md` and the `lesson-writer` agent.
