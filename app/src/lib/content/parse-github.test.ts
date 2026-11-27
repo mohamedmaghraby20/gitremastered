@@ -85,7 +85,7 @@ describe('checkGitHubLines against the bypasses found in the security audit', ()
 
 	it('refuses gh in any form and any letter case in setup lines', () => {
 		for (const line of [
-			'\gh repo delete x --yes',
+			'\\gh repo delete x --yes',
 			'"gh" api user',
 			'x; GH api user',
 			'git clone https://GitHub.com/a/b'

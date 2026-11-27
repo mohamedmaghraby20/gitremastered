@@ -177,17 +177,17 @@ Decisions made 2026-11-27 (todo.md, "Phase 6 decisions"). Run in one go; you rev
 - [x] Task 86: GitHub state and goal checks
 - [x] Task 87: Connect GitHub: guided setup, consent, clean-up
 - [x] Task 88: GitHub challenges tested against the real account
-- [ ] Task 89: Lesson `github-account-ssh`
+- [x] Task 89: Lesson `github-account-ssh`
 
 **Wave C: GitHub lessons**
-- [ ] Task 90: Module 5 GitHub part and `force-push-safely`
-- [ ] Task 91: The GitHub-release half of `tags-and-releases`
-- [ ] Task 92: Module 8, Professional GitHub (6 lessons)
+- [x] Task 90: Module 5 GitHub part and `force-push-safely`
+- [x] Task 91: The GitHub-release half of `tags-and-releases`
+- [x] Task 92: Module 8, Professional GitHub (6 lessons)
 - [ ] Task 93: Wave C checkpoints, paths, glossary and links
 
 **Wave D: capstones**
-- [ ] Task 94: `capstone-solo-rescue`
-- [ ] Task 95: `capstone-team-release`, `capstone-open-source`
+- [x] Task 94: `capstone-solo-rescue`
+- [x] Task 95: `capstone-team-release`, `capstone-open-source`
 - [ ] Task 96: Finish phase 6: measure, review, push
 
 ### Checkpoint G: Full course
