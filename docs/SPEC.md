@@ -27,11 +27,11 @@ A free, open-source desktop app that turns Pro Git into an interactive course. E
 | Git | The student's own installed Git; course targets the latest Git at release |
 | Visualizer | Svelte Flow, with our own lane layout (`lane-layout.ts`; ELK was replaced in phase 5) |
 | Lesson text | Markdown with frontmatter |
-| Missions, quizzes, paths | YAML |
+| Challenges, quizzes, paths | YAML |
 | Search | Own small in-memory index over the loaded content (approved 2026-11-26, replaces Pagefind: our content is already in memory) |
 | Progress | Tauri store plugin (local JSON file) |
 | Styling | Tailwind CSS + shadcn-svelte; repeated looks as named classes via `@apply` |
-| Tests | Vitest (TypeScript), `cargo test` (Rust), mission tests against real Git |
+| Tests | Vitest (TypeScript), `cargo test` (Rust), challenge tests against real Git |
 | Code quality | ESLint + Prettier + `svelte-check`; Clippy + rustfmt |
 | Package manager | pnpm |
 | Updates | Tauri updater plugin |
@@ -44,7 +44,7 @@ A free, open-source desktop app that turns Pro Git into an interactive course. E
 
 | Layer | Job | Language | Rule |
 |---|---|---|---|
-| Content | Lessons, missions, quizzes, paths | Markdown + YAML | Holds no logic |
+| Content | Lessons, challenges, quizzes, paths | Markdown + YAML | Holds no logic |
 | Screens | Everything the student sees and clicks | Svelte + TypeScript | Never touches the file system or runs programs |
 | Core | Shell, Git, practice folders, watching for changes | Rust | Never draws anything |
 
@@ -52,10 +52,10 @@ A free, open-source desktop app that turns Pro Git into an interactive course. E
 
 | # | Module id | Job | Depends on | Layer |
 |---|---|---|---|---|
-| 1 | `content` | Load and validate lessons, missions, quizzes, paths, glossary | — | Screens (TS) |
+| 1 | `content` | Load and validate lessons, challenges, quizzes, paths, glossary | — | Screens (TS) |
 | 2 | `git-runner` | Open the real shell; create, reset and delete practice folders | — | Core |
 | 3 | `repo-inspector` | Watch the practice folder; build a `RepoSnapshot` with read-only Git commands | git-runner | Core |
-| 4 | `mission-engine` | Run mission setup; check goals against the snapshot; serve hints | content, git-runner, repo-inspector | Screens (TS) |
+| 4 | `challenges` | Run challenge setup; check goals against the snapshot; serve hints | content, git-runner, repo-inspector | Screens (TS) |
 | 5 | `lesson-reader` | Lesson page: three layers, recap card, book link | content | Screens |
 | 6 | `terminal-view` | xterm.js wired to the shell | git-runner | Screens |
 | 7 | `visualizer` | Draw the snapshot; animate changes | repo-inspector | Screens |
@@ -72,16 +72,16 @@ Commands (screen asks, core answers):
 
 | Command | Input | Output |
 |---|---|---|
-| `open_practice_repo` | `missionId`, setup steps | practice folder path (kept as the student left it; rebuilt when the setup steps changed) |
-| `find_practice_repo` | `missionId` | practice folder path, or null if never built |
-| `reset_practice_repo` | `missionId` | practice folder path |
+| `open_practice_repo` | `practiceId`, setup steps | practice folder path (kept as the student left it; rebuilt when the setup steps changed) |
+| `find_practice_repo` | `practiceId` | practice folder path, or null if never built |
+| `reset_practice_repo` | `practiceId` | practice folder path |
 | `start_terminal_session` | practice folder path | session id |
 | `send_terminal_input` | session id, text | nothing |
 | `resize_terminal` | session id, columns, rows | nothing |
 | `close_terminal_session` | session id | nothing (stops the shell; added in task 13) |
 | `get_repo_snapshot` | practice folder path | `RepoSnapshot` |
 | `open_practice_repo`, `reset_practice_repo` (phase 6) | also the challenge's `github` field, if any | as above; a GitHub challenge prepares its practice repository first, only with the consent Rust keeps |
-| `find_github_challenge_start` | `missionId` | when the GitHub attempt started (GitHub's clock), or null |
+| `find_github_challenge_start` | `practiceId` | when the GitHub attempt started (GitHub's clock), or null |
 | `get_github_connection` | none | `GitHubConnection` (gh installed, signed in, login, delete permission) |
 | `get_github_state` | practice repository name | `GitHubState` (branches, pull requests, issues, releases, rules, workflow runs) |
 | `get_github_consent`, `grant_github_consent`, `revoke_github_consent` | none | the consent; only Rust's own native dialog can grant it |
@@ -92,7 +92,7 @@ Events (core announces, screens react):
 | Event | Payload | Who listens |
 |---|---|---|
 | `terminal_output` | session id, text | terminal-view |
-| `repo_changed` | `RepoSnapshot` | stores → visualizer, mission-engine |
+| `repo_changed` | `RepoSnapshot` | stores → visualizer, challenges |
 | `terminal_exited` | session id, exit code | terminal-view |
 
 Changing this contract needs the user's approval (see Boundaries). The GitHub commands were added in phase 6.
@@ -158,11 +158,11 @@ Approved 2026-11-25 as version 1. Fields are added when a lesson needs them. Ver
 2. `git-runner` passes it to the real shell; real Git runs; output returns as `terminal_output`.
 3. `repo-inspector` sees the practice folder change (its files or `.git`), waits ~100 ms for it to settle, builds a `RepoSnapshot`, emits `repo_changed`.
 4. The event handler writes the snapshot into the `currentRepoSnapshot` store.
-5. `visualizer` redraws; `mission-engine` re-checks the goal.
+5. `visualizer` redraws; `challenges` re-checks the goal.
 
 ### 3.6 Practice folders
 
-- Location: the app's local data folder, `<app data>/practice/<missionId>/project`. The folder above it is the mission's workspace: a lesson about remotes builds a local "server" (`origin.git`) and a teammate's clone there, so it works offline. Reset deletes and rebuilds the whole workspace (phase 5).
+- Location: the app's local data folder, `<app data>/practice/<practiceId>/project`. The folder above it is the lesson's workspace: a lesson about remotes builds a local "server" (`origin.git`) and a teammate's clone there, so it works offline. Reset deletes and rebuilds the whole workspace (phase 5).
 - The app's own automatic Git commands only ever run inside a practice folder, never in the student's own projects.
 - Reset = delete the folder and run the active challenge's setup again. Starting another challenge builds the folder from that challenge's setup.
 
@@ -199,7 +199,7 @@ readFirst: [first-look-inside, start-a-repo]
 
 Inside sections, special blocks open with a line `:::name` and close with `:::`. Markdown inside: `try-it`, `careful`, `sidenote`. YAML inside: `definitions` (list of `term`, `text`, optional `area`: working, staging or repository) and `compare` (`today`, `book`). `bookUrl` must start with `https://git-scm.com/` or `https://docs.github.com/`, the only sites the app may open.
 
-`challenges.yaml` holds 3 or more challenges from easy to hard, each with `id`, `title`, `level` and the mission fields (brief, setup, goal, hints, solution); the content check fails with fewer than 3. Goal checks are declarative, read against the snapshot. Check kinds: `file-is-untracked`, `file-is-modified`, `file-is-staged`, `file-is-committed`, `file-is-not-committed` (each with `file`), `commit-count-at-least` (with `count`), `working-folder-clean`. Each goal has a `label` for the checklist.
+`challenges.yaml` holds 3 or more challenges from easy to hard, each with `id`, `title`, `level` and the challenge details (brief, setup, goal, hints, solution); the content check fails with fewer than 3. Goal checks are declarative, read against the snapshot. Check kinds: `file-is-untracked`, `file-is-modified`, `file-is-staged`, `file-is-committed`, `file-is-not-committed` (each with `file`), `commit-count-at-least` (with `count`), `working-folder-clean`. Each goal has a `label` for the checklist.
 
 ```yaml
 brief: "Save notes.txt in the repository."
@@ -298,7 +298,7 @@ apps/
     │   ├── routes/                pages: home, lessons/[lessonId], paths, glossary, search
     │   └── lib/
     │       ├── content/           the app's course loader (Vite reads content/ at build time)
-    │       ├── mission-engine/    the app's practice sessions (they call the Rust core)
+    │       ├── practice/      the app's practice sessions (they call the Rust core)
     │       ├── components/        lesson-reader, terminal-view, visualizer, quiz, ui …
     │       ├── stores/            shared stores (snapshot, progress)
     │       ├── tauri/             typed wrappers around every contract command and event
@@ -316,12 +316,12 @@ apps/
     │   ├── design-tokens/         builds src/lib/styles/tokens.css from docs/design/tokens.json
     │   └── review/                the review driver: plays the built app like a student
     └── tests/
-        ├── missions/              runs every mission's setup + solution against real Git
+        ├── challenges/              runs every challenge's setup + solution against real Git
         └── github/                runs every GitHub challenge against a real account
 packages/
 └── course-engine/                 no screens, no Tauri: shared by the apps
     ├── src/content/               module: content (parse and check lessons, paths, reference)
-    ├── src/mission-engine/        module: mission-engine (goal checks)
+    ├── src/challenges/        module: challenges (goal checks)
     ├── src/types/                 shared data shapes
     ├── src/node/                  read content/ from disk (for scripts and tests)
     ├── scripts/                   content checks: content:check, lesson:check, lesson:link
@@ -351,7 +351,7 @@ Run from the repository root:
 | Rust tests | `cargo test --manifest-path apps/desktop/src-tauri/Cargo.toml` |
 | Rust lint | `cargo clippy --manifest-path apps/desktop/src-tauri/Cargo.toml -- -D warnings` |
 | Rust format | `cargo fmt --manifest-path apps/desktop/src-tauri/Cargo.toml` |
-| Mission tests | `pnpm test:missions` |
+| Challenge tests | `pnpm test:challenges` |
 
 ## 7. Code style
 
@@ -359,16 +359,16 @@ Run from the repository root:
 
 ```ts
 /**
- * mission-checker.ts
- * Decides whether a mission's goal is reached, by reading the current repo snapshot.
+ * goal-checker.ts
+ * Decides whether a challenge's goal is reached, by reading the current repo snapshot.
  */
 
 import type { RepoSnapshot } from "@gitremastered/course-engine/types/repo-snapshot";
-import type { GoalCheck } from "@gitremastered/course-engine/types/mission";
+import type { GoalCheck } from "@gitremastered/course-engine/types/challenge";
 
 /**
  * Checks one goal against the repo snapshot.
- * @param goalCheck - the goal from mission.yaml, e.g. "file-is-committed"
+ * @param goalCheck - the goal from challenges.yaml, e.g. "file-is-committed"
  * @param repoSnapshot - the repo state right now
  * @returns true if the goal is met
  */
@@ -391,7 +391,7 @@ Naming: `kebab-case` file names (TypeScript, Svelte components in `PascalCase.sv
 |---|---|---|---|
 | Unit | Pure logic: content parsing, goal checks, snapshot parsing | Vitest, `cargo test` | Next to the code |
 | Integration | Rust core against a real temporary Git repo | `cargo test` | `apps/desktop/src-tauri/tests/` |
-| Mission | Every mission: setup + reference solution reaches the goal with real Git | Vitest + real Git | `apps/desktop/tests/missions/` |
+| Challenge | Every challenge: setup + reference solution reaches the goal with real Git | Vitest + real Git | `apps/desktop/tests/challenges/` |
 | Manual | The pilot lesson played as a student | You | Checkpoint |
 
 A task is done only when all tests, type checks and lints pass.
@@ -423,7 +423,7 @@ A task is done only when all tests, type checks and lints pass.
 2. The pilot lesson shows all three layers and the recap card.
 3. The terminal runs real Git in a practice folder; typing feels instant.
 4. After a Git command, the visualizer updates within 300 ms.
-5. The pilot mission sets up, detects the goal, and serves all hint levels; reset works.
+5. The pilot challenge sets up, detects the goal, and serves all hint levels; reset works.
 6. The pilot quiz checks answers and explains them.
 7. Progress survives an app restart.
 8. A second lesson can be added with content files only, and it works with no app code changes.

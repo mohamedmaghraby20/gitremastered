@@ -3,7 +3,7 @@
  * The shape of one lesson after it is read from content/lessons/<lesson-id>/ (docs/SPEC.md section 4).
  */
 
-import type { Challenge } from './mission.ts';
+import type { Challenge } from './challenge.ts';
 import type { Quiz } from './quiz.ts';
 
 /** The four parts of lesson.md, in the order a student meets them. */

@@ -6,7 +6,7 @@
  * commit that holds only part of a change. Pure functions on a snapshot.
  */
 
-import type { ContentGoalCheck } from '../types/mission.ts';
+import type { ContentGoalCheck } from '../types/challenge.ts';
 import type { FileText, RepoSnapshot } from '../types/repo-snapshot.ts';
 
 /**

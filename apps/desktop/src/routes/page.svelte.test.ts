@@ -10,7 +10,7 @@ import { render } from 'vitest-browser-svelte';
 import {
 	createMemoryStorage,
 	loadProgress,
-	markMissionFinished,
+	markLessonFinished,
 	saveLayerRead,
 	saveLessonOpened
 } from '$lib/stores/progress';
@@ -47,7 +47,7 @@ describe('home page', () => {
 	});
 
 	it('counts finished lessons on the path card and offers a review question', async () => {
-		await markMissionFinished('three-areas');
+		await markLessonFinished('three-areas');
 		await render(HomePage);
 
 		const wholeCourse = page.getByRole('progressbar', { name: 'Whole course' });

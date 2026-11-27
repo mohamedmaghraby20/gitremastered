@@ -1,7 +1,7 @@
 {
 	"name": "@gitremastered/course-engine",
 	"version": "0.1.0",
-	"description": "GitRemastered course engine: reads and checks the course content, and checks mission goals. No screens, no Tauri.",
+	"description": "GitRemastered course engine: reads and checks the course content, and checks challenge goals. No screens, no Tauri.",
 	"type": "module",
 	"private": true,
 	"license": "MIT",

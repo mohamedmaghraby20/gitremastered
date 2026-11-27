@@ -44,7 +44,7 @@ Code is written for humans first: someone learning software engineering must be 
 |---|---|---|
 | Write lessons | `lesson-writer` agent, or you | Only files under `content/lessons/<id>/` and new command or glossary entries. Never shared files (`content/paths/*.yaml`, other lessons); the main session adds new lessons to the paths and runs the link pass (`pnpm lesson:link`) |
 | Write routine UI | `ui-builder` agent, or you | Screens and components under `apps/desktop/src/` |
-| Rust, stores, mission engine, visualizer, terminal, course map, design changes | main session | Kept together because they are hard to get right |
+| Rust, stores, challenge checks, visualizer, terminal, course map, design changes | main session | Kept together because they are hard to get right |
 | Check | the check agents (below) | After each phase of work |
 | Commit | main session only | After reviewing the work and explaining it |
 
@@ -67,7 +67,7 @@ Helper agents live in `.claude/agents/`, slash commands in `.claude/commands/`.
 | Agent | Use for |
 |---|---|
 | `lesson-writer` | Writing and revising lessons, command pages, glossary entries |
-| `lesson-tester` | Running content checks, missions and the real-app playthrough on lessons |
+| `lesson-tester` | Running content checks, challenges and the real-app playthrough on lessons |
 | `ui-builder` | Routine Svelte screens and components |
 | `code-reviewer` | Review after each phase |
 | `accessibility-auditor` | Screens added or changed |

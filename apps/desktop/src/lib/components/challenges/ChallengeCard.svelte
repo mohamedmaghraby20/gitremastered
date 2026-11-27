@@ -8,7 +8,7 @@
           isDone (finished before), onstart (called when the student starts it).
 -->
 <script lang="ts">
-	import type { Challenge } from '@gitremastered/course-engine/types/mission';
+	import type { Challenge } from '@gitremastered/course-engine/types/challenge';
 	import { Button } from '$lib/components/ui/button';
 
 	let {

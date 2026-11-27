@@ -6,7 +6,7 @@
  * lesson's check.
  *
  * Used by `pnpm lesson:check` and, through the DRAFT_LESSON environment variable, by the
- * mission tests.
+ * challenge tests.
  */
 
 import { execFileSync } from 'node:child_process';

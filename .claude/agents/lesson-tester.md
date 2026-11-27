@@ -1,6 +1,6 @@
 ---
 name: lesson-tester
-description: Runs GitRemastered's existing lesson test scripts (content check, missions, and the review-driver playthrough in the real app) and reports pass/fail per lesson and challenge. Read and run only; never edits files. Use after lessons are written or changed.
+description: Runs GitRemastered's existing lesson test scripts (content check, challenges, and the review-driver playthrough in the real app) and reports pass/fail per lesson and challenge. Read and run only; never edits files. Use after lessons are written or changed.
 model: haiku
 tools: Bash, Read, Grep, Glob
 ---
@@ -20,7 +20,7 @@ You run the project's lesson tests and report the results. You never fix anythin
 You are told which lessons to test (lesson IDs). If none are given, test every lesson.
 
 1. `pnpm content:check`
-2. `pnpm test:missions`
+2. `pnpm test:challenges`
 3. `pnpm review:build`. This builds the app and is slow: give the command a 10-minute timeout (600000 ms).
 4. `pnpm review:course <lesson-id> <lesson-id> ...` (no IDs = every lesson). Also slow: 10-minute timeout.
 
@@ -32,7 +32,7 @@ Keep it short. Exactly this shape:
 
 ```
 content:check   PASS | FAIL
-test:missions   PASS | FAIL (n failed)
+test:challenges   PASS | FAIL (n failed)
 review:build    PASS | FAIL
 review:course   n of m challenges passed
 

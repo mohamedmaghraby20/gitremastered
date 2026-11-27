@@ -11,7 +11,7 @@ import { countCourseLessons } from '$lib/course-map/course-map-data';
 import {
 	createMemoryStorage,
 	loadProgress,
-	markMissionFinished,
+	markLessonFinished,
 	saveLessonOpened
 } from '$lib/stores/progress';
 import Sidebar from './Sidebar.svelte';
@@ -39,7 +39,7 @@ describe('Sidebar (full)', () => {
 	});
 
 	it('shows path progress and the lessons of the current module, with done marks', async () => {
-		await markMissionFinished('three-areas');
+		await markLessonFinished('three-areas');
 		await saveLessonOpened('ignoring-files');
 		await render(Sidebar, { currentPath: '/lessons/ignoring-files', variant: 'full' });
 

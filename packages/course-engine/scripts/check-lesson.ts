@@ -46,13 +46,13 @@ function checkDraftContent(draft: Draft): boolean {
 }
 
 /**
- * Runs the draft lesson's challenges through the mission tests.
+ * Runs the draft lesson's challenges through the challenge tests.
  * @param draft - the lesson and its command pages
  * @returns true when every challenge's solution reaches every goal
  */
 function runDraftChallenges(draft: Draft): boolean {
 	// One command line run by the shell: on Windows, pnpm is a script only a shell can start.
-	const result = spawnSync('pnpm --filter @gitremastered/desktop test:missions', {
+	const result = spawnSync('pnpm --filter @gitremastered/desktop test:challenges', {
 		stdio: 'inherit',
 		shell: true,
 		env: {

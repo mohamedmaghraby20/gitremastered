@@ -4,7 +4,7 @@
  * on a snapshot.
  */
 
-import type { RemoteGoalCheck } from '../types/mission.ts';
+import type { RemoteGoalCheck } from '../types/challenge.ts';
 import type { RepoSnapshot } from '../types/repo-snapshot.ts';
 import { messageContains } from './commit-walk.ts';
 

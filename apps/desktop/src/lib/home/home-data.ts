@@ -97,7 +97,7 @@ function pickTodaysReview(
 	const sources: ReviewSource[] = [];
 	for (const lessonId of lessonIds) {
 		const isWorkedOn =
-			progress.finishedMissions.includes(lessonId) || lessonId in progress.quizResults;
+			progress.finishedLessons.includes(lessonId) || lessonId in progress.quizResults;
 		const lesson = getLesson(lessonId);
 		if (isWorkedOn && lesson !== undefined) {
 			sources.push({ lessonId, questions: lesson.quiz.questions });

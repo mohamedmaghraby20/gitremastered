@@ -1,4 +1,4 @@
-//! Finds the shell that runs mission steps and the student's terminal.
+//! Finds the shell that runs challenge steps and the student's terminal.
 //!
 //! Windows: Git Bash, which ships with Git for Windows. We ask Git where it lives
 //! (`git --exec-path`, e.g. `C:/Program Files/Git/mingw64/libexec/git-core`) and walk up

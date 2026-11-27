@@ -1,7 +1,7 @@
 /**
- * mission.ts
+ * challenge.ts
  * The shape of a lesson's challenges, read from challenges.yaml (docs/SPEC.md section 4): each
- * challenge is a mission (brief, setup, goals, hints, solution) with an ID, a title and a level.
+ * challenge is its details (brief, setup, goals, hints, solution) plus an ID, a title and a level.
  * docs/writing-lessons.md explains every goal check to lesson authors.
  */
 
@@ -187,16 +187,16 @@ export const goalCheckFields: Record<GoalCheckKind, readonly string[]> = {
 /** The names of every kind of goal check, used to reject unknown ones. */
 export const goalCheckKinds = Object.keys(goalCheckFields) as GoalCheckKind[];
 
-/** A goal check plus the sentence shown in the mission checklist. */
-export type MissionGoal = GoalCheck & { label: string };
+/** A goal check plus the sentence shown in the challenge checklist. */
+export type ChallengeGoal = GoalCheck & { label: string };
 
-/** A complete mission: how to set it up, what to reach, how to help. */
-export type Mission = {
+/** A complete challenge: how to set it up, what to reach, how to help. */
+export type ChallengeDetails = {
 	brief: string; // what the student is asked to do, in one or two sentences
 	setup: string[]; // shell commands that build the practice repo, run in order
-	goals: MissionGoal[];
+	goals: ChallengeGoal[];
 	hints: string[]; // from a gentle nudge to the full answer
-	solution: string[]; // shell commands that reach every goal (used by mission tests)
+	solution: string[]; // shell commands that reach every goal (used by challenge tests)
 	github: GitHubChallenge | null; // a GitHub challenge's practice repository and teammate steps
 };
 
@@ -206,8 +206,8 @@ export const challengeLevels = ['easy', 'medium', 'hard'] as const;
 /** How hard a challenge is. */
 export type ChallengeLevel = (typeof challengeLevels)[number];
 
-/** One challenge: a mission with an ID (unique in its lesson), a short title and a level. */
-export type Challenge = Mission & {
+/** One challenge: its details plus an ID (unique in its lesson), a short title and a level. */
+export type Challenge = ChallengeDetails & {
 	id: string; // e.g. "release-notes"
 	title: string; // e.g. "Save the release notes on their own"
 	level: ChallengeLevel;

@@ -1,6 +1,6 @@
 <!--
   GoalRow.svelte
-  One line of the mission checklist: a box that ticks itself when the goal is met.
+  One line of the challenge checklist: a box that ticks itself when the goal is met.
   Status is shown with a ✓ and words for screen readers, never by color alone.
   Inputs: label (the goal in words), isMet.
 -->

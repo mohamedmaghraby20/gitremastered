@@ -1,4 +1,4 @@
-//! Runs a mission's setup steps (shell commands from mission.yaml) inside a practice folder.
+//! Runs a challenge's setup steps (shell commands from challenges.yaml) inside a practice folder.
 //!
 //! Each step runs as `bash -c "<step>"`, so steps can use shell features like `>` and `||`.
 //! The function takes a `PracticeFolder`, so it can never run outside a practice folder.

@@ -5,7 +5,7 @@
  * Pure functions on a snapshot.
  */
 
-import type { WorkspaceGoalCheck } from '../types/mission.ts';
+import type { WorkspaceGoalCheck } from '../types/challenge.ts';
 import type { RepoSnapshot } from '../types/repo-snapshot.ts';
 
 /**

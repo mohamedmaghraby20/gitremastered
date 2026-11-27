@@ -14,7 +14,7 @@ pub mod repo_inspector;
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
-        // Saves progress (finished missions, quiz results, theme) in a JSON file.
+        // Saves progress (finished lessons and challenges, quiz results, theme) in a JSON file.
         .plugin(tauri_plugin_store::Builder::default().build())
         // Opens the Pro Git citation links in the system browser (https:// only, see capabilities).
         .plugin(tauri_plugin_opener::init())

@@ -1,8 +1,8 @@
 <!--
   PartHeading.svelte
-  The heading that opens one practice part under the lesson text (the mission, the quiz):
+  The heading that opens one practice part under the lesson text (the challenge, the quiz):
   the part's name, and one line saying what this part is for, so a student
-  never mistakes the mission for the quiz.
+  never mistakes the challenge for the quiz.
 
   Inputs: headingId (so the part's section can point to its heading), title, description,
           aside (optional: shown at the right end, like the quiz score).

@@ -8,7 +8,7 @@ How to add a lesson to GitRemastered. A lesson is three files in one folder; no 
 2. Create `content/lessons/<id>/` with `lesson.md`, `challenges.yaml`, `quiz.yaml` and `coverage.md`.
 3. Add the ID to a module in `content/paths/pro-path.yaml`.
 4. Run `pnpm content:check` (from the repository root). It names the file and the problem if something is wrong.
-5. Run `pnpm test:missions`. It runs every challenge's setup and solution with real Git and checks every goal.
+5. Run `pnpm test:challenges`. It runs every challenge's setup and solution with real Git and checks every goal.
 
    While you are still writing, `pnpm lesson:check <lesson-id> [command-id ...]` does both for your lesson alone: it loads the committed content plus your lesson folder and the command pages you name, so someone else's half-written lesson cannot fail your check. Example: `pnpm lesson:check start-a-repo git-init git-clone`.
 6. Open the lesson in the app and play it once as a student.
@@ -89,13 +89,13 @@ For reviewers; the app does not show it. It proves the lesson covers its Pro Git
 
 Rule: every important point of the book section is in "Must know" or "Under the hood", or listed under "Left out" with the lesson that teaches it.
 
-Try-its must not solve the mission: practise on a separate file, so the mission still has work to do.
+Try-its must not solve the challenge: practise on a separate file, so the challenge still has work to do.
 
 ## challenges.yaml
 
 Three or more challenges, from easy to hard (decided 2026-11-26). Each is a real small job in the practice project; the student picks any one, and starting it rebuilds the project in that challenge's starting state. The goals tick themselves from the live repo state. Challenges test whether the student can do the job; the quiz tests understanding.
 
-Each challenge has an `id` (unique in the lesson; it names the challenge in saved progress), a `title`, a `level` (`easy`, `medium` or `hard`, never going back down), and the mission fields below.
+Each challenge has an `id` (unique in the lesson; it names the challenge in saved progress), a `title`, a `level` (`easy`, `medium` or `hard`, never going back down), and the challenge details below.
 
 ```yaml
 challenges:
@@ -117,7 +117,7 @@ challenges:
       - "Run git status. Which file is new?"
       - "A commit takes only what is in the staging area."
       - "Run: git add notes.txt, then git commit -m \"Add release notes\""
-    solution:                  # the reference answer; pnpm test:missions runs it
+    solution:                  # the reference answer; pnpm test:challenges runs it
       - git add notes.txt
       - git commit -q -m "Add release notes"
   - id: two-commits
@@ -243,7 +243,7 @@ Every goal has a `check`, a `label` (the sentence in the checklist) and the extr
 - Starting or resetting the challenge creates the repository (public) if needed, closes open pull requests and issues, deletes releases and rules, then runs the setup with `PRACTICE_GITHUB_URL` set, makes `main` the default branch and runs the teammate steps. Only after the student accepted the consent screen.
 - Setup lines never call `gh` and never name a github.com address. Solution lines may use `gh` (the student types them) but never `--repo`, an address, or `gh repo delete`. The content check refuses both.
 - One repository per lesson family, so several lessons may share a name; the setup's mirror push always starts it clean.
-- `pnpm test:missions` skips GitHub challenges; `pnpm test:github` runs them against the account signed in to `gh` on this computer.
+- `pnpm test:challenges` skips GitHub challenges; `pnpm test:github` runs them against the account signed in to `gh` on this computer.
 
 **Answer challenges.** Some skills only read: finding a commit, reading a diff. Their challenges ask the student to write what they found into `answer.txt` (`echo 3 > answer.txt`, or `git rev-parse --short HEAD~2 > answer.txt`), and a goal checks the answer. Say exactly what form the answer takes ("the short commit ID", "a number", "the file name"). Add `echo answer.txt >> .git/info/exclude` to the setup, so the answer file stays out of `git status`.
 
@@ -386,7 +386,7 @@ If a first-year student might not know a word (build output, checksum, branch, e
 
 ### 6. Never mention something before it is explained
 
-No "the mission's files", "the index", "HEAD" or "the challenge" until the student has met them. If you must point ahead, say what it is in a few words first.
+No "the practice folder", "the index" or "HEAD" until the student has met them. If you must point ahead, say what it is in a few words first.
 
 ### 7. Try-it steps say what to do and what you will see
 

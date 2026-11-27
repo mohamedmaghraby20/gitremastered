@@ -5,7 +5,7 @@ use std::process::Command;
 
 use gitremastered_lib::git_runner::practice_folder::{PracticeError, PracticeRoot};
 
-/// Setup steps like a real mission's: a repo with one commit and one new file.
+/// Setup steps like a real challenge's: a repo with one commit and one new file.
 fn sample_setup_steps() -> Vec<String> {
     [
         "git init -q -b main",
@@ -72,7 +72,7 @@ fn reset_gives_a_fresh_copy() {
     );
 }
 
-/// Resetting a mission that was never created is a clear error.
+/// Resetting a challenge that was never created is a clear error.
 #[test]
 fn reset_without_create_is_refused() {
     let temporary_folder = tempfile::tempdir().expect("temporary folder");
@@ -132,16 +132,16 @@ fn paths_outside_the_practice_root_are_refused() {
 fn a_practice_folder_is_accepted() {
     let temporary_folder = tempfile::tempdir().expect("temporary folder");
     let practice_root = PracticeRoot::open(temporary_folder.path().join("practice")).expect("root");
-    let folder = practice_root.create("empty", &[]).expect("empty mission");
+    let folder = practice_root.create("empty", &[]).expect("empty challenge");
 
     let checked = practice_root.check_inside(folder.path()).expect("inside");
 
     assert_eq!(checked.path(), folder.path());
 }
 
-/// Mission IDs that could escape the root are refused before anything is created.
+/// Practice IDs that could escape the root are refused before anything is created.
 #[test]
-fn bad_mission_ids_are_refused() {
+fn bad_practice_ids_are_refused() {
     let temporary_folder = tempfile::tempdir().expect("temporary folder");
     let practice_root = PracticeRoot::open(temporary_folder.path().join("practice")).expect("root");
 
@@ -149,12 +149,12 @@ fn bad_mission_ids_are_refused() {
 
     assert_eq!(
         result,
-        Err(PracticeError::InvalidMissionId("../escape".to_string()))
+        Err(PracticeError::InvalidPracticeId("../escape".to_string()))
     );
     assert!(!temporary_folder.path().join("escape").exists());
 }
 
-/// Opening a mission again keeps the student's work, so "Continue lesson" picks up where they were.
+/// Opening a challenge again keeps the student's work, so "Continue lesson" picks up where they were.
 #[test]
 fn open_or_create_keeps_the_students_work() {
     let temporary_folder = tempfile::tempdir().expect("temporary folder");
@@ -174,7 +174,7 @@ fn open_or_create_keeps_the_students_work() {
     );
 }
 
-/// When the mission's setup steps changed (a content update), the folder is built again.
+/// When the challenge's setup steps changed (a content update), the folder is built again.
 #[test]
 fn open_or_create_rebuilds_when_the_setup_changed() {
     let temporary_folder = tempfile::tempdir().expect("temporary folder");

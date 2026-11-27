@@ -50,7 +50,7 @@ describe('contract commands', () => {
 		await closeTerminalSession('session-1');
 
 		expect(mockedInvoke).toHaveBeenCalledWith('open_practice_repo', {
-			missionId: 'three-areas',
+			practiceId: 'three-areas',
 			setupSteps: ['git init'],
 			github: null
 		});

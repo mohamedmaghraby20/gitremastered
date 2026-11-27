@@ -1,7 +1,7 @@
 <!--
   LayerMarks.svelte
   The row under the continue card's lede: ✓ for the layers read, → for the next one, then the
-  mission and the quiz. The marks have words for screen readers ("read", "next").
+  challenge and the quiz. The marks have words for screen readers ("read", "next").
 
   Input: furthestLayerId (the deepest layer opened, or undefined).
 -->

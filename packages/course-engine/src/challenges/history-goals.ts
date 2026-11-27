@@ -5,7 +5,7 @@
  * and about answers the student writes into answer.txt. Pure functions on a snapshot.
  */
 
-import type { HistoryGoalCheck } from '../types/mission.ts';
+import type { HistoryGoalCheck } from '../types/challenge.ts';
 import type { RepoSnapshot } from '../types/repo-snapshot.ts';
 import { findHeadCommit, findHistory, messageContains } from './commit-walk.ts';
 

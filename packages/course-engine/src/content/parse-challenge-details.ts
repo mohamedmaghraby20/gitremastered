@@ -1,6 +1,6 @@
 /**
- * parse-mission.ts
- * Reads the mission part of a challenge: the brief, setup steps, goal checks, hint ladder and
+ * parse-challenge-details.ts
+ * Reads one challenge's details: the brief, setup steps, goal checks, hint ladder and
  * reference solution (parse-challenges.ts reads the rest of each challenge).
  */
 
@@ -10,19 +10,19 @@ import {
 	isGitHubGoalCheck,
 	type GoalCheck,
 	type GoalCheckKind,
-	type Mission,
-	type MissionGoal
-} from '../types/mission.ts';
+	type ChallengeDetails,
+	type ChallengeGoal
+} from '../types/challenge.ts';
 import { FieldReader } from './field-reader.ts';
 import { checkGitHubLines, readGitHubChallenge } from './parse-github.ts';
 
 /**
- * Reads the mission fields of one challenge.
+ * Reads the challenge details of one challenge.
  * @param reader - a reader for one challenge (its brief, setup, goal, hints, solution)
- * @returns the typed mission
+ * @returns the typed challenge
  * @throws ContentError naming the file, the challenge and the problem
  */
-export function readMissionFields(reader: FieldReader): Mission {
+export function readChallengeDetails(reader: FieldReader): ChallengeDetails {
 	const goalReaders = reader.recordList('goal', 'goal');
 	const setup = reader.textList('setup');
 	const solution = reader.textList('solution');
@@ -50,7 +50,7 @@ export function readMissionFields(reader: FieldReader): Mission {
  * @param goalReader - a reader for one item of the "goal" list
  * @returns the typed goal
  */
-function readGoal(goalReader: FieldReader): MissionGoal {
+function readGoal(goalReader: FieldReader): ChallengeGoal {
 	const label = goalReader.text('label');
 	const goalCheck = readGoalCheck(goalReader);
 	return { ...goalCheck, label };
@@ -61,7 +61,7 @@ const numberFieldName = 'count';
 
 /**
  * Reads the check part of a goal. Each kind of check needs different fields; the table
- * goalCheckFields (types/mission.ts) lists them.
+ * goalCheckFields (types/challenge.ts) lists them.
  * @param goalReader - a reader for one goal
  * @returns the typed goal check
  */

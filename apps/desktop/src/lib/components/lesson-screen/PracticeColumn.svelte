@@ -7,11 +7,11 @@
   shell keeps running and its history stays. In a large window, the handle between the two
   resizes them (the terminal takes 25% to 80% of the height; double-click resets).
 
-  Inputs: missionId (the lesson ID), session (the lesson's practice session),
+  Inputs: practiceId (the lesson ID), session (the lesson's practice session),
           snapshot (the latest repo snapshot, or null).
 -->
 <script lang="ts">
-	import type { PracticeSession } from '$lib/mission-engine/practice-session.svelte';
+	import type { PracticeSession } from '$lib/practice/practice-session.svelte';
 	import type { RepoSnapshot } from '@gitremastered/course-engine/types/repo-snapshot';
 	import PracticeTerminal from '$lib/components/terminal-view/PracticeTerminal.svelte';
 	import HistoryPanel from '$lib/components/visualizer/HistoryPanel.svelte';
@@ -22,10 +22,10 @@
 	import { terminalLimits } from '$lib/layout/panel-sizes';
 
 	let {
-		missionId,
+		practiceId,
 		session,
 		snapshot
-	}: { missionId: string; session: PracticeSession; snapshot: RepoSnapshot | null } = $props();
+	}: { practiceId: string; session: PracticeSession; snapshot: RepoSnapshot | null } = $props();
 
 	type PracticeTool = 'visualizer' | 'terminal';
 	const toolOptions: SegmentedSwitchOption<PracticeTool>[] = [
@@ -137,7 +137,7 @@
 		]}
 	>
 		<PracticeTerminal
-			{missionId}
+			{practiceId}
 			practiceFolderPath={session.practiceFolderPath}
 			statusMessage={session.statusMessage}
 			onCommand={recordCommand}

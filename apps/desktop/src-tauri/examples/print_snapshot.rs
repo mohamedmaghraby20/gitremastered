@@ -1,6 +1,6 @@
 //! Prints the snapshot of a Git repository as JSON, using the app's own snapshot reader.
 //!
-//! Used by the mission tests (`pnpm test:missions`), so they check goals against exactly the
+//! Used by the challenge tests (`pnpm test:challenges`), so they check goals against exactly the
 //! snapshot the app would see, without a second copy of the parsing code.
 //!
 //! Run: `cargo run --example print_snapshot -- <practice-root> <folder-inside-it>`

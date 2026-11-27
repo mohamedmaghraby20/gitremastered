@@ -8,7 +8,7 @@ import type { LessonFrontmatter, LessonSections } from '../types/lesson.ts';
 import { ContentError } from './content-error.ts';
 import { FieldReader } from './field-reader.ts';
 
-/** Everything lesson.md holds, before the mission and quiz are added. */
+/** Everything lesson.md holds, before the challenge and quiz are added. */
 export type LessonText = {
 	frontmatter: LessonFrontmatter;
 	lede: string;

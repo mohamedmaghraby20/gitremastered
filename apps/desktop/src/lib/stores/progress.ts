@@ -1,6 +1,6 @@
 /**
  * progress.ts
- * The one module that saves and loads the student's progress: finished missions, quiz
+ * The one module that saves and loads the student's progress: finished lessons and challenges, quiz
  * results, the last opened lesson and the furthest layer read in each, plus screen choices
  * (theme, terminal and lesson text size, reduce motion, folded files desk, chosen path,
  * panel sizes). In the desktop app it uses the Tauri store
@@ -23,7 +23,7 @@ export type CoursePathId = 'pro-path' | 'book-path';
 
 /** Everything the app remembers between sessions. */
 export type ProgressData = {
-	finishedMissions: string[]; // lesson IDs with at least one finished challenge ("lesson done")
+	finishedLessons: string[]; // lesson IDs with at least one finished challenge ("lesson done")
 	finishedChallenges: Record<string, string[]>; // by lesson ID, the challenge IDs finished
 	activeChallengeIds: Record<string, string>; // by lesson ID, the challenge being worked on
 	quizResults: Record<string, QuizResult>; // by lesson ID, the latest result
@@ -54,7 +54,7 @@ const storeFileName = 'progress.json';
 
 /** Progress for a student who has not started yet. */
 export const emptyProgress: ProgressData = {
-	finishedMissions: [],
+	finishedLessons: [],
 	finishedChallenges: {},
 	activeChallengeIds: {},
 	quizResults: {},
@@ -77,6 +77,9 @@ export const progress: Readable<ProgressData> = progressStore;
 
 let storage: KeyValueStorage = createMemoryStorage();
 
+/** Progress as saved by any version of the app, including field names that were renamed since. */
+type SavedProgress = Partial<ProgressData> & { finishedMissions?: string[] };
+
 /**
  * Chooses where progress is kept and loads what was saved.
  * @param chosenStorage - the storage to use; the Tauri store in the app by default
@@ -84,22 +87,39 @@ let storage: KeyValueStorage = createMemoryStorage();
  */
 export async function loadProgress(chosenStorage?: KeyValueStorage): Promise<ProgressData> {
 	storage = chosenStorage ?? (await openDefaultStorage());
-	const saved = await storage.get<Partial<ProgressData>>(progressKey);
-	const loaded: ProgressData = { ...emptyProgress, ...saved };
+	const saved = await storage.get<SavedProgress>(progressKey);
+	const loaded: ProgressData = { ...emptyProgress, ...renameOldFields(saved) };
 	progressStore.set(loaded);
 	return loaded;
 }
 
 /**
- * Remembers that a lesson's mission is done.
+ * Moves fields saved under an old name to their current name, so no student loses progress.
+ * Renamed so far: finishedMissions -> finishedLessons (2026-11-27).
+ * @param saved - the progress as read from storage, or undefined when nothing was saved
+ * @returns the same progress with only current field names
+ */
+function renameOldFields(saved: SavedProgress | undefined): Partial<ProgressData> {
+	if (saved === undefined) {
+		return {};
+	}
+	const { finishedMissions, ...currentFields } = saved;
+	if (finishedMissions === undefined || currentFields.finishedLessons !== undefined) {
+		return currentFields;
+	}
+	return { ...currentFields, finishedLessons: finishedMissions };
+}
+
+/**
+ * Remembers that a lesson's challenge is done.
  * @param lessonId - the lesson
  */
-export async function markMissionFinished(lessonId: string): Promise<void> {
+export async function markLessonFinished(lessonId: string): Promise<void> {
 	const current = get(progressStore);
-	if (current.finishedMissions.includes(lessonId)) {
+	if (current.finishedLessons.includes(lessonId)) {
 		return;
 	}
-	await saveProgress({ ...current, finishedMissions: [...current.finishedMissions, lessonId] });
+	await saveProgress({ ...current, finishedLessons: [...current.finishedLessons, lessonId] });
 }
 
 /**
@@ -119,9 +139,9 @@ export async function markChallengeFinished(lessonId: string, challengeId: strin
 			...current.finishedChallenges,
 			[lessonId]: [...finishedHere, challengeId]
 		},
-		finishedMissions: current.finishedMissions.includes(lessonId)
-			? current.finishedMissions
-			: [...current.finishedMissions, lessonId]
+		finishedLessons: current.finishedLessons.includes(lessonId)
+			? current.finishedLessons
+			: [...current.finishedLessons, lessonId]
 	});
 }
 
@@ -235,7 +255,7 @@ export async function saveLayerRead(lessonId: string, layerId: LessonLayerId): P
 	});
 }
 
-/** Forgets missions, quiz results and reading places (screen choices like the theme stay). */
+/** Forgets challenges, quiz results and reading places (screen choices like the theme stay). */
 export async function resetProgress(): Promise<void> {
 	const current = get(progressStore);
 	await saveProgress({

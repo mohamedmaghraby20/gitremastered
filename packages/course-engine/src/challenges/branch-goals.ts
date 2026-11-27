@@ -5,7 +5,7 @@
  * Branch names may be local ("main") or remote-tracking ("origin/main") unless noted.
  */
 
-import type { BranchGoalCheck } from '../types/mission.ts';
+import type { BranchGoalCheck } from '../types/challenge.ts';
 import type { RepoSnapshot } from '../types/repo-snapshot.ts';
 import { findBranch, findHistory, messageContains } from './commit-walk.ts';
 

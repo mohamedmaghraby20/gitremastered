@@ -2,7 +2,7 @@
  * check-review-fixes.ts
  * Plays the fixes from the second pilot review in the real desktop app and prints each result:
  * the terminal's share of the practice column (about 55%), even gaps around the desk's commands, paste,
- * Ctrl C still stopping a command, Ctrl + / 0 text size, the mission and quiz headings, and the
+ * Ctrl C still stopping a command, Ctrl + / 0 text size, the challenge and quiz headings, and the
  * history map's zoom buttons, Esc reaching Vim for a commit message, F6 leaving the terminal,
  * the small-window layout at 1024 × 700, the resize handle, a long history, and starting a
  * challenge. Saves a screenshot for a person to look at.
@@ -63,7 +63,7 @@ const checks: ReviewCheck[] = [
 	{ name: 'Ctrl V pastes into the terminal', run: checkPaste },
 	{ name: 'Ctrl C with nothing selected still stops a command', run: checkInterrupt },
 	{ name: 'Ctrl + makes the text bigger, Ctrl 0 resets it', run: checkTextSize },
-	{ name: 'Mission and quiz have their own headings', run: checkHeadings },
+	{ name: 'Challenge and quiz have their own headings', run: checkHeadings },
 	{ name: 'History map zooms out with its button', run: checkZoomOut },
 	// Before the window-size checks: resizing reflows the long prompt badly (review finding 4).
 	{
@@ -169,17 +169,17 @@ async function checkTextSize(student: StudentActions): Promise<string> {
 }
 
 /**
- * Reads the mission and quiz headings.
+ * Reads the challenge and quiz headings.
  * @param student - the student actions
  * @returns both headings
  */
 async function checkHeadings(student: StudentActions): Promise<string> {
-	const mission = await student.readText('#challenges-heading');
+	const challenge = await student.readText('#challenges-heading');
 	const quiz = await student.readText('#quiz-heading');
-	if (mission === '' || quiz === '') {
+	if (challenge === '' || quiz === '') {
 		throw new Error('a heading is missing');
 	}
-	return `"${mission}" and "${quiz}"`;
+	return `"${challenge}" and "${quiz}"`;
 }
 
 /**
@@ -198,7 +198,7 @@ async function checkZoomOut(student: StudentActions): Promise<string> {
 
 /**
  * Commits a scratch file through Vim, as the lesson teaches: git commit, i, the message, Esc, :wq.
- * Uses its own file, so the mission's files stay as they are.
+ * Uses its own file, so the practice folder's files stay as they are.
  * @param student - the student actions
  * @returns the message Git saved
  */

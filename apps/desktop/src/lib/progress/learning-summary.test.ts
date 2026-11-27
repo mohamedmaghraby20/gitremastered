@@ -53,7 +53,7 @@ const bookPath: BookPath = {
  * @returns the place
  */
 function place(changes: Partial<StudentPlace>): StudentPlace {
-	return { finishedMissions: [], lastOpenedLessonId: null, ...changes };
+	return { finishedLessons: [], lastOpenedLessonId: null, ...changes };
 }
 
 describe('listing lessons', () => {
@@ -97,7 +97,7 @@ describe('findContinueLessonId', () => {
 
 describe('findUpNextLessonIds', () => {
 	it('lists the next unfinished lessons after the current one, in path order', () => {
-		const student = place({ lastOpenedLessonId: 'setup', finishedMissions: ['three-areas'] });
+		const student = place({ lastOpenedLessonId: 'setup', finishedLessons: ['three-areas'] });
 		expect(findUpNextLessonIds(student, listPathLessonIds(proPath), 2)).toEqual([
 			'ignoring-files',
 			'what-is-git'
@@ -113,8 +113,8 @@ describe('findUpNextLessonIds', () => {
 });
 
 describe('countPathProgress', () => {
-	it('counts finished missions among the given lessons', () => {
-		const student = place({ finishedMissions: ['setup', 'three-areas', 'not-in-path'] });
+	it('counts finished lessons among the given lessons', () => {
+		const student = place({ finishedLessons: ['setup', 'three-areas', 'not-in-path'] });
 		expect(countPathProgress(student, listPathLessonIds(proPath))).toEqual({
 			doneCount: 2,
 			totalCount: 4

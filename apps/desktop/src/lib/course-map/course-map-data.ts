@@ -124,7 +124,7 @@ function toRows(lessonIds: string[], student: StudentPlace): LessonRow[] {
  * @returns "done", "current" or "todo"
  */
 export function findLessonStatus(lessonId: string, student: StudentPlace): LessonStatus {
-	if (student.finishedMissions.includes(lessonId)) {
+	if (student.finishedLessons.includes(lessonId)) {
 		return 'done';
 	}
 	if (student.lastOpenedLessonId === lessonId) {

@@ -1,11 +1,11 @@
 <!--
   LessonReader.svelte
   The lesson column: header, layer tabs, the chosen layer's text, the recap card, anything the
-  page adds after the text (mission, quiz), and the Previous / Next links.
+  page adds after the text (challenge, quiz), and the Previous / Next links.
 
   Inputs:  lesson (the loaded lesson), place (its number and neighbours in the path, or null),
            afterText (optional: content shown under the recap on the "Must know" tab only,
-           like the mission and the quiz), onLayerChange (optional: called with the layer the
+           like the challenge and the quiz), onLayerChange (optional: called with the layer the
            student switches to, so it can be saved), widthShare (optional: the column's share
            of the screen in percent, set by dragging the resize handle; null = the default).
   A lesson opened through a link in another lesson shows "← Back to …" at the top (BackBar),
@@ -153,7 +153,7 @@
 
 		<RecapCard markdown={lesson.sections.recap} />
 
-		<!-- The mission and quiz practise "Must know". On the other tabs they are hidden, not
+		<!-- The challenge and quiz practise "Must know". On the other tabs they are hidden, not
 		     removed, so revealed hints and checked answers survive a tab switch. -->
 		<div class="flex flex-col gap-12 pt-6" hidden={activeLayerId !== 'mustKnow'}>
 			{@render afterText?.()}

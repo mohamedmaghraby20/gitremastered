@@ -41,7 +41,7 @@ All run from the repository root.
 | Fix formatting | `pnpm format` |
 | Check every lesson file | `pnpm content:check` |
 | Check one lesson while writing it | `pnpm lesson:check <lesson-id>` |
-| Run every mission with real Git | `pnpm test:missions` |
+| Run every challenge with real Git | `pnpm test:challenges` |
 | Rebuild `apps/desktop/src/lib/styles/tokens.css` after editing `docs/design/tokens.json` | `pnpm tokens` |
 | Build the screens only (static files in `apps/desktop/build/`) | `pnpm build` |
 | Rust tests | `cargo test --manifest-path apps/desktop/src-tauri/Cargo.toml` |

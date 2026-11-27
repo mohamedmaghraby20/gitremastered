@@ -15,8 +15,8 @@ import {
 	readDraftContentFiles,
 	readDraftFromEnvironment
 } from '@gitremastered/course-engine/node/read-draft-content';
-import { buildSnapshotPrinter } from '../missions/mission-runner.ts';
-import { buildGitHubProgram, isGitHubReady, runGitHubMission } from './github-runner.ts';
+import { buildSnapshotPrinter } from '../challenges/challenge-runner.ts';
+import { buildGitHubProgram, isGitHubReady, runGitHubChallenge } from './github-runner.ts';
 
 /** The one lesson being written, when set; otherwise null. */
 const draft = readDraftFromEnvironment();
@@ -44,7 +44,7 @@ describe.skipIf(!canRun)('every GitHub challenge', () => {
 	it.each(challenges)(
 		'%s: the reference solution reaches every goal',
 		async (challengeLabel, challenge) => {
-			const result = await runGitHubMission(challengeLabel.replace(' / ', '-'), challenge);
+			const result = await runGitHubChallenge(challengeLabel.replace(' / ', '-'), challenge);
 			expect(result.missedGoals).toEqual([]);
 		}
 	);

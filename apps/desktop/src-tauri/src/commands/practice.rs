@@ -1,9 +1,9 @@
 //! `open_practice_repo`, `reset_practice_repo`, `find_practice_repo` and
-//! `find_github_challenge_start`: open, rebuild or find a mission's practice folder under the
-//! app's local data folder, `<app data>/practice/<missionId>/`.
+//! `find_github_challenge_start`: open, rebuild or find a lesson's practice folder under the
+//! app's local data folder, `<app data>/practice/<practiceId>/`.
 //!
 //! After building it, the folder is watched: every change sends a `repo_changed` event with
-//! the new snapshot (the first one right away), so the visualizer and mission stay live.
+//! the new snapshot (the first one right away), so the visualizer and challenge stay live.
 //!
 //! Only one build runs at a time (`PracticeBuildLock`): a GitHub build takes many seconds,
 //! and a second click must not build into the same folder or reset the same repository.
@@ -45,13 +45,13 @@ pub fn open_practice_root<R: Runtime>(app: &AppHandle<R>) -> Result<PracticeRoot
     PracticeRoot::open(app_data_folder(app)?.join("practice")).map_err(|error| error.to_string())
 }
 
-/// Opens a mission's practice folder as the student left it, or builds it from its setup
+/// Opens a lesson's practice folder as the student left it, or builds it from its setup
 /// steps if there is none yet (or the steps changed).
 ///
 /// A GitHub challenge (one with a `github` field) also prepares its practice repository on
 /// GitHub when the folder is rebuilt, and only with the consent Rust keeps.
 ///
-/// Inputs: the mission ID, setup steps (from challenges.yaml) and the GitHub field (if any).
+/// Inputs: the practice ID, setup steps (from challenges.yaml) and the GitHub field (if any).
 /// Output: the folder's path.
 #[tauri::command]
 pub async fn open_practice_repo<R: Runtime>(
@@ -59,7 +59,7 @@ pub async fn open_practice_repo<R: Runtime>(
     build_lock: State<'_, PracticeBuildLock>,
     active_watcher: State<'_, ActiveRepoWatcher>,
     terminal_sessions: State<'_, TerminalSessions>,
-    mission_id: String,
+    practice_id: String,
     setup_steps: Vec<String>,
     github: Option<GitHubChallenge>,
 ) -> Result<String, String> {
@@ -72,29 +72,29 @@ pub async fn open_practice_repo<R: Runtime>(
     active_watcher.replace(None);
     terminal_sessions.close_all()?;
     let is_kept = practice_root
-        .is_built_with(&mission_id, &setup_steps)
+        .is_built_with(&practice_id, &setup_steps)
         .map_err(|error| error.to_string())?;
     let folder = match github {
         Some(challenge) if !is_kept => build_github_challenge(
             &app,
             &practice_root,
-            &mission_id,
+            &practice_id,
             &challenge,
             |environment| {
-                practice_root.create_with_environment(&mission_id, &setup_steps, environment)
+                practice_root.create_with_environment(&practice_id, &setup_steps, environment)
             },
         )?,
         _ => practice_root
-            .open_or_create(&mission_id, &setup_steps)
+            .open_or_create(&practice_id, &setup_steps)
             .map_err(|error| error.to_string())?,
     };
     watch_and_announce(&app, &active_watcher, &folder)?;
     Ok(folder.path().display().to_string())
 }
 
-/// Deletes a mission's practice folder and builds it again from its saved setup steps.
+/// Deletes a lesson's practice folder and builds it again from its saved setup steps.
 ///
-/// Inputs: the mission ID, and for a GitHub challenge its GitHub field.
+/// Inputs: the practice ID, and for a GitHub challenge its GitHub field.
 /// Output: the folder's path.
 #[tauri::command]
 pub async fn reset_practice_repo<R: Runtime>(
@@ -102,7 +102,7 @@ pub async fn reset_practice_repo<R: Runtime>(
     build_lock: State<'_, PracticeBuildLock>,
     active_watcher: State<'_, ActiveRepoWatcher>,
     terminal_sessions: State<'_, TerminalSessions>,
-    mission_id: String,
+    practice_id: String,
     github: Option<GitHubChallenge>,
 ) -> Result<String, String> {
     let _only_build = build_lock
@@ -116,46 +116,46 @@ pub async fn reset_practice_repo<R: Runtime>(
         Some(challenge) => build_github_challenge(
             &app,
             &practice_root,
-            &mission_id,
+            &practice_id,
             &challenge,
-            |environment| practice_root.reset_with_environment(&mission_id, environment),
+            |environment| practice_root.reset_with_environment(&practice_id, environment),
         )?,
         None => practice_root
-            .reset(&mission_id)
+            .reset(&practice_id)
             .map_err(|error| error.to_string())?,
     };
     watch_and_announce(&app, &active_watcher, &folder)?;
     Ok(folder.path().display().to_string())
 }
 
-/// Finds a mission's practice folder without creating or changing it, so a screen like home
+/// Finds a lesson's practice folder without creating or changing it, so a screen like home
 /// can show where the student left the repository.
 ///
-/// Input: the mission ID. Output: the folder's path, or `None` if it was never built.
+/// Input: the practice ID. Output: the folder's path, or `None` if it was never built.
 #[tauri::command]
 pub async fn find_practice_repo<R: Runtime>(
     app: AppHandle<R>,
-    mission_id: String,
+    practice_id: String,
 ) -> Result<Option<String>, String> {
     let practice_root = open_practice_root(&app)?;
     let folder = practice_root
-        .find(&mission_id)
+        .find(&practice_id)
         .map_err(|error| error.to_string())?;
     Ok(folder.map(|found| found.path().display().to_string()))
 }
 
-/// Tells when the mission's GitHub challenge attempt started, by GitHub's clock. GitHub goals
+/// Tells when the lesson's GitHub challenge attempt started, by GitHub's clock. GitHub goals
 /// count only pull requests, issues and runs made from then on.
 ///
-/// Input: the mission ID. Output: the time (ISO 8601), or `None` if no GitHub attempt was built.
+/// Input: the practice ID. Output: the time (ISO 8601), or `None` if no GitHub attempt was built.
 #[tauri::command]
 pub async fn find_github_challenge_start<R: Runtime>(
     app: AppHandle<R>,
-    mission_id: String,
+    practice_id: String,
 ) -> Result<Option<String>, String> {
     let practice_root = open_practice_root(&app)?;
     practice_root
-        .read_github_start(&mission_id)
+        .read_github_start(&practice_id)
         .map_err(|error| error.to_string())
 }
 
@@ -164,23 +164,23 @@ pub async fn find_github_challenge_start<R: Runtime>(
 /// steps. If those last steps fail, the folder is marked unfinished so the next open builds
 /// it again instead of keeping a half-made challenge.
 ///
-/// Inputs: the app, the practice root, the mission ID, the GitHub field, and the local build
+/// Inputs: the app, the practice root, the practice ID, the GitHub field, and the local build
 /// (given the environment). Output: the folder, or a readable error.
 fn build_github_challenge<R: Runtime>(
     app: &AppHandle<R>,
     practice_root: &PracticeRoot,
-    mission_id: &str,
+    practice_id: &str,
     challenge: &GitHubChallenge,
     build_locally: impl FnOnce(&[(String, String)]) -> Result<PracticeFolder, PracticeError>,
 ) -> Result<PracticeFolder, String> {
     let consent = has_consent(&app_data_folder(app)?);
     let prepared = prepare_github_challenge(challenge, consent)?;
     practice_root
-        .save_github_start(mission_id, &prepared.started_at)
+        .save_github_start(practice_id, &prepared.started_at)
         .map_err(|error| error.to_string())?;
     let folder = build_locally(&prepared.environment).map_err(|error| error.to_string())?;
     if let Err(problem) = finish_github_challenge(&prepared, challenge) {
-        let _ = practice_root.mark_not_ready(mission_id);
+        let _ = practice_root.mark_not_ready(practice_id);
         return Err(problem);
     }
     Ok(folder)

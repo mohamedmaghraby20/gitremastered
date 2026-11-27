@@ -61,7 +61,7 @@ function sampleContentFiles(): ContentFiles {
 }
 
 describe('buildCourseContent', () => {
-	it('loads a valid lesson with its mission and quiz', () => {
+	it('loads a valid lesson with its challenge and quiz', () => {
 		const courseContent = buildCourseContent(sampleContentFiles());
 		const lesson = findLessonById(courseContent, 'sample-lesson');
 		expect(lesson?.title).toBe('A sample lesson');

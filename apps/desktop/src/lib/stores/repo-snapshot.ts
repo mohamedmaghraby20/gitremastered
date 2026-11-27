@@ -2,7 +2,7 @@
  * repo-snapshot.ts
  * The shared store with the latest snapshot of the open lesson's practice repo.
  * The Rust core sends a "repo_changed" event after every change; the visualizer and the
- * mission read this store instead of listening themselves.
+ * challenge read this store instead of listening themselves.
  */
 
 import { writable, type Readable } from 'svelte/store';

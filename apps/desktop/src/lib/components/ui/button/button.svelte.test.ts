@@ -10,9 +10,9 @@ import ButtonTestHost from './button-test-host.svelte';
 
 describe('Button', () => {
 	it('is a real <button> with its label as its accessible name', async () => {
-		await render(ButtonTestHost, { label: 'Check mission' });
+		await render(ButtonTestHost, { label: 'Check challenge' });
 
-		const button = page.getByRole('button', { name: 'Check mission' });
+		const button = page.getByRole('button', { name: 'Check challenge' });
 		await expect.element(button).toBeInTheDocument();
 		expect(button.element().tagName).toBe('BUTTON');
 	});
@@ -41,7 +41,7 @@ describe('Button', () => {
 	});
 
 	it('shows the keyboard shortcut in a <kbd> key', async () => {
-		await render(ButtonTestHost, { label: 'Check mission', shortcut: 'Enter' });
+		await render(ButtonTestHost, { label: 'Check challenge', shortcut: 'Enter' });
 
 		const shortcutKey = page.getByRole('button').element().querySelector('kbd');
 		expect(shortcutKey?.textContent).toBe('Enter');
@@ -49,7 +49,7 @@ describe('Button', () => {
 
 	it('calls the click handler when clicked', async () => {
 		const handleClick = vi.fn();
-		await render(ButtonTestHost, { label: 'Check mission', onclick: handleClick });
+		await render(ButtonTestHost, { label: 'Check challenge', onclick: handleClick });
 
 		await page.getByRole('button').click();
 		expect(handleClick).toHaveBeenCalledOnce();

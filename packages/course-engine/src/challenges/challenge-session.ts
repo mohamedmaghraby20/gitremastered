@@ -1,6 +1,6 @@
 /**
- * mission-session.ts
- * The parts of a mission that are pure state, with no screen code: the hint ladder
+ * challenge-session.ts
+ * The parts of a challenge that are pure state, with no screen code: the hint ladder
  * (hints revealed one at a time, gentle first, the answer last) and the message shown after
  * "Check challenge".
  */
@@ -10,7 +10,7 @@ export type HintLadder = { revealedCount: number; totalCount: number };
 
 /**
  * Starts a ladder with no hint showing.
- * @param totalCount - how many hints the mission has
+ * @param totalCount - how many hints the challenge has
  * @returns the ladder
  */
 export function createHintLadder(totalCount: number): HintLadder {
@@ -56,7 +56,7 @@ export function hintButtonLabel(ladder: HintLadder): string {
 export function describeCheckResult(goalResults: boolean[]): string {
 	const metCount = goalResults.filter((isMet) => isMet).length;
 	if (metCount === goalResults.length) {
-		return 'Mission complete. Every goal is met.';
+		return 'Challenge complete. Every goal is met.';
 	}
 	const leftCount = goalResults.length - metCount;
 	const goalWord = leftCount === 1 ? 'goal' : 'goals';

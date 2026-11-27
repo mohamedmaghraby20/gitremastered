@@ -3,8 +3,8 @@
  * Reads fields out of parsed YAML and checks their type, so the parsers stay short and every
  * mistake becomes a ContentError that names the file, the place and the field.
  *
- * Example: new FieldReader(record, 'mission.yaml', 'goal 2').text('file')
- * fails with "mission.yaml: goal 2: the "file" field is missing".
+ * Example: new FieldReader(record, 'challenges.yaml', 'goal 2').text('file')
+ * fails with "challenges.yaml: goal 2: the "file" field is missing".
  */
 
 import { parse, YAMLParseError } from 'yaml';

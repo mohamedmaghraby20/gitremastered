@@ -1,6 +1,6 @@
 /**
  * GitHubChallengePanel.svelte.test.ts
- * Component tests for the GitHub part of the mission panel: the consent card (accept, setup
+ * Component tests for the GitHub part of the challenge panel: the consent card (accept, setup
  * steps when `gh` is not ready) and the status line ("Check GitHub now").
  */
 
@@ -8,7 +8,7 @@ import { page } from 'vitest/browser';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { getGitHubConnection } from '$lib/tauri/commands';
-import type { GitHubWatch } from '$lib/mission-engine/github-watch.svelte';
+import type { GitHubWatch } from '$lib/practice/github-watch.svelte';
 import type { GitHubConnection } from '@gitremastered/course-engine/types/github';
 import GitHubChallengePanel from './GitHubChallengePanel.svelte';
 

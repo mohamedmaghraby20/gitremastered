@@ -9,7 +9,7 @@
 -->
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
-	import type { GitHubWatch } from '$lib/mission-engine/github-watch.svelte';
+	import type { GitHubWatch } from '$lib/practice/github-watch.svelte';
 
 	let { watch }: { watch: GitHubWatch | null } = $props();
 

@@ -6,7 +6,7 @@
  * to tick themselves. A few challenges also check what the picture shows (a faded commit
  * after an amend, the Stash shelf, the distance to origin/main ...).
  *
- * `pnpm test:missions` already proves each solution reaches its goals with real Git. This
+ * `pnpm test:challenges` already proves each solution reaches its goals with real Git. This
  * run adds the rest of the chain: the practice workspace, the terminal, the folder watcher,
  * the snapshot and the screen.
  *
@@ -17,7 +17,7 @@
 
 import { buildCourseContent } from '@gitremastered/course-engine/content/load-lessons';
 import type { Lesson } from '@gitremastered/course-engine/types/lesson';
-import type { Challenge } from '@gitremastered/course-engine/types/mission';
+import type { Challenge } from '@gitremastered/course-engine/types/challenge';
 import { readContentFiles } from '@gitremastered/course-engine/node/read-content-files';
 import { DevToolsConnection } from './devtools-connection.ts';
 import { debuggingPort, pause, startReviewApp, stopReviewApp } from './review-app.ts';

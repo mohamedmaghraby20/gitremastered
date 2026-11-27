@@ -1,13 +1,13 @@
 /**
  * parse-challenges.ts
  * Reads a lesson's challenges.yaml: 3 or more challenges, from easy to hard. Each one has an
- * ID, a title and a level, plus the mission fields (brief, setup, goals, hints, solution).
+ * ID, a title and a level, plus the challenge details (brief, setup, goals, hints, solution).
  * The student picks any challenge; starting one builds the practice project from its setup.
  */
 
-import { challengeLevels, type Challenge, type ChallengeLevel } from '../types/mission.ts';
+import { challengeLevels, type Challenge, type ChallengeLevel } from '../types/challenge.ts';
 import { FieldReader } from './field-reader.ts';
-import { readMissionFields } from './parse-mission.ts';
+import { readChallengeDetails } from './parse-challenge-details.ts';
 
 /** Every lesson offers at least this many challenges (decided 2026-11-26). */
 export const smallestChallengeCount = 3;
@@ -44,7 +44,7 @@ function readChallenge(challengeReader: FieldReader): Challenge {
 		id: challengeReader.text('id'),
 		title: challengeReader.text('title'),
 		level,
-		...readMissionFields(challengeReader)
+		...readChallengeDetails(challengeReader)
 	};
 }
 

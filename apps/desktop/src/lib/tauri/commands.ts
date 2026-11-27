@@ -23,52 +23,52 @@ export function getGitVersion(): Promise<string> {
 }
 
 /**
- * Opens a mission's practice folder as the student left it, or builds it from its setup steps
+ * Opens a lesson's practice folder as the student left it, or builds it from its setup steps
  * when there is none yet (or the steps changed since it was built).
  * A GitHub challenge also prepares its practice repository on GitHub, only with the consent
  * Rust keeps (see grantGitHubConsent).
- * @param missionId - the mission's ID, which names the folder
+ * @param practiceId - the lesson's ID, which names the practice folder
  * @param setupSteps - shell commands from challenges.yaml, run in order
  * @param github - the challenge's GitHub field, or null for a local challenge
  * @returns the practice folder's path
  */
 export function openPracticeRepo(
-	missionId: string,
+	practiceId: string,
 	setupSteps: string[],
 	github: GitHubChallenge | null = null
 ): Promise<string> {
-	return invoke<string>('open_practice_repo', { missionId, setupSteps, github });
+	return invoke<string>('open_practice_repo', { practiceId, setupSteps, github });
 }
 
 /**
- * Finds a mission's practice folder without creating or changing it.
- * @param missionId - the mission's ID
+ * Finds a lesson's practice folder without creating or changing it.
+ * @param practiceId - the lesson's ID, which names the practice folder
  * @returns the folder's path, or null if it was never built
  */
-export function findPracticeRepo(missionId: string): Promise<string | null> {
-	return invoke<string | null>('find_practice_repo', { missionId });
+export function findPracticeRepo(practiceId: string): Promise<string | null> {
+	return invoke<string | null>('find_practice_repo', { practiceId });
 }
 
 /**
- * Deletes a mission's practice folder and builds it again from its setup steps.
- * @param missionId - the mission's ID
+ * Deletes a lesson's practice folder and builds it again from its setup steps.
+ * @param practiceId - the lesson's ID, which names the practice folder
  * @param github - the challenge's GitHub field, or null for a local challenge
  * @returns the practice folder's path
  */
 export function resetPracticeRepo(
-	missionId: string,
+	practiceId: string,
 	github: GitHubChallenge | null = null
 ): Promise<string> {
-	return invoke<string>('reset_practice_repo', { missionId, github });
+	return invoke<string>('reset_practice_repo', { practiceId, github });
 }
 
 /**
- * Tells when the mission's GitHub challenge attempt started, by GitHub's clock.
- * @param missionId - the mission's ID
+ * Tells when the lesson's GitHub challenge attempt started, by GitHub's clock.
+ * @param practiceId - the lesson's ID, which names the practice folder
  * @returns the time (ISO 8601), or null when no GitHub attempt was built
  */
-export function findGitHubChallengeStart(missionId: string): Promise<string | null> {
-	return invoke<string | null>('find_github_challenge_start', { missionId });
+export function findGitHubChallengeStart(practiceId: string): Promise<string | null> {
+	return invoke<string | null>('find_github_challenge_start', { practiceId });
 }
 
 /**

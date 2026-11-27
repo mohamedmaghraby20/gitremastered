@@ -31,7 +31,7 @@ Pro Git is the backbone. A lesson sourced only from `D` or `G` is marked **beyon
 
 ## 1. Graduation outcomes
 
-At the end of the course a learner can do all of these. Each outcome is proven by at least one mission done without hints.
+At the end of the course a learner can do all of these. Each outcome is proven by at least one challenge done without hints.
 
 | # | The learner can… | Lessons | Proven in |
 |---|---|---|---|
@@ -57,12 +57,12 @@ These keep the course easy to absorb, study, revisit and walk through.
 
 1. One idea per screen. If a lesson needs two ideas, split it.
 2. Every concept has a visual: the live visualizer, or a diagram from the book.
-3. Every lesson ends with the same three things: a recap card (3 to 5 lines plus the key commands), one mission in the terminal, and 2 to 4 quiz questions.
-4. Each module ends with a checkpoint mission done without hints.
-5. Later missions reuse earlier commands on purpose, so old skills get practiced again.
+3. Every lesson ends with the same three things: a recap card (3 to 5 lines plus the key commands), one challenge in the terminal, and 2 to 4 quiz questions.
+4. Each module ends with a checkpoint challenge done without hints.
+5. Later challenges reuse earlier commands on purpose, so old skills get practiced again.
 6. Every lesson cites its book section with a link, so the learner can go back to the book.
 7. Revisit tools: module cheat sheets, a searchable command index (from Appendix C), a glossary, and recap cards readable on their own.
-8. Student-facing text gets the humanizer pass; mission steps stay numbered lists; key terms are bold where introduced.
+8. Student-facing text gets the humanizer pass; challenge steps stay numbered lists; key terms are bold where introduced.
 
 ## 3. Pro path
 
@@ -268,7 +268,7 @@ Pro Git order. Every section maps to a lesson above or to the reference list (se
 
 ## 5. Reference only
 
-Short summary pages with a link to the book, in the book path and in search. No missions.
+Short summary pages with a link to the book, in the book path and in search. No challenges.
 
 - Ch4: bare repo on a server, setting up a server, Git daemon, Smart HTTP, GitWeb, GitLab, third-party hosting
 - Ch5: contributing and applying patches over email, build numbers, preparing a release, shortlog
@@ -280,14 +280,14 @@ Short summary pages with a link to the book, in the book path and in search. No 
 
 How we confirm the course works before and after each release:
 
-1. **Coverage check (automatic).** Every book section maps to a lesson or to section 5. Every outcome in section 1 has at least one lesson and one no-hint mission. Run after every map change.
-2. **Pilot test.** The user takes `three-areas` as a student before any other lesson is built. Check: time per layer, where they got stuck, and whether they can do the mission without hints the next day. Fix the lesson format, then build the rest.
+1. **Coverage check (automatic).** Every book section maps to a lesson or to section 5. Every outcome in section 1 has at least one lesson and one no-hint challenge. Run after every map change.
+2. **Pilot test.** The user takes `three-areas` as a student before any other lesson is built. Check: time per layer, where they got stuck, and whether they can do the challenge without hints the next day. Fix the lesson format, then build the rest.
 3. **Lesson quality check, every lesson:** follows the section 2 rules; facts checked against the cited book section or official doc; humanizer pass on student-facing text.
-4. **Module checkpoints.** Each module ends with a no-hint mission. Failing it points to the lesson that needs work.
+4. **Module checkpoints.** Each module ends with a no-hint challenge. Failing it points to the lesson that needs work.
 5. **Capstones as graduation proof.** Passing all three covers outcomes O1 to O15 together, not one at a time.
 6. **After each module release,** review where learners got stuck (from hint usage, if we track it) and fix those lessons first.
 
 ## 7. Decisions
 
 1. Module order stays as listed: History mastery (3.6) comes before Professional GitHub (3.8), because history skills are pure Git and are needed for good pull requests.
-2. Checkpoint missions are optional. A learner can skip any checkpoint, and it stays available for anyone who wants to test themselves.
+2. Checkpoint challenges are optional. A learner can skip any checkpoint, and it stays available for anyone who wants to test themselves.

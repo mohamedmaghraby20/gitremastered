@@ -1,17 +1,17 @@
 /**
- * MissionPanel.svelte.test.ts
- * Component tests for the mission ticket: goals tick from the snapshot, hints reveal one at a
+ * ChallengePanel.svelte.test.ts
+ * Component tests for the challenge ticket: goals tick from the snapshot, hints reveal one at a
  * time, Check explains, Reset hides the hints again, and completion is reported once.
  */
 
 import { page } from 'vitest/browser';
 import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
-import type { Mission } from '@gitremastered/course-engine/types/mission';
+import type { ChallengeDetails } from '@gitremastered/course-engine/types/challenge';
 import type { RepoSnapshot } from '@gitremastered/course-engine/types/repo-snapshot';
-import MissionPanel from './MissionPanel.svelte';
+import ChallengePanel from './ChallengePanel.svelte';
 
-const mission: Mission = {
+const challenge: ChallengeDetails = {
 	brief: 'Commit notes.txt.',
 	setup: ['git init'],
 	goals: [
@@ -57,10 +57,10 @@ const stagedSnapshot = snapshotWith({
 	stagedFiles: [{ path: 'notes.txt', changeKind: 'added', oldPath: null }]
 });
 
-describe('MissionPanel', () => {
+describe('ChallengePanel', () => {
 	it('ticks goals as soon as the snapshot meets them', async () => {
-		await render(MissionPanel, {
-			mission,
+		await render(ChallengePanel, {
+			challenge,
 			heading: 'Challenge 1 · Easy',
 			snapshot: stagedSnapshot,
 			onReset: () => Promise.resolve()
@@ -72,8 +72,8 @@ describe('MissionPanel', () => {
 	});
 
 	it('shows no hint button for a checkpoint challenge, and says why', async () => {
-		await render(MissionPanel, {
-			mission: { ...mission, hints: [] },
+		await render(ChallengePanel, {
+			challenge: { ...challenge, hints: [] },
 			heading: 'Challenge 1 · Easy',
 			snapshot: null,
 			onReset: () => Promise.resolve()
@@ -84,8 +84,8 @@ describe('MissionPanel', () => {
 	});
 
 	it('reveals hints one at a time', async () => {
-		await render(MissionPanel, {
-			mission,
+		await render(ChallengePanel, {
+			challenge,
 			heading: 'Challenge 1 · Easy',
 			snapshot: null,
 			onReset: () => Promise.resolve()
@@ -99,8 +99,8 @@ describe('MissionPanel', () => {
 	});
 
 	it('explains what is left when checking', async () => {
-		await render(MissionPanel, {
-			mission,
+		await render(ChallengePanel, {
+			challenge,
 			heading: 'Challenge 1 · Easy',
 			snapshot: stagedSnapshot,
 			onReset: () => Promise.resolve()
@@ -112,7 +112,12 @@ describe('MissionPanel', () => {
 
 	it('resets the practice folder and hides the hints again', async () => {
 		const onReset = vi.fn(() => Promise.resolve());
-		await render(MissionPanel, { mission, heading: 'Challenge 1 · Easy', snapshot: null, onReset });
+		await render(ChallengePanel, {
+			challenge,
+			heading: 'Challenge 1 · Easy',
+			snapshot: null,
+			onReset
+		});
 		await page.getByRole('button', { name: 'Show a hint (1 of 3)' }).click();
 
 		await page.getByRole('button', { name: 'Reset practice' }).click();
@@ -139,8 +144,8 @@ describe('MissionPanel', () => {
 			],
 			head: { kind: 'branch' as const, branchName: 'main', commitId: 'a'.repeat(40) }
 		};
-		const screen = await render(MissionPanel, {
-			mission,
+		const screen = await render(ChallengePanel, {
+			challenge,
 			heading: 'Challenge 1 · Easy',
 			snapshot: doneSnapshot,
 			onReset: () => Promise.resolve(),

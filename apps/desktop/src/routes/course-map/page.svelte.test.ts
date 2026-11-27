@@ -10,7 +10,7 @@ import { render } from 'vitest-browser-svelte';
 import {
 	createMemoryStorage,
 	loadProgress,
-	markMissionFinished,
+	markLessonFinished,
 	saveLessonOpened
 } from '$lib/stores/progress';
 import CourseMapPage from './+page.svelte';
@@ -29,7 +29,7 @@ describe('course map page', () => {
 	});
 
 	it('marks a done lesson and the current one, in words as well as marks', async () => {
-		await markMissionFinished('three-areas');
+		await markLessonFinished('three-areas');
 		await saveLessonOpened('ignoring-files');
 		await render(CourseMapPage);
 

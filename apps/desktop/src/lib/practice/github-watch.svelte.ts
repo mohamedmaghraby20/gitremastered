@@ -6,7 +6,7 @@
  * - after a local change (a push, say), at most once every 10 seconds,
  * - every 20 seconds while a GitHub goal is still open,
  * - whenever the student presses "Check GitHub now".
- * Its fields are Svelte state, so the mission panel updates by itself.
+ * Its fields are Svelte state, so the challenge panel updates by itself.
  */
 
 import type { GitHubContext, GitHubState } from '@gitremastered/course-engine/types/github';

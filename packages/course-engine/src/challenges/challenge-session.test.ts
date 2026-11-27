@@ -1,5 +1,5 @@
 /**
- * mission-session.test.ts
+ * challenge-session.test.ts
  * Tests for the hint ladder and the "Check challenge" message.
  */
 
@@ -10,7 +10,7 @@ import {
 	hasHiddenHints,
 	hintButtonLabel,
 	revealNextHint
-} from './mission-session.ts';
+} from './challenge-session.ts';
 
 describe('hint ladder', () => {
 	it('starts with no hint showing', () => {
@@ -32,7 +32,7 @@ describe('hint ladder', () => {
 
 describe('describeCheckResult', () => {
 	it('celebrates when every goal is met', () => {
-		expect(describeCheckResult([true, true])).toBe('Mission complete. Every goal is met.');
+		expect(describeCheckResult([true, true])).toBe('Challenge complete. Every goal is met.');
 	});
 
 	it('says how many goals are left', () => {

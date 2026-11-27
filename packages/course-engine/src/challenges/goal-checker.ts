@@ -1,6 +1,6 @@
 /**
  * goal-checker.ts
- * Decides whether a mission's goals are reached, by reading the current repo snapshot.
+ * Decides whether a challenge's goals are reached, by reading the current repo snapshot.
  * This file only sorts each goal to the file that knows its topic:
  *   file-goals.ts     one file's place among the three areas
  *   history-goals.ts  commits on HEAD's history, work in progress, settings, answers
@@ -14,7 +14,7 @@
  */
 
 import type { GitHubContext } from '../types/github.ts';
-import { isGitHubGoalCheck, type GoalCheck } from '../types/mission.ts';
+import { isGitHubGoalCheck, type GoalCheck } from '../types/challenge.ts';
 import type { RepoSnapshot } from '../types/repo-snapshot.ts';
 import { isBranchGoalMet } from './branch-goals.ts';
 import { isContentGoalMet } from './content-goals.ts';
@@ -104,8 +104,8 @@ export function isGoalMet(
 }
 
 /**
- * Checks every goal of a mission.
- * @param goalChecks - the mission's goals, in order
+ * Checks every goal of a challenge.
+ * @param goalChecks - the challenge's goals, in order
  * @param repoSnapshot - the repo state right now
  * @param gitHubContext - the practice repository on GitHub (null when unknown)
  * @returns one true/false per goal, in the same order

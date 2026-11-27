@@ -23,7 +23,7 @@ describe('buildHomeData', () => {
 	it('gives a returning student the last lesson, its furthest layer, and a review question', () => {
 		const returning: ProgressData = {
 			...emptyProgress,
-			finishedMissions: ['three-areas'],
+			finishedLessons: ['three-areas'],
 			lastOpenedLessonId: 'ignoring-files',
 			furthestLayers: { 'ignoring-files': 'underTheHood' }
 		};

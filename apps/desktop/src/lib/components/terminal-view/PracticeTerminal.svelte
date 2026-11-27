@@ -3,7 +3,7 @@
   The terminal window for a lesson: the retro frame with the live terminal inside, once the
   practice folder is ready. Before that (or outside the desktop app) it shows a short status line.
 
-  Inputs: missionId (names the folder in the title bar), practiceFolderPath (null until ready),
+  Inputs: practiceId (names the folder in the title bar), practiceFolderPath (null until ready),
           statusMessage (shown while there is no folder, e.g. "Setting up the practice folder…"),
           onCommand (called with each command line the student enters).
 -->
@@ -13,12 +13,12 @@
 	import TerminalWindow from './TerminalWindow.svelte';
 
 	let {
-		missionId,
+		practiceId,
 		practiceFolderPath,
 		statusMessage,
 		onCommand
 	}: {
-		missionId: string;
+		practiceId: string;
 		practiceFolderPath: string | null;
 		statusMessage: string;
 		onCommand: (commandLine: string) => void;
@@ -35,7 +35,7 @@
 	}
 </script>
 
-<TerminalWindow folderLabel={`~/practice/${missionId}/project`} bind:windowElement>
+<TerminalWindow folderLabel={`~/practice/${practiceId}/project`} bind:windowElement>
 	{#if practiceFolderPath === null}
 		<p class="type-terminal m-0 text-terminal-muted">{statusMessage}</p>
 	{:else}

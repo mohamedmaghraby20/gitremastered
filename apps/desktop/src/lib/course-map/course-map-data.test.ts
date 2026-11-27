@@ -13,7 +13,7 @@ import {
 	type LessonRow
 } from './course-map-data';
 
-const newStudent = { finishedMissions: [], lastOpenedLessonId: null };
+const newStudent = { finishedLessons: [], lastOpenedLessonId: null };
 
 describe('buildProModules', () => {
 	it('lists the modules in path order with numbered lesson rows', () => {
@@ -30,7 +30,7 @@ describe('buildProModules', () => {
 	});
 
 	it('marks done and current lessons and sums the module up', () => {
-		const student = { finishedMissions: ['what-is-git'], lastOpenedLessonId: 'setup' };
+		const student = { finishedLessons: ['what-is-git'], lastOpenedLessonId: 'setup' };
 		const rows = buildProModules(student)[0].rows;
 		expect(rows.map((row) => row.status)).toEqual(['done', 'current', 'todo']);
 		expect(buildProModules(student)[0].summary).toBe('In progress');
@@ -60,7 +60,7 @@ describe('findCurrentModule', () => {
 
 describe('findLessonStatus', () => {
 	it('keeps a finished lesson done even when it is open again', () => {
-		const student = { finishedMissions: ['three-areas'], lastOpenedLessonId: 'three-areas' };
+		const student = { finishedLessons: ['three-areas'], lastOpenedLessonId: 'three-areas' };
 		expect(findLessonStatus('three-areas', student)).toBe('done');
 	});
 });

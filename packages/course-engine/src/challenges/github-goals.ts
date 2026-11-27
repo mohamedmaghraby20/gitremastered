@@ -2,11 +2,11 @@
  * github-goals.ts
  * Goal checks about the practice repository on GitHub: branches, pull requests, issues,
  * releases, rules and Actions runs. They read a GitHubContext (the state plus when the
- * challenge started), which the mission panel fetches now and then (assumption A6), never
+ * challenge started), which the challenge panel fetches now and then (assumption A6), never
  * the local snapshot. Pure functions.
  */
 
-import type { GitHubGoalCheck } from '../types/mission.ts';
+import type { GitHubGoalCheck } from '../types/challenge.ts';
 import type { GitHubContext, Issue, PullRequest } from '../types/github.ts';
 
 /**

@@ -4,7 +4,7 @@
  * latest commit. Pure functions on a snapshot.
  */
 
-import type { FileGoalCheck } from '../types/mission.ts';
+import type { FileGoalCheck } from '../types/challenge.ts';
 import type { FileChange, RepoSnapshot } from '../types/repo-snapshot.ts';
 
 /**

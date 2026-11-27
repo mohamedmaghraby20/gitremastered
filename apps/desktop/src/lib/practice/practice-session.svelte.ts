@@ -15,11 +15,11 @@ import { explainCommand, type CommandCaption } from '$lib/visualizer/explain-com
 /** The core commands the session uses; tests pass fakes. */
 export type PracticeCommands = {
 	openPracticeRepo: (
-		missionId: string,
+		practiceId: string,
 		setupSteps: string[],
 		github: GitHubChallenge | null
 	) => Promise<string>;
-	resetPracticeRepo: (missionId: string, github: GitHubChallenge | null) => Promise<string>;
+	resetPracticeRepo: (practiceId: string, github: GitHubChallenge | null) => Promise<string>;
 	hasGitHubConsent: () => Promise<boolean>;
 	isDesktopApp: () => boolean;
 };
@@ -44,7 +44,7 @@ export class PracticeSession {
 	/** True while a build runs; screens disable Start and Reset meanwhile. */
 	isBuilding = $state(false);
 
-	private readonly missionId: string;
+	private readonly practiceId: string;
 	private setupSteps: string[];
 	private github: GitHubChallenge | null;
 	private readonly commands: PracticeCommands;
@@ -52,18 +52,18 @@ export class PracticeSession {
 	private latestBuildNumber = 0;
 
 	/**
-	 * @param missionId - names the practice folder (the lesson ID)
+	 * @param practiceId - names the practice folder (the lesson ID)
 	 * @param setupSteps - the active challenge's setup commands
 	 * @param github - the active challenge's GitHub field, or null for a local challenge
 	 * @param commands - the core commands (real ones by default)
 	 */
 	constructor(
-		missionId: string,
+		practiceId: string,
 		setupSteps: string[],
 		github: GitHubChallenge | null = null,
 		commands: PracticeCommands = realCommands
 	) {
-		this.missionId = missionId;
+		this.practiceId = practiceId;
 		this.setupSteps = setupSteps;
 		this.github = github;
 		this.commands = commands;
@@ -84,7 +84,7 @@ export class PracticeSession {
 			return;
 		}
 		await this.buildFolder('Opening your practice folder…', () =>
-			this.commands.openPracticeRepo(this.missionId, this.setupSteps, this.github)
+			this.commands.openPracticeRepo(this.practiceId, this.setupSteps, this.github)
 		);
 	}
 
@@ -95,7 +95,7 @@ export class PracticeSession {
 		}
 		this.lastCaption = null;
 		await this.buildFolder('Resetting the practice folder…', () =>
-			this.commands.resetPracticeRepo(this.missionId, this.github)
+			this.commands.resetPracticeRepo(this.practiceId, this.github)
 		);
 	}
 
@@ -118,7 +118,7 @@ export class PracticeSession {
 		}
 		this.lastCaption = null;
 		await this.buildFolder('Setting up the challenge…', () =>
-			this.commands.openPracticeRepo(this.missionId, this.setupSteps, this.github)
+			this.commands.openPracticeRepo(this.practiceId, this.setupSteps, this.github)
 		);
 	}
 

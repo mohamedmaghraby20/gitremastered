@@ -13,7 +13,7 @@
 		"check": "pnpm --recursive check",
 		"lint": "pnpm --recursive lint",
 		"format": "pnpm --recursive format",
-		"test:missions": "pnpm --filter @gitremastered/desktop test:missions",
+		"test:challenges": "pnpm --filter @gitremastered/desktop test:challenges",
 		"test:github": "pnpm --filter @gitremastered/desktop test:github",
 		"content:check": "pnpm --filter @gitremastered/course-engine content:check",
 		"lesson:check": "pnpm --filter @gitremastered/course-engine lesson:check",

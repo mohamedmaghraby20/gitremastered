@@ -3,7 +3,7 @@
  * Pure functions that answer "where is the student?" from saved progress and the path files:
  * the lesson to continue, the lessons up next, how far along a path is, and which reading
  * layer is further. Home, the course map and the sidebar use them; none of them saves anything.
- * A lesson counts as done when its mission is finished (the sidebar's ✓ uses the same rule).
+ * A lesson counts as done when its challenge is finished (the sidebar's ✓ uses the same rule).
  */
 
 import type { BookPath } from '@gitremastered/course-engine/types/book-path';
@@ -12,7 +12,7 @@ import { lessonLayerIds, type LessonLayerId } from '@gitremastered/course-engine
 
 /** The parts of saved progress these functions read. */
 export type StudentPlace = {
-	finishedMissions: string[];
+	finishedLessons: string[];
 	lastOpenedLessonId: string | null;
 };
 
@@ -93,7 +93,7 @@ export function findUpNextLessonIds(
 	];
 	return lessonsInReadingOrder
 		.filter((lessonId) => lessonId !== currentLessonId)
-		.filter((lessonId) => !student.finishedMissions.includes(lessonId))
+		.filter((lessonId) => !student.finishedLessons.includes(lessonId))
 		.slice(0, count);
 }
 
@@ -105,7 +105,7 @@ export function findUpNextLessonIds(
  */
 export function countPathProgress(student: StudentPlace, lessonIds: string[]): PathProgress {
 	const doneCount = lessonIds.filter((lessonId) =>
-		student.finishedMissions.includes(lessonId)
+		student.finishedLessons.includes(lessonId)
 	).length;
 	return { doneCount, totalCount: lessonIds.length };
 }

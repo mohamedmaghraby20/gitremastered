@@ -11,11 +11,11 @@
           onGitHubConsent (the student accepted the consent screen).
 -->
 <script lang="ts">
-	import type { Challenge } from '@gitremastered/course-engine/types/mission';
+	import type { Challenge } from '@gitremastered/course-engine/types/challenge';
 	import type { RepoSnapshot } from '@gitremastered/course-engine/types/repo-snapshot';
-	import type { GitHubWatch } from '$lib/mission-engine/github-watch.svelte';
+	import type { GitHubWatch } from '$lib/practice/github-watch.svelte';
 	import PartHeading from '$lib/components/lesson-reader/PartHeading.svelte';
-	import MissionPanel from '$lib/components/mission-panel/MissionPanel.svelte';
+	import ChallengePanel from '$lib/components/challenges/ChallengePanel.svelte';
 	import ChallengeCard from './ChallengeCard.svelte';
 
 	let {
@@ -83,8 +83,8 @@
 		{/each}
 	</ul>
 	{#key activeChallenge.id}
-		<MissionPanel
-			mission={activeChallenge}
+		<ChallengePanel
+			challenge={activeChallenge}
 			heading={describeActiveChallenge()}
 			{snapshot}
 			onReset={onreset}

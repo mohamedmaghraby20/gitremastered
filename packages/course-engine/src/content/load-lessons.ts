@@ -9,7 +9,7 @@
 import type { BookPath } from '../types/book-path.ts';
 import type { LearningPath } from '../types/learning-path.ts';
 import type { Lesson } from '../types/lesson.ts';
-import type { Challenge } from '../types/mission.ts';
+import type { Challenge } from '../types/challenge.ts';
 import type { CommandPage, GlossaryTerm } from '../types/reference.ts';
 import { checkLessonsExist } from './check-lesson-ids.ts';
 import { loadCommandPages, loadGlossary } from './load-reference.ts';

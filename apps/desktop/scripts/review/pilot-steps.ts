@@ -15,7 +15,7 @@ export type PilotStep = {
 };
 
 /** Page script: the active challenge header's "n / m done" text. */
-const missionProgress = `document.querySelector('section[aria-label="Active challenge"] header').innerText`;
+const challengeProgress = `document.querySelector('section[aria-label="Active challenge"] header').innerText`;
 
 /**
  * Clicks a layer tab and checks its panel shows.
@@ -123,12 +123,12 @@ export const pilotSteps: PilotStep[] = [
 		}
 	},
 	{
-		name: '5 · mission detects the goal after the real solution',
+		name: '5 · challenge detects the goal after the real solution',
 		run: async (student) => {
 			await student.typeCommand('git add notes.txt');
 			await pause(300);
 			await student.typeCommand('git commit -q -m "Add release notes"');
-			const milliseconds = await student.waitUntil(`${missionProgress}.includes('2 / 2 done')`);
+			const milliseconds = await student.waitUntil(`${challengeProgress}.includes('2 / 2 done')`);
 			await student.clickButton('Check challenge');
 			const message = await student.readText(
 				'section[aria-label="Active challenge"] [role="status"]'
@@ -140,7 +140,7 @@ export const pilotSteps: PilotStep[] = [
 		name: '5 · reset rebuilds the practice folder and hides the hints',
 		run: async (student) => {
 			await student.clickButton('Reset practice');
-			await student.waitUntil(`${missionProgress}.includes('1 / 2 done')`, 15_000);
+			await student.waitUntil(`${challengeProgress}.includes('1 / 2 done')`, 15_000);
 			const hintCount = await student.evaluate<number>(
 				`document.querySelectorAll('ol[aria-label="Hints"] li').length`
 			);
@@ -175,7 +175,7 @@ export const pilotSteps: PilotStep[] = [
 		}
 	},
 	{
-		name: '7 · finished mission gets a ✓ in the sidebar',
+		name: '7 · finished challenge gets a ✓ in the sidebar',
 		run: async (student) => {
 			// The lesson page folds the sidebar to an icon rail, so check on the home page.
 			await student.evaluate(`document.querySelector('header a[href$="/"]').click()`);

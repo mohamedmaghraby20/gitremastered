@@ -1,6 +1,6 @@
 /**
- * run-missions.test.ts
- * `pnpm test:missions`: every challenge of every lesson, run for real. Its setup and reference
+ * run-challenges.test.ts
+ * `pnpm test:challenges`: every challenge of every lesson, run for real. Its setup and reference
  * solution must reach every goal. A deliberately wrong solution must fail, naming the goal it
  * missed.
  *
@@ -15,7 +15,7 @@ import {
 	readDraftContentFiles,
 	readDraftFromEnvironment
 } from '@gitremastered/course-engine/node/read-draft-content';
-import { buildSnapshotPrinter, runMission } from './mission-runner.ts';
+import { buildSnapshotPrinter, runChallenge } from './challenge-runner.ts';
 
 /** The one lesson being written, when `pnpm lesson:check` started this run; otherwise null. */
 const draft = readDraftFromEnvironment();
@@ -46,7 +46,7 @@ describe.skipIf(challenges.length === 0)('every challenge', () => {
 	it.each(challenges)(
 		'%s: the reference solution reaches every goal',
 		(challengeLabel, challenge) => {
-			const result = runMission(challengeLabel.replace(' / ', '-'), challenge);
+			const result = runChallenge(challengeLabel.replace(' / ', '-'), challenge);
 			expect(result.missedGoals).toEqual([]);
 		}
 	);
@@ -57,13 +57,13 @@ describe.skipIf(draft !== null)('a wrong solution', () => {
 		if (pilotChallenge === undefined) {
 			throw new Error('The pilot lesson three-areas is missing');
 		}
-		// Commits README.md too, which the mission says to keep out.
-		const wrongMission = {
+		// Commits README.md too, which the challenge says to keep out.
+		const wrongChallenge = {
 			...pilotChallenge,
 			solution: ['git add notes.txt README.md', 'git commit -q -m "Add everything"']
 		};
 
-		const result = runMission('wrong-solution', wrongMission);
+		const result = runChallenge('wrong-solution', wrongChallenge);
 
 		expect(result.missedGoals).toEqual(['README.md is still changed, not committed']);
 	});
@@ -75,12 +75,12 @@ describe.skipIf(draft !== null)('a shortcut that saves nothing', () => {
 			throw new Error('The pilot lesson three-areas is missing');
 		}
 		// Deletes notes.txt and makes an empty commit: no pending change for notes.txt, no save.
-		const shortcutMission = {
+		const shortcutChallenge = {
 			...pilotChallenge,
 			solution: ['rm notes.txt', 'git commit -q --allow-empty -m "Nothing"']
 		};
 
-		const result = runMission('shortcut-solution', shortcutMission);
+		const result = runChallenge('shortcut-solution', shortcutChallenge);
 
 		expect(result.missedGoals).toEqual(['notes.txt is saved in a new commit']);
 	});
@@ -104,7 +104,7 @@ describe.skipIf(draft !== null)('the re-include trap', () => {
 			]
 		};
 
-		const result = runMission('re-include-trap', trapSolution);
+		const result = runChallenge('re-include-trap', trapSolution);
 
 		expect(result.missedGoals).toEqual(['build/NOTES.md is committed']);
 	});

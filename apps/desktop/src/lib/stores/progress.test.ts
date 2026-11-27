@@ -9,7 +9,7 @@ import {
 	createMemoryStorage,
 	loadProgress,
 	markChallengeFinished,
-	markMissionFinished,
+	markLessonFinished,
 	saveActiveChallenge,
 	progress,
 	resetProgress,
@@ -28,7 +28,7 @@ describe('progress', () => {
 	it('starts empty with the system theme when nothing was saved', async () => {
 		const loaded = await loadProgress(createMemoryStorage());
 		expect(loaded).toEqual({
-			finishedMissions: [],
+			finishedLessons: [],
 			finishedChallenges: {},
 			activeChallengeIds: {},
 			quizResults: {},
@@ -45,12 +45,23 @@ describe('progress', () => {
 		});
 	});
 
-	it('saves finished missions, quiz results and the theme and text size, and loads them again', async () => {
+	it('keeps finished lessons saved under their old name, finishedMissions', async () => {
+		const storage = createMemoryStorage();
+		await storage.set('progress', { finishedMissions: ['three-areas'], theme: 'dark' });
+
+		const loaded = await loadProgress(storage);
+
+		expect(loaded.finishedLessons).toEqual(['three-areas']);
+		expect(loaded.theme).toBe('dark');
+		expect(loaded).not.toHaveProperty('finishedMissions');
+	});
+
+	it('saves finished challenges, quiz results and the theme and text size, and loads them again', async () => {
 		const storage = createMemoryStorage();
 		await loadProgress(storage);
 
-		await markMissionFinished('three-areas');
-		await markMissionFinished('three-areas');
+		await markLessonFinished('three-areas');
+		await markLessonFinished('three-areas');
 		await saveQuizResult('three-areas', { correctCount: 2, questionCount: 3 });
 		await saveThemeChoice('dark');
 		await saveTerminalFontSize(16);
@@ -58,7 +69,7 @@ describe('progress', () => {
 		// A new session: load from the same storage.
 		const reloaded = await loadProgress(storage);
 		expect(reloaded).toEqual({
-			finishedMissions: ['three-areas'],
+			finishedLessons: ['three-areas'],
 			finishedChallenges: {},
 			activeChallengeIds: {},
 			quizResults: { 'three-areas': { correctCount: 2, questionCount: 3 } },
@@ -94,23 +105,23 @@ describe('progress', () => {
 		const saveSpy = vi.spyOn(storage, 'save');
 		await loadProgress(storage);
 
-		await markMissionFinished('three-areas');
+		await markLessonFinished('three-areas');
 
 		expect(saveSpy).toHaveBeenCalledOnce();
 	});
 
-	it('resets missions, quizzes and reading places but keeps the theme and text size', async () => {
+	it('resets challenges, quizzes and reading places but keeps the theme and text size', async () => {
 		await loadProgress(createMemoryStorage());
 		await saveLessonOpened('three-areas');
 		await saveLayerRead('three-areas', 'advanced');
 		await saveThemeChoice('dark');
 		await saveTerminalFontSize(16);
-		await markMissionFinished('three-areas');
+		await markLessonFinished('three-areas');
 
 		await resetProgress();
 
 		expect(get(progress)).toEqual({
-			finishedMissions: [],
+			finishedLessons: [],
 			finishedChallenges: {},
 			activeChallengeIds: {},
 			quizResults: {},
@@ -157,6 +168,6 @@ describe('progress', () => {
 		const reloaded = await loadProgress(storage);
 		expect(reloaded.finishedChallenges).toEqual({ 'three-areas': ['two-commits'] });
 		expect(reloaded.activeChallengeIds).toEqual({ 'three-areas': 'two-commits' });
-		expect(reloaded.finishedMissions).toEqual(['three-areas']);
+		expect(reloaded.finishedLessons).toEqual(['three-areas']);
 	});
 });

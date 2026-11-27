@@ -16,14 +16,14 @@ import type {
 	GitHubContext,
 	GitHubState
 } from '@gitremastered/course-engine/types/github';
-import type { Mission } from '@gitremastered/course-engine/types/mission';
-import { checkGoals } from '@gitremastered/course-engine/mission-engine/goal-checker';
+import type { ChallengeDetails } from '@gitremastered/course-engine/types/challenge';
+import { checkGoals } from '@gitremastered/course-engine/challenges/goal-checker';
 import {
 	findBashProgram,
 	readSnapshot,
 	stepEnvironment,
-	type MissionRunResult
-} from '../missions/mission-runner.ts';
+	type ChallengeRunResult
+} from '../challenges/challenge-runner.ts';
 
 /** The Rust project, where the GitHub example program lives. */
 const rustProjectPath = fileURLToPath(new URL('../../src-tauri', import.meta.url));
@@ -61,26 +61,26 @@ export function isGitHubReady(): boolean {
 /**
  * Runs a GitHub challenge's setup and solution, then checks its goals against the local
  * snapshot and GitHub's state.
- * @param missionId - names the temporary practice folder
- * @param mission - the challenge (its `github` field must be set)
+ * @param practiceId - names the temporary practice folder
+ * @param challenge - the challenge (its `github` field must be set)
  * @returns each goal's result and the labels of missed goals
  */
-export async function runGitHubMission(
-	missionId: string,
-	mission: Mission
-): Promise<MissionRunResult> {
-	const github = mission.github as GitHubChallenge;
+export async function runGitHubChallenge(
+	practiceId: string,
+	challenge: ChallengeDetails
+): Promise<ChallengeRunResult> {
+	const github = challenge.github as GitHubChallenge;
 	const practiceRoot = mkdtempSync(join(tmpdir(), 'gitremastered-github-'));
-	const practiceFolder = join(practiceRoot, missionId, 'project');
+	const practiceFolder = join(practiceRoot, practiceId, 'project');
 	mkdirSync(practiceFolder, { recursive: true });
 	try {
 		// Rust answers with the setup's environment and, apart, the attempt's start by GitHub's clock.
 		const { STARTED_AT: startedAt, ...githubVariables } = callGitHubProgram('prepare', github);
 		const environment = { ...stepEnvironment, ...githubVariables };
-		runSteps(mission.setup, practiceFolder, environment);
+		runSteps(challenge.setup, practiceFolder, environment);
 		callGitHubProgram('finish', github);
-		runSteps(mission.solution, practiceFolder, environment);
-		return await waitForGoals(mission, practiceRoot, practiceFolder, startedAt);
+		runSteps(challenge.solution, practiceFolder, environment);
+		return await waitForGoals(challenge, practiceRoot, practiceFolder, startedAt);
 	} finally {
 		rmSync(practiceRoot, { recursive: true, force: true });
 	}
@@ -105,32 +105,32 @@ function runSteps(steps: string[], practiceFolder: string, environment: NodeJS.P
 
 /**
  * Reads the snapshot and GitHub until every goal is met or the wait is over.
- * @param mission - the challenge
+ * @param challenge - the challenge
  * @param practiceRoot - the temporary practice root
  * @param practiceFolder - the project folder
  * @param startedAt - when the challenge started (ISO 8601)
  * @returns the last results
  */
 async function waitForGoals(
-	mission: Mission,
+	challenge: ChallengeDetails,
 	practiceRoot: string,
 	practiceFolder: string,
 	startedAt: string
-): Promise<MissionRunResult> {
-	const github = mission.github as GitHubChallenge;
+): Promise<ChallengeRunResult> {
+	const github = challenge.github as GitHubChallenge;
 	const deadline = Date.now() + longestWait;
 	let goalResults: boolean[] = [];
 	while (true) {
 		const snapshot = readSnapshot(practiceRoot, practiceFolder);
 		const state = callGitHubProgram('state', github) as unknown as GitHubState;
 		const context: GitHubContext = { state, startedAt };
-		goalResults = checkGoals(mission.goals, snapshot, context);
+		goalResults = checkGoals(challenge.goals, snapshot, context);
 		if (goalResults.every((isMet) => isMet) || Date.now() > deadline) {
 			break;
 		}
 		await new Promise((resolve) => setTimeout(resolve, readGap));
 	}
-	const missedGoals = mission.goals
+	const missedGoals = challenge.goals
 		.filter((_goal, index) => !goalResults[index])
 		.map((goal) => goal.label);
 	return { goalResults, missedGoals };

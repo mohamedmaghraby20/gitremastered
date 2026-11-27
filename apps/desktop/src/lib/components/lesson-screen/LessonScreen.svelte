@@ -1,6 +1,6 @@
 <!--
   LessonScreen.svelte
-  One open lesson: the lesson column (text, mission, quiz) on the left and the practice column
+  One open lesson: the lesson column (text, challenge, quiz) on the left and the practice column
   (visualizer and terminal) on the right.
   It owns the lesson's practice session and listens for live repo snapshots while open.
   The page re-creates it for each lesson, so every lesson starts with a fresh session.
@@ -11,8 +11,8 @@
 	import type { Lesson } from '@gitremastered/course-engine/types/lesson';
 	import type { LessonPlace } from '@gitremastered/course-engine/content/lesson-navigation';
 	import { untrack } from 'svelte';
-	import { PracticeSession } from '$lib/mission-engine/practice-session.svelte';
-	import { GitHubWatch } from '$lib/mission-engine/github-watch.svelte';
+	import { PracticeSession } from '$lib/practice/practice-session.svelte';
+	import { GitHubWatch } from '$lib/practice/github-watch.svelte';
 	import {
 		findGitHubChallengeStart,
 		getGitHubState,
@@ -237,5 +237,5 @@
 		onresizeend={saveLessonColumnShare}
 		onreset={resetLessonColumnShare}
 	/>
-	<PracticeColumn missionId={lesson.id} {session} snapshot={$currentRepoSnapshot} />
+	<PracticeColumn practiceId={lesson.id} {session} snapshot={$currentRepoSnapshot} />
 </div>

@@ -1,6 +1,6 @@
 <!--
   ResetProgress.svelte
-  Settings row that forgets finished missions and quiz results, after asking to confirm.
+  Settings row that forgets finished challenges and quiz results, after asking to confirm.
   The first click only asks; nothing is deleted until the student confirms.
 -->
 <script lang="ts">
@@ -22,7 +22,8 @@
 	<div>
 		<div class="font-semibold">Reset progress</div>
 		<div class="type-small text-ink-muted">
-			Forgets finished missions, quiz results and where you are in each lesson. Your settings stay.
+			Forgets finished challenges, quiz results and where you are in each lesson. Your settings
+			stay.
 		</div>
 	</div>
 	{#if isConfirming}

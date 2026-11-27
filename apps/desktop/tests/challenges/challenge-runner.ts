@@ -1,6 +1,6 @@
 /**
- * mission-runner.ts
- * Runs one mission for real: in a temporary folder, it runs the mission's setup steps and its
+ * challenge-runner.ts
+ * Runs one challenge for real: in a temporary folder, it runs the challenge's setup steps and its
  * reference solution with real Git (through bash, like the app), reads the repo snapshot with
  * the app's own Rust reader, and checks every goal with the app's own goal checker.
  */
@@ -10,48 +10,48 @@ import { existsSync, mkdirSync, mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import type { Mission } from '@gitremastered/course-engine/types/mission';
+import type { ChallengeDetails } from '@gitremastered/course-engine/types/challenge';
 import type { RepoSnapshot } from '@gitremastered/course-engine/types/repo-snapshot';
-import { checkGoals } from '@gitremastered/course-engine/mission-engine/goal-checker';
+import { checkGoals } from '@gitremastered/course-engine/challenges/goal-checker';
 
 /** The Rust project, where the snapshot printer lives. */
 const rustProjectPath = fileURLToPath(new URL('../../src-tauri', import.meta.url));
 
-/** What happened when a mission ran. */
-export type MissionRunResult = {
+/** What happened when a challenge ran. */
+export type ChallengeRunResult = {
 	goalResults: boolean[]; // one per goal, in order
 	missedGoals: string[]; // the labels of the goals that were not met
 };
 
 /**
  * Environment for the steps: a fixed identity (CI machines have none) and no prompts.
- * A mission's own `git config` steps still win, because repo settings beat these defaults.
+ * A challenge's own `git config` steps still win, because repo settings beat these defaults.
  */
 export const stepEnvironment = {
 	...process.env,
 	GIT_TERMINAL_PROMPT: '0',
 	GIT_EDITOR: 'true',
-	GIT_AUTHOR_NAME: 'Mission Test',
-	GIT_AUTHOR_EMAIL: 'mission-test@example.com',
-	GIT_COMMITTER_NAME: 'Mission Test',
-	GIT_COMMITTER_EMAIL: 'mission-test@example.com'
+	GIT_AUTHOR_NAME: 'Challenge Test',
+	GIT_AUTHOR_EMAIL: 'challenge-test@example.com',
+	GIT_COMMITTER_NAME: 'Challenge Test',
+	GIT_COMMITTER_EMAIL: 'challenge-test@example.com'
 };
 
 /**
- * Runs a mission's setup and solution, then checks its goals.
- * @param missionId - names the temporary practice folder
- * @param mission - the mission from mission.yaml
+ * Runs a challenge's setup and solution, then checks its goals.
+ * @param practiceId - names the temporary practice folder
+ * @param challenge - the challenge from challenges.yaml
  * @returns each goal's result and the labels of missed goals
  */
-export function runMission(missionId: string, mission: Mission): MissionRunResult {
-	const practiceRoot = mkdtempSync(join(tmpdir(), 'gitremastered-missions-'));
-	// The same layout as the app: a workspace per mission, with the practice folder inside,
+export function runChallenge(practiceId: string, challenge: ChallengeDetails): ChallengeRunResult {
+	const practiceRoot = mkdtempSync(join(tmpdir(), 'gitremastered-challenges-'));
+	// The same layout as the app: a workspace per challenge, with the practice folder inside,
 	// so a remote lesson can build "../origin.git" beside it.
-	const practiceFolder = join(practiceRoot, missionId, 'project');
+	const practiceFolder = join(practiceRoot, practiceId, 'project');
 	mkdirSync(practiceFolder, { recursive: true });
 	try {
 		const bashProgram = findBashProgram();
-		for (const step of [...mission.setup, ...mission.solution]) {
+		for (const step of [...challenge.setup, ...challenge.solution]) {
 			execFileSync(bashProgram, ['-c', step], {
 				cwd: practiceFolder,
 				env: stepEnvironment,
@@ -59,8 +59,8 @@ export function runMission(missionId: string, mission: Mission): MissionRunResul
 			});
 		}
 		const snapshot = readSnapshot(practiceRoot, practiceFolder);
-		const goalResults = checkGoals(mission.goals, snapshot);
-		const missedGoals = mission.goals
+		const goalResults = checkGoals(challenge.goals, snapshot);
+		const missedGoals = challenge.goals
 			.filter((_goal, index) => !goalResults[index])
 			.map((goal) => goal.label);
 		return { goalResults, missedGoals };

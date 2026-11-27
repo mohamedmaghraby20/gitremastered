@@ -1,7 +1,7 @@
 /**
  * parse-challenges.test.ts
  * Tests for reading challenges.yaml: three or more challenges, easy to hard, each with the
- * mission fields (brief, setup, goals, hints, solution).
+ * challenge details (brief, setup, goals, hints, solution).
  */
 
 import { describe, expect, it } from 'vitest';
@@ -12,7 +12,7 @@ const fileName = 'content/lessons/sample-lesson/challenges.yaml';
 const validChallengesText = readSampleLessonFile('challenges.yaml');
 
 describe('parseChallengesText', () => {
-	it('reads every challenge with its level and mission fields', () => {
+	it('reads every challenge with its level and challenge details', () => {
 		const challenges = parseChallengesText(validChallengesText, fileName);
 		expect(challenges.map((challenge) => challenge.level)).toEqual(['easy', 'medium', 'hard']);
 		const first = challenges[0];
