@@ -145,3 +145,109 @@ challenges:
       - git tag -a v2.0 -m "Version 2.0" "$(git log --format=%h --grep='Set version to 2.0')"
       - git push -q origin v2.0
       - git push -q
+
+  - id: publish-a-release
+    title: Publish version 1.0 on GitHub
+    level: hard
+    brief: "This challenge runs on a practice repository in your own GitHub account. The notes app is ready: its newest commit sets the version to 1.0, and the commits are on GitHub. Tag that commit as v1.0 with an annotated tag, get the tag onto GitHub, and publish a GitHub release for it with a title and a line of notes."
+    github:
+      repo: gitremastered-practice-tags-and-releases
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Notes app" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - echo "function search() {}" > search.js
+      - git add search.js
+      - git commit -q -m "Add search page"
+      - echo "function search(text) { if (!text) return []; }" > search.js
+      - git commit -q -am "Fix search for empty text"
+      - echo "function exportPdf() {}" > export.js
+      - git add export.js
+      - git commit -q -m "Add export to PDF"
+      - echo "1.0" > VERSION
+      - git add VERSION
+      - git commit -q -m "Set version to 1.0"
+      - git remote add origin "$PRACTICE_GITHUB_URL"
+      - git push -q --force --mirror origin
+      - git fetch -q origin
+      - git branch -q --set-upstream-to=origin/main main
+    goal:
+      - check: tag-is-annotated
+        tag: v1.0
+        label: "v1.0 is an annotated tag in your repository"
+      - check: tag-is-on-commit
+        tag: v1.0
+        message: "Set version to 1.0"
+        label: "v1.0 sits on the commit \"Set version to 1.0\""
+      - check: github-release-exists
+        tag: v1.0
+        label: "GitHub shows a published release for v1.0"
+    hints:
+      - "Three steps, in this order: make the tag, send the tag, publish the release. Read \"Publish a release on GitHub\" in Must know."
+      - "git tag -a makes the tag and git push origin v1.0 sends it. Then gh release create builds the release on the tag; give it --title and --notes, or it stops to ask questions."
+      - "Run: git tag -a v1.0 -m \"Version 1.0\", then git push origin v1.0, then gh release create v1.0 --title \"Version 1.0\" --notes \"First public release with search and export to PDF.\""
+    solution:
+      - git tag -a v1.0 -m "Version 1.0"
+      - git push -q origin v1.0
+      - gh release create v1.0 --title "Version 1.0" --notes "First public release with search and export to PDF."
+
+  - id: release-an-older-version
+    title: The release that was never published
+    level: hard
+    brief: "This challenge runs on a practice repository in your own GitHub account. Version 1.1 shipped at the commit \"Set version to 1.1\", and main has moved on since. Nobody tagged 1.1 and GitHub has no release for it. Tag that commit as v1.1 (annotated), push the tag, and publish a release for it. Let GitHub write the notes."
+    github:
+      repo: gitremastered-practice-tags-and-releases
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Notes app" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - echo "function search() {}" > search.js
+      - git add search.js
+      - git commit -q -m "Add search page"
+      - echo "1.0" > VERSION
+      - git add VERSION
+      - git commit -q -m "Set version to 1.0"
+      - git tag -a v1.0 -m "Version 1.0"
+      - echo "function exportPdf() {}" > export.js
+      - git add export.js
+      - git commit -q -m "Add export to PDF"
+      - echo "1.1" > VERSION
+      - git commit -q -am "Set version to 1.1"
+      - 'echo "body { background: black; }" > dark.css'
+      - git add dark.css
+      - git commit -q -m "Start the dark theme"
+      - git remote add origin "$PRACTICE_GITHUB_URL"
+      - git push -q --force --mirror origin
+      - git fetch -q origin
+      - git branch -q --set-upstream-to=origin/main main
+    goal:
+      - check: tag-is-on-commit
+        tag: v1.1
+        message: "Set version to 1.1"
+        label: "v1.1 sits on the commit \"Set version to 1.1\""
+      - check: tag-is-annotated
+        tag: v1.1
+        label: "v1.1 is an annotated tag in your repository"
+      - check: github-release-exists
+        tag: v1.1
+        label: "GitHub shows a published release for v1.1"
+      - check: branch-is-at-commit
+        branch: main
+        message: "Start the dark theme"
+        label: "main is still on \"Start the dark theme\""
+    hints:
+      - "The release belongs on an older commit, not on the newest one. Find its ID with git log --oneline. If you let gh make the tag for you, where would the tag go? Read \"Let gh check the tag\" in Advanced."
+      - "Tag the older commit yourself (a commit ID at the end of git tag -a), push the tag, then create the release. The option --generate-notes makes GitHub write the notes, and --verify-tag stops gh if the tag is not on GitHub."
+      - "Run: git tag -a v1.1 <id> -m \"Version 1.1\" with the ID of \"Set version to 1.1\", then git push origin v1.1, then gh release create v1.1 --generate-notes --verify-tag"
+    solution:
+      - git tag -a v1.1 -m "Version 1.1" "$(git log --format=%h --grep='Set version to 1.1')"
+      - git push -q origin v1.1
+      - gh release create v1.1 --generate-notes --verify-tag

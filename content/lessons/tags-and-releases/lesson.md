@@ -1,6 +1,6 @@
 ---
 id: tags-and-releases
-title: "Tags: mark a release"
+title: "Tags and GitHub releases"
 module: remotes
 bookSection: "2.6 Tagging"
 bookUrl: https://git-scm.com/book/en/v2/Git-Basics-Tagging
@@ -10,7 +10,7 @@ bookSources:
 readFirst: [remotes]
 ---
 
-A customer reports a bug in version 1.0, and your project has had forty commits since. Which commit was version 1.0? A tag answers that for good: it puts a name like `v1.0` on one commit, and this lesson shows how to create tags, share them and go back to the version they mark.
+A customer reports a bug in version 1.0, and your project has had forty commits since. Which commit was version 1.0? A tag answers that for good: it puts a name like `v1.0` on one commit. This lesson shows how to create tags, share them, go back to the version they mark, and turn a tag into a release page on GitHub that your users can read.
 
 ## Must know
 
@@ -262,9 +262,59 @@ today: "`git switch --detach v1.0` to look, `git switch -c hotfix-1.0 v1.0` to w
 book: "`git checkout v1.0` and `git checkout -b version2 v1.0` do the same and still work."
 :::
 
+### Publish a release on GitHub
+
+A tag tells Git, and your team, which commit is version 1.0. The people who use your program never read tags. They want a page that says what is new and gives them something to download.
+
+On GitHub that page is a [release](term:release): a tag, plus a title, release notes (a short text that says what changed) and, if you want, files to download. GitHub Docs put it in one line: releases are based on Git tags. Every release sits on exactly one tag.
+
+| Part of a release | Where it comes from |
+|---|---|
+| The commit it marks | The tag, so from Git |
+| Title and notes | You write them, or GitHub writes the notes for you |
+| Source code as a `.zip` and a `.tar.gz` file | GitHub adds these links by itself, from the files at the tag |
+| Other files, such as an installer | You upload them (see "Files to download" in Advanced) |
+
+Releases show on the repository's main page on GitHub: a "Releases" link to the right of the list of files.
+
+You can publish a release in the browser, or from the terminal with `gh`. `gh` is GitHub's own command-line program, [the GitHub CLI](term:github-cli). Git talks to any server; `gh` talks only to GitHub, about the things Git knows nothing of, such as releases. When you start a GitHub challenge, the app shows how to install `gh` and sign in.
+
+Publishing takes three steps, in this order:
+
+```console
+$ git tag -a v1.0 -m "Version 1.0"
+$ git push origin v1.0
+To https://github.com/your-name/notes-app.git
+ * [new tag]         v1.0 -> v1.0
+$ gh release create v1.0 --title "Version 1.0" --notes "First public release: search for notes."
+https://github.com/your-name/notes-app/releases/tag/v1.0
+```
+
+The first two commands are the ones you know: make the annotated tag, send it. The third is new.
+
+`gh release create v1.0` tells GitHub: build a release on the tag `v1.0`. `--title` is the heading of the page and `--notes` is its text. `gh` finds the repository by reading your remote `origin`, so you do not name it. It answers with the address of the new page, where `your-name` is your GitHub account and `notes-app` the repository.
+
+Give both `--title` and `--notes`. If you leave them out, `gh` stops and asks its questions one by one in the terminal.
+
+`gh release list` shows the releases of the repository, newest first:
+
+```console
+$ gh release list
+TITLE        TYPE    TAG NAME  PUBLISHED
+Version 1.0  Latest  v1.0      less than a minute ago
+```
+
+`Latest` in the `TYPE` column is the release GitHub shows on the repository's main page as the current version. `gh release view v1.0` prints one release with its notes, and `gh release view v1.0 --web` opens its page in your browser.
+
+The practice project for the Try-its keeps its server in a folder on your computer, so there is no Try-it here. You publish real releases in the last two challenges of this lesson, on a practice repository in your own GitHub account.
+
+:::careful
+The tag belongs to Git; the release belongs to GitHub. `git clone` and `git fetch` bring the tag `v1.0` and nothing of the release: its notes and files live only on GitHub. It works the other way too: deleting a release leaves its tag in place.
+:::
+
 ### When it goes wrong
 
-Four messages you will meet with tags:
+Four messages you will meet with tags, and one with releases:
 
 ```console
 $ git tag -a v0.5 -m "First version with search"
@@ -292,6 +342,13 @@ hint: Updates were rejected because the tag already exists in the remote.
 The server already has a tag `v0.5`, and it points somewhere else than yours. This happens after you delete and re-create a tag that was pushed before. If nobody has fetched the old one, delete it on the server (`git push origin --delete v0.5`) and push again. If people have it, keep the old tag and choose a new version number.
 
 The fourth has no message at all: a teammate says "I can't find v1.0", and you are sure you pushed. You pushed the commits. Run `git ls-remote --tags origin`; if the tag is missing there, send it with `git push origin v1.0`.
+
+```console
+$ gh release create v1.5 --title "Version 1.5" --notes "Faster search."
+tag v1.5 exists locally but has not been pushed to your-name/notes-app, please push it before continuing or specify the `--target` flag to create a new tag
+```
+
+You made the tag and forgot the middle step. GitHub cannot build a release on a tag it does not have. Run `git push origin v1.5`, then the same `gh` command again. Do not reach for `--target` here: it makes GitHub create a tag of its own, and your annotated tag stays at home.
 
 ## Under the hood
 
@@ -408,16 +465,153 @@ $ git config --global push.followTags true
 
 ### Signed tags
 
-`git tag -s v1.0 -m "Version 1.0"` makes an annotated tag with a cryptographic signature, so others can check that the release really comes from you. `git tag -v v1.0` verifies it. It needs a signing key; the lesson "Sign commits and tags (GPG and SSH)" sets one up.
+`git tag -s v1.0 -m "Version 1.0"` makes an annotated tag with a cryptographic signature, so others can check that the release really comes from you. `git tag -v v1.0` verifies it. It needs a signing key; the lesson [Sign commits and tags (GPG and SSH)](lesson:signing) sets one up.
 
-### GitHub releases
+### Let gh check the tag
 
-On GitHub, a release is a web page built on a tag: the tag marks the commit, and the page adds release notes and files to download, such as an installer. The tag is Git; the page is GitHub. The lesson on releases comes with the GitHub part of the course, where you work with a real GitHub account.
+"Must know" pushed the tag first, then created the release. Here is what happens when no tag with that name exists anywhere, neither on your computer nor on GitHub:
+
+```console
+$ gh release create v1.3 --title "Version 1.3" --notes "Oops"
+https://github.com/your-name/notes-app/releases/tag/v1.3
+$ git ls-remote --tags origin
+cdcd29c13c9adf18ed9a0c8f121c9d1f935d4e6a	refs/tags/v1.2
+5e97cd630bfd18161d809ccf34b3ddd5739f785a	refs/tags/v1.2^{}
+5e97cd630bfd18161d809ccf34b3ddd5739f785a	refs/tags/v1.3
+```
+
+No error. GitHub made the tag `v1.3` itself, on the newest commit of the [default branch](term:default-branch) (the repository's main branch on GitHub, here `main`). Compare the lines: `v1.2`, pushed from a computer, has two lines, so it is annotated. `v1.3` has one line: a lightweight tag, with no tagger and no message. And if the version you meant to release was an older commit, the tag is now on the wrong one.
+
+Add `--verify-tag`, and `gh` refuses to invent a tag:
+
+```console
+$ gh release create v9.9 --verify-tag --title "Version 9.9" --notes "Not yet"
+tag v9.9 doesn't exist in the repo your-name/notes-app, aborting due to --verify-tag flag
+```
+
+Use `--verify-tag` in every script that publishes releases. A typo in the version then stops the command and does not create a release on the wrong commit.
+
+### Notes written for you
+
+Writing notes by hand gets slow. Two options fill them in:
+
+| Option | The notes become | Good when |
+|---|---|---|
+| `--generate-notes` | A list GitHub builds: the merged pull requests since the release before, the people who contributed, and a link named "Full Changelog" that compares the two tags | The team works with pull requests |
+| `--notes-from-tag` | The message of your annotated tag | You already wrote a good tag message |
+
+A [pull request](term:pull-request) is a proposal on GitHub to merge one branch into another, which teammates discuss before it goes in; the lesson on pull requests teaches it. This small project has none, so the generated notes hold only the link:
+
+```console
+$ gh release create v1.1 --generate-notes --verify-tag
+https://github.com/your-name/notes-app/releases/tag/v1.1
+$ gh release view v1.1
+v1.1
+your-name released this less than a minute ago
+
+  **Full Changelog**: https://github.com/your-name/notes-app/compare/v1.0...v1.1
+
+
+View on GitHub: https://github.com/your-name/notes-app/releases/tag/v1.1
+```
+
+With `--generate-notes` you may leave `--title` out: the title becomes the tag name, `v1.1`. GitHub compared `v1.1` with `v1.0`, the tag before it. You can mix both: `--generate-notes --notes "Read this first"` puts your text above the generated list.
+
+### Drafts and pre-releases
+
+Two switches change who sees a release and how it is labelled:
+
+| Option | What it makes | Use it for |
+|---|---|---|
+| `--draft` | A release that is saved but not published: visitors do not see it | Preparing the notes and files, and publishing when everything is there |
+| `--prerelease` | A published release with a "Pre-release" label, which tells users it may be unstable | Release candidates and betas: versions for testers, not for everyone |
+
+```console
+$ gh release create v1.2-rc1 --prerelease --notes-from-tag
+https://github.com/your-name/notes-app/releases/tag/v1.2-rc1
+$ gh release create v1.2 --draft --title "Version 1.2" --notes "Dark theme." notes-app-1.2.zip
+https://github.com/your-name/notes-app/releases/tag/untagged-b2a27abaf55a5c2d0079
+$ gh release list
+TITLE        TYPE         TAG NAME  PUBLISHED
+Version 1.2  Draft        v1.2      less than a minute ago
+v1.2-rc1     Pre-release  v1.2-rc1  less than a minute ago
+v1.1         Latest       v1.1      less than a minute ago
+Version 1.0               v1.0      less than a minute ago
+```
+
+The file name at the end of the second command is explained in the next topic. Read the `TYPE` column: the pre-release was published after `v1.1`, and `v1.1` kept `Latest`. The draft's address says `untagged-…` because the draft has no public page at its tag yet. When the draft is ready, publish it with `gh release edit`:
+
+```console
+$ gh release edit v1.2 --draft=false
+https://github.com/your-name/notes-app/releases/tag/v1.2
+```
+
+Now `v1.2` is published, and `gh release list` shows it as `Latest`.
+
+### Files to download
+
+The files you attach to a release are called **assets**: an installer, a compiled program, a PDF of the manual. They are not in Git. GitHub stores them next to the release.
+
+Name the files at the end of `gh release create`, as the draft of `v1.2` above did with `notes-app-1.2.zip`, or add them later with `gh release upload`:
+
+```console
+$ gh release upload v1.2 checksums.txt
+$ gh release view v1.2
+v1.2
+your-name released this less than a minute ago
+
+  Dark theme.
+
+
+Assets
+NAME               DIGEST                                                                   SIZE
+checksums.txt      sha256:c001d0d1d2da2d23b87521529826ff1bb00c6afaac20b652c0871905c84d1508  5 B
+notes-app-1.2.zip  sha256:38d74681d1d2501765f17a3adc7b5d6c26e69b6deda06c3cb11519663afb6a4f  18 B
+
+View on GitHub: https://github.com/your-name/notes-app/releases/tag/v1.2
+```
+
+`DIGEST` is a checksum of each file: a fingerprint someone can compare after downloading, to be sure the file arrived unchanged. `gh release download v1.2` fetches the assets of a release into the current folder.
+
+GitHub Docs give the limits: each file under 2 GiB, up to 1000 files per release. This is where big build results belong, not in commits.
+
+### Which release is "Latest"
+
+Publishing a release for an old version has a trap. Here `v1.2` is the current release, and then someone publishes the forgotten `v0.9`:
+
+```console
+$ gh release create v0.9 --title "Version 0.9" --notes "Search page."
+https://github.com/your-name/notes-app/releases/tag/v0.9
+$ gh release list
+TITLE        TYPE         TAG NAME  PUBLISHED
+Version 0.9  Latest       v0.9      less than a minute ago
+Version 1.2               v1.2      less than a minute ago
+v1.2-rc1     Pre-release  v1.2-rc1  less than a minute ago
+v1.1                      v1.1      less than a minute ago
+Version 1.0               v1.0      less than a minute ago
+```
+
+`Latest` moved to 0.9, so the repository's main page now offers the old version as the current one. Say what you mean when you publish an older version, or repair it afterwards:
+
+| Command | Effect |
+|---|---|
+| `gh release create v0.9 --latest=false ...` | Publishes `v0.9` and leaves "Latest" where it is |
+| `gh release edit v1.2 --latest` | Moves "Latest" back to `v1.2` |
+
+### Change or delete a release
+
+| Command | Does |
+|---|---|
+| `gh release edit v1.0 --notes "..."` | Changes the notes (also `--title`, `--prerelease`, `--draft=false`) |
+| `gh release delete v1.0` | Deletes the release page and its assets, after asking; the tag stays |
+| `gh release delete v1.0 --cleanup-tag` | Deletes the release and the tag on GitHub. Your local tag stays until `git tag -d v1.0` |
+
+Fixing a typo in the notes is harmless. Deleting a published release is like moving a pushed tag: people may already have downloaded it. Publish a new version unless nobody has seen the release yet.
 
 ## Recap
 
-- A tag is a name for one commit that never moves. Use it to mark releases.
-- `git tag -a v1.0 -m "..."` makes an annotated tag (tagger, date, message). `git tag <name>` alone makes a lightweight one. Add a commit ID at the end to tag an older commit.
+- A tag is a name for one commit that never moves; use it to mark releases. `git tag -a v1.0 -m "..."` makes an annotated tag (tagger, date, message). `git tag <name>` alone makes a lightweight one. Add a commit ID at the end to tag an older commit.
 - `git push` does not send tags. Use `git push origin v1.0`, or `git push --follow-tags`.
 - Delete in two places: `git tag -d v1.0` here, `git push origin --delete v1.0` on the server. Never move a tag others already have.
 - `git switch --detach v1.0` looks at a release; `git switch -c <branch> v1.0` starts work from it.
+- A GitHub release is a page built on a tag, with notes and files. Push the tag, then `gh release create v1.0 --title "..." --notes "..."`.
