@@ -5,10 +5,10 @@ module: undo-and-fix
 bookSection: "2.4 Undoing Things"
 bookUrl: https://git-scm.com/book/en/v2/Git-Basics-Undoing-Things
 bookSources:
-  - book/progit2/book/02-git-basics/sections/undoing.asc
-  - book/progit2/book/07-git-tools/sections/rewriting-history.asc
-  - book/progit2/book/07-git-tools/sections/advanced-merging.asc
-  - book/progit2/book/07-git-tools/sections/reset.asc
+  - vendor/progit2/book/02-git-basics/sections/undoing.asc
+  - vendor/progit2/book/07-git-tools/sections/rewriting-history.asc
+  - vendor/progit2/book/07-git-tools/sections/advanced-merging.asc
+  - vendor/progit2/book/07-git-tools/sections/reset.asc
 readFirst: [undo-basics, fix-last-commit, revert-a-commit, reset-demystified]
 checkpoint: true
 ---

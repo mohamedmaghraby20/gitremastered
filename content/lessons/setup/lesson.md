@@ -5,10 +5,10 @@ module: orientation
 bookSection: "1.6 First-Time Git Setup"
 bookUrl: https://git-scm.com/book/en/v2/Getting-Started-First-Time-Git-Setup
 bookSources:
-  - book/progit2/book/01-introduction/sections/command-line.asc
-  - book/progit2/book/01-introduction/sections/installing.asc
-  - book/progit2/book/01-introduction/sections/first-time-setup.asc
-  - book/progit2/book/01-introduction/sections/help.asc
+  - vendor/progit2/book/01-introduction/sections/command-line.asc
+  - vendor/progit2/book/01-introduction/sections/installing.asc
+  - vendor/progit2/book/01-introduction/sections/first-time-setup.asc
+  - vendor/progit2/book/01-introduction/sections/help.asc
 readFirst: []
 ---
 

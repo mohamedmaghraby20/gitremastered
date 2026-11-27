@@ -5,7 +5,7 @@ module: working-in-a-team
 bookSection: "6.2 GitHub - Contributing to a Project"
 bookUrl: https://git-scm.com/book/en/v2/GitHub-Contributing-to-a-Project
 bookSources:
-  - book/progit2/book/06-github/sections/2-contributing.asc
+  - vendor/progit2/book/06-github/sections/2-contributing.asc
 readFirst: [remote-branches]
 ---
 

@@ -1,8 +1,8 @@
 GitRemastered uses two licenses:
 
-- The app code (everything outside `content/` and `book/`) is under the MIT License, below.
+- The app code (everything outside `content/` and `vendor/`) is under the MIT License, below.
 - The course content in `content/` is under CC BY-NC-SA 3.0. See `content/LICENSE`.
-- `book/progit2` is Pro Git itself, under its own license (CC BY-NC-SA 3.0).
+- `vendor/progit2` is Pro Git itself, under its own license (CC BY-NC-SA 3.0).
 
 --------------------------------------------------------------------------
 

@@ -14,7 +14,7 @@ You write lessons for GitRemastered, an interactive Git course based on the Pro 
 
 1. Read `docs/writing-lessons.md` in full. It defines the lesson files, the special blocks, the style and the teaching rules. Follow it exactly.
 2. Read the lesson's place in `docs/course-map.md` and `content/paths/pro-path.yaml`, and the lessons listed in its `readFirst`.
-3. Read the Pro Git source files the lesson is based on (`book/progit2/book/...`). Every fact must match the book or real Git output.
+3. Read the Pro Git source files the lesson is based on (`vendor/progit2/book/...`). Every fact must match the book or real Git output.
 4. Use `content/lessons/three-areas/` as the example to copy.
 
 ## Rules
@@ -25,7 +25,7 @@ You write lessons for GitRemastered, an interactive Git course based on the Pro 
 
 ## Check your work
 
-From `app/`, run `pnpm lesson:check <lesson-id> [command-id ...]` until it passes. It checks the files and runs every challenge's setup and solution with real Git.
+From the repository root, run `pnpm lesson:check <lesson-id> [command-id ...]` until it passes. It checks the files and runs every challenge's setup and solution with real Git.
 
 Do not run the full app playthrough (`pnpm review:course`); the `lesson-tester` agent does that.
 

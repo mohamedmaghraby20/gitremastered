@@ -1,3 +1,3 @@
 [submodule "book/progit2"]
-	path = book/progit2
+	path = vendor/progit2
 	url = https://github.com/progit/progit2.git

@@ -5,13 +5,13 @@ module: history-mastery
 bookSection: "7 Git Tools"
 bookUrl: https://git-scm.com/book/en/v2/Git-Tools-Revision-Selection
 bookSources:
-  - book/progit2/book/07-git-tools/sections/revision-selection.asc
-  - book/progit2/book/07-git-tools/sections/interactive-staging.asc
-  - book/progit2/book/07-git-tools/sections/rewriting-history.asc
-  - book/progit2/book/07-git-tools/sections/searching.asc
-  - book/progit2/book/07-git-tools/sections/debugging.asc
-  - book/progit2/book/07-git-tools/sections/advanced-merging.asc
-  - book/progit2/book/07-git-tools/sections/rerere.asc
+  - vendor/progit2/book/07-git-tools/sections/revision-selection.asc
+  - vendor/progit2/book/07-git-tools/sections/interactive-staging.asc
+  - vendor/progit2/book/07-git-tools/sections/rewriting-history.asc
+  - vendor/progit2/book/07-git-tools/sections/searching.asc
+  - vendor/progit2/book/07-git-tools/sections/debugging.asc
+  - vendor/progit2/book/07-git-tools/sections/advanced-merging.asc
+  - vendor/progit2/book/07-git-tools/sections/rerere.asc
 readFirst: [revision-selection, clean-up-history, partial-staging, search-blame-bisect, advanced-merging]
 checkpoint: true
 ---

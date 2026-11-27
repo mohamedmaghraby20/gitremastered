@@ -5,7 +5,7 @@ module: professional-github
 bookSection: "GitHub Docs: Issues and code security"
 bookUrl: https://docs.github.com/en/issues/tracking-your-work-with-issues/about-issues
 bookSources:
-  - book/progit2/book/06-github/sections/2-contributing.asc
+  - vendor/progit2/book/06-github/sections/2-contributing.asc
 readFirst: [maintaining-github-repo]
 ---
 

@@ -5,9 +5,9 @@ module: capstones
 bookSection: "6.2 Contributing to a Project"
 bookUrl: https://git-scm.com/book/en/v2/GitHub-Contributing-to-a-Project
 bookSources:
-  - book/progit2/book/06-github/sections/2-contributing.asc
-  - book/progit2/book/06-github/sections/3-maintaining.asc
-  - book/progit2/book/05-distributed-git/sections/contributing.asc
+  - vendor/progit2/book/06-github/sections/2-contributing.asc
+  - vendor/progit2/book/06-github/sections/3-maintaining.asc
+  - vendor/progit2/book/05-distributed-git/sections/contributing.asc
 readFirst: [github-flow-prs, code-review, team-contributing, maintaining-github-repo, branch-protection-codeowners]
 checkpoint: true
 ---

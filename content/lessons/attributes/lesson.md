@@ -5,8 +5,8 @@ module: make-git-yours
 bookSection: "8.2 Git Attributes"
 bookUrl: https://git-scm.com/book/en/v2/Customizing-Git-Git-Attributes
 bookSources:
-  - book/progit2/book/08-customizing-git/sections/attributes.asc
-  - book/progit2/book/08-customizing-git/sections/config.asc
+  - vendor/progit2/book/08-customizing-git/sections/attributes.asc
+  - vendor/progit2/book/08-customizing-git/sections/config.asc
 readFirst: [config-pro]
 ---
 

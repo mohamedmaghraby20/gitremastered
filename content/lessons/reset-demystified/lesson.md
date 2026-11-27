@@ -5,7 +5,7 @@ module: undo-and-fix
 bookSection: "7.7 Reset Demystified"
 bookUrl: https://git-scm.com/book/en/v2/Git-Tools-Reset-Demystified
 bookSources:
-  - book/progit2/book/07-git-tools/sections/reset.asc
+  - vendor/progit2/book/07-git-tools/sections/reset.asc
 readFirst: [undo-basics, reading-history]
 ---
 

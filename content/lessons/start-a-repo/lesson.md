@@ -5,7 +5,7 @@ module: daily-loop
 bookSection: "2.1 Getting a Git Repository"
 bookUrl: https://git-scm.com/book/en/v2/Git-Basics-Getting-a-Git-Repository
 bookSources:
-  - book/progit2/book/02-git-basics/sections/getting-a-repository.asc
+  - vendor/progit2/book/02-git-basics/sections/getting-a-repository.asc
 readFirst: [setup]
 ---
 

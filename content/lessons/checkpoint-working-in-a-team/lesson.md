@@ -5,12 +5,12 @@ module: working-in-a-team
 bookSection: "5 Distributed Git"
 bookUrl: https://git-scm.com/book/en/v2/Distributed-Git-Distributed-Workflows
 bookSources:
-  - book/progit2/book/05-distributed-git/sections/distributed-workflows.asc
-  - book/progit2/book/05-distributed-git/sections/contributing.asc
-  - book/progit2/book/05-distributed-git/sections/maintaining.asc
-  - book/progit2/book/03-git-branching/sections/workflows.asc
-  - book/progit2/book/03-git-branching/sections/rebasing.asc
-  - book/progit2/book/06-github/sections/2-contributing.asc
+  - vendor/progit2/book/05-distributed-git/sections/distributed-workflows.asc
+  - vendor/progit2/book/05-distributed-git/sections/contributing.asc
+  - vendor/progit2/book/05-distributed-git/sections/maintaining.asc
+  - vendor/progit2/book/03-git-branching/sections/workflows.asc
+  - vendor/progit2/book/03-git-branching/sections/rebasing.asc
+  - vendor/progit2/book/06-github/sections/2-contributing.asc
 readFirst: [team-workflows, commit-craft, github-flow-prs, code-review, team-contributing, rebasing, pr-merge-strategies, integrating-work]
 checkpoint: true
 ---

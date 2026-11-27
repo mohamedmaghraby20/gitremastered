@@ -5,7 +5,7 @@ module: branching
 bookSection: "7.3 Stashing and Cleaning"
 bookUrl: https://git-scm.com/book/en/v2/Git-Tools-Stashing-and-Cleaning
 bookSources:
-  - book/progit2/book/07-git-tools/sections/stashing-cleaning.asc
+  - vendor/progit2/book/07-git-tools/sections/stashing-cleaning.asc
 readFirst: [branch-and-merge]
 ---
 

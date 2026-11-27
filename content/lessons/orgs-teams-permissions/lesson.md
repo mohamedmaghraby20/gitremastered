@@ -5,7 +5,7 @@ module: professional-github
 bookSection: "6.4 Managing an organization"
 bookUrl: https://git-scm.com/book/en/v2/GitHub-Managing-an-organization
 bookSources:
-  - book/progit2/book/06-github/sections/4-managing-organization.asc
+  - vendor/progit2/book/06-github/sections/4-managing-organization.asc
 readFirst: [maintaining-github-repo]
 ---
 

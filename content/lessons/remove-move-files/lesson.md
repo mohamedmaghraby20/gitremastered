@@ -5,7 +5,7 @@ module: daily-loop
 bookSection: "2.2 Recording Changes to the Repository"
 bookUrl: https://git-scm.com/book/en/v2/Git-Basics-Recording-Changes-to-the-Repository#_removing_files
 bookSources:
-  - book/progit2/book/02-git-basics/sections/recording-changes.asc
+  - vendor/progit2/book/02-git-basics/sections/recording-changes.asc
 readFirst: [three-areas]
 ---
 

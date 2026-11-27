@@ -5,7 +5,7 @@ module: professional-github
 bookSection: "6.3 GitHub - Maintaining a Project"
 bookUrl: https://git-scm.com/book/en/v2/GitHub-Maintaining-a-Project
 bookSources:
-  - book/progit2/book/06-github/sections/3-maintaining.asc
+  - vendor/progit2/book/06-github/sections/3-maintaining.asc
 readFirst: [github-flow-prs]
 ---
 

@@ -5,7 +5,7 @@ module: history-mastery
 bookSection: "git-push (Git reference, beyond the book)"
 bookUrl: https://git-scm.com/docs/git-push
 bookSources:
-  - book/progit2/book/03-git-branching/sections/rebasing.asc
+  - vendor/progit2/book/03-git-branching/sections/rebasing.asc
 readFirst: [clean-up-history]
 ---
 

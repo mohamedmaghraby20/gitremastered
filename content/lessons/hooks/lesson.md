@@ -5,8 +5,8 @@ module: make-git-yours
 bookSection: "8.3 Git Hooks"
 bookUrl: https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks
 bookSources:
-  - book/progit2/book/08-customizing-git/sections/hooks.asc
-  - book/progit2/book/08-customizing-git/sections/policy.asc
+  - vendor/progit2/book/08-customizing-git/sections/hooks.asc
+  - vendor/progit2/book/08-customizing-git/sections/policy.asc
 readFirst: [three-areas]
 ---
 

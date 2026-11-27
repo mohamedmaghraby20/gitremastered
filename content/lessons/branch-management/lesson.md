@@ -5,7 +5,7 @@ module: branching
 bookSection: "3.3 Branch Management"
 bookUrl: https://git-scm.com/book/en/v2/Git-Branching-Branch-Management
 bookSources:
-  - book/progit2/book/03-git-branching/sections/branch-management.asc
+  - vendor/progit2/book/03-git-branching/sections/branch-management.asc
 readFirst: [branch-and-merge]
 ---
 

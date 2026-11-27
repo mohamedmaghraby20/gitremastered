@@ -5,7 +5,7 @@ module: history-mastery
 bookSection: "7.1 Revision Selection"
 bookUrl: https://git-scm.com/book/en/v2/Git-Tools-Revision-Selection
 bookSources:
-  - book/progit2/book/07-git-tools/sections/revision-selection.asc
+  - vendor/progit2/book/07-git-tools/sections/revision-selection.asc
 readFirst: [branches-are-pointers]
 ---
 

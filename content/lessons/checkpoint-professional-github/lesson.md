@@ -5,10 +5,10 @@ module: professional-github
 bookSection: "6 GitHub"
 bookUrl: https://git-scm.com/book/en/v2/GitHub-Maintaining-a-Project
 bookSources:
-  - book/progit2/book/06-github/sections/2-contributing.asc
-  - book/progit2/book/06-github/sections/3-maintaining.asc
-  - book/progit2/book/06-github/sections/4-managing-organization.asc
-  - book/progit2/book/06-github/sections/5-scripting.asc
+  - vendor/progit2/book/06-github/sections/2-contributing.asc
+  - vendor/progit2/book/06-github/sections/3-maintaining.asc
+  - vendor/progit2/book/06-github/sections/4-managing-organization.asc
+  - vendor/progit2/book/06-github/sections/5-scripting.asc
 readFirst: [maintaining-github-repo, orgs-teams-permissions, branch-protection-codeowners, github-actions-ci, gh-cli-and-api, issues-projects-security]
 checkpoint: true
 ---

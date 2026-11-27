@@ -1,0 +1,10 @@
+# pnpm-workspace.yaml: lists the projects of this repository, so one `pnpm install` at the root
+# sets up all of them with one lock file and one node_modules.
+#   the root     the desktop app (always part of the workspace)
+#   packages/*   code shared with the future website (today: the course engine)
+packages:
+  - packages/*
+
+# Only these packages may run install scripts (esbuild downloads its compiled program).
+allowBuilds:
+  esbuild: true

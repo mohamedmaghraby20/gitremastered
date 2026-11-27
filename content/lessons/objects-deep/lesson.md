@@ -5,7 +5,7 @@ module: under-the-hood
 bookSection: "10.2 Git Objects"
 bookUrl: https://git-scm.com/book/en/v2/Git-Internals-Git-Objects
 bookSources:
-  - book/progit2/book/10-git-internals/sections/objects.asc
+  - vendor/progit2/book/10-git-internals/sections/objects.asc
 readFirst: [first-look-inside]
 ---
 

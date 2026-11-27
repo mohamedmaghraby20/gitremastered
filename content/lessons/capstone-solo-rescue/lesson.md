@@ -5,11 +5,11 @@ module: capstones
 bookSection: "7 Git Tools"
 bookUrl: https://git-scm.com/book/en/v2/Git-Tools-Rewriting-History
 bookSources:
-  - book/progit2/book/07-git-tools/sections/rewriting-history.asc
-  - book/progit2/book/07-git-tools/sections/reset.asc
-  - book/progit2/book/07-git-tools/sections/debugging.asc
-  - book/progit2/book/07-git-tools/sections/interactive-staging.asc
-  - book/progit2/book/10-git-internals/sections/maintenance.asc
+  - vendor/progit2/book/07-git-tools/sections/rewriting-history.asc
+  - vendor/progit2/book/07-git-tools/sections/reset.asc
+  - vendor/progit2/book/07-git-tools/sections/debugging.asc
+  - vendor/progit2/book/07-git-tools/sections/interactive-staging.asc
+  - vendor/progit2/book/10-git-internals/sections/maintenance.asc
 readFirst: [commit-craft, search-blame-bisect, rescue-lost-work, remove-sensitive-data]
 checkpoint: true
 ---

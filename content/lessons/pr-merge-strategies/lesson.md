@@ -5,7 +5,7 @@ module: working-in-a-team
 bookSection: "GitHub Docs: About merge methods on GitHub"
 bookUrl: https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/configuring-pull-request-merges/about-merge-methods-on-github
 bookSources:
-  - book/progit2/book/03-git-branching/sections/rebasing.asc
+  - vendor/progit2/book/03-git-branching/sections/rebasing.asc
 readFirst: [rebasing, github-flow-prs]
 ---
 

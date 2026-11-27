@@ -5,8 +5,8 @@ module: remotes
 bookSection: "2.6 Tagging"
 bookUrl: https://git-scm.com/book/en/v2/Git-Basics-Tagging
 bookSources:
-  - book/progit2/book/02-git-basics/sections/tagging.asc
-  - book/progit2/book/10-git-internals/sections/refs.asc
+  - vendor/progit2/book/02-git-basics/sections/tagging.asc
+  - vendor/progit2/book/10-git-internals/sections/refs.asc
 readFirst: [remotes]
 ---
 

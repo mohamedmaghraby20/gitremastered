@@ -5,7 +5,7 @@ module: professional-github
 bookSection: "6.3 Maintaining a Project"
 bookUrl: https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/about-rulesets
 bookSources:
-  - book/progit2/book/06-github/sections/3-maintaining.asc
+  - vendor/progit2/book/06-github/sections/3-maintaining.asc
 readFirst: [maintaining-github-repo]
 ---
 

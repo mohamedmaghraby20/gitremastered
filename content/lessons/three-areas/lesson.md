@@ -5,9 +5,9 @@ module: daily-loop
 bookSection: "2.2 Recording Changes to the Repository"
 bookUrl: https://git-scm.com/book/en/v2/Git-Basics-Recording-Changes-to-the-Repository
 bookSources:
-  - book/progit2/book/02-git-basics/sections/recording-changes.asc
-  - book/progit2/book/01-introduction/sections/what-is-git.asc
-  - book/progit2/book/10-git-internals/sections/objects.asc
+  - vendor/progit2/book/02-git-basics/sections/recording-changes.asc
+  - vendor/progit2/book/01-introduction/sections/what-is-git.asc
+  - vendor/progit2/book/10-git-internals/sections/objects.asc
 readFirst: [first-look-inside, start-a-repo]
 ---
 

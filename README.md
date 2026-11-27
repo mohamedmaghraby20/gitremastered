@@ -14,11 +14,15 @@ The course follows [Pro Git, 2nd edition](https://git-scm.com/book), by Scott Ch
 
 | Folder | What it holds |
 |---|---|
+| `src/`, `src-tauri/` | The desktop app: lesson screens (SvelteKit) and the Rust core (Tauri) |
+| `packages/course-engine/` | Course logic shared by the app and the future website: reads lessons, checks mission goals |
 | `content/` | The course: lessons, learning paths, reference pages |
-| `app/` | The website: lesson pages, practice terminal, visualizer |
-| `book/progit2/` | The Pro Git source, pinned to one version (a Git submodule) |
+| `tools/` | Content checks for lesson writers |
+| `scripts/`, `tests/` | Design tokens, the student driver, mission and GitHub challenge tests |
+| `vendor/progit2/` | The Pro Git source, pinned to one version (a Git submodule) |
 | `docs/` | The course map and project decisions |
-| `tasks/` | Work plans for building the project |
+
+How to run and change the app: [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Get a copy
 

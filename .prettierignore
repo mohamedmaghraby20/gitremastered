@@ -1,0 +1,31 @@
+# Files Prettier must not format.
+
+# Lock files are written by the package manager.
+pnpm-lock.yaml
+skills-lock.json
+
+# Static files are copied into the app as they are.
+/static/
+
+# Rust: compiled output and generated schemas. Rust code is formatted by rustfmt instead.
+/src-tauri/target/
+/src-tauri/gen/
+
+# Generated from tokens.json by `pnpm tokens`; its exact text is checked by a test.
+/src/lib/styles/tokens.css
+
+# The course engine formats itself (packages/course-engine has its own Prettier settings).
+/packages/
+
+# Not code: lessons, documents, the Pro Git book, AI tooling and work notes keep their own layout.
+/content/
+/docs/
+/vendor/
+/tasks/
+/study/
+/.claude/
+/.agents/
+/*.md
+
+# Local AI tool settings keep their own layout.
+/.mcp.json

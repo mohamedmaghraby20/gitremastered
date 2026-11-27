@@ -5,8 +5,8 @@ module: remotes
 bookSection: "4.1 Git on the Server - The Protocols"
 bookUrl: https://git-scm.com/book/en/v2/Git-on-the-Server-The-Protocols
 bookSources:
-  - book/progit2/book/04-git-server/sections/protocols.asc
-  - book/progit2/book/10-git-internals/sections/transfer-protocols.asc
+  - vendor/progit2/book/04-git-server/sections/protocols.asc
+  - vendor/progit2/book/10-git-internals/sections/transfer-protocols.asc
 readFirst: [first-look-inside]
 ---
 

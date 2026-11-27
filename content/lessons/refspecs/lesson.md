@@ -5,7 +5,7 @@ module: remotes
 bookSection: "10.5 The Refspec"
 bookUrl: https://git-scm.com/book/en/v2/Git-Internals-The-Refspec
 bookSources:
-  - book/progit2/book/10-git-internals/sections/refspec.asc
+  - vendor/progit2/book/10-git-internals/sections/refspec.asc
 readFirst: [remote-branches]
 ---
 

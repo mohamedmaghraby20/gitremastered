@@ -5,8 +5,8 @@ module: under-the-hood
 bookSection: "10.4 Packfiles"
 bookUrl: https://git-scm.com/book/en/v2/Git-Internals-Packfiles
 bookSources:
-  - book/progit2/book/10-git-internals/sections/packfiles.asc
-  - book/progit2/book/10-git-internals/sections/maintenance.asc
+  - vendor/progit2/book/10-git-internals/sections/packfiles.asc
+  - vendor/progit2/book/10-git-internals/sections/maintenance.asc
 readFirst: [objects-deep]
 ---
 

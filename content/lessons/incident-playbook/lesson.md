@@ -5,8 +5,8 @@ module: recovery
 bookSection: "7.8 Advanced Merging: Undoing Merges"
 bookUrl: https://git-scm.com/book/en/v2/Git-Tools-Advanced-Merging#_undoing_merges
 bookSources:
-  - book/progit2/book/07-git-tools/sections/reset.asc
-  - book/progit2/book/07-git-tools/sections/advanced-merging.asc
+  - vendor/progit2/book/07-git-tools/sections/reset.asc
+  - vendor/progit2/book/07-git-tools/sections/advanced-merging.asc
 readFirst: [rescue-lost-work]
 ---
 

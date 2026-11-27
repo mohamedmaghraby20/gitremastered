@@ -5,7 +5,7 @@ module: daily-loop
 bookSection: "2.3 Viewing the Commit History"
 bookUrl: https://git-scm.com/book/en/v2/Git-Basics-Viewing-the-Commit-History
 bookSources:
-  - book/progit2/book/02-git-basics/sections/viewing-history.asc
+  - vendor/progit2/book/02-git-basics/sections/viewing-history.asc
 readFirst: [three-areas]
 ---
 

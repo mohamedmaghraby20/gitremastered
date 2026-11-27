@@ -5,7 +5,7 @@ module: history-mastery
 bookSection: "7.2 Interactive Staging"
 bookUrl: https://git-scm.com/book/en/v2/Git-Tools-Interactive-Staging
 bookSources:
-  - book/progit2/book/07-git-tools/sections/interactive-staging.asc
+  - vendor/progit2/book/07-git-tools/sections/interactive-staging.asc
 readFirst: [three-areas]
 ---
 

@@ -5,7 +5,7 @@ module: working-in-a-team
 bookSection: "5.3 Maintaining a Project"
 bookUrl: https://git-scm.com/book/en/v2/Distributed-Git-Maintaining-a-Project
 bookSources:
-  - book/progit2/book/05-distributed-git/sections/maintaining.asc
+  - vendor/progit2/book/05-distributed-git/sections/maintaining.asc
 readFirst: [team-contributing]
 ---
 

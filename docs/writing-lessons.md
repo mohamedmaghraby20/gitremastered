@@ -7,7 +7,7 @@ How to add a lesson to GitRemastered. A lesson is three files in one folder; no 
 1. Pick an ID: lowercase words joined by `-` (`ignoring-files`). The folder name must equal the ID.
 2. Create `content/lessons/<id>/` with `lesson.md`, `challenges.yaml`, `quiz.yaml` and `coverage.md`.
 3. Add the ID to a module in `content/paths/pro-path.yaml`.
-4. Run `pnpm content:check` (from `app/`). It names the file and the problem if something is wrong.
+4. Run `pnpm content:check` (from the repository root). It names the file and the problem if something is wrong.
 5. Run `pnpm test:missions`. It runs every challenge's setup and solution with real Git and checks every goal.
 
    While you are still writing, `pnpm lesson:check <lesson-id> [command-id ...]` does both for your lesson alone: it loads the committed content plus your lesson folder and the command pages you name, so someone else's half-written lesson cannot fail your check. Example: `pnpm lesson:check start-a-repo git-init git-clone`.
@@ -25,7 +25,7 @@ module: daily-loop
 bookSection: "2.2 Recording Changes to the Repository"
 bookUrl: https://git-scm.com/book/en/v2/Git-Basics-Recording-Changes-to-the-Repository#_ignoring
 bookSources:
-  - book/progit2/book/02-git-basics/sections/recording-changes.asc
+  - vendor/progit2/book/02-git-basics/sections/recording-changes.asc
 readFirst: [three-areas]
 ---
 

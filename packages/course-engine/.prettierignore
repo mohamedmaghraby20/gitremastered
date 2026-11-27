@@ -1,0 +1,4 @@
+# Files Prettier must not format.
+
+# Sample content files are kept exactly as lesson authors would write them.
+tests/fixtures/sample-lesson/

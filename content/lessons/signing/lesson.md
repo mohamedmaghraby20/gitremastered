@@ -5,7 +5,7 @@ module: make-git-yours
 bookSection: "7.4 Signing Your Work"
 bookUrl: https://git-scm.com/book/en/v2/Git-Tools-Signing-Your-Work
 bookSources:
-  - book/progit2/book/07-git-tools/sections/signing.asc
+  - vendor/progit2/book/07-git-tools/sections/signing.asc
 readFirst: [tags-and-releases]
 ---
 

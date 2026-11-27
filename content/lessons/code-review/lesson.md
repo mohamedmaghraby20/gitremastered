@@ -5,7 +5,7 @@ module: working-in-a-team
 bookSection: "GitHub Docs: About pull request reviews"
 bookUrl: https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/reviewing-changes-in-pull-requests/about-pull-request-reviews
 bookSources:
-  - book/progit2/book/06-github/sections/2-contributing.asc
+  - vendor/progit2/book/06-github/sections/2-contributing.asc
 readFirst: [github-flow-prs]
 ---
 

@@ -5,7 +5,7 @@ module: remotes
 bookSection: "2.5 Working with Remotes"
 bookUrl: https://git-scm.com/book/en/v2/Git-Basics-Working-with-Remotes
 bookSources:
-  - book/progit2/book/02-git-basics/sections/remotes.asc
+  - vendor/progit2/book/02-git-basics/sections/remotes.asc
 readFirst: [start-a-repo, github-account-ssh]
 ---
 

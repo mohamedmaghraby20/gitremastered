@@ -5,8 +5,8 @@ module: history-mastery
 bookSection: "7.5 Searching and 7.10 Debugging with Git"
 bookUrl: https://git-scm.com/book/en/v2/Git-Tools-Searching
 bookSources:
-  - book/progit2/book/07-git-tools/sections/searching.asc
-  - book/progit2/book/07-git-tools/sections/debugging.asc
+  - vendor/progit2/book/07-git-tools/sections/searching.asc
+  - vendor/progit2/book/07-git-tools/sections/debugging.asc
 readFirst: [reading-history]
 ---
 

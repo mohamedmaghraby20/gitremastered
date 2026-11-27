@@ -5,8 +5,8 @@ module: working-in-a-team
 bookSection: "3.4 Branching Workflows"
 bookUrl: https://git-scm.com/book/en/v2/Git-Branching-Branching-Workflows
 bookSources:
-  - book/progit2/book/03-git-branching/sections/workflows.asc
-  - book/progit2/book/05-distributed-git/sections/distributed-workflows.asc
+  - vendor/progit2/book/03-git-branching/sections/workflows.asc
+  - vendor/progit2/book/05-distributed-git/sections/distributed-workflows.asc
 readFirst: [remote-branches]
 ---
 

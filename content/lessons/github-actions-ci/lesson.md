@@ -5,7 +5,7 @@ module: professional-github
 bookSection: "GitHub Docs: Quickstart for GitHub Actions"
 bookUrl: https://docs.github.com/en/actions/writing-workflows/quickstart
 bookSources:
-  - book/progit2/book/06-github/sections/5-scripting.asc
+  - vendor/progit2/book/06-github/sections/5-scripting.asc
 readFirst: [github-flow-prs]
 ---
 

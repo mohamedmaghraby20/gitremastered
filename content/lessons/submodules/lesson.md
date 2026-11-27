@@ -5,7 +5,7 @@ module: modern-git
 bookSection: "7.11 Submodules"
 bookUrl: https://git-scm.com/book/en/v2/Git-Tools-Submodules
 bookSources:
-  - book/progit2/book/07-git-tools/sections/submodules.asc
+  - vendor/progit2/book/07-git-tools/sections/submodules.asc
 readFirst: [remotes]
 ---
 

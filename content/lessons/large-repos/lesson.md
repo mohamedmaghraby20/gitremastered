@@ -5,7 +5,7 @@ module: modern-git
 bookSection: "7.12 Bundling"
 bookUrl: https://git-scm.com/book/en/v2/Git-Tools-Bundling
 bookSources:
-  - book/progit2/book/07-git-tools/sections/bundling.asc
+  - vendor/progit2/book/07-git-tools/sections/bundling.asc
 readFirst: [remotes]
 ---
 

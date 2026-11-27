@@ -5,7 +5,7 @@ module: under-the-hood
 bookSection: "10.3 Git References"
 bookUrl: https://git-scm.com/book/en/v2/Git-Internals-Git-References
 bookSources:
-  - book/progit2/book/10-git-internals/sections/refs.asc
+  - vendor/progit2/book/10-git-internals/sections/refs.asc
 readFirst: [objects-deep]
 ---
 

@@ -5,7 +5,7 @@ module: branching
 bookSection: "3.2 Basic Branching and Merging"
 bookUrl: https://git-scm.com/book/en/v2/Git-Branching-Basic-Branching-and-Merging
 bookSources:
-  - book/progit2/book/03-git-branching/sections/basic-branching-and-merging.asc
+  - vendor/progit2/book/03-git-branching/sections/basic-branching-and-merging.asc
 readFirst: [switch-and-detached-head]
 ---
 

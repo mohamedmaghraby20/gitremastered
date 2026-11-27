@@ -6,13 +6,13 @@ checkpoint: true
 bookSection: "2.5 Working with Remotes"
 bookUrl: https://git-scm.com/book/en/v2/Git-Basics-Working-with-Remotes
 bookSources:
-  - book/progit2/book/04-git-server/sections/protocols.asc
-  - book/progit2/book/10-git-internals/sections/transfer-protocols.asc
-  - book/progit2/book/02-git-basics/sections/remotes.asc
-  - book/progit2/book/03-git-branching/sections/remote-branches.asc
-  - book/progit2/book/10-git-internals/sections/refspec.asc
-  - book/progit2/book/02-git-basics/sections/tagging.asc
-  - book/progit2/book/10-git-internals/sections/refs.asc
+  - vendor/progit2/book/04-git-server/sections/protocols.asc
+  - vendor/progit2/book/10-git-internals/sections/transfer-protocols.asc
+  - vendor/progit2/book/02-git-basics/sections/remotes.asc
+  - vendor/progit2/book/03-git-branching/sections/remote-branches.asc
+  - vendor/progit2/book/10-git-internals/sections/refspec.asc
+  - vendor/progit2/book/02-git-basics/sections/tagging.asc
+  - vendor/progit2/book/10-git-internals/sections/refs.asc
 readFirst: [how-git-talks, remotes, remote-branches, refspecs, tags-and-releases]
 ---
 

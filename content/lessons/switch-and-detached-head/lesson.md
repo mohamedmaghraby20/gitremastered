@@ -5,8 +5,8 @@ module: branching
 bookSection: "3.1 Branches in a Nutshell"
 bookUrl: https://git-scm.com/book/en/v2/Git-Branching-Branches-in-a-Nutshell#_switching_branches
 bookSources:
-  - book/progit2/book/03-git-branching/sections/nutshell.asc
-  - book/progit2/book/07-git-tools/sections/reset.asc
+  - vendor/progit2/book/03-git-branching/sections/nutshell.asc
+  - vendor/progit2/book/07-git-tools/sections/reset.asc
 readFirst: [branches-are-pointers]
 ---
 

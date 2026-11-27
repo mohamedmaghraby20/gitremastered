@@ -5,9 +5,9 @@ module: history-mastery
 bookSection: "7.8 Advanced Merging, 7.9 Rerere"
 bookUrl: https://git-scm.com/book/en/v2/Git-Tools-Advanced-Merging
 bookSources:
-  - book/progit2/book/07-git-tools/sections/advanced-merging.asc
-  - book/progit2/book/07-git-tools/sections/subtree-merges.asc
-  - book/progit2/book/07-git-tools/sections/rerere.asc
+  - vendor/progit2/book/07-git-tools/sections/advanced-merging.asc
+  - vendor/progit2/book/07-git-tools/sections/subtree-merges.asc
+  - vendor/progit2/book/07-git-tools/sections/rerere.asc
 readFirst: [branch-and-merge]
 ---
 

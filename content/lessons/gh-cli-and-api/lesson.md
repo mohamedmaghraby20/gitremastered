@@ -5,7 +5,7 @@ module: professional-github
 bookSection: "6.5 Scripting GitHub"
 bookUrl: https://git-scm.com/book/en/v2/GitHub-Scripting-GitHub
 bookSources:
-  - book/progit2/book/06-github/sections/5-scripting.asc
+  - vendor/progit2/book/06-github/sections/5-scripting.asc
 readFirst: [maintaining-github-repo]
 ---
 

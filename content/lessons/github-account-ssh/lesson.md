@@ -5,9 +5,9 @@ module: remotes
 bookSection: "6.1 Account Setup and Configuration"
 bookUrl: https://git-scm.com/book/en/v2/GitHub-Account-Setup-and-Configuration
 bookSources:
-  - book/progit2/book/06-github/sections/1-setting-up-account.asc
-  - book/progit2/book/04-git-server/sections/generating-ssh-key.asc
-  - book/progit2/book/07-git-tools/sections/credentials.asc
+  - vendor/progit2/book/06-github/sections/1-setting-up-account.asc
+  - vendor/progit2/book/04-git-server/sections/generating-ssh-key.asc
+  - vendor/progit2/book/07-git-tools/sections/credentials.asc
 readFirst: [setup]
 ---
 

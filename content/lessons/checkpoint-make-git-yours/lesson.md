@@ -6,13 +6,13 @@ checkpoint: true
 bookSection: "8 Customizing Git"
 bookUrl: https://git-scm.com/book/en/v2/Customizing-Git-Git-Configuration
 bookSources:
-  - book/progit2/book/08-customizing-git/sections/config.asc
-  - book/progit2/book/08-customizing-git/sections/attributes.asc
-  - book/progit2/book/08-customizing-git/sections/hooks.asc
-  - book/progit2/book/08-customizing-git/sections/policy.asc
-  - book/progit2/book/07-git-tools/sections/signing.asc
-  - book/progit2/book/02-git-basics/sections/aliases.asc
-  - book/progit2/book/A-git-in-other-environments/sections/visualstudiocode.asc
+  - vendor/progit2/book/08-customizing-git/sections/config.asc
+  - vendor/progit2/book/08-customizing-git/sections/attributes.asc
+  - vendor/progit2/book/08-customizing-git/sections/hooks.asc
+  - vendor/progit2/book/08-customizing-git/sections/policy.asc
+  - vendor/progit2/book/07-git-tools/sections/signing.asc
+  - vendor/progit2/book/02-git-basics/sections/aliases.asc
+  - vendor/progit2/book/A-git-in-other-environments/sections/visualstudiocode.asc
 readFirst: [config-pro, git-in-your-tools, hooks, attributes, signing]
 ---
 

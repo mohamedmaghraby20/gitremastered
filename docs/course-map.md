@@ -1,6 +1,6 @@
 # Course map
 
-Draft 2, 2026-11-24. Goal: a developer who finishes the course understands Git deeply and works with Git and GitHub professionally. Built from the outline of Pro Git 2nd edition (`book/progit2`, 452 headings), plus the official Git reference manual and GitHub Docs for topics the book does not cover.
+Draft 2, 2026-11-24. Goal: a developer who finishes the course understands Git deeply and works with Git and GitHub professionally. Built from the outline of Pro Git 2nd edition (`vendor/progit2`, 452 headings), plus the official Git reference manual and GitHub Docs for topics the book does not cover.
 
 ## 0. How this map works
 
@@ -23,7 +23,7 @@ A learner can stop after "Must know" and come back for the rest. Revisiting a le
 
 **Sources.**
 
-- `B` = Pro Git. `B 02/recording-changes#Ignoring Files` means `book/progit2/book/02-git-basics/sections/recording-changes.asc`, subsection "Ignoring Files".
+- `B` = Pro Git. `B 02/recording-changes#Ignoring Files` means `vendor/progit2/book/02-git-basics/sections/recording-changes.asc`, subsection "Ignoring Files".
 - `D` = Git reference manual, git-scm.com/docs. For example, `D git-switch`.
 - `G` = GitHub Docs, docs.github.com.
 

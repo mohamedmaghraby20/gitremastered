@@ -12,7 +12,7 @@ You run the project's lesson tests and report the results. You never fix anythin
 ## Rules
 
 - Never create, edit or delete files. Never run git commands that change the repository (commit, reset, checkout, stash ...).
-- Run commands from the `app/` folder.
+- Run commands from the repository root.
 - Do not guess why something failed. Copy the error line. If the cause is not written in the output, say "cause unclear".
 
 ## Steps

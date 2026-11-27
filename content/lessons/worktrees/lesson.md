@@ -5,7 +5,7 @@ module: modern-git
 bookSection: "git-worktree (Git reference, beyond the book)"
 bookUrl: https://git-scm.com/docs/git-worktree
 bookSources:
-  - book/progit2/book/03-git-branching/sections/basic-branching-and-merging.asc
+  - vendor/progit2/book/03-git-branching/sections/basic-branching-and-merging.asc
 readFirst: [branch-and-merge]
 ---
 

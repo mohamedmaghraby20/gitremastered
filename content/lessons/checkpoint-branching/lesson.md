@@ -5,12 +5,12 @@ module: branching
 bookSection: "3 Git Branching"
 bookUrl: https://git-scm.com/book/en/v2/Git-Branching-Branches-in-a-Nutshell
 bookSources:
-  - book/progit2/book/03-git-branching/sections/nutshell.asc
-  - book/progit2/book/03-git-branching/sections/basic-branching-and-merging.asc
-  - book/progit2/book/03-git-branching/sections/branch-management.asc
-  - book/progit2/book/07-git-tools/sections/stashing-cleaning.asc
-  - book/progit2/book/07-git-tools/sections/reset.asc
-  - book/progit2/book/10-git-internals/sections/refs.asc
+  - vendor/progit2/book/03-git-branching/sections/nutshell.asc
+  - vendor/progit2/book/03-git-branching/sections/basic-branching-and-merging.asc
+  - vendor/progit2/book/03-git-branching/sections/branch-management.asc
+  - vendor/progit2/book/07-git-tools/sections/stashing-cleaning.asc
+  - vendor/progit2/book/07-git-tools/sections/reset.asc
+  - vendor/progit2/book/10-git-internals/sections/refs.asc
 readFirst: [branches-are-pointers, switch-and-detached-head, branch-and-merge, branch-management, stash-and-clean]
 checkpoint: true
 ---

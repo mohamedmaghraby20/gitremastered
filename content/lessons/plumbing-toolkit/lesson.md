@@ -5,8 +5,8 @@ module: under-the-hood
 bookSection: "10.8 Environment Variables"
 bookUrl: https://git-scm.com/book/en/v2/Git-Internals-Environment-Variables
 bookSources:
-  - book/progit2/book/10-git-internals/sections/environment.asc
-  - book/progit2/book/07-git-tools/sections/replace.asc
+  - vendor/progit2/book/10-git-internals/sections/environment.asc
+  - vendor/progit2/book/07-git-tools/sections/replace.asc
 readFirst: [refs-deep]
 ---
 

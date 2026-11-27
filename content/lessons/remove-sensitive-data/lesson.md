@@ -5,8 +5,8 @@ module: recovery
 bookSection: "7.6 Rewriting History"
 bookUrl: https://git-scm.com/book/en/v2/Git-Tools-Rewriting-History
 bookSources:
-  - book/progit2/book/07-git-tools/sections/rewriting-history.asc
-  - book/progit2/book/10-git-internals/sections/maintenance.asc
+  - vendor/progit2/book/07-git-tools/sections/rewriting-history.asc
+  - vendor/progit2/book/10-git-internals/sections/maintenance.asc
 readFirst: [rescue-lost-work]
 ---
 

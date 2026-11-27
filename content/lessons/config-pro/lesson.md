@@ -5,8 +5,8 @@ module: make-git-yours
 bookSection: "8.1 Git Configuration"
 bookUrl: https://git-scm.com/book/en/v2/Customizing-Git-Git-Configuration
 bookSources:
-  - book/progit2/book/08-customizing-git/sections/config.asc
-  - book/progit2/book/02-git-basics/sections/aliases.asc
+  - vendor/progit2/book/08-customizing-git/sections/config.asc
+  - vendor/progit2/book/02-git-basics/sections/aliases.asc
 readFirst: [setup]
 ---
 

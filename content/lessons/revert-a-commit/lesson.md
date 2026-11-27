@@ -5,7 +5,7 @@ module: undo-and-fix
 bookSection: "7.8 Git Tools - Advanced Merging"
 bookUrl: https://git-scm.com/book/en/v2/Git-Tools-Advanced-Merging#_undoing_merges
 bookSources:
-  - book/progit2/book/07-git-tools/sections/advanced-merging.asc
+  - vendor/progit2/book/07-git-tools/sections/advanced-merging.asc
 readFirst: [fix-last-commit]
 ---
 

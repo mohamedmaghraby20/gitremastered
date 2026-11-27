@@ -99,7 +99,7 @@ Changing this contract needs the user's approval (see Boundaries). The phase 6 c
 
 ### 3.4 Shared data shapes
 
-Defined once in TypeScript (`app/src/lib/types/`) and mirrored in Rust (`app/src-tauri/src/models/`, serialized with serde):
+Defined once in TypeScript (`packages/course-engine/src/types/`) and mirrored in Rust (`src-tauri/src/models/`, serialized with serde):
 
 ```ts
 /** The state of the practice repository at one moment. */
@@ -193,7 +193,7 @@ module: daily-loop
 bookSection: "2.2 Recording Changes"   # shown in the lesson eyebrow
 bookUrl: https://git-scm.com/book/en/v2/Git-Basics-Recording-Changes-to-the-Repository   # the citation link
 bookSources:
-  - book/progit2/book/02-git-basics/sections/recording-changes.asc
+  - vendor/progit2/book/02-git-basics/sections/recording-changes.asc
 readFirst: [first-look-inside, start-a-repo]
 ```
 
@@ -257,7 +257,7 @@ chapters:
         lessons: [three-areas, ignoring-files]
 ```
 
-Lists show two facts per lesson, computed by `app/src/lib/content/lesson-facts.ts`, never written by hand: reading time (words of "Must know" plus the first challenge's brief, at 200 words a minute, rounded, at least 1) and source label ("Pro Git 2.2" from `bookSection`, or "Beyond the book" when `bookUrl` is not a Pro Git link).
+Lists show two facts per lesson, computed by `packages/course-engine/src/content/lesson-facts.ts`, never written by hand: reading time (words of "Must know" plus the first challenge's brief, at 200 words a minute, rounded, at least 1) and source label ("Pro Git 2.2" from `bookSection`, or "Beyond the book" when `bookUrl` is not a Pro Git link).
 
 Command pages (`commands/<command-id>.md`): frontmatter, then the explanation in Markdown with the usual lesson blocks. The `id` must match the file name, and every lesson in `lessons` must exist.
 
@@ -285,46 +285,60 @@ terms:
 
 Lessons and command pages can link to a glossary term or a lesson with `[text](term:<term-id>)` or `[text](lesson:<lesson-id>)`; the content check rejects unknown IDs (`docs/writing-lessons.md`, "Links between lessons").
 
-The loader (`app/src/lib/content/`) rejects a broken file with `<file>: <problem>`. `pnpm build` runs `pnpm content:check` first, so a broken lesson stops the build.
+The loader (`packages/course-engine/src/content/`) rejects a broken file with `<file>: <problem>`. `pnpm build` runs `pnpm content:check` first, so a broken lesson stops the build.
 
 ## 5. Project structure
 
+The repository root is the desktop app (Tauri + SvelteKit). Code the future website will share lives in `packages/`.
+
 ```
-app/                           Tauri + SvelteKit project
-├── package.json
-├── src/
-│   ├── routes/                pages: home, lessons/[lessonId], paths, glossary, search
-│   └── lib/
-│       ├── content/           module: content
-│       ├── mission-engine/    module: mission-engine
-│       ├── components/
-│       │   ├── lesson-reader/
-│       │   ├── terminal-view/
-│       │   ├── visualizer/
-│       │   ├── quiz/
-│       │   └── ui/            shadcn-svelte building blocks
-│       ├── stores/            shared stores (snapshot, progress)
-│       ├── tauri/             typed wrappers around every contract command and event
-│       └── types/             shared data shapes
-├── src-tauri/
-│   ├── Cargo.toml
-│   ├── tauri.conf.json
-│   ├── capabilities/          what the screens are allowed to call
-│   └── src/
-│       ├── main.rs            starts the app, registers commands
-│       ├── commands/          one file per contract command group
-│       ├── git_runner/        module: git-runner
-│       ├── repo_inspector/    module: repo-inspector
-│       └── models/            Rust versions of the shared data shapes
-└── tests/missions/            runs every mission's setup + solution against real Git
-content/  book/  docs/  tasks/  (see README)
+package.json                   the app, plus the workspace scripts (pnpm content:check …)
+pnpm-workspace.yaml            lists packages/*
+src/
+├── routes/                    pages: home, lessons/[lessonId], paths, glossary, search
+└── lib/
+    ├── content/               the app's course loader (Vite reads content/ at build time)
+    ├── mission-engine/        the app's practice sessions (they call the Rust core)
+    ├── components/
+    │   ├── lesson-reader/
+    │   ├── terminal-view/
+    │   ├── visualizer/
+    │   ├── quiz/
+    │   └── ui/                shadcn-svelte building blocks
+    ├── stores/                shared stores (snapshot, progress)
+    ├── tauri/                 typed wrappers around every contract command and event
+    └── types/                 app-only data shapes (design tokens)
+src-tauri/
+├── Cargo.toml
+├── tauri.conf.json
+├── capabilities/              what the screens are allowed to call
+└── src/
+    ├── main.rs                starts the app, registers commands
+    ├── commands/              one file per contract command group
+    ├── git_runner/            module: git-runner
+    ├── repo_inspector/        module: repo-inspector
+    └── models/                Rust versions of the shared data shapes
+packages/
+└── course-engine/             no screens, no Tauri: shared by the app and the future website
+    ├── src/content/           module: content (parse and check lessons, paths, reference)
+    ├── src/mission-engine/    module: mission-engine (goal checks)
+    ├── src/types/             shared data shapes
+    ├── src/node/              read content/ from disk (for tools and tests)
+    └── tests/fixtures/        a sample lesson for tests
+tools/                         content checks: content:check, lesson:check, lesson:link
+scripts/                       design tokens, student driver (drives the built app)
+tests/missions/                runs every mission's setup + solution against real Git
+tests/github/                  runs every GitHub challenge against a real account
+content/  docs/  vendor/progit2/  tasks/  (see README)
 ```
+
+Code imports the engine by package name, for example `@gitremastered/course-engine/content/load-lessons`.
 
 Tests sit next to the code they test: `name.test.ts` beside `name.ts`; Rust unit tests in a `#[cfg(test)] mod tests` block in the same file.
 
 ## 6. Commands
 
-Run from `app/`:
+Run from the repository root:
 
 | Purpose | Command |
 |---|---|
@@ -350,8 +364,8 @@ Run from `app/`:
  * Decides whether a mission's goal is reached, by reading the current repo snapshot.
  */
 
-import type { RepoSnapshot } from "$lib/types/repo-snapshot";
-import type { GoalCheck } from "$lib/types/mission";
+import type { RepoSnapshot } from "@gitremastered/course-engine/types/repo-snapshot";
+import type { GoalCheck } from "@gitremastered/course-engine/types/mission";
 
 /**
  * Checks one goal against the repo snapshot.
@@ -378,7 +392,7 @@ Naming: `kebab-case` file names (TypeScript, Svelte components in `PascalCase.sv
 |---|---|---|---|
 | Unit | Pure logic: content parsing, goal checks, snapshot parsing | Vitest, `cargo test` | Next to the code |
 | Integration | Rust core against a real temporary Git repo | `cargo test` | `src-tauri/tests/` |
-| Mission | Every mission: setup + reference solution reaches the goal with real Git | Vitest + real Git | `app/tests/missions/` |
+| Mission | Every mission: setup + reference solution reaches the goal with real Git | Vitest + real Git | `tests/missions/` |
 | Manual | The pilot lesson played as a student | You | Checkpoint |
 
 A task is done only when all tests, type checks and lints pass.

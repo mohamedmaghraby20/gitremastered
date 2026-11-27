@@ -5,10 +5,10 @@ module: recovery
 bookSection: "10.7 Maintenance and Data Recovery"
 bookUrl: https://git-scm.com/book/en/v2/Git-Internals-Maintenance-and-Data-Recovery
 bookSources:
-  - book/progit2/book/10-git-internals/sections/maintenance.asc
-  - book/progit2/book/07-git-tools/sections/reset.asc
-  - book/progit2/book/07-git-tools/sections/advanced-merging.asc
-  - book/progit2/book/07-git-tools/sections/rewriting-history.asc
+  - vendor/progit2/book/10-git-internals/sections/maintenance.asc
+  - vendor/progit2/book/07-git-tools/sections/reset.asc
+  - vendor/progit2/book/07-git-tools/sections/advanced-merging.asc
+  - vendor/progit2/book/07-git-tools/sections/rewriting-history.asc
 readFirst: [rescue-lost-work, incident-playbook, remove-sensitive-data]
 checkpoint: true
 ---

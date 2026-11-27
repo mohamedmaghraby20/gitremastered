@@ -5,9 +5,9 @@ module: orientation
 bookSection: "1.3 What is Git?"
 bookUrl: https://git-scm.com/book/en/v2/Getting-Started-What-is-Git%3F
 bookSources:
-  - book/progit2/book/01-introduction/sections/about-version-control.asc
-  - book/progit2/book/01-introduction/sections/what-is-git.asc
-  - book/progit2/book/01-introduction/sections/history.asc
+  - vendor/progit2/book/01-introduction/sections/about-version-control.asc
+  - vendor/progit2/book/01-introduction/sections/what-is-git.asc
+  - vendor/progit2/book/01-introduction/sections/history.asc
 readFirst: []
 ---
 

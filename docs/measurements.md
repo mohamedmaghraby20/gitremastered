@@ -4,7 +4,7 @@ SPEC §10 items 4 and 10, measured in the real desktop app with the pilot lesson
 
 **Machine:** Intel Core i5-12500H, 16 GB RAM, Windows 11 Home, WebView2 158.0.4370.33, Git 2.55.0.windows.3.
 **App:** release build ("review copy", `pnpm review:build`), window 1440 × 900.
-**How:** `pnpm review:measure` (`app/scripts/student-driver/measure.ts`). It opens the pilot, reads the memory of the app's whole process tree, then types 15 Git commands into the real terminal (12 × `git add`, 3 × `git commit`) and times each one **from pressing Enter** until the visualizer's desk shows the result. That is stricter than the SPEC's "after a Git command", because it includes the time Git itself runs.
+**How:** `pnpm review:measure` (`scripts/student-driver/measure.ts`). It opens the pilot, reads the memory of the app's whole process tree, then types 15 Git commands into the real terminal (12 × `git add`, 3 × `git commit`) and times each one **from pressing Enter** until the visualizer's desk shows the result. That is stricter than the SPEC's "after a Git command", because it includes the time Git itself runs.
 
 ## Visualizer delay (target: under 300 ms)
 

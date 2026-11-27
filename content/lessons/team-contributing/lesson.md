@@ -5,7 +5,7 @@ module: working-in-a-team
 bookSection: "5.2 Contributing to a Project"
 bookUrl: https://git-scm.com/book/en/v2/Distributed-Git-Contributing-to-a-Project
 bookSources:
-  - book/progit2/book/05-distributed-git/sections/contributing.asc
+  - vendor/progit2/book/05-distributed-git/sections/contributing.asc
 readFirst: [github-flow-prs]
 ---
 

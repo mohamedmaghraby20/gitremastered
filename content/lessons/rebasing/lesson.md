@@ -5,7 +5,7 @@ module: working-in-a-team
 bookSection: "3.6 Git Branching - Rebasing"
 bookUrl: https://git-scm.com/book/en/v2/Git-Branching-Rebasing
 bookSources:
-  - book/progit2/book/03-git-branching/sections/rebasing.asc
+  - vendor/progit2/book/03-git-branching/sections/rebasing.asc
 readFirst: [remote-branches]
 ---
 

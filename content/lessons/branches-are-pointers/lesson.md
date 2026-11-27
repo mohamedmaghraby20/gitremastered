@@ -5,8 +5,8 @@ module: branching
 bookSection: "3.1 Branches in a Nutshell"
 bookUrl: https://git-scm.com/book/en/v2/Git-Branching-Branches-in-a-Nutshell
 bookSources:
-  - book/progit2/book/03-git-branching/sections/nutshell.asc
-  - book/progit2/book/10-git-internals/sections/refs.asc
+  - vendor/progit2/book/03-git-branching/sections/nutshell.asc
+  - vendor/progit2/book/10-git-internals/sections/refs.asc
 readFirst: [reading-history]
 ---
 

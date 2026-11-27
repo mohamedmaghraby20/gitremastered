@@ -5,14 +5,14 @@ module: make-git-yours
 bookSection: "A1 Git in Other Environments"
 bookUrl: https://git-scm.com/book/en/v2/Appendix-A:-Git-in-Other-Environments-Graphical-Interfaces
 bookSources:
-  - book/progit2/book/A-git-in-other-environments/sections/guis.asc
-  - book/progit2/book/A-git-in-other-environments/sections/visualstudiocode.asc
-  - book/progit2/book/A-git-in-other-environments/sections/visualstudio.asc
-  - book/progit2/book/A-git-in-other-environments/sections/jetbrainsides.asc
-  - book/progit2/book/A-git-in-other-environments/sections/sublimetext.asc
-  - book/progit2/book/A-git-in-other-environments/sections/bash.asc
-  - book/progit2/book/A-git-in-other-environments/sections/zsh.asc
-  - book/progit2/book/A-git-in-other-environments/sections/powershell.asc
+  - vendor/progit2/book/A-git-in-other-environments/sections/guis.asc
+  - vendor/progit2/book/A-git-in-other-environments/sections/visualstudiocode.asc
+  - vendor/progit2/book/A-git-in-other-environments/sections/visualstudio.asc
+  - vendor/progit2/book/A-git-in-other-environments/sections/jetbrainsides.asc
+  - vendor/progit2/book/A-git-in-other-environments/sections/sublimetext.asc
+  - vendor/progit2/book/A-git-in-other-environments/sections/bash.asc
+  - vendor/progit2/book/A-git-in-other-environments/sections/zsh.asc
+  - vendor/progit2/book/A-git-in-other-environments/sections/powershell.asc
 readFirst: [setup]
 ---
 

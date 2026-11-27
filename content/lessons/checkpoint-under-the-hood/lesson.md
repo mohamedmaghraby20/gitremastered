@@ -5,13 +5,13 @@ module: under-the-hood
 bookSection: "10 Git Internals"
 bookUrl: https://git-scm.com/book/en/v2/Git-Internals-Plumbing-and-Porcelain
 bookSources:
-  - book/progit2/book/10-git-internals/sections/plumbing-porcelain.asc
-  - book/progit2/book/10-git-internals/sections/objects.asc
-  - book/progit2/book/10-git-internals/sections/refs.asc
-  - book/progit2/book/10-git-internals/sections/packfiles.asc
-  - book/progit2/book/10-git-internals/sections/maintenance.asc
-  - book/progit2/book/10-git-internals/sections/environment.asc
-  - book/progit2/book/07-git-tools/sections/replace.asc
+  - vendor/progit2/book/10-git-internals/sections/plumbing-porcelain.asc
+  - vendor/progit2/book/10-git-internals/sections/objects.asc
+  - vendor/progit2/book/10-git-internals/sections/refs.asc
+  - vendor/progit2/book/10-git-internals/sections/packfiles.asc
+  - vendor/progit2/book/10-git-internals/sections/maintenance.asc
+  - vendor/progit2/book/10-git-internals/sections/environment.asc
+  - vendor/progit2/book/07-git-tools/sections/replace.asc
 readFirst: [objects-deep, refs-deep, packfiles-gc, plumbing-toolkit]
 checkpoint: true
 ---

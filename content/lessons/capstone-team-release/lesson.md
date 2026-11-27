@@ -5,14 +5,14 @@ module: capstones
 bookSection: "5.1 Distributed Workflows"
 bookUrl: https://git-scm.com/book/en/v2/Distributed-Git-Distributed-Workflows
 bookSources:
-  - book/progit2/book/05-distributed-git/sections/distributed-workflows.asc
-  - book/progit2/book/03-git-branching/sections/workflows.asc
-  - book/progit2/book/03-git-branching/sections/basic-branching-and-merging.asc
-  - book/progit2/book/03-git-branching/sections/rebasing.asc
-  - book/progit2/book/07-git-tools/sections/advanced-merging.asc
-  - book/progit2/book/07-git-tools/sections/rewriting-history.asc
-  - book/progit2/book/02-git-basics/sections/tagging.asc
-  - book/progit2/book/06-github/sections/2-contributing.asc
+  - vendor/progit2/book/05-distributed-git/sections/distributed-workflows.asc
+  - vendor/progit2/book/03-git-branching/sections/workflows.asc
+  - vendor/progit2/book/03-git-branching/sections/basic-branching-and-merging.asc
+  - vendor/progit2/book/03-git-branching/sections/rebasing.asc
+  - vendor/progit2/book/07-git-tools/sections/advanced-merging.asc
+  - vendor/progit2/book/07-git-tools/sections/rewriting-history.asc
+  - vendor/progit2/book/02-git-basics/sections/tagging.asc
+  - vendor/progit2/book/06-github/sections/2-contributing.asc
 readFirst: [team-workflows, branch-and-merge, advanced-merging, rebasing, clean-up-history, tags-and-releases]
 checkpoint: true
 ---

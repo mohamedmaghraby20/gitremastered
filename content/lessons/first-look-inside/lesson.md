@@ -5,9 +5,9 @@ module: orientation
 bookSection: "10.1 Plumbing and Porcelain"
 bookUrl: https://git-scm.com/book/en/v2/Git-Internals-Plumbing-and-Porcelain
 bookSources:
-  - book/progit2/book/10-git-internals/sections/plumbing-porcelain.asc
-  - book/progit2/book/10-git-internals/sections/objects.asc
-  - book/progit2/book/10-git-internals/sections/refs.asc
+  - vendor/progit2/book/10-git-internals/sections/plumbing-porcelain.asc
+  - vendor/progit2/book/10-git-internals/sections/objects.asc
+  - vendor/progit2/book/10-git-internals/sections/refs.asc
 readFirst: [what-is-git]
 ---
 

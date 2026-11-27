@@ -5,9 +5,9 @@ module: daily-loop
 bookSection: "2 Git Basics"
 bookUrl: https://git-scm.com/book/en/v2/Git-Basics-Getting-a-Git-Repository
 bookSources:
-  - book/progit2/book/02-git-basics/sections/getting-a-repository.asc
-  - book/progit2/book/02-git-basics/sections/recording-changes.asc
-  - book/progit2/book/02-git-basics/sections/viewing-history.asc
+  - vendor/progit2/book/02-git-basics/sections/getting-a-repository.asc
+  - vendor/progit2/book/02-git-basics/sections/recording-changes.asc
+  - vendor/progit2/book/02-git-basics/sections/viewing-history.asc
 readFirst: [start-a-repo, three-areas, ignoring-files, remove-move-files, reading-history, diffs-in-depth]
 checkpoint: true
 ---

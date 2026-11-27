@@ -5,7 +5,7 @@ module: remotes
 bookSection: "3.5 Git Branching - Remote Branches"
 bookUrl: https://git-scm.com/book/en/v2/Git-Branching-Remote-Branches
 bookSources:
-  - book/progit2/book/03-git-branching/sections/remote-branches.asc
+  - vendor/progit2/book/03-git-branching/sections/remote-branches.asc
 readFirst: [remotes, branch-and-merge]
 ---
 
