@@ -14,7 +14,7 @@
  */
 
 import type { GitHubContext } from '$lib/types/github';
-import { isGitHubGoalCheck, type GoalCheck } from '$lib/types/mission';
+import { isGitHubGoalCheck, type GoalCheck } from '../types/mission';
 import type { RepoSnapshot } from '$lib/types/repo-snapshot';
 import { isBranchGoalMet } from './branch-goals';
 import { isContentGoalMet } from './content-goals';
