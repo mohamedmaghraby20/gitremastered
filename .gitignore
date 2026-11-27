@@ -62,3 +62,6 @@ desktop.ini
 # Plans, todo lists and briefs used while building the app (the /plan and /build commands read them).
 # Kept on the maintainer's disk only; contributors plan with GitHub issues instead.
 tasks/
+
+# Personal assistant preferences for this machine (Claude Code reads it beside CLAUDE.md).
+CLAUDE.local.md

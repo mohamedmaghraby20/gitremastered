@@ -19,7 +19,10 @@ You write lessons for GitRemastered, an interactive Git course based on the Pro 
 
 ## Rules
 
-- Only touch files under `content/` (and `content/paths/pro-path.yaml` to add a lesson). Never edit app code; if the app needs a change, say so in your report.
+- Only touch your own lesson's folder (`content/lessons/<id>/`) and new command pages or glossary entries the lesson needs. Never edit shared files: `content/paths/*.yaml` and other lessons. Other writers may be working at the same time; the main session adds your lesson to the paths and runs the link pass. If a shared file needs a change, say so in your report.
+- Never edit app code; if the app needs a change, say so in your report.
+- Run Git commands for real output in your own scratch folder under the system temp directory, named after your lesson (for example `<temp>/lesson-<id>/`), never a folder another writer could use.
+- Edit files with the Edit and Write tools, never through shell strings (backticks and quotes in shell commands have broken files).
 - Terminal output in a lesson must be real Git output, not invented.
 - No word is used before it is explained. Book names first.
 
