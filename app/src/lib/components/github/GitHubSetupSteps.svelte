@@ -38,9 +38,11 @@
 	</li>
 	<li>
 		<span class="font-semibold">Sign in.</span>
-		{@render command('gh auth login')}
+		{@render command('gh auth login --scopes workflow')}
 		<span class="type-small text-ink-muted">
-			Choose GitHub.com, HTTPS, and log in with a web browser.
+			Choose GitHub.com, HTTPS, and log in with a web browser. The extra "workflow" permission lets
+			you push GitHub Actions files in the CI lessons. Already signed in? Run
+			<code class="type-code">gh auth refresh -h github.com -s workflow</code> instead.
 		</span>
 	</li>
 	<li>

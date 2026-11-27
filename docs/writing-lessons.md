@@ -214,7 +214,7 @@ Every goal has a `check`, a `label` (the sentence in the checklist) and the extr
 | `github-pull-request-is-open` / `-is-merged` / `-is-closed` | `head` | A pull request from that branch is open, merged, or closed without merging |
 | `github-pull-request-has-comment` / `-has-review` | `head` | That pull request has a comment, or a submitted review |
 | `github-issue-exists` / `github-issue-is-closed` | `title` | An issue with that text in its title exists, or is closed |
-| `github-issue-has-label` | `title`, `label` | That issue has the label |
+| `github-issue-has-label` | `title`, `labelName` | That issue has the label named `labelName` (`label` stays the checklist sentence) |
 | `github-release-exists` | `tag` | A published (not draft) release for that tag |
 | `github-default-branch-has-rule` | `rule` | A rule of that type protects the default branch, like `pull_request` or `deletion` |
 | `github-workflow-succeeded` / `github-workflow-failed` | `workflow` | A run of the workflow with that `name:` finished with success, or failure |

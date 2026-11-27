@@ -43,7 +43,9 @@ export function isGitHubGoalMet(
 		case 'github-issue-is-closed':
 			return hasIssue(context, goalCheck.title, (issue) => issue.state === 'closed');
 		case 'github-issue-has-label':
-			return hasIssue(context, goalCheck.title, (issue) => issue.labels.includes(goalCheck.label));
+			return hasIssue(context, goalCheck.title, (issue) =>
+				issue.labels.includes(goalCheck.labelName)
+			);
 		case 'github-release-exists':
 			return state.releases.some(
 				(release) => release.tagName === goalCheck.tag && !release.isDraft

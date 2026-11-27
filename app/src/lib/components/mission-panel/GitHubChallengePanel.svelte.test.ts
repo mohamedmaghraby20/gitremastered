@@ -72,7 +72,7 @@ describe('GitHubChallengePanel consent', () => {
 			onConsent: vi.fn()
 		});
 
-		await expect.element(page.getByText('gh auth login')).toBeVisible();
+		await expect.element(page.getByText('gh auth login --scopes workflow')).toBeVisible();
 		await expect.element(page.getByRole('button', { name: 'Check again' })).toBeVisible();
 		await expect
 			.element(page.getByRole('button', { name: 'Allow practice on GitHub' }))
