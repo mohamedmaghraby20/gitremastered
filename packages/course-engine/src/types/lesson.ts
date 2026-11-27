@@ -1,6 +1,6 @@
 /**
  * lesson.ts
- * The shape of one lesson after it is read from content/lessons/<lesson-id>/ (SPEC.md section 4).
+ * The shape of one lesson after it is read from content/lessons/<lesson-id>/ (docs/SPEC.md section 4).
  */
 
 import type { Challenge } from './mission.ts';

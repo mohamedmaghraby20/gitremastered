@@ -9,8 +9,8 @@ import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildTokensCss, type DesignTokens } from './design-tokens.ts';
 
-const tokensJsonPath = fileURLToPath(new URL('../docs/design/tokens.json', import.meta.url));
-const tokensCssPath = fileURLToPath(new URL('../src/lib/styles/tokens.css', import.meta.url));
+const tokensJsonPath = fileURLToPath(new URL('../../docs/design/tokens.json', import.meta.url));
+const tokensCssPath = fileURLToPath(new URL('../../src/lib/styles/tokens.css', import.meta.url));
 
 /**
  * Reads the tokens, converts them and writes the CSS file.

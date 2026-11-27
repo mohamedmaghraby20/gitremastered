@@ -1,6 +1,6 @@
 /**
  * events.ts
- * Typed listeners for every event the Rust core announces (SPEC.md section 3.3).
+ * Typed listeners for every event the Rust core announces (docs/SPEC.md section 3.3).
  * Each function starts listening and returns a function that stops listening.
  */
 

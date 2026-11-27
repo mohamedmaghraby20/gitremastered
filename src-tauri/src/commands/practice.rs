@@ -22,7 +22,7 @@ use crate::github::consent::has_consent;
 use crate::repo_inspector::snapshot::read_snapshot;
 use crate::repo_inspector::watcher::{ActiveRepoWatcher, RepoWatcher};
 
-/// The event name for a new snapshot (SPEC.md section 3.3).
+/// The event name for a new snapshot (docs/SPEC.md section 3.3).
 const REPO_CHANGED_EVENT: &str = "repo_changed";
 
 /// Held for the whole of a build, so two builds never run at once (code review finding 1).

@@ -2,7 +2,7 @@
   TerminalView.svelte
   The terminal screen: an xterm.js terminal connected to a real shell in a practice folder.
   Colors and font come from the terminal tokens; it refits when its pane changes size;
-  F6 moves keyboard focus out of the terminal (DESIGN.md accessibility rule); Esc goes to the shell.
+  F6 moves keyboard focus out of the terminal (docs/DESIGN.md accessibility rule); Esc goes to the shell.
   Ctrl V pastes, Ctrl C copies selected text, Ctrl + / − / 0 change the text size
   (the shortcuts themselves are in terminal-keys.ts).
 

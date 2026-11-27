@@ -1,6 +1,6 @@
 <!--
   HistoryMap.svelte
-  The metro-map history from DESIGN.md, drawn with Svelte Flow: commits as stations on a solid
+  The metro-map history from docs/DESIGN.md, drawn with Svelte Flow: commits as stations on a solid
   track, oldest on the left, one row per line of work, HEAD and the branch, remote and tag
   labels on their station, and a dashed track to the faded "next commit" station. A commit no
   branch reaches any more keeps its place, faded. Placement comes from history-layout.ts.

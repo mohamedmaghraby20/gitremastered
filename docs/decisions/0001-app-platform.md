@@ -21,7 +21,7 @@ Status: accepted, 2026-11-24. Approved stack:
 | Usage tracking | None in version 1 |
 | Git | The student's own installed Git, no bundled Git. Installing Git is taught in the `setup` lesson (Pro Git 1.5). The course targets the latest Git at release time; lessons flag where commands differ from Pro Git's older ones. How the app handles a missing Git: decided later. |
 
-The original comparison follows. Part of writing `SPEC.md` (the "Tech stack" and "System design" sections).
+The original comparison follows. Part of writing `docs/SPEC.md` (the "Tech stack" and "System design" sections).
 
 ## The question
 

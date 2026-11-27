@@ -1,6 +1,6 @@
 <!--
   button.svelte
-  The keycap Button from DESIGN.md: a key with a 3px bottom edge that presses down 2px when clicked.
+  The keycap Button from docs/DESIGN.md: a key with a 3px bottom edge that presses down 2px when clicked.
   Variants: primary (the one main action on a screen), secondary (companion actions), ghost (quiet).
   The classes for each variant live in button-variants.ts.
 

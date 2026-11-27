@@ -1,6 +1,6 @@
 <!--
   MissionPanel.svelte
-  The active challenge as a worksheet ticket (DESIGN.md): header with the challenge's name and
+  The active challenge as a worksheet ticket (docs/DESIGN.md): header with the challenge's name and
   progress, a dashed separator, the brief in serif, a checklist that ticks itself from the live
   snapshot, and the actions: Check challenge, Reset practice, and the hint ladder.
   A checkpoint's challenge has no hints: the hint button gives way to a line that says so.

@@ -1,6 +1,6 @@
 <!--
   CarefulNote.svelte
-  A "Careful" note from DESIGN.md: a warning the student should not miss, marked with the word
+  A "Careful" note from docs/DESIGN.md: a warning the student should not miss, marked with the word
   "Careful" and a 2px warning rule (never by color alone).
   Input: markdown, the note's text.
 -->

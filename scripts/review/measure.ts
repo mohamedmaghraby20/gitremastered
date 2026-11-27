@@ -3,7 +3,7 @@
  * SPEC §10 items 4 and 10, measured in the real desktop app:
  *  - the visualizer delay: from pressing Enter on a Git command to the desk showing the result;
  *  - the memory of the app and its web view processes with the pilot lesson open.
- * Run from the repository root:  node scripts/student-driver/measure.ts
+ * Run from the repository root:  node scripts/review/measure.ts
  */
 
 import { DevToolsConnection } from './devtools-connection.ts';

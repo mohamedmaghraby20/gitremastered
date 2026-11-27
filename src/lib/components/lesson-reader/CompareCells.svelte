@@ -1,6 +1,6 @@
 <!--
   CompareCells.svelte
-  The "Use today / In the book" comparison from DESIGN.md ("New vs. old"): two cells side by
+  The "Use today / In the book" comparison from docs/DESIGN.md ("New vs. old"): two cells side by
   side, the current command on the left and the one Pro Git shows on the right.
   Inputs: today and book, each one line of Markdown.
 -->

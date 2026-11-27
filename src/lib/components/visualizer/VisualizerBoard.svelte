@@ -1,6 +1,6 @@
 <!--
   VisualizerBoard.svelte
-  The dotted drawing board from DESIGN.md: the files desk on top, the history map in the
+  The dotted drawing board from docs/DESIGN.md: the files desk on top, the history map in the
   middle (passed in as "history"), and the caption bar at the bottom. The header says which
   branch you are on and how far it is from the branch it follows on the remote; a strip
   under it appears for a merge that is waiting and for stashed work (WorkStatus).

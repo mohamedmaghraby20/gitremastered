@@ -1,6 +1,6 @@
 <!--
   Sidenote.svelte
-  A sidenote from DESIGN.md: a Pro Git quote or margin note in the italic sidenote style,
+  A sidenote from docs/DESIGN.md: a Pro Git quote or margin note in the italic sidenote style,
   under a small "From Pro Git" label.
   Input: markdown, the note's text.
 -->

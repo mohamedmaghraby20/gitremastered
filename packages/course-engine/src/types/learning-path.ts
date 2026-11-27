@@ -1,6 +1,6 @@
 /**
  * learning-path.ts
- * The shape of a learning path, read from content/paths/<path-id>.yaml (SPEC.md section 4).
+ * The shape of a learning path, read from content/paths/<path-id>.yaml (docs/SPEC.md section 4).
  */
 
 /** A group of lessons inside a path, like "Your daily loop". */

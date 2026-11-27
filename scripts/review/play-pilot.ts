@@ -3,7 +3,7 @@
  * Plays the pilot lesson as a student in the real desktop app (the review copy), then restarts
  * the app to check progress was kept, and plays the second lesson's first challenge.
  * Prints one line per step: PASS or FAIL, with what was seen.
- * Run from the repository root:  node scripts/student-driver/play-pilot.ts
+ * Run from the repository root:  node scripts/review/play-pilot.ts
  */
 
 import type { ChildProcess } from 'node:child_process';

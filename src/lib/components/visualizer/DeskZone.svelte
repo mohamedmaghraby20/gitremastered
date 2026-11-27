@@ -1,7 +1,7 @@
 <!--
   DeskZone.svelte
   One compact zone on the files desk: a one-line header (the area's name and a count) and the
-  area's items below. The area's look follows DESIGN.md "draft → highlighted → inked".
+  area's items below. The area's look follows docs/DESIGN.md "draft → highlighted → inked".
   The short explanation ("what you're editing") is the header's tooltip, to save height.
 
   Inputs: name (e.g. "Staging area"), hint (the tooltip), tone ("working", "staging" or

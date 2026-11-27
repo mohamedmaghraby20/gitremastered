@@ -7,8 +7,8 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { buildTokensCss, countCssVariables, type DesignTokens } from './design-tokens';
 
-const tokensJsonPath = new URL('../docs/design/tokens.json', import.meta.url);
-const tokensCssPath = new URL('../src/lib/styles/tokens.css', import.meta.url);
+const tokensJsonPath = new URL('../../docs/design/tokens.json', import.meta.url);
+const tokensCssPath = new URL('../../src/lib/styles/tokens.css', import.meta.url);
 const designTokens = JSON.parse(readFileSync(tokensJsonPath, 'utf8')) as DesignTokens;
 const tokensCss = buildTokensCss(designTokens);
 

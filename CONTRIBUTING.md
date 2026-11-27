@@ -10,9 +10,10 @@ How to run the desktop app, where things live, and the checks every change must 
 | `src-tauri/` | The core: window, real shell, Git, files (Tauri) | Rust |
 | `packages/course-engine/` | Course logic with no screens and no Tauri: reads and checks lessons, checks mission goals. Shared with the future website | TypeScript |
 | `content/` | The lessons, paths, command pages and glossary | Markdown + YAML |
-| `tools/` | Content checks for lesson writers | TypeScript |
+| `scripts/` | Content checks for lesson writers, design tokens, the review driver | TypeScript |
+| `tests/` | Mission and GitHub challenge runners (real Git, real GitHub) | TypeScript |
 
-Tech stack and folder layout: [`SPEC.md`](SPEC.md). How to write a lesson: [`docs/writing-lessons.md`](docs/writing-lessons.md). Design rules: [`DESIGN.md`](DESIGN.md).
+Tech stack and folder layout: [`docs/SPEC.md`](docs/SPEC.md). How to write a lesson: [`docs/writing-lessons.md`](docs/writing-lessons.md). Design rules: [`docs/DESIGN.md`](docs/DESIGN.md).
 
 ## Run it
 

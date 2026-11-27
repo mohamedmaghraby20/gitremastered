@@ -4,7 +4,7 @@
 
 **Theme:** light and dark (the terminal is dark in both).
 
-This file is the design source of truth for the app. Exact values live in [`docs/design/tokens.json`](docs/design/tokens.json); this file explains how to use them. When the two disagree, `tokens.json` wins for values and this file wins for rules.
+This file is the design source of truth for the app. Exact values live in [`docs/design/tokens.json`](design/tokens.json); this file explains how to use them. When the two disagree, `tokens.json` wins for values and this file wins for rules.
 
 Visual references (review copies, kept in sync with this file):
 - Design system: https://claude.ai/artifact/CCVRsuqiKBegEA19Q2tzzJ

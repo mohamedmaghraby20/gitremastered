@@ -1,6 +1,6 @@
 /**
  * reference.ts
- * The shapes of the command index's content (SPEC.md section 4):
+ * The shapes of the command index's content (docs/SPEC.md section 4):
  * - a command page, read from content/commands/<command-id>.md;
  * - a glossary term, read from content/glossary.yaml.
  */

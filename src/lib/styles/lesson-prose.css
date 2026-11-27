@@ -9,7 +9,7 @@
 	display: flex;
 	flex-direction: column;
 	gap: var(--space-4);
-	max-width: 64ch; /* DESIGN.md: lesson text at most 64 characters wide */
+	max-width: 64ch; /* docs/DESIGN.md: lesson text at most 64 characters wide */
 	color: var(--ink);
 	font-family: var(--type-lesson-family);
 	font-size: var(--type-lesson-size);

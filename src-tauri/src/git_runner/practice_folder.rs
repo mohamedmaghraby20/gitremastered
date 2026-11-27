@@ -1,4 +1,4 @@
-//! Practice folders (SPEC.md section 3.6). Each mission gets a small workspace:
+//! Practice folders (docs/SPEC.md section 3.6). Each mission gets a small workspace:
 //!
 //! ```text
 //! <app data>/practice/<missionId>/            the workspace, deleted and rebuilt as a whole

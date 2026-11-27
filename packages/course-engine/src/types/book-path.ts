@@ -1,6 +1,6 @@
 /**
  * book-path.ts
- * The shape of the Book path, read from content/paths/book-path.yaml (SPEC.md section 4):
+ * The shape of the Book path, read from content/paths/book-path.yaml (docs/SPEC.md section 4):
  * the course in Pro Git's own order, chapter by chapter, section by section.
  */
 

@@ -4,7 +4,7 @@ Learn Git and GitHub properly, from your first commit to running a team reposito
 
 GitRemastered turns the Pro Git book into an interactive course. Each lesson gives you a short explanation, a terminal with a ready-made repository to practice in, and a live view of what Git is doing inside. Jump to any topic you need, or follow a path from start to finish.
 
-> Status: early. The course map is done; the app is being planned.
+> Status: before the first release. The desktop app and its 73 lessons are built and tested.
 
 ## Built on Pro Git
 
@@ -17,10 +17,9 @@ The course follows [Pro Git, 2nd edition](https://git-scm.com/book), by Scott Ch
 | `src/`, `src-tauri/` | The desktop app: lesson screens (SvelteKit) and the Rust core (Tauri) |
 | `packages/course-engine/` | Course logic shared by the app and the future website: reads lessons, checks mission goals |
 | `content/` | The course: lessons, learning paths, reference pages |
-| `tools/` | Content checks for lesson writers |
-| `scripts/`, `tests/` | Design tokens, the student driver, mission and GitHub challenge tests |
+| `scripts/`, `tests/` | Content checks, design tokens, the review driver; mission and GitHub challenge tests |
 | `vendor/progit2/` | The Pro Git source, pinned to one version (a Git submodule) |
-| `docs/` | The course map and project decisions |
+| `docs/` | Spec, design, course map, lesson writing guide, decisions, roadmap |
 
 How to run and change the app: [CONTRIBUTING.md](CONTRIBUTING.md).
 

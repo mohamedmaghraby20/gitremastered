@@ -1,6 +1,6 @@
 <!--
   segmented-switch.svelte
-  The segmented switch from DESIGN.md: an outlined group with a 3px keycap edge; the chosen
+  The segmented switch from docs/DESIGN.md: an outlined group with a 3px keycap edge; the chosen
   option is filled with the primary color. Used for theme, Pro / Book path, and
   Visualizer / Terminal.
 

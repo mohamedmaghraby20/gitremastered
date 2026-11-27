@@ -1,6 +1,6 @@
 <!--
   TerminalWindow.svelte
-  The retro terminal window from DESIGN.md: a dark frame with a title bar (three window dots,
+  The retro terminal window from docs/DESIGN.md: a dark frame with a title bar (three window dots,
   the practice folder's name, a "bash" badge) around a warm screen with faint scanlines.
   It is the only element besides menus that casts a shadow.
 

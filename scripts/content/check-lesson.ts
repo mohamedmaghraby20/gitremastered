@@ -55,7 +55,7 @@ function checkDraftContent(draft: Draft): boolean {
  */
 function runDraftChallenges(draft: Draft): boolean {
 	// One command line run by the shell: on Windows, pnpm is a script only a shell can start.
-	const result = spawnSync('pnpm exec vitest run --config vitest.missions.config.ts', {
+	const result = spawnSync('pnpm exec vitest run --config tests/missions/vitest.config.ts', {
 		stdio: 'inherit',
 		shell: true,
 		env: {

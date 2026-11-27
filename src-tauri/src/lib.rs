@@ -1,6 +1,6 @@
 //! The core of GitRemastered: builds and starts the Tauri app.
 //!
-//! Registers the commands the screens can call (see SPEC.md section 3.3).
+//! Registers the commands the screens can call (see docs/SPEC.md section 3.3).
 
 pub mod commands;
 pub mod git_runner;

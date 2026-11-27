@@ -11,17 +11,17 @@ GitRemastered is an interactive Git and GitHub course built on the Pro Git book:
 | `src/`, `src-tauri/` | The desktop app: screens (Svelte + TypeScript) and core (Rust) |
 | `packages/course-engine/` | Course logic with no screens and no Tauri, shared with the future website |
 | `content/` | Lessons, paths, command pages, glossary |
-| `tools/` | Content checks (`pnpm content:check`, `pnpm lesson:check`) |
+| `scripts/` | Content checks, design tokens, the review driver (`scripts/content`, `scripts/design-tokens`, `scripts/review`) |
 | `docs/` | Course map, lesson writing guide, design, decisions, roadmap |
 | `vendor/progit2/` | Pro Git source (Git submodule), the source every lesson follows |
 
-Architecture and contracts: `SPEC.md`. Commands: `CONTRIBUTING.md`. All commands run from the repository root.
+Architecture and contracts: `docs/SPEC.md`. Commands: `CONTRIBUTING.md`. All commands run from the repository root.
 
 ## Design
 
-- `DESIGN.md` is the design source of truth; exact values are in `docs/design/tokens.json`. Follow both for every screen and component.
+- `docs/DESIGN.md` is the design source of truth; exact values are in `docs/design/tokens.json`. Follow both for every screen and component.
 - Never hard-code a color, font or size in a component: use the tokens.
-- To change the design, update `DESIGN.md` and `tokens.json` first, then run `pnpm tokens`, then change the screens.
+- To change the design, update `docs/DESIGN.md` and `tokens.json` first, then run `pnpm tokens`, then change the screens.
 
 ## How to write code
 
@@ -78,7 +78,7 @@ Helper agents live in `.claude/agents/`, slash commands in `.claude/commands/`.
 
 | Command | What it does |
 |---|---|
-| `/spec` | Write or update `SPEC.md` before a big change |
+| `/spec` | Write or update `docs/SPEC.md` before a big change |
 | `/plan` | Break work into small tasks (local notes in `tasks/`, not committed) |
 | `/build` | Build the planned tasks one by one, test and verify each |
 | `/test` | Test-first workflow; for bugs, prove the bug with a failing test first |

@@ -1,4 +1,4 @@
-//! The repo-inspector module (SPEC.md section 3.2): reads a practice repository's state.
+//! The repo-inspector module (docs/SPEC.md section 3.2): reads a practice repository's state.
 //!
 //! - `snapshot`: puts a `RepoSnapshot` together from the pieces below.
 //! - `git_reads`: runs the read-only Git commands, all at once.

@@ -1,4 +1,4 @@
-//! The git-runner module (SPEC.md section 3.2): everything that runs programs for a mission.
+//! The git-runner module (docs/SPEC.md section 3.2): everything that runs programs for a mission.
 //!
 //! - `hidden_command`: starts programs without flashing a console window on Windows.
 //! - `shell_choice`: finds the shell (Git Bash on Windows, bash elsewhere).

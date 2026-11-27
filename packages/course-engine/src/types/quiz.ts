@@ -1,6 +1,6 @@
 /**
  * quiz.ts
- * The shape of a lesson's quiz, read from quiz.yaml (SPEC.md section 4).
+ * The shape of a lesson's quiz, read from quiz.yaml (docs/SPEC.md section 4).
  */
 
 /** One answer to pick, with the reason it is right or wrong. */

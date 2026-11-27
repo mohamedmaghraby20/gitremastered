@@ -2,7 +2,7 @@
   PracticeColumn.svelte
   The right side of the lesson screen: the visualizer board on top and the terminal below,
   both following the lesson's practice session.
-  In a small window (below 1100px, DESIGN.md) they share one panel: a Visualizer / Terminal
+  In a small window (below 1100px, docs/DESIGN.md) they share one panel: a Visualizer / Terminal
   switch shows one at a time. The other one is only hidden, never removed, so the terminal's
   shell keeps running and its history stays. In a large window, the handle between the two
   resizes them (the terminal takes 25% to 80% of the height; double-click resets).

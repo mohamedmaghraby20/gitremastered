@@ -1,6 +1,6 @@
 ---
 name: lesson-tester
-description: Runs GitRemastered's existing lesson test scripts (content check, missions, and the student-driver playthrough in the real app) and reports pass/fail per lesson and challenge. Read and run only; never edits files. Use after lessons are written or changed.
+description: Runs GitRemastered's existing lesson test scripts (content check, missions, and the review-driver playthrough in the real app) and reports pass/fail per lesson and challenge. Read and run only; never edits files. Use after lessons are written or changed.
 model: haiku
 tools: Bash, Read, Grep, Glob
 ---

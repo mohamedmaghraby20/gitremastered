@@ -2,7 +2,7 @@
  * check-terminal.ts
  * Checkpoint B, played in the real desktop app: open the pilot lesson, wait for the shell,
  * type "git status" and print what the real shell answered.
- * Run from the repository root:  node scripts/student-driver/check-terminal.ts
+ * Run from the repository root:  node scripts/review/check-terminal.ts
  */
 
 import { DevToolsConnection } from './devtools-connection.ts';

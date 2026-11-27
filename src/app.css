@@ -1,7 +1,7 @@
 /**
  * app.css
  * The global stylesheet: Tailwind, the design tokens, fonts, and the base rules every screen shares.
- * Every value comes from a token (see DESIGN.md); never write a raw color or size here.
+ * Every value comes from a token (see docs/DESIGN.md); never write a raw color or size here.
  *
  * Three layers, from the bottom up:
  * 1. tokens.css   our design tokens as CSS variables (generated from docs/design/tokens.json)
@@ -32,7 +32,7 @@
 }
 
 /**
- * narrow: the small-window layout from DESIGN.md "Layout": below 1100px window width the
+ * narrow: the small-window layout from docs/DESIGN.md "Layout": below 1100px window width the
  * visualizer and terminal share one panel with a switch. Example: narrow:hidden.
  */
 @custom-variant narrow (@media (width < 1100px));

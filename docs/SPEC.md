@@ -6,7 +6,7 @@ Related documents:
 - `docs/course-map.md`: what the course teaches (62 lessons, two paths, outcomes)
 - `docs/decisions/0001-app-platform.md`: why this tech stack
 - `CLAUDE.md`: how to talk to the user and how to write code
-- `DESIGN.md` + `docs/design/tokens.json`: look and feel (approved 2026-11-24)
+- `docs/DESIGN.md` + `docs/design/tokens.json`: look and feel (approved 2026-11-24)
 
 ## 1. Objective
 
@@ -323,10 +323,11 @@ packages/
     ├── src/content/           module: content (parse and check lessons, paths, reference)
     ├── src/mission-engine/    module: mission-engine (goal checks)
     ├── src/types/             shared data shapes
-    ├── src/node/              read content/ from disk (for tools and tests)
+    ├── src/node/              read content/ from disk (for scripts and tests)
     └── tests/fixtures/        a sample lesson for tests
-tools/                         content checks: content:check, lesson:check, lesson:link
-scripts/                       design tokens, student driver (drives the built app)
+scripts/content/               content checks: content:check, lesson:check, lesson:link
+scripts/design-tokens/         builds src/lib/styles/tokens.css from docs/design/tokens.json
+scripts/review/                the review driver: plays the built app like a student
 tests/missions/                runs every mission's setup + solution against real Git
 tests/github/                  runs every GitHub challenge against a real account
 content/  docs/  vendor/progit2/  (see README)
@@ -447,7 +448,7 @@ A task is done only when all tests, type checks and lints pass.
 
 ## 12. Open questions
 
-1. ~~Design system~~ Approved: `DESIGN.md` + `docs/design/tokens.json`.
-2. ~~App prototype~~ Approved: linked in `DESIGN.md` (home, course map, lesson, small-window lesson, search, command index, settings).
+1. ~~Design system~~ Approved: `docs/DESIGN.md` + `docs/design/tokens.json`.
+2. ~~App prototype~~ Approved: linked in `docs/DESIGN.md` (home, course map, lesson, small-window lesson, search, command index, settings).
 3. Component inventory: derived from the approved prototype during `/plan`, so the plan holds one task per reusable component; components are built after the plan.
 4. ~~Final content format~~ Settled after the pilot review (2026-11-25): §4 as written, unchanged in shape. The review changed the engine, not the format: `file-is-committed` now needs the file in the latest commit.

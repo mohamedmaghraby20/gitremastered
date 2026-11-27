@@ -1,6 +1,6 @@
 /**
  * render-blocks.ts
- * Splits a lesson section into plain Markdown and the special blocks from DESIGN.md.
+ * Splits a lesson section into plain Markdown and the special blocks from docs/DESIGN.md.
  * Authors mark a block with a line ":::name" and close it with a line ":::".
  *
  *   :::careful                      Markdown inside: try-it, careful, sidenote

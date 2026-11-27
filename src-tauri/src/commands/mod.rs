@@ -1,4 +1,4 @@
-//! Tauri commands: the functions the screens can call (SPEC.md section 3.3).
+//! Tauri commands: the functions the screens can call (docs/SPEC.md section 3.3).
 //!
 //! One file per command group. The screens call these only through the typed
 //! wrappers in `src/lib/tauri/commands.ts`.

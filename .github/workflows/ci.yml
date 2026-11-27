@@ -1,5 +1,5 @@
 # ci.yml: runs every test and code check on GitHub for each push and pull request.
-# Same commands as on your PC (SPEC.md section 6), so "green here" means "green there".
+# Same commands as on your PC (docs/SPEC.md section 6), so "green here" means "green there".
 # Everything runs from the repository root, where the app lives; the course engine is in packages/.
 
 name: CI

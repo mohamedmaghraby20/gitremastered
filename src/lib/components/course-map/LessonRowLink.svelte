@@ -2,7 +2,7 @@
   LessonRowLink.svelte
   One lesson in the course map, as a link that opens it: number, title, source ("Pro Git 2.2"),
   reading time, and a mark: ✓ done, ● the lesson open now. The marks have words for screen
-  readers, so status is never shown by color alone (DESIGN.md).
+  readers, so status is never shown by color alone (docs/DESIGN.md).
 
   Input: row (the lesson's card and its status).
 -->

@@ -28,8 +28,7 @@ const config = {
 					'../*.config.js',
 					'../*.config.ts',
 					'../scripts/**/*.ts',
-					'../tests/**/*.ts',
-					'../tools/**/*.ts'
+					'../tests/**/*.ts'
 				);
 			}
 		},

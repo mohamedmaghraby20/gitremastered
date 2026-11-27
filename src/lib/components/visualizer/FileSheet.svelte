@@ -1,6 +1,6 @@
 <!--
   FileSheet.svelte
-  One file as a paper sheet on the desk, in its zone's look (DESIGN.md "draft → highlighted"):
+  One file as a paper sheet on the desk, in its zone's look (docs/DESIGN.md "draft → highlighted"):
   dashed edges in the working tree, a highlighter stripe in the staging area.
   A sheet that just arrived gets a brief outline (instant with "reduce motion").
   A file with a merge conflict carries the word "conflict" and a thicker warning edge.

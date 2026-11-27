@@ -1,6 +1,6 @@
 <!--
   DefinitionRows.svelte
-  Definition rows from DESIGN.md: a term on the left (with a swatch in its Git area's look:
+  Definition rows from docs/DESIGN.md: a term on the left (with a swatch in its Git area's look:
   draft, highlighted or inked) and its meaning on the right, separated by hairlines.
   Input: items, each { term, area (or null), text }.
 -->
@@ -10,7 +10,7 @@
 
 	let { items }: { items: DefinitionItem[] } = $props();
 
-	/** The swatch look for each Git area (DESIGN.md "draft → highlighted → inked"). */
+	/** The swatch look for each Git area (docs/DESIGN.md "draft → highlighted → inked"). */
 	const swatchClasses = {
 		working: 'border border-dashed border-git-working',
 		staging: 'border border-git-staging-edge bg-git-staging',

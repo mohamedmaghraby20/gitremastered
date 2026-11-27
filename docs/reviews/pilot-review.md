@@ -2,7 +2,7 @@
 
 The pilot lesson (`three-areas`) and the second lesson (`ignoring-files`) played as a student in the real desktop app on Windows, 2026-11-25.
 
-**How:** a release build with its own app identifier (a "review copy", so your own progress and practice folders are untouched), driven by `scripts/student-driver/` through the web view's DevTools port: it clicks, types into the real terminal and reads the screen. Your own run-through as a student is still to come (Checkpoint D).
+**How:** a release build with its own app identifier (a "review copy", so your own progress and practice folders are untouched), driven by `scripts/review/` through the web view's DevTools port: it clicks, types into the real terminal and reads the screen. Your own run-through as a student is still to come (Checkpoint D).
 
 ## Findings
 
@@ -32,7 +32,7 @@ Your notes after taking the pilot yourself. Fixed items were checked in the desk
 | 15 | Quiz questions are stuck together in one card | Clarity | Fixed: each question is its own card |
 | 16 | The history map zooms in on double-click but cannot zoom out | Bug | Fixed: zoom in / out / fit buttons, mouse wheel and trackpad pinch; drag to look around |
 | 17 | The branch name under the commit is hard to read as a branch | Clarity | Fixed: HEAD and "branch main" labels sit above the commit, like tags |
-| 18 | The yellow behind key terms is harsh | Design | Fixed: a soft marker stroke under the words (new token `highlight-soft`, in `DESIGN.md` and `tokens.json`) |
+| 18 | The yellow behind key terms is harsh | Design | Fixed: a soft marker stroke under the words (new token `highlight-soft`, in `docs/DESIGN.md` and `tokens.json`) |
 | 19 | The map will not fit once branches grow; panels cannot be resized | Design | Planned: task 41 (drag to resize panels) and task 42 (expand the map, follow HEAD; branch lanes with the branching lessons) |
 
 Also from the walkthrough: Ctrl K should open a quick search panel over the current screen, with "See all results" leading to the search page (added to task 37); a general design pass ("more premium") after all phases; and a review of how deep the lessons go (next discussion).

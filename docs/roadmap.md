@@ -56,14 +56,13 @@ At the release, each idea becomes a GitHub issue labelled `idea` or `after-1.0`,
 - **Problem:** students who finish the course ask "what next?"
 - **Idea:** a page of trusted Git and GitHub resources: official docs, well-known articles, videos and courses, each with one line on why it is worth the time.
 - **Note:** separate from the sources the lessons were written from (those are already linked on each lesson).
-- **Open question:** who reviews new links, and how often dead links are checked (the link check in `tools/` could cover it).
+- **Open question:** who reviews new links, and how often dead links are checked (a link check in `scripts/content/` could cover it).
 
 ## F5. Repository docs cleanup
 
 - **Problem:** some documents were written for building the app, not for contributors. The work notes in `tasks/` are already local only (git-ignored).
-- **Why later:** the slash commands and helper agents still read them during development (`/plan` and `/build` use `tasks/`, `/spec` uses `SPEC.md`). Moving them now would break that workflow.
+- **Why later:** the slash commands and helper agents still read them during development (`/plan` and `/build` use `tasks/`, `/spec` uses `docs/SPEC.md`). Rewriting them now would break that workflow.
 - **Idea, once development settles:**
   - Fold the lesson rules from the phase briefs into `docs/writing-lessons.md` and the `lesson-writer` agent.
-  - Split `SPEC.md` into `docs/architecture.md` (how the system works today) without the approval history.
-  - Move `DESIGN.md` into `docs/design/`.
+  - Rewrite `docs/SPEC.md` as `docs/architecture.md` (how the system works today), without the approval history.
   - Add the remaining community files: `CODE_OF_CONDUCT.md`, `SECURITY.md`, `CHANGELOG.md`, issue and pull request templates.

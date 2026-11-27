@@ -1,4 +1,4 @@
-//! Rust versions of the shared data shapes (SPEC.md section 3.4).
+//! Rust versions of the shared data shapes (docs/SPEC.md section 3.4).
 //!
 //! Each type mirrors one in `packages/course-engine/src/types/`, and serde turns it into the same JSON
 //! (camelCase field names), so the screens and the core always agree.

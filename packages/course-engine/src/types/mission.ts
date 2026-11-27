@@ -1,6 +1,6 @@
 /**
  * mission.ts
- * The shape of a lesson's challenges, read from challenges.yaml (SPEC.md section 4): each
+ * The shape of a lesson's challenges, read from challenges.yaml (docs/SPEC.md section 4): each
  * challenge is a mission (brief, setup, goals, hints, solution) with an ID, a title and a level.
  * docs/writing-lessons.md explains every goal check to lesson authors.
  */

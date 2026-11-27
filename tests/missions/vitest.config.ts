@@ -1,5 +1,5 @@
 /**
- * vitest.missions.config.ts
+ * tests/missions/vitest.config.ts
  * Settings for `pnpm test:missions`: runs every lesson's mission with real Git and the real
  * Rust snapshot reader. Kept apart from `pnpm test` because it needs Git, bash and Cargo.
  */

@@ -1,6 +1,6 @@
 /**
  * repo-snapshot.ts
- * The state of a practice repository at one moment (SPEC.md section 3.4).
+ * The state of a practice repository at one moment (docs/SPEC.md section 3.4).
  * Mirrors src-tauri/src/models/repo_snapshot.rs; a Rust test checks the JSON names match.
  */
 
