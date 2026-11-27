@@ -36,9 +36,12 @@ pub fn read_working_texts(repo_folder: &Path, paths: &[String]) -> Vec<FileText>
 
 /// Reads one file if it is small text.
 ///
-/// Input: the file. Output: its text, or `None` for a missing, large or binary file.
+/// A symbolic link is never followed: it could point outside the practice folder, for
+/// example at a credentials file (security audit L1).
+///
+/// Input: the file. Output: its text, or `None` for a missing, large, binary or linked file.
 fn read_small_text(file_path: &Path) -> Option<String> {
-    let metadata = fs::metadata(file_path).ok()?;
+    let metadata = fs::symlink_metadata(file_path).ok()?;
     if !metadata.is_file() || metadata.len() > LARGEST_TEXT_FILE {
         return None;
     }
@@ -73,6 +76,11 @@ fn read_one_worktree(record_folder: &Path) -> Option<Worktree> {
         .strip_prefix("ref: refs/heads/")
         .map(str::to_string);
     let worktree_git_file = gitdir_text.trim();
+    // A worktree whose folder was deleted by hand is only a stale record ("prunable"): it
+    // does not count (code review finding 11).
+    if !Path::new(worktree_git_file).exists() {
+        return None;
+    }
     let path = worktree_git_file
         .strip_suffix("/.git")
         .unwrap_or(worktree_git_file)
@@ -158,22 +166,33 @@ mod tests {
         assert_eq!(skipped, vec!["art/ship.png".to_string()]);
     }
 
-    /// A worktree on a branch and one with a detached HEAD.
+    /// A worktree on a branch and one with a detached HEAD count; one whose folder was
+    /// deleted by hand does not.
     #[test]
     fn reads_linked_worktrees() {
         let folder = tempfile::tempdir().expect("temporary folder");
         let records = folder.path().join(".git/worktrees");
-        for (name, head) in [("hotfix", "ref: refs/heads/hotfix\n"), ("look", "abc123\n")] {
+        let worktree_cases = [
+            ("hotfix", "ref: refs/heads/hotfix\n", true),
+            ("look", "abc123\n", true),
+            ("gone", "ref: refs/heads/gone\n", false),
+        ];
+        for (name, head, folder_exists) in worktree_cases {
+            let worktree_folder = folder.path().join("work").join(name);
+            if folder_exists {
+                fs::create_dir_all(&worktree_folder).expect("create worktree folder");
+                fs::write(worktree_folder.join(".git"), "gitdir: x").expect("write .git file");
+            }
             fs::create_dir_all(records.join(name)).expect("create record");
             fs::write(records.join(name).join("HEAD"), head).expect("write HEAD");
-            let gitdir = format!("/work/{name}/.git\n");
+            let gitdir = format!("{}/.git\n", worktree_folder.display());
             fs::write(records.join(name).join("gitdir"), gitdir).expect("write gitdir");
         }
 
         let worktrees = read_worktrees(folder.path());
 
         assert_eq!(worktrees.len(), 2);
-        assert_eq!(worktrees[0].path, "/work/hotfix");
+        assert!(worktrees[0].path.ends_with("hotfix"));
         assert_eq!(worktrees[0].branch, Some("hotfix".to_string()));
         assert_eq!(worktrees[1].branch, None);
     }

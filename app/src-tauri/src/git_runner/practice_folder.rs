@@ -253,6 +253,47 @@ impl PracticeRoot {
         fs::write(ready_marker_path, "").map_err(file_system_error)
     }
 
+    /// Marks a mission's folder as not finished, so the next open builds it again. Used when
+    /// a GitHub challenge's steps after the local setup failed (code review finding 2).
+    ///
+    /// Input: the mission ID. Output: nothing, or an error.
+    pub fn mark_not_ready(&self, mission_id: &str) -> Result<(), PracticeError> {
+        self.folder_for(mission_id)?;
+        let ready_marker_path = self.ready_marker_path(mission_id);
+        if ready_marker_path.exists() {
+            fs::remove_file(ready_marker_path).map_err(file_system_error)?;
+        }
+        Ok(())
+    }
+
+    /// Saves when a GitHub challenge's attempt started (GitHub's clock), next to the folder.
+    ///
+    /// Inputs: the mission ID and the time (ISO 8601). Output: nothing, or an error.
+    pub fn save_github_start(
+        &self,
+        mission_id: &str,
+        started_at: &str,
+    ) -> Result<(), PracticeError> {
+        self.folder_for(mission_id)?;
+        fs::write(self.github_start_path(mission_id), started_at).map_err(file_system_error)
+    }
+
+    /// Reads when a GitHub challenge's attempt started.
+    ///
+    /// Input: the mission ID. Output: the time, or `None` if no GitHub attempt was built.
+    pub fn read_github_start(&self, mission_id: &str) -> Result<Option<String>, PracticeError> {
+        self.folder_for(mission_id)?;
+        let saved = fs::read_to_string(self.github_start_path(mission_id)).ok();
+        Ok(saved.map(|text| text.trim().to_string()))
+    }
+
+    /// Where a GitHub challenge's start time is saved: `<root>/<missionId>.github-start`.
+    ///
+    /// Input: a mission ID that was already checked. Output: the file path.
+    fn github_start_path(&self, mission_id: &str) -> PathBuf {
+        self.root_path.join(format!("{mission_id}.github-start"))
+    }
+
     /// A mission's workspace: the folder that holds its practice folder and, in remote
     /// lessons, the repositories beside it.
     ///

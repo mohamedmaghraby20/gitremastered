@@ -79,3 +79,45 @@ describe('checkGitHubLines', () => {
 		expect(() => checkGitHubLines(reader, [], ['gh repo delete x --yes'])).toThrow(/solution line/);
 	});
 });
+
+describe('checkGitHubLines against the bypasses found in the security audit', () => {
+	const reader = challengeReader('brief: x');
+
+	it('refuses gh in any form and any letter case in setup lines', () => {
+		for (const line of [
+			'\gh repo delete x --yes',
+			'"gh" api user',
+			'x; GH api user',
+			'git clone https://GitHub.com/a/b'
+		]) {
+			expect(() => checkGitHubLines(reader, [line], []), line).toThrow(/setup line/);
+		}
+	});
+
+	it('refuses a modified practice address and web tools in setup lines', () => {
+		const derived = 'git push -f --mirror "${PRACTICE_GITHUB_URL%/*}/real-project.git"';
+		expect(() => checkGitHubLines(reader, [derived], [])).toThrow(/setup line/);
+		expect(() => checkGitHubLines(reader, ['curl -s https://example.com'], [])).toThrow(
+			/setup line/
+		);
+		expect(() =>
+			checkGitHubLines(reader, ['git push -q origin "${PRACTICE_GITHUB_URL}"'], [])
+		).not.toThrow();
+	});
+
+	it('refuses gh api writes outside repos/{owner}/{repo} in solution lines', () => {
+		expect(() => checkGitHubLines(reader, [], ['gh api -X DELETE repos/octo/other'])).toThrow(
+			/solution line/
+		);
+		expect(() =>
+			checkGitHubLines(
+				reader,
+				[],
+				['gh api -X POST repos/{owner}/{repo}/rulesets --input ruleset.json']
+			)
+		).not.toThrow();
+		expect(() =>
+			checkGitHubLines(reader, [], ['gh api graphql -f query="{ viewer { login } }"'])
+		).not.toThrow();
+	});
+});

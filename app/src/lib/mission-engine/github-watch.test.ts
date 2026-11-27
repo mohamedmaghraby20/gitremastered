@@ -97,4 +97,22 @@ describe('GitHubWatch', () => {
 		expect(watch.problem).toContain('15 seconds');
 		expect(watch.context).toBeNull();
 	});
+
+	it('never starts a read while another one runs', async () => {
+		let finishRead: (state: GitHubState) => void = () => {};
+		const readState = vi.fn(() => new Promise<GitHubState>((resolve) => (finishRead = resolve)));
+		const watch = new GitHubWatch(
+			'gitremastered-practice-flow',
+			'2026-11-27T10:00:00Z',
+			readState,
+			() => Date.now()
+		);
+
+		const firstRead = watch.readNow();
+		void watch.readNow();
+		finishRead(emptyState);
+		await firstRead;
+
+		expect(readState).toHaveBeenCalledTimes(1);
+	});
 });

@@ -21,21 +21,19 @@ export function getGitVersion(): Promise<string> {
 /**
  * Opens a mission's practice folder as the student left it, or builds it from its setup steps
  * when there is none yet (or the steps changed since it was built).
- * @param missionId - the mission's ID, which names the folder
- * A GitHub challenge also prepares its practice repository on GitHub, only with consent.
+ * A GitHub challenge also prepares its practice repository on GitHub, only with the consent
+ * Rust keeps (see grantGitHubConsent).
  * @param missionId - the mission's ID, which names the folder
  * @param setupSteps - shell commands from challenges.yaml, run in order
  * @param github - the challenge's GitHub field, or null for a local challenge
- * @param githubConsent - true when the student agreed to the GitHub consent screen
  * @returns the practice folder's path
  */
 export function openPracticeRepo(
 	missionId: string,
 	setupSteps: string[],
-	github: GitHubChallenge | null = null,
-	githubConsent = false
+	github: GitHubChallenge | null = null
 ): Promise<string> {
-	return invoke<string>('open_practice_repo', { missionId, setupSteps, github, githubConsent });
+	return invoke<string>('open_practice_repo', { missionId, setupSteps, github });
 }
 
 /**
@@ -51,15 +49,46 @@ export function findPracticeRepo(missionId: string): Promise<string | null> {
  * Deletes a mission's practice folder and builds it again from its setup steps.
  * @param missionId - the mission's ID
  * @param github - the challenge's GitHub field, or null for a local challenge
- * @param githubConsent - true when the student agreed to the GitHub consent screen
  * @returns the practice folder's path
  */
 export function resetPracticeRepo(
 	missionId: string,
-	github: GitHubChallenge | null = null,
-	githubConsent = false
+	github: GitHubChallenge | null = null
 ): Promise<string> {
-	return invoke<string>('reset_practice_repo', { missionId, github, githubConsent });
+	return invoke<string>('reset_practice_repo', { missionId, github });
+}
+
+/**
+ * Tells when the mission's GitHub challenge attempt started, by GitHub's clock.
+ * @param missionId - the mission's ID
+ * @returns the time (ISO 8601), or null when no GitHub attempt was built
+ */
+export function findGitHubChallengeStart(missionId: string): Promise<string | null> {
+	return invoke<string | null>('find_github_challenge_start', { missionId });
+}
+
+/**
+ * Tells whether the student agreed to practise on GitHub (Rust keeps the answer).
+ * @returns true once they agreed
+ */
+export function getGitHubConsent(): Promise<boolean> {
+	return invoke<boolean>('get_github_consent');
+}
+
+/**
+ * Asks for consent with the app's own native dialog; only that dialog can grant it.
+ * @returns true when the student agreed
+ */
+export function grantGitHubConsent(): Promise<boolean> {
+	return invoke<boolean>('grant_github_consent');
+}
+
+/**
+ * Takes the GitHub consent back.
+ * @returns nothing
+ */
+export function revokeGitHubConsent(): Promise<void> {
+	return invoke<void>('revoke_github_consent');
 }
 
 /**
@@ -134,9 +163,10 @@ export function listPracticeRepositories(): Promise<string[]> {
 
 /**
  * Deletes every practice repository on the student's account (needs the delete_repo scope).
- * @param hasConsent - true once the student confirmed
- * @returns the names deleted
+ * The app asks again with its own native dialog before anything is deleted.
+ * @param confirmedNames - the repositories the student saw listed and chose
+ * @returns the names deleted (empty when the student said no in the dialog)
  */
-export function deletePracticeRepositories(hasConsent: boolean): Promise<string[]> {
-	return invoke<string[]>('delete_practice_repositories', { hasConsent });
+export function deletePracticeRepositories(confirmedNames: string[]): Promise<string[]> {
+	return invoke<string[]>('delete_practice_repositories', { confirmedNames });
 }

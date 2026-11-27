@@ -26,13 +26,21 @@
 		}
 	}
 
-	/** Deletes every practice repository and says which ones went. */
+	/**
+	 * Deletes the listed practice repositories. The app asks once more in its own dialog,
+	 * which names them; saying no there deletes nothing.
+	 */
 	async function confirmDelete(): Promise<void> {
 		isConfirming = false;
+		const listedNames = repositoryNames ?? [];
 		try {
-			const deletedNames = await deletePracticeRepositories(true);
+			const deletedNames = await deletePracticeRepositories(listedNames);
+			if (deletedNames.length === 0) {
+				message = 'Nothing was deleted.';
+				return;
+			}
 			message = `Deleted: ${deletedNames.join(', ')}.`;
-			repositoryNames = [];
+			repositoryNames = listedNames.filter((name) => !deletedNames.includes(name));
 		} catch (error) {
 			message = `Could not delete: ${String(error)}`;
 		}

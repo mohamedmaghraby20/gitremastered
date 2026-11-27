@@ -18,6 +18,10 @@ pub fn run() {
         .plugin(tauri_plugin_store::Builder::default().build())
         // Opens the Pro Git citation links in the system browser (https:// only, see capabilities).
         .plugin(tauri_plugin_opener::init())
+        // Native dialogs Rust shows itself: GitHub consent and deleting practice repositories.
+        .plugin(tauri_plugin_dialog::init())
+        // Only one practice folder is built at a time.
+        .manage(commands::practice::PracticeBuildLock::default())
         // One list of terminal sessions for the whole app; it stops every shell on exit.
         .manage(git_runner::terminal_session::TerminalSessions::new())
         // The watcher of the open lesson's practice folder (one at a time).
@@ -28,6 +32,10 @@ pub fn run() {
             commands::github::get_github_state,
             commands::github::list_practice_repositories,
             commands::github::delete_practice_repositories,
+            commands::github::get_github_consent,
+            commands::github::grant_github_consent,
+            commands::github::revoke_github_consent,
+            commands::practice::find_github_challenge_start,
             commands::practice::open_practice_repo,
             commands::practice::find_practice_repo,
             commands::practice::reset_practice_repo,

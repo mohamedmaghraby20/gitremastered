@@ -2,49 +2,32 @@
  * practice-session.svelte.ts
  * The practice side of one open lesson: builds its practice folder for the active challenge,
  * rebuilds it on reset or when another challenge starts, and remembers the caption for the last
- * command typed in the terminal. A GitHub challenge is only built after the student agreed to
- * the GitHub consent screen; its start time is reported, so GitHub goals count only new work.
+ * command typed in the terminal. A GitHub challenge is only built after the student agreed in
+ * the app's consent dialog (Rust keeps that answer; this session only asks whether it exists).
  * Its fields are Svelte state ($state), so screens that read them update by themselves.
  */
 
 import { isTauri } from '@tauri-apps/api/core';
-import { openPracticeRepo, resetPracticeRepo } from '$lib/tauri/commands';
+import { getGitHubConsent, openPracticeRepo, resetPracticeRepo } from '$lib/tauri/commands';
 import type { GitHubChallenge } from '$lib/types/github';
 import { explainCommand, type CommandCaption } from '$lib/visualizer/explain-command';
 
-/** The two core commands the session uses; tests pass fakes. */
+/** The core commands the session uses; tests pass fakes. */
 export type PracticeCommands = {
 	openPracticeRepo: (
 		missionId: string,
 		setupSteps: string[],
-		github: GitHubChallenge | null,
-		githubConsent: boolean
+		github: GitHubChallenge | null
 	) => Promise<string>;
-	resetPracticeRepo: (
-		missionId: string,
-		github: GitHubChallenge | null,
-		githubConsent: boolean
-	) => Promise<string>;
+	resetPracticeRepo: (missionId: string, github: GitHubChallenge | null) => Promise<string>;
+	hasGitHubConsent: () => Promise<boolean>;
 	isDesktopApp: () => boolean;
-};
-
-/** How the session learns about GitHub consent and reports a GitHub challenge's start. */
-export type GitHubHooks = {
-	hasConsent: () => boolean;
-	onChallengeStarted: (startedAt: string) => void;
-};
-
-/** GitHub's clock and ours may differ a little; a start this much earlier still counts. */
-const clockMargin = 60_000;
-
-const noGitHubHooks: GitHubHooks = {
-	hasConsent: () => false,
-	onChallengeStarted: () => {}
 };
 
 const realCommands: PracticeCommands = {
 	openPracticeRepo,
 	resetPracticeRepo,
+	hasGitHubConsent: getGitHubConsent,
 	isDesktopApp: isTauri
 };
 
@@ -58,31 +41,31 @@ export class PracticeSession {
 	lastCaption: CommandCaption | null = $state(null);
 	/** True when the active challenge is a GitHub challenge waiting for the student's consent. */
 	needsGitHubConsent = $state(false);
+	/** True while a build runs; screens disable Start and Reset meanwhile. */
+	isBuilding = $state(false);
 
 	private readonly missionId: string;
 	private setupSteps: string[];
 	private github: GitHubChallenge | null;
 	private readonly commands: PracticeCommands;
-	private readonly githubHooks: GitHubHooks;
+	/** Counts builds, so the answer of a build that a newer one replaced is ignored. */
+	private latestBuildNumber = 0;
 
 	/**
 	 * @param missionId - names the practice folder (the lesson ID)
 	 * @param setupSteps - the active challenge's setup commands
 	 * @param github - the active challenge's GitHub field, or null for a local challenge
-	 * @param githubHooks - consent and start-time reporting (none by default)
 	 * @param commands - the core commands (real ones by default)
 	 */
 	constructor(
 		missionId: string,
 		setupSteps: string[],
 		github: GitHubChallenge | null = null,
-		githubHooks: GitHubHooks = noGitHubHooks,
 		commands: PracticeCommands = realCommands
 	) {
 		this.missionId = missionId;
 		this.setupSteps = setupSteps;
 		this.github = github;
-		this.githubHooks = githubHooks;
 		this.commands = commands;
 	}
 
@@ -94,20 +77,14 @@ export class PracticeSession {
 		return this.commands.isDesktopApp();
 	}
 
-	/** Builds a fresh practice folder for the lesson. */
+	/** Opens the lesson's practice folder as the student left it, or builds it. */
 	async start(): Promise<void> {
 		if (!this.commands.isDesktopApp()) {
 			this.statusMessage = 'The terminal runs in the desktop app (pnpm tauri dev).';
 			return;
 		}
-		// The folder may be kept as the student left it, so this is not a fresh start.
-		await this.buildFolder('Opening your practice folder…', false, () =>
-			this.commands.openPracticeRepo(
-				this.missionId,
-				this.setupSteps,
-				this.github,
-				this.githubHooks.hasConsent()
-			)
+		await this.buildFolder('Opening your practice folder…', () =>
+			this.commands.openPracticeRepo(this.missionId, this.setupSteps, this.github)
 		);
 	}
 
@@ -117,8 +94,8 @@ export class PracticeSession {
 			return;
 		}
 		this.lastCaption = null;
-		await this.buildFolder('Resetting the practice folder…', true, () =>
-			this.commands.resetPracticeRepo(this.missionId, this.github, this.githubHooks.hasConsent())
+		await this.buildFolder('Resetting the practice folder…', () =>
+			this.commands.resetPracticeRepo(this.missionId, this.github)
 		);
 	}
 
@@ -140,32 +117,17 @@ export class PracticeSession {
 			return;
 		}
 		this.lastCaption = null;
-		await this.buildFolder('Setting up the challenge…', true, () =>
-			this.commands.openPracticeRepo(
-				this.missionId,
-				this.setupSteps,
-				this.github,
-				this.githubHooks.hasConsent()
-			)
+		await this.buildFolder('Setting up the challenge…', () =>
+			this.commands.openPracticeRepo(this.missionId, this.setupSteps, this.github)
 		);
 	}
 
 	/**
-	 * Builds the active GitHub challenge right after the student accepted the consent screen.
+	 * Builds the active GitHub challenge right after the student agreed in the consent dialog.
 	 * Inputs: none. Output: none.
 	 */
 	async buildAfterConsent(): Promise<void> {
-		if (!this.commands.isDesktopApp()) {
-			return;
-		}
-		await this.buildFolder('Setting up the challenge…', true, () =>
-			this.commands.openPracticeRepo(
-				this.missionId,
-				this.setupSteps,
-				this.github,
-				this.githubHooks.hasConsent()
-			)
-		);
+		await this.start();
 	}
 
 	/**
@@ -181,40 +143,46 @@ export class PracticeSession {
 
 	/**
 	 * Clears the folder (which stops the terminal), runs a build step, and shows the result.
+	 * A GitHub challenge without consent is not built: the consent card shows instead. When a
+	 * newer build starts before this one ends, this one's answer is ignored (code review
+	 * finding 1); Rust also runs only one build at a time.
 	 * @param waitingMessage - shown while building
-	 * @param isFreshStart - true when the folder is surely rebuilt (reset, a new challenge)
 	 * @param buildStep - creates or resets the folder and returns its path
 	 */
 	private async buildFolder(
 		waitingMessage: string,
-		isFreshStart: boolean,
 		buildStep: () => Promise<string>
 	): Promise<void> {
+		this.latestBuildNumber += 1;
+		const buildNumber = this.latestBuildNumber;
 		this.practiceFolderPath = null;
-		this.needsGitHubConsent = this.github !== null && !this.githubHooks.hasConsent();
-		if (this.needsGitHubConsent) {
+		const isGitHubChallenge = this.github !== null;
+		const hasConsent = isGitHubChallenge ? await this.commands.hasGitHubConsent() : true;
+		if (buildNumber !== this.latestBuildNumber) {
+			return;
+		}
+		this.needsGitHubConsent = !hasConsent;
+		if (!hasConsent) {
 			this.statusMessage = 'This challenge runs on GitHub. Read and accept the consent first.';
 			return;
 		}
-		this.statusMessage =
-			this.github === null ? waitingMessage : 'Preparing your practice repository on GitHub…';
-		const startedAt = timeAsText(Date.now() - clockMargin);
+		this.statusMessage = isGitHubChallenge
+			? 'Preparing your practice repository on GitHub…'
+			: waitingMessage;
+		this.isBuilding = true;
 		try {
-			this.practiceFolderPath = await buildStep();
-			if (this.github !== null && isFreshStart) {
-				this.githubHooks.onChallengeStarted(startedAt);
+			const folderPath = await buildStep();
+			if (buildNumber === this.latestBuildNumber) {
+				this.practiceFolderPath = folderPath;
 			}
 		} catch (error) {
-			this.statusMessage = `The practice folder could not be built: ${String(error)}`;
+			if (buildNumber === this.latestBuildNumber) {
+				this.statusMessage = `The practice folder could not be built: ${String(error)}`;
+			}
+		} finally {
+			if (buildNumber === this.latestBuildNumber) {
+				this.isBuilding = false;
+			}
 		}
 	}
-}
-
-/**
- * Writes a moment as ISO 8601 text, like "2026-11-27T10:00:00.000Z".
- * @param milliseconds - the moment, in milliseconds since 1970
- * @returns the text
- */
-function timeAsText(milliseconds: number): string {
-	return new Date(milliseconds).toISOString();
 }

@@ -9,6 +9,8 @@
 //! - The app never stores a token: it uses the student's own `gh` login.
 //!
 //! - `gh_command`: runs `gh` with a time limit.
+//! - `consent`: the student's consent, kept by Rust.
+//! - `clock`: writes the local time as ISO text (a fallback for GitHub's clock).
 //! - `practice_repo`: the guard.
 //! - `connection`: who is signed in.
 //! - `repo_writes`: create, reset, delete a practice repository.
@@ -18,7 +20,9 @@
 //! - `url_text`: puts names safely into API addresses.
 
 pub mod challenge_setup;
+pub mod clock;
 pub mod connection;
+pub mod consent;
 pub mod gh_command;
 pub mod practice_repo;
 pub mod repo_writes;

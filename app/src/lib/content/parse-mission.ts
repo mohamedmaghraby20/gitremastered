@@ -7,6 +7,7 @@
 import {
 	goalCheckFields,
 	goalCheckKinds,
+	isGitHubGoalCheck,
 	type GoalCheck,
 	type GoalCheckKind,
 	type Mission,
@@ -26,14 +27,21 @@ export function readMissionFields(reader: FieldReader): Mission {
 	const setup = reader.textList('setup');
 	const solution = reader.textList('solution');
 	checkGitHubLines(reader, setup, solution);
+	const goals = goalReaders.map(readGoal);
+	const github = readGitHubChallenge(reader.optionalRecord('github'));
+	const hasGitHubGoal = goals.some((goal) => isGitHubGoalCheck(goal));
+	if (hasGitHubGoal && github === null) {
+		// Such a goal could never be met: nothing reads GitHub without a practice repository.
+		reader.fail('a github-… goal needs a "github" field with the practice repository');
+	}
 	return {
 		brief: reader.text('brief'),
 		setup,
-		goals: goalReaders.map(readGoal),
+		goals,
 		// A checkpoint's challenges have no hints; load-lessons.ts checks that only they do.
 		hints: reader.optionalTextList('hints'),
 		solution,
-		github: readGitHubChallenge(reader.optionalRecord('github'))
+		github
 	};
 }
 

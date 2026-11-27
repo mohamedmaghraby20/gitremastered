@@ -9,13 +9,30 @@
 	import { Button } from '$lib/components/ui/button';
 	import GitHubSetupSteps from '$lib/components/github/GitHubSetupSteps.svelte';
 	import { GitHubConnectionReader } from '$lib/components/github/github-connection.svelte';
-	import { progress, saveGitHubConsent } from '$lib/stores/progress';
+	import { getGitHubConsent, revokeGitHubConsent } from '$lib/tauri/commands';
 	import PracticeRepositoriesDelete from './PracticeRepositoriesDelete.svelte';
 
 	const reader = new GitHubConnectionReader();
 
+	/** The consent Rust keeps; only the app's own dialog can grant it. */
+	let hasConsent = $state(false);
+
+	/** Reads the consent from Rust (only in the desktop app). */
+	async function readConsent(): Promise<void> {
+		if (reader.isDesktopApp) {
+			hasConsent = await getGitHubConsent();
+		}
+	}
+
+	/** Takes the consent back and shows the new state. */
+	async function takeBackConsent(): Promise<void> {
+		await revokeGitHubConsent();
+		await readConsent();
+	}
+
 	onMount(() => {
 		void reader.check();
+		void readConsent();
 	});
 </script>
 
@@ -56,15 +73,13 @@
 		<div>
 			<div class="font-semibold">Practice on GitHub</div>
 			<div class="type-small text-ink-muted">
-				{$progress.hasGitHubConsent
+				{hasConsent
 					? 'Allowed: GitHub challenges may create and reset practice repositories on your account.'
 					: 'Not allowed yet: you will be asked before the first GitHub challenge.'}
 			</div>
 		</div>
-		{#if $progress.hasGitHubConsent}
-			<Button variant="secondary" onclick={() => saveGitHubConsent(false)}>
-				Take back consent
-			</Button>
+		{#if hasConsent}
+			<Button variant="secondary" onclick={takeBackConsent}>Take back consent</Button>
 		{/if}
 	</div>
 

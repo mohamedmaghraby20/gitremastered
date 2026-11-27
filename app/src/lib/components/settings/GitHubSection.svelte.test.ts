@@ -4,21 +4,16 @@
  * permission, taking consent back, and the delete confirm flow.
  */
 
-import { get } from 'svelte/store';
 import { page } from 'vitest/browser';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import {
 	deletePracticeRepositories,
 	getGitHubConnection,
-	listPracticeRepositories
+	getGitHubConsent,
+	listPracticeRepositories,
+	revokeGitHubConsent
 } from '$lib/tauri/commands';
-import {
-	createMemoryStorage,
-	loadProgress,
-	progress,
-	saveGitHubConsent
-} from '$lib/stores/progress';
 import type { GitHubConnection } from '$lib/types/github';
 import GitHubSection from './GitHubSection.svelte';
 
@@ -26,7 +21,9 @@ vi.mock('@tauri-apps/api/core', () => ({ isTauri: () => true }));
 vi.mock('$lib/tauri/commands', () => ({
 	getGitHubConnection: vi.fn(),
 	listPracticeRepositories: vi.fn(),
-	deletePracticeRepositories: vi.fn()
+	deletePracticeRepositories: vi.fn(),
+	getGitHubConsent: vi.fn(),
+	revokeGitHubConsent: vi.fn()
 }));
 
 /**
@@ -44,8 +41,9 @@ function connectionIs(changes: Partial<GitHubConnection>): void {
 }
 
 describe('GitHubSection', () => {
-	beforeEach(async () => {
-		await loadProgress(createMemoryStorage());
+	beforeEach(() => {
+		vi.mocked(getGitHubConsent).mockResolvedValue(false);
+		vi.mocked(revokeGitHubConsent).mockResolvedValue();
 		vi.mocked(listPracticeRepositories).mockResolvedValue(['gitremastered-practice-flow']);
 		vi.mocked(deletePracticeRepositories).mockResolvedValue(['gitremastered-practice-flow']);
 	});
@@ -75,14 +73,15 @@ describe('GitHubSection', () => {
 			.toBeVisible();
 	});
 
-	it('takes consent back', async () => {
+	it('takes consent back through Rust', async () => {
 		connectionIs({});
-		await saveGitHubConsent(true);
+		vi.mocked(getGitHubConsent).mockResolvedValueOnce(true).mockResolvedValue(false);
 		await render(GitHubSection);
 
 		await page.getByRole('button', { name: 'Take back consent' }).click();
 
-		expect(get(progress).hasGitHubConsent).toBe(false);
+		expect(revokeGitHubConsent).toHaveBeenCalled();
+		await expect.element(page.getByText(/Not allowed yet/)).toBeVisible();
 	});
 
 	it('lists, asks to confirm, then deletes the practice repositories', async () => {
@@ -97,7 +96,7 @@ describe('GitHubSection', () => {
 
 		await page.getByRole('button', { name: 'Yes, delete them' }).click();
 
-		expect(deletePracticeRepositories).toHaveBeenCalledWith(true);
+		expect(deletePracticeRepositories).toHaveBeenCalledWith(['gitremastered-practice-flow']);
 		await expect.element(page.getByText('Deleted: gitremastered-practice-flow.')).toBeVisible();
 	});
 });

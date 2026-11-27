@@ -25,6 +25,7 @@ portable-pty = "0.9.0"
 notify-debouncer-mini = "0.8.0"
 tauri-plugin-store = "2.5.1"
 tauri-plugin-opener = "2.7.3"
+tauri-plugin-dialog = "2"
 
 [dev-dependencies]
 # Temporary folders for tests with real Git; deleted when the test ends.

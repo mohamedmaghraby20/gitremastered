@@ -210,3 +210,12 @@ export type Challenge = Mission & {
 	title: string; // e.g. "Save the release notes on their own"
 	level: ChallengeLevel;
 };
+
+/**
+ * Tells whether a goal reads GitHub (one of the `github-…` checks) rather than the snapshot.
+ * @param goalCheck - any goal
+ * @returns true for a GitHub goal, and narrows its type
+ */
+export function isGitHubGoalCheck(goalCheck: GoalCheck): goalCheck is GitHubGoalCheck {
+	return goalCheck.check.startsWith('github-');
+}

@@ -12,6 +12,7 @@
 
 use serde::{Deserialize, Serialize};
 
+use super::clock::now_as_iso_text;
 use super::connection::require_login;
 use super::practice_repo::PracticeRepo;
 use super::repo_writes::{create_if_missing, reset_to_clean, use_main_as_default};
@@ -45,6 +46,8 @@ pub struct PreparedChallenge {
     pub upstream: Option<PracticeRepo>,
     /// `PRACTICE_GITHUB_URL` (and `PRACTICE_GITHUB_UPSTREAM_URL`) for the setup steps.
     pub environment: Vec<(String, String)>,
+    /// When this attempt started, by GitHub's clock: right after the shared repository's reset.
+    pub started_at: String,
 }
 
 impl PreparedChallenge {
@@ -71,11 +74,14 @@ pub fn prepare_github_challenge(
         );
     }
     let login = require_login()?;
-    let repo = prepare_one_repo(&login, &challenge.repo)?;
+    let (repo, repo_started_at) = prepare_one_repo(&login, &challenge.repo)?;
+    let mut started_at = repo_started_at;
     let mut environment = vec![(PRACTICE_URL_VARIABLE.to_string(), repo.clone_url())];
     let upstream = match &challenge.upstream {
         Some(upstream_name) => {
-            let upstream = prepare_one_repo(&login, upstream_name)?;
+            let (upstream, upstream_started_at) = prepare_one_repo(&login, upstream_name)?;
+            // The goals read the upstream, so its reset is the start that counts.
+            started_at = upstream_started_at;
             environment.push((UPSTREAM_URL_VARIABLE.to_string(), upstream.clone_url()));
             Some(upstream)
         }
@@ -85,17 +91,19 @@ pub fn prepare_github_challenge(
         repo,
         upstream,
         environment,
+        started_at,
     })
 }
 
 /// Guards, creates (if needed) and clears one practice repository.
 ///
 /// Inputs: the signed-in login and the repository's name. Output: the guarded repository.
-fn prepare_one_repo(login: &str, name: &str) -> Result<PracticeRepo, String> {
+fn prepare_one_repo(login: &str, name: &str) -> Result<(PracticeRepo, String), String> {
     let repo = PracticeRepo::new(login, name, login)?;
     create_if_missing(&repo)?;
-    reset_to_clean(&repo)?;
-    Ok(repo)
+    let github_time = reset_to_clean(&repo)?;
+    let started_at = github_time.unwrap_or_else(now_as_iso_text);
+    Ok((repo, started_at))
 }
 
 /// Step 3: everything after the setup steps ran.

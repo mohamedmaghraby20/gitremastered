@@ -6,6 +6,7 @@
 use super::hidden_command::hidden_command;
 use super::practice_folder::{PracticeError, PracticeFolder};
 use super::shell_choice::find_bash_program;
+use crate::github::gh_command::redact_tokens;
 
 /// Runs each setup step in order, stopping at the first one that fails.
 ///
@@ -30,6 +31,12 @@ pub fn run_setup_steps(
             .env("GIT_EDITOR", "true")
             // Never open a sign-in window of the Git Credential Manager while setting up.
             .env("GCM_INTERACTIVE", "never")
+            // A token in the environment would let a setup line reach GitHub around the guard
+            // (security audit M2): setup lines reach GitHub only through git and the student's
+            // own credential helper, with the URL Rust gives them.
+            .env_remove("GH_TOKEN")
+            .env_remove("GITHUB_TOKEN")
+            .env_remove("GH_ENTERPRISE_TOKEN")
             .envs(environment.iter().map(|(name, value)| (name, value)))
             .output()
             .map_err(|error| PracticeError::StepFailed {
@@ -37,7 +44,9 @@ pub fn run_setup_steps(
                 output: error.to_string(),
             })?;
         if !output.status.success() {
-            let error_text = String::from_utf8_lossy(&output.stderr).trim().to_string();
+            let error_output = String::from_utf8_lossy(&output.stderr);
+            // A push or clone error could hold a token; never show one (security audit L4).
+            let error_text = redact_tokens(error_output.trim());
             return Err(PracticeError::StepFailed {
                 step: step.clone(),
                 output: error_text,

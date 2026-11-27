@@ -14,7 +14,7 @@
  */
 
 import type { GitHubContext } from '$lib/types/github';
-import type { GoalCheck } from '$lib/types/mission';
+import { isGitHubGoalCheck, type GoalCheck } from '$lib/types/mission';
 import type { RepoSnapshot } from '$lib/types/repo-snapshot';
 import { isBranchGoalMet } from './branch-goals';
 import { isContentGoalMet } from './content-goals';
@@ -36,8 +36,8 @@ export function isGoalMet(
 	repoSnapshot: RepoSnapshot | null,
 	gitHubContext: GitHubContext | null = null
 ): boolean {
-	if (goalCheck.check.startsWith('github-')) {
-		return isGitHubGoalMet(goalCheck as Parameters<typeof isGitHubGoalMet>[0], gitHubContext);
+	if (isGitHubGoalCheck(goalCheck)) {
+		return isGitHubGoalMet(goalCheck, gitHubContext);
 	}
 	if (repoSnapshot === null) {
 		return false;
@@ -99,8 +99,7 @@ export function isGoalMet(
 		case 'submodule-exists':
 			return isWorkspaceGoalMet(goalCheck, repoSnapshot);
 		default:
-			// Only GitHub goals are left, and they were answered above.
-			return false;
+			return assertNoGoalLeft(goalCheck);
 	}
 }
 
@@ -117,4 +116,14 @@ export function checkGoals(
 	gitHubContext: GitHubContext | null = null
 ): boolean[] {
 	return goalChecks.map((goalCheck) => isGoalMet(goalCheck, repoSnapshot, gitHubContext));
+}
+
+/**
+ * Makes the compiler prove every non-GitHub goal kind is handled above: after the switch,
+ * only GitHub goals could be left, and those returned at the top.
+ * @param goalCheck - a goal no case handled (impossible once every kind has a case)
+ * @returns never; it throws if reached
+ */
+function assertNoGoalLeft(goalCheck: never): never {
+	throw new Error(`No goal check handles ${JSON.stringify(goalCheck)}`);
 }

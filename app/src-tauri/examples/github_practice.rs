@@ -52,11 +52,16 @@ fn run_action(action: &str, request_text: &str) -> Result<String, String> {
     match action {
         "prepare" => {
             let prepared = prepare_github_challenge(&challenge, true)?;
-            let variables: serde_json::Map<String, serde_json::Value> = prepared
+            let mut variables: serde_json::Map<String, serde_json::Value> = prepared
                 .environment
                 .into_iter()
                 .map(|(name, value)| (name, serde_json::Value::String(value)))
                 .collect();
+            // Not an environment variable: the runner reads it to know when the attempt began.
+            variables.insert(
+                "STARTED_AT".to_string(),
+                serde_json::Value::String(prepared.started_at),
+            );
             Ok(serde_json::Value::Object(variables).to_string())
         }
         "finish" => {
@@ -68,6 +73,7 @@ fn run_action(action: &str, request_text: &str) -> Result<String, String> {
                     .map(guarded_repo)
                     .transpose()?,
                 environment: Vec::new(),
+                started_at: String::new(),
             };
             finish_github_challenge(&prepared, &challenge)?;
             Ok("{}".to_string())

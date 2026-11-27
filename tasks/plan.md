@@ -53,6 +53,7 @@ Approving this plan approves these. Anything not listed is asked about separatel
 | Dev | `playwright`, `@vitest/browser-playwright`, `vitest-browser-svelte` (approved 2026-11-25) | Component tests in a real headless Chromium, close to the app's own web view; needed for terminal and keyboard tests |
 | Rust | `tauri`, `serde`, `serde_json`, `portable-pty`, `notify`, `notify-debouncer-mini`, `tempfile` (tests only) | Core, terminal, folder watching |
 | App + Rust | `@tauri-apps/plugin-opener`, `tauri-plugin-opener` (approved 2026-11-25) | Open the Pro Git link in the system browser |
+| Rust | `tauri-plugin-dialog` (phase 6, decision 12) | Native dialogs Rust shows itself for the GitHub consent and for deleting practice repositories, so a script in the web view can never grant either (security audit M1). Brings `tauri-plugin-fs` and `rfd` with it |
 
 ## Task list
 

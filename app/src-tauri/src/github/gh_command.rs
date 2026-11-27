@@ -139,14 +139,18 @@ fn first_error_line(error_output: &str) -> String {
 /// The starts of GitHub's token formats.
 const TOKEN_PREFIXES: [&str; 6] = ["ghp_", "gho_", "ghs_", "ghu_", "ghr_", "github_pat_"];
 
-/// Replaces every word that holds something shaped like a GitHub token with `[token hidden]`.
+/// Replaces every word that holds something shaped like a GitHub token, or an address with a
+/// user name and password in it (`https://user:token@host`), with `[token hidden]`. Words
+/// are split on every kind of white space, so a token after a tab or line break is caught too.
 ///
 /// Input: a text. Output: the same text without tokens.
 pub fn redact_tokens(text: &str) -> String {
     let words: Vec<&str> = text
-        .split(' ')
+        .split_whitespace()
         .map(|word| {
-            let looks_like_token = TOKEN_PREFIXES.iter().any(|prefix| word.contains(prefix));
+            let has_token_prefix = TOKEN_PREFIXES.iter().any(|prefix| word.contains(prefix));
+            let has_address_password = word.contains("://") && word.contains('@');
+            let looks_like_token = has_token_prefix || has_address_password;
             if looks_like_token {
                 "[token hidden]"
             } else {
@@ -168,6 +172,16 @@ mod tests {
         assert_eq!(
             redact_tokens(text),
             "bad credentials for [token hidden] and [token hidden] sorry"
+        );
+    }
+
+    /// An address with a password in it is hidden too.
+    #[test]
+    fn hides_passwords_in_addresses() {
+        let text = "fatal: could not read from https://ada:secret123@github.com/ada/x.git";
+        assert_eq!(
+            redact_tokens(text),
+            "fatal: could not read from [token hidden]"
         );
     }
 

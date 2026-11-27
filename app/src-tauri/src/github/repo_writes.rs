@@ -111,8 +111,11 @@ pub fn create_if_missing(repo: &PracticeRepo) -> Result<bool, String> {
 
 /// Clears what an earlier attempt left on GitHub, so the challenge starts clean.
 ///
-/// Input: the practice repository. Output: nothing, or the first error.
-pub fn reset_to_clean(repo: &PracticeRepo) -> Result<(), String> {
+/// Input: the practice repository. Output: GitHub's own time right after the reset (the
+/// repository's `updated_at`), when GitHub gave one, or the first error. Goals count only
+/// pull requests, issues and runs made from that moment on, so nothing the reset itself
+/// closed can tick a goal (code review finding 6).
+pub fn reset_to_clean(repo: &PracticeRepo) -> Result<Option<String>, String> {
     require_made_by_app(repo)?;
     let full_name = repo.full_name();
     for number in list_numbers(
@@ -164,8 +167,8 @@ pub fn reset_to_clean(repo: &PracticeRepo) -> Result<(), String> {
         "delete_branch_on_merge": false,
         "has_issues": true,
     });
-    call_api("PATCH", &format!("repos/{full_name}"), Some(&settings))?;
-    Ok(())
+    let updated = call_api("PATCH", &format!("repos/{full_name}"), Some(&settings))?;
+    Ok(updated["updated_at"].as_str().map(str::to_string))
 }
 
 /// Makes `main` the default branch, once the setup has pushed it.

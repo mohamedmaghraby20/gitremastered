@@ -80,6 +80,12 @@ Commands (screen asks, core answers):
 | `resize_terminal` | session id, columns, rows | nothing |
 | `close_terminal_session` | session id | nothing (stops the shell; added in task 13) |
 | `get_repo_snapshot` | practice folder path | `RepoSnapshot` |
+| `open_practice_repo`, `reset_practice_repo` (phase 6) | also the challenge's `github` field, if any | as above; a GitHub challenge prepares its practice repository first, only with the consent Rust keeps |
+| `find_github_challenge_start` | `missionId` | when the GitHub attempt started (GitHub's clock), or null |
+| `get_github_connection` | none | `GitHubConnection` (gh installed, signed in, login, delete permission) |
+| `get_github_state` | practice repository name | `GitHubState` (branches, pull requests, issues, releases, rules, workflow runs) |
+| `get_github_consent`, `grant_github_consent`, `revoke_github_consent` | none | the consent; only Rust's own native dialog can grant it |
+| `list_practice_repositories`, `delete_practice_repositories` | the names the student chose (delete) | names; deleting asks again in a native dialog |
 
 Events (core announces, screens react):
 
@@ -89,7 +95,7 @@ Events (core announces, screens react):
 | `repo_changed` | `RepoSnapshot` | stores → visualizer, mission-engine |
 | `terminal_exited` | session id, exit code | terminal-view |
 
-Changing this contract needs the user's approval (see Boundaries).
+Changing this contract needs the user's approval (see Boundaries). The phase 6 commands were added under decision 11 in `tasks/todo.md`.
 
 ### 3.4 Shared data shapes
 

@@ -12,7 +12,7 @@
   A GitHub challenge also shows the GitHub panel: consent, connection, "Check GitHub now".
 -->
 <script lang="ts">
-	import type { Mission } from '$lib/types/mission';
+	import { isGitHubGoalCheck, type Mission } from '$lib/types/mission';
 	import type { RepoSnapshot } from '$lib/types/repo-snapshot';
 	import { Button } from '$lib/components/ui/button';
 	import { checkGoals } from '$lib/mission-engine/goal-checker';
@@ -56,7 +56,7 @@
 	const goalResults = $derived(checkGoals(mission.goals, snapshot, gitHubWatch?.context ?? null));
 	/** True while a goal that reads GitHub is not met yet: GitHub is then read every 20 s. */
 	const hasOpenGitHubGoal = $derived(
-		mission.goals.some((goal, index) => goal.check.startsWith('github-') && !goalResults[index])
+		mission.goals.some((goal, index) => isGitHubGoalCheck(goal) && !goalResults[index])
 	);
 
 	$effect(() => {

@@ -105,18 +105,77 @@ export function checkGitHubLines(
 	solution: string[]
 ): void {
 	for (const line of setup) {
-		if (/(^|[\s;&|(])gh\s/.test(line) || line.includes('github.com')) {
+		if (isUnsafeSetupLine(line)) {
 			challengeReader.fail(
-				`setup line "${line}" calls gh or names github.com; use a teammate step or $PRACTICE_GITHUB_URL`
+				`setup line "${line}" calls gh, names a GitHub address or changes $PRACTICE_GITHUB_URL; use a teammate step or the plain "$PRACTICE_GITHUB_URL"`
 			);
 		}
 	}
 	for (const line of solution) {
-		const namesAnotherPlace = line.includes('github.com') || /\s(--repo|-R)(\s|=)/.test(line);
-		if (namesAnotherPlace || /gh\s+repo\s+delete/.test(line)) {
+		if (isUnsafeSolutionLine(line)) {
 			challengeReader.fail(
 				`solution line "${line}" names an address or another repository, or deletes one`
 			);
 		}
 	}
+}
+
+/**
+ * Tells whether a setup line breaks the rules (security audit M2). Letter case is ignored,
+ * so `GitHub.com` is caught too. `gh` is refused anywhere as a word (also as `\gh` or "gh");
+ * curl, wget and the API address are refused; the practice address may only appear as the
+ * plain variable, never with a shell modifier like `${PRACTICE_GITHUB_URL%/*}` that could
+ * turn it into another repository's address.
+ * @param line - one setup line
+ * @returns true when the line must be refused
+ */
+function isUnsafeSetupLine(line: string): boolean {
+	const lowerLine = line.toLowerCase();
+	const callsGh = /(^|[^a-z0-9_-])gh([^a-z0-9_-]|$)/.test(lowerLine);
+	const namesGitHub = lowerLine.includes('github.com');
+	const callsTheWeb = /(^|[^a-z0-9_-])(curl|wget)([^a-z0-9_-]|$)/.test(lowerLine);
+	const changesPracticeAddress = /\$\{practice_github_(upstream_)?url[^}]/.test(lowerLine);
+	return callsGh || namesGitHub || callsTheWeb || changesPracticeAddress;
+}
+
+/**
+ * Tells whether a solution line breaks the rules. Solutions are what the student types, so
+ * `gh` is allowed, but never on another repository, an address, or to delete a repository.
+ * A `gh api` call that writes must target the practice repository through the
+ * `repos/{owner}/{repo}` placeholders, which gh fills from the current repository.
+ * @param line - one solution line
+ * @returns true when the line must be refused
+ */
+function isUnsafeSolutionLine(line: string): boolean {
+	const lowerLine = line.toLowerCase();
+	const namesAddress = lowerLine.includes('github.com') || /(^|\s)(curl|wget)\s/.test(lowerLine);
+	const namesOtherRepository = /\s(--repo|-r)(\s|=)/.test(line.replace(/-R/g, '-r'));
+	const deletesRepository = /gh\s+repo\s+delete/.test(lowerLine);
+	const writesToOtherPath = isApiWriteOutsidePlaceholders(line);
+	return namesAddress || namesOtherRepository || deletesRepository || writesToOtherPath;
+}
+
+/**
+ * Tells whether a line is a writing `gh api` call (-X or --method other than GET, or a field
+ * with -f/-F, or --input) whose path is not under `repos/{owner}/{repo}`.
+ * @param line - one solution line
+ * @returns true when the call could write somewhere else
+ */
+function isApiWriteOutsidePlaceholders(line: string): boolean {
+	if (!/(^|[^a-z0-9_-])gh\s+api\s/i.test(line)) {
+		return false;
+	}
+	// A GraphQL query is sent with -f but only reads; a mutation writes.
+	const isGraphQlQuery = /gh\s+api\s+graphql\s/i.test(line) && !/mutation/i.test(line);
+	if (isGraphQlQuery) {
+		return false;
+	}
+	const methodMatch = /(?:-X|--method)[\s=]+([A-Za-z]+)/.exec(line);
+	const isWrite =
+		(methodMatch !== null && methodMatch[1].toUpperCase() !== 'GET') ||
+		/\s(-f|-F|--field|--raw-field|--input)\s/.test(line);
+	if (!isWrite) {
+		return false;
+	}
+	return !line.includes('repos/{owner}/{repo}');
 }

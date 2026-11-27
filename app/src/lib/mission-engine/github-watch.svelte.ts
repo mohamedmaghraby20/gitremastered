@@ -35,7 +35,11 @@ export class GitHubWatch {
 	private readonly now: () => number;
 	private lastReadAt = 0;
 	private waitingRead: ReturnType<typeof setTimeout> | null = null;
-	private repeatingRead: ReturnType<typeof setInterval> | null = null;
+	private repeatingRead: ReturnType<typeof setTimeout> | null = null;
+	/** True while a GitHub goal is open: after each read, the next one is planned. */
+	private shouldRepeat = false;
+	/** False once stopped: a read that ends later must not plan another. */
+	private isRunning = true;
 
 	/**
 	 * @param repoName - the practice repository, like "gitremastered-practice-flow"
@@ -50,9 +54,17 @@ export class GitHubWatch {
 		this.now = now;
 	}
 
-	/** Reads GitHub right away (the first read, and the "Check GitHub now" button). */
+	/**
+	 * Reads GitHub right away (the first read, and the "Check GitHub now" button). A read never
+	 * starts while another runs, so an older answer can never overwrite a newer one (code
+	 * review finding 4).
+	 */
 	async readNow(): Promise<void> {
+		if (this.isReading || !this.isRunning) {
+			return;
+		}
 		this.cancelWaitingRead();
+		this.cancelRepeatingRead();
 		this.lastReadAt = this.now();
 		this.isReading = true;
 		try {
@@ -63,6 +75,7 @@ export class GitHubWatch {
 			this.problem = String(error);
 		} finally {
 			this.isReading = false;
+			this.planNextRepeat();
 		}
 	}
 
@@ -83,23 +96,47 @@ export class GitHubWatch {
 	}
 
 	/**
-	 * Reads every 20 seconds while a GitHub goal is open, and stops once none is.
+	 * Reads every 20 seconds while a GitHub goal is open, and stops once none is. The next
+	 * read is planned only after the last one ended, so slow reads never pile up.
 	 * @param hasOpenGoal - true while at least one GitHub goal is not met
 	 */
 	keepReadingWhile(hasOpenGoal: boolean): void {
-		if (hasOpenGoal && this.repeatingRead === null) {
-			this.repeatingRead = setInterval(() => void this.readNow(), openGoalReadInterval);
+		this.shouldRepeat = hasOpenGoal;
+		if (!hasOpenGoal) {
+			this.cancelRepeatingRead();
+			return;
 		}
-		if (!hasOpenGoal && this.repeatingRead !== null) {
-			clearInterval(this.repeatingRead);
-			this.repeatingRead = null;
+		if (!this.isReading) {
+			this.planNextRepeat();
 		}
 	}
 
 	/** Stops every timer (when the lesson closes or another challenge starts). */
 	stop(): void {
+		this.isRunning = false;
+		this.shouldRepeat = false;
 		this.cancelWaitingRead();
-		this.keepReadingWhile(false);
+		this.cancelRepeatingRead();
+	}
+
+	/** Plans the next repeated read, unless one is planned already or none is wanted. */
+	private planNextRepeat(): void {
+		const isWanted = this.shouldRepeat && this.isRunning;
+		if (!isWanted || this.repeatingRead !== null) {
+			return;
+		}
+		this.repeatingRead = setTimeout(() => {
+			this.repeatingRead = null;
+			void this.readNow();
+		}, openGoalReadInterval);
+	}
+
+	/** Cancels a planned repeated read. */
+	private cancelRepeatingRead(): void {
+		if (this.repeatingRead !== null) {
+			clearTimeout(this.repeatingRead);
+			this.repeatingRead = null;
+		}
 	}
 
 	/** Cancels a read that was waiting for the 10-second gap. */

@@ -70,8 +70,9 @@ export async function runGitHubMission(
 	const practiceFolder = join(practiceRoot, missionId, 'project');
 	mkdirSync(practiceFolder, { recursive: true });
 	try {
-		const startedAt = new Date(Date.now() - 60_000).toISOString();
-		const environment = { ...stepEnvironment, ...callGitHubProgram('prepare', github) };
+		// Rust answers with the setup's environment and, apart, the attempt's start by GitHub's clock.
+		const { STARTED_AT: startedAt, ...githubVariables } = callGitHubProgram('prepare', github);
+		const environment = { ...stepEnvironment, ...githubVariables };
 		runSteps(mission.setup, practiceFolder, environment);
 		callGitHubProgram('finish', github);
 		runSteps(mission.solution, practiceFolder, environment);
