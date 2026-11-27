@@ -1,0 +1,40 @@
+questions:
+  - question: "A pull request from the branch search has five commits. A teammate merges it with Squash and merge, and you run git pull on main. What did main gain?"
+    answers:
+      - text: "The five commits of search, with the same IDs, in one straight line"
+        explanation: "That would be a fast-forward, which none of GitHub's three buttons does. A squash never brings the original commits over."
+      - text: "One new commit that holds the changes of all five; none of the five originals is in main"
+        correct: true
+        explanation: "A squash merge builds one new commit with one parent. The five originals stay only on the branch search."
+      - text: "The five commits plus a merge commit with two parents"
+        explanation: "That is the default method, Create a merge commit. A squash adds exactly one commit, and it has one parent."
+
+  - question: "Your pull request from the branch login was squash-merged and the branch was deleted on GitHub. You switch to main, pull, and run git branch -d login. Git answers: error: the branch 'login' is not fully merged. What is going on, and what do you do?"
+    answers:
+      - text: "The merge failed on GitHub. Open the pull request again and merge it once more"
+        explanation: "The pull request is merged and main has the work. The message comes from your own Git, which only looks at commits on your computer."
+      - text: "Git is right about the commits and wrong about the work: main holds a new commit with the same changes. Check that the pull request is merged, then delete the branch with git branch -D login"
+        correct: true
+        explanation: "git branch -d asks whether the branch's newest commit can be reached from main. After a squash it cannot, although every change is there. -D skips that question, so you answer it yourself first."
+      - text: "Run git merge login on main, so that Git sees the branch as merged, then delete it"
+        explanation: "That would bring the original commits into main beside the squashed one, joined by a merge commit: the same changes twice in the history the team wanted clean."
+
+  - question: "Your team wants two things on main: every commit of a pull request stays a separate commit, and the history is one straight line with no merge commits. Which setup gives both?"
+    answers:
+      - text: "Allow only merge commits"
+        explanation: "The commits stay separate, but every pull request adds a merge commit with two parents, so the history is not a straight line."
+      - text: "Allow only squash merging"
+        explanation: "The history is a straight line, but each pull request becomes one commit, so the separate commits are gone from main."
+      - text: "Allow only rebase merging"
+        correct: true
+        explanation: "Rebase and merge copies each commit onto main, one after the other, with no merge commit. With the other two methods switched off in the settings, nobody can pick the wrong button."
+
+  - question: "Your pull request from the branch checkout was squash-merged yesterday. Today you add two more commits to the same branch checkout and open a second pull request. What should you expect?"
+    answers:
+      - text: "The new pull request lists yesterday's commits again beside the two new ones, and it may conflict with main"
+        correct: true
+        explanation: "main never received yesterday's commits, only one new commit with their changes. To Git the old commits are still missing from main, so they show up again. Start each new piece of work on a new branch from the updated main."
+      - text: "The new pull request lists only the two new commits, because GitHub remembers what was merged"
+        explanation: "GitHub compares commits, like Git does. Yesterday's commits are not in main's history, so they are listed again."
+      - text: "GitHub refuses the pull request, because the branch was merged before"
+        explanation: "A branch can be the source of any number of pull requests. GitHub opens this one; it is just harder to read and to merge."

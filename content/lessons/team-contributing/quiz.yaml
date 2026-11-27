@@ -1,0 +1,40 @@
+questions:
+  - question: "On a three-person team everyone pushes to main. You committed a change to tea.md; a teammate pushed a change to soup.md a minute ago. Your git push is rejected. Why, when you touched different files?"
+    answers:
+      - text: "Git never joins two people's work on the server: you merge the teammate's commit into your main on your computer, then push"
+        correct: true
+        explanation: "The server only moves its branch forward to a commit that contains everything it already has. Fetch, merge origin/main, push. Which files changed plays no part."
+      - text: "The server found a conflict between tea.md and soup.md"
+        explanation: "Two different files cannot conflict, and the server never tries to merge. It refused because your commit does not contain the teammate's commit."
+      - text: "Your push access was taken away"
+        explanation: "A permission problem gives a different message (permission denied, error 403). \"rejected\" with \"non-fast-forward\" or \"fetch first\" means the server has a commit you lack."
+
+  - question: "Your branch add-tea is ready. You run git fetch origin and then git log --no-merges add-tea..origin/main, and Git prints two commits. What did you learn?"
+    answers:
+      - text: "add-tea has two commits that main on the server lacks"
+        explanation: "That is the range the other way round: origin/main..add-tea. The name after the two dots is the side whose commits are listed."
+      - text: "The server's main has two commits that add-tea lacks: what a merge of origin/main would bring in"
+        correct: true
+        explanation: "A..B lists the commits B has and A does not. --no-merges only hides merge commits, so you read the commits that did the work."
+      - text: "Two commits on the server conflict with add-tea"
+        explanation: "git log lists commits; it does not test for conflicts. You find out about a conflict when you merge."
+
+  - question: "You forked an open-source project a month ago and cloned your fork. Today you want to start a new fix on the project's newest code. Which start is right?"
+    answers:
+      - text: "git pull on main, then git switch -c fix-typo"
+        explanation: "In a clone of your fork, main follows origin/main, and origin is your fork. The fork is a month old too, so the pull brings nothing new."
+      - text: "git fetch upstream, then git switch -c fix-typo upstream/main"
+        correct: true
+        explanation: "The upstream remote is the project itself. Fetching it updates upstream/main, and the new branch starts from the project's newest commit."
+      - text: "git switch -c fix-typo on top of your last topic branch, so nothing is lost"
+        explanation: "Then the new fix carries the old branch's commits with it, and the maintainer cannot accept one without the other. Each contribution starts from the project's main."
+
+  - question: "A maintainer asked you to rebase your pull request's branch. You ran git rebase upstream/main, and now git push origin add-tea is rejected as non-fast-forward. What do you do?"
+    answers:
+      - text: "git pull, as the hint says, then push"
+        explanation: "That merges the old copies of your commits back into the rebased branch: every commit shows up twice. The hint is written for shared branches, not for a branch you just rebased."
+      - text: "git push --force-with-lease origin add-tea, because the branch is yours alone and the old commits should be replaced"
+        correct: true
+        explanation: "A rebase makes new commits, so the server's branch has to be replaced. On your own topic branch that is accepted, and --force-with-lease refuses if someone else pushed there since your last fetch."
+      - text: "git push --force origin main, to bring the fork up to date first"
+        explanation: "main is not the problem, and forcing main is the one push to avoid. Only the rebased topic branch needs replacing."

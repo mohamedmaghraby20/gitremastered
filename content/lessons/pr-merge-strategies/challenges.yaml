@@ -1,0 +1,204 @@
+challenges:
+  - id: squash-the-hours
+    title: Squash three commits into one
+    level: easy
+    brief: "A teammate opened a pull request from the branch hours into main. It has three small commits, and the bakery team wants every pull request to arrive on main as one commit. Squash-merge the pull request, then bring your local main up to date. Stay on main."
+    github:
+      repo: gitremastered-practice-pr-merge-strategies
+      teammate:
+        - action: open-pull-request
+          head: hours
+          base: main
+          title: "Add opening hours"
+          body: "Three small commits: the hours, a later closing time, and the closing day."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "<h1>Corner Bakery</h1>" > index.html
+      - git add index.html
+      - git commit -q -m "Add homepage"
+      - 'echo "Email: hello@bakery.example" > contact.txt'
+      - git add contact.txt
+      - git commit -q -m "Add contact page"
+      - git switch -q -c hours
+      - echo "Open 9 to 5" > hours.txt
+      - git add hours.txt
+      - git commit -q -m "Add opening hours"
+      - echo "Open 9 to 6" > hours.txt
+      - git commit -q -am "Stay open until 6"
+      - echo "Closed on Mondays" >> hours.txt
+      - git commit -q -am "Add closing day"
+      - git switch -q main
+      - git remote add origin "$PRACTICE_GITHUB_URL"
+      - git push -q --force --mirror origin
+      - git fetch -q origin
+      - git branch -q --set-upstream-to=origin/main main
+    goal:
+      - check: github-pull-request-is-merged
+        head: hours
+        label: "The pull request from hours is merged on GitHub"
+      - check: head-is-on-branch
+        branch: main
+        label: "You are on main"
+      - check: commit-count-is
+        count: 3
+        label: "Your main has 3 commits: the two it had, plus one for the whole pull request"
+      - check: history-is-linear
+        label: "The history of main is a straight line (no merge commit)"
+      - check: branch-is-in-sync
+        branch: main
+        label: "Your main is level with main on GitHub"
+    hints:
+      - "Which of the three merge methods puts one new commit on main, however many commits the pull request has? The merge happens on GitHub, so your local main does not change until you fetch the result."
+      - "gh pr merge takes the branch of the pull request and one flag for the method: --merge, --squash or --rebase. Afterwards, git pull brings the new commit to your main."
+      - "Run: gh pr merge hours --squash, then git pull. Check with git log --oneline: three commits, the newest named Add opening hours with the pull request's number after it."
+    solution:
+      - gh pr merge hours --squash
+      - git pull -q
+
+  - id: two-pull-requests-two-methods
+    title: Two pull requests, two methods
+    level: medium
+    brief: "Two pull requests are open. The menu pull request has two tidy commits: the team wants both of them on main, with no merge commit. The about pull request is a bigger piece of work: the team wants a merge commit that shows where it came in. Merge menu first, then about, each with the method that fits, and bring your local main up to date."
+    github:
+      repo: gitremastered-practice-pr-merge-strategies
+      teammate:
+        - action: open-pull-request
+          head: menu
+          base: main
+          title: "Add the menu"
+          body: "Two tidy commits. Please keep both."
+        - action: open-pull-request
+          head: about
+          base: main
+          title: "Add the about page"
+          body: "Our story. Please keep this visible as one piece of work."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "<h1>Corner Bakery</h1>" > index.html
+      - git add index.html
+      - git commit -q -m "Add homepage"
+      - 'echo "Email: hello@bakery.example" > contact.txt'
+      - git add contact.txt
+      - git commit -q -m "Add contact page"
+      - git switch -q -c menu
+      - echo "Bread, cake, coffee" > menu.txt
+      - git add menu.txt
+      - git commit -q -m "Add menu"
+      - echo "Bread 3, cake 4, coffee 2" > menu.txt
+      - git commit -q -am "Add prices to menu"
+      - git switch -q -c about main
+      - echo "A family bakery" > about.txt
+      - git add about.txt
+      - git commit -q -m "Add about page"
+      - echo "Baking since 1990" >> about.txt
+      - git commit -q -am "Add founding year"
+      - git switch -q main
+      - git remote add origin "$PRACTICE_GITHUB_URL"
+      - git push -q --force --mirror origin
+      - git fetch -q origin
+      - git branch -q --set-upstream-to=origin/main main
+    goal:
+      - check: github-pull-request-is-merged
+        head: menu
+        label: "The menu pull request is merged on GitHub"
+      - check: github-pull-request-is-merged
+        head: about
+        label: "The about pull request is merged on GitHub"
+      - check: head-commit-is-merge
+        label: "The newest commit of your main is a merge commit"
+      - check: latest-commit-message-contains
+        text: "/about"
+        label: "That merge commit is the one of the about pull request"
+      - check: commit-count-is
+        count: 7
+        label: "Your main has 7 commits: menu's two came in with no merge commit of their own"
+      - check: branch-is-in-sync
+        branch: main
+        label: "Your main is level with main on GitHub"
+    hints:
+      - "Count the commits each method adds to main. menu must add exactly two, and about must add its two plus one more that has two parents."
+      - "Rebase and merge copies each commit of the pull request onto main and adds nothing else. The default method keeps the commits and adds a merge commit. The order matters here: menu first, then about."
+      - "Run: gh pr merge menu --rebase, then gh pr merge about --merge, then git pull. Check with git log --oneline --graph."
+    solution:
+      - gh pr merge menu --rebase
+      - gh pr merge about --merge
+      - git pull -q
+
+  - id: clean-up-after-a-squash
+    title: Squash, then clean up a branch Git calls unmerged
+    level: hard
+    brief: "Your pull request from gallery is approved. It has four commits, two of them named wip. The team's rules: the work arrives on main as one commit titled exactly \"Add a gallery page\" (no pull request number after it), and no finished branch is left behind, on GitHub or on your computer. Squash-merge the pull request with that title, update your main, delete gallery in both places and finish on main. Then write the short ID of the commit on main that now holds the gallery work into answer.txt."
+    github:
+      repo: gitremastered-practice-pr-merge-strategies
+      teammate:
+        - action: open-pull-request
+          head: gallery
+          base: main
+          title: "Add a gallery page"
+          body: "Four commits, two of them named wip. One commit on main is enough."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "<h1>Corner Bakery</h1>" > index.html
+      - git add index.html
+      - git commit -q -m "Add homepage"
+      - 'echo "Email: hello@bakery.example" > contact.txt'
+      - git add contact.txt
+      - git commit -q -m "Add contact page"
+      - git switch -q -c gallery
+      - echo "Photo of the shop front" > gallery.txt
+      - git add gallery.txt
+      - git commit -q -m "Start gallery"
+      - echo "Photo of the oven" >> gallery.txt
+      - git commit -q -am "wip"
+      - echo "Photo of the bread shelf" >> gallery.txt
+      - git commit -q -am "wip again"
+      - echo "Photo of the team" >> gallery.txt
+      - git commit -q -am "Gallery done"
+      - echo answer.txt >> .git/info/exclude
+      - git remote add origin "$PRACTICE_GITHUB_URL"
+      - git push -q --force --mirror origin
+      - git fetch -q origin
+      - git branch -q --set-upstream-to=origin/main main
+      - git branch -q --set-upstream-to=origin/gallery gallery
+    goal:
+      - check: github-pull-request-is-merged
+        head: gallery
+        label: "The pull request from gallery is merged on GitHub"
+      - check: head-is-on-branch
+        branch: main
+        label: "You are on main"
+      - check: commit-count-is
+        count: 3
+        label: "Your main has 3 commits: the whole pull request became one"
+      - check: branch-is-in-sync
+        branch: main
+        label: "Your main is level with main on GitHub"
+      - check: github-branch-is-missing
+        branch: gallery
+        label: "The branch gallery is gone from GitHub"
+      - check: branch-is-missing
+        branch: gallery
+        label: "The local branch gallery is deleted"
+      - check: answer-is-commit
+        message: "Add a gallery page"
+        label: "answer.txt holds the ID of the commit titled exactly \"Add a gallery page\""
+    hints:
+      - "Four jobs: merge with the right method and title, update main, remove the branch on GitHub, remove it here. A squash merge names its commit after the pull request and adds the number. Advanced shows the flag that sets the title yourself."
+      - "After the merge, none of gallery's four commits is in main: main got one new commit with the same changes. So git branch -d may refuse. Check that nothing would be lost with git diff main gallery (it should print nothing), then use the capital D. You cannot delete the branch you are on."
+      - "Run: gh pr merge gallery --squash --subject \"Add a gallery page\", then git switch main, git pull, git push origin --delete gallery, git branch -D gallery, and git rev-parse --short HEAD > answer.txt"
+    solution:
+      - gh pr merge gallery --squash --subject "Add a gallery page"
+      - git switch -q main
+      - git pull -q
+      - git push -q origin --delete gallery
+      - git branch -q -D gallery
+      - git rev-parse --short HEAD > answer.txt

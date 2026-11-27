@@ -1,0 +1,209 @@
+challenges:
+  - id: open-your-first-pr
+    title: Open a pull request for the opening hours
+    level: easy
+    brief: "The opening hours for the Corner Cafe site are committed on your local branch add-hours, and nobody can see them. Push the branch to GitHub and open a pull request that asks to merge add-hours into main. Do not merge it: the team reviews it first."
+    github:
+      repo: gitremastered-practice-github-flow-prs
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - git config pull.rebase false
+      - echo "# Corner Cafe" > README.md
+      - echo "The website of a small cafe on the corner." >> README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - printf 'Coffee 3.00\nTea 2.50\nCroissant 2.80\n' > menu.txt
+      - git add menu.txt
+      - git commit -q -m "Add menu"
+      - git remote add origin "$PRACTICE_GITHUB_URL"
+      - git push -q --force --mirror origin
+      - git fetch -q origin
+      - git branch -q -u origin/main main
+      # A teammate has a commit ready that is not on GitHub yet (a Try-it pushes it):
+      - git clone -q -c core.autocrlf=false "$PRACTICE_GITHUB_URL" ../teammate
+      - git -C ../teammate config user.name "Tariq (teammate)"
+      - git -C ../teammate config user.email "tariq@example.com"
+      - echo "Scone 2.20" >> ../teammate/menu.txt
+      - git -C ../teammate commit -q -am "Add scone to menu"
+      # Your own work, not pushed yet:
+      - git switch -q -c add-hours
+      - printf 'Monday to Friday 8:00 to 18:00\nSaturday 9:00 to 14:00\n' > hours.txt
+      - git add hours.txt
+      - git commit -q -m "Add opening hours"
+      - git switch -q main
+    goal:
+      - check: github-branch-exists
+        branch: add-hours
+        label: "The branch add-hours is on GitHub"
+      - check: github-pull-request-is-open
+        head: add-hours
+        label: "A pull request from add-hours is open"
+      - check: branch-lacks-commit
+        branch: main
+        message: "Add opening hours"
+        label: "Your main does not hold the opening hours yet (the pull request is not merged)"
+    hints:
+      - "Run git branch -vv. Which branch has no upstream in square brackets? GitHub cannot show a branch it never received."
+      - "Two steps: publish the branch with git push -u, then ask GitHub for the pull request with gh pr create while you are on that branch."
+      - "Run: git switch add-hours, then git push -u origin add-hours, then gh pr create --fill (or give your own --title and --body)."
+    solution:
+      - git switch -q add-hours
+      - git push -q -u origin add-hours
+      - gh pr create --fill
+
+  - id: fix-after-review
+    title: Fix what the reviewer asked for, then merge
+    level: medium
+    brief: "Your pull request \"Add contact page\" (branch add-contact) is open, and your teammate Tariq left a comment on it. Read the comment, fix the file on the same branch, push the fix so that the pull request picks it up, and merge the pull request with a merge commit. Finish on main with the merged work pulled to your computer."
+    github:
+      repo: gitremastered-practice-github-flow-prs
+      teammate:
+        - action: open-pull-request
+          head: add-contact
+          base: main
+          title: "Add contact page"
+          body: "Adds contact.txt with our address and email, so guests can reach us."
+        - action: comment-pull-request
+          head: add-contact
+          body: "Nice. One typo in contact.txt, line 2: \"Emial\" should be \"Email\". Fix it and this is good to merge."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - git config pull.rebase false
+      - echo "# Corner Cafe" > README.md
+      - echo "The website of a small cafe on the corner." >> README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - printf 'Coffee 3.00\nTea 2.50\nCroissant 2.80\n' > menu.txt
+      - git add menu.txt
+      - git commit -q -m "Add menu"
+      # The branch you opened the pull request from:
+      - git switch -q -c add-contact
+      - 'printf "Corner Cafe, 12 Mill Street\nEmial: hello@cornercafe.example\n" > contact.txt'
+      - git add contact.txt
+      - git commit -q -m "Add contact page"
+      - git switch -q main
+      - git remote add origin "$PRACTICE_GITHUB_URL"
+      - git push -q --force --mirror origin
+      - git fetch -q origin
+      - git branch -q -u origin/main main
+      - git branch -q -u origin/add-contact add-contact
+    goal:
+      - check: github-pull-request-is-merged
+        head: add-contact
+        label: "The pull request from add-contact is merged on GitHub"
+      - check: head-is-on-branch
+        branch: main
+        label: "You are on main"
+      - check: committed-file-contains
+        file: contact.txt
+        text: "Email: hello@cornercafe.example"
+        label: "Your main holds contact.txt with the word Email spelled right"
+      - check: committed-file-lacks
+        file: contact.txt
+        text: "Emial"
+        label: "The typo is gone from contact.txt on main"
+      - check: branch-is-in-sync
+        branch: main
+        label: "main is level with GitHub"
+    hints:
+      - "Run gh pr view add-contact --comments to read what Tariq wrote. A pull request follows its branch: where do new commits have to go?"
+      - "Switch to add-contact, fix the word in contact.txt, commit and git push. The open pull request shows the new commit by itself. Then merge it from the terminal with gh pr merge."
+      - "Run: git switch add-contact, change Emial to Email in contact.txt, git commit -am \"Fix typo in contact page\", git push, gh pr merge --merge, git switch main, git pull."
+    solution:
+      - git switch -q add-contact
+      - sed -i -e 's/Emial/Email/' contact.txt
+      - git commit -q -am "Fix typo in contact page"
+      - git push -q
+      # GitHub needs a moment after a push before it can merge (a person types slower than this script):
+      - sleep 8
+      - gh pr merge --merge
+      - git switch -q main
+      - git pull -q
+
+  - id: update-merge-clean-up
+    title: Bring a stale pull request up to date, merge it, clean up
+    level: hard
+    brief: "Your pull request \"Add opening hours\" (branch add-hours) has been open for a while, and Tariq has pushed a new commit to main on GitHub since. The team's rule: a branch takes in the newest main before it is merged, so the two are tested together. Merge GitHub's newest main into add-hours, push, and merge the pull request with a merge commit. Then leave nothing behind: no add-hours on GitHub, no local add-hours, no stale origin/add-hours record, and your main holding the merged work."
+    github:
+      repo: gitremastered-practice-github-flow-prs
+      teammate:
+        - action: open-pull-request
+          head: add-hours
+          base: main
+          title: "Add opening hours"
+          body: "Adds hours.txt with our opening hours."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - git config pull.rebase false
+      - echo "# Corner Cafe" > README.md
+      - echo "The website of a small cafe on the corner." >> README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - printf 'Coffee 3.00\nTea 2.50\nCroissant 2.80\n' > menu.txt
+      - git add menu.txt
+      - git commit -q -m "Add menu"
+      # The branch you opened the pull request from:
+      - git switch -q -c add-hours
+      - printf 'Monday to Friday 8:00 to 18:00\nSaturday 9:00 to 14:00\n' > hours.txt
+      - git add hours.txt
+      - git commit -q -m "Add opening hours"
+      - git switch -q main
+      - git remote add origin "$PRACTICE_GITHUB_URL"
+      - git push -q --force --mirror origin
+      - git fetch -q origin
+      - git branch -q -u origin/main main
+      - git branch -q -u origin/add-hours add-hours
+      # A teammate pushes to main after your last fetch:
+      - git clone -q -c core.autocrlf=false "$PRACTICE_GITHUB_URL" ../teammate
+      - git -C ../teammate config user.name "Tariq (teammate)"
+      - git -C ../teammate config user.email "tariq@example.com"
+      - echo "Scone 2.20" >> ../teammate/menu.txt
+      - git -C ../teammate commit -q -am "Add scone to menu"
+      - git -C ../teammate push -q
+    goal:
+      - check: github-pull-request-is-merged
+        head: add-hours
+        label: "The pull request from add-hours is merged on GitHub"
+      - check: branch-contains-commit
+        branch: main
+        message: "into add-hours"
+        label: "add-hours took in main before it was merged (a merge commit \"... into add-hours\" is in your main)"
+      - check: branch-contains-commit
+        branch: main
+        message: "Add opening hours"
+        label: "Your main holds the commit \"Add opening hours\""
+      - check: branch-contains-commit
+        branch: main
+        message: "Add scone to menu"
+        label: "Your main holds Tariq's commit \"Add scone to menu\""
+      - check: github-branch-is-missing
+        branch: add-hours
+        label: "The branch add-hours is deleted on GitHub"
+      - check: branch-is-missing
+        branch: add-hours
+        label: "Your local branch add-hours is deleted"
+      - check: remote-branch-is-missing
+        branch: origin/add-hours
+        label: "The stale record origin/add-hours is gone"
+    hints:
+      - "Your main is as old as your last fetch, so merging your local main would bring nothing new. Which name holds GitHub's newest main after git fetch?"
+      - "On add-hours: git fetch origin, then git merge origin/main, then git push. Merge the pull request with gh pr merge; one of its options also deletes the branch on GitHub and on your computer. Under the hood explains the record that is still left afterwards."
+      - "Run: git switch add-hours, git fetch origin, git merge origin/main (accept the message), git push, gh pr merge --merge --delete-branch, then git fetch --prune."
+    solution:
+      - git fetch -q origin
+      - git switch -q add-hours
+      - git merge -q --no-edit origin/main
+      - git push -q
+      # GitHub needs a moment after a push before it can merge (a person types slower than this script):
+      - sleep 8
+      - gh pr merge --merge --delete-branch
+      - git fetch -q --prune

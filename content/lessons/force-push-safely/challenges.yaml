@@ -1,0 +1,217 @@
+challenges:
+  - id: publish-the-squash
+    title: Publish your cleaned-up branch
+    level: easy
+    brief: "Your branch add-menu is on GitHub with three WIP commits. You squashed them into one commit, \"Add the menu\", on your computer. Publish the clean version to GitHub with the safe kind of force push."
+    github:
+      repo: gitremastered-practice-force-push-safely
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Sunrise Bakery" > README.md
+      - git add README.md
+      - git commit -q -m "Add homepage"
+      - echo "Call 555-0100" > contact.txt
+      - git add contact.txt
+      - git commit -q -m "Add contact page"
+      - git switch -q -c add-menu
+      - echo "Croissant" > menu.txt
+      - git add menu.txt
+      - git commit -q -m "WIP menu"
+      - echo "Baguette" >> menu.txt
+      - git commit -q -am "WIP more menu"
+      - echo "Sourdough" >> menu.txt
+      - git commit -q -am "WIP bread"
+      - git remote add origin "$PRACTICE_GITHUB_URL"
+      - git push -q --force --mirror origin
+      - git fetch -q origin
+      - git branch -q -u origin/main main
+      - git branch -q -u origin/add-menu add-menu
+      # A teammate's clone, for the lesson's Try-its:
+      - git clone -q -c core.autocrlf=false "$PRACTICE_GITHUB_URL" ../teammate
+      - git -C ../teammate config user.name "Tariq (teammate)"
+      - git -C ../teammate config user.email "tariq@example.com"
+      # The clean-up, done on your computer only:
+      - git reset -q --soft main
+      - git commit -q -m "Add the menu"
+    goal:
+      - check: github-branch-exists
+        branch: add-menu
+        label: "add-menu is still on GitHub"
+      - check: branch-is-at-commit
+        branch: origin/add-menu
+        message: "Add the menu"
+        label: "The server's add-menu ends with \"Add the menu\""
+      - check: branch-lacks-commit
+        branch: origin/add-menu
+        message: "WIP"
+        label: "No WIP commit is left on the server's add-menu"
+      - check: branch-is-in-sync
+        branch: add-menu
+        label: "Your add-menu is level with origin/add-menu"
+    hints:
+      - "Run git status. It says your branch and origin/add-menu have diverged: 1 commit is only yours, 3 are only on the server."
+      - "A plain git push is rejected as non-fast-forward. The branch is yours alone, so a force push is fine here. Which option overwrites the branch only if nobody else pushed?"
+      - "Run: git push --force-with-lease"
+    solution:
+      - git push -q --force-with-lease
+
+  - id: keep-the-teammates-commit
+    title: A teammate pushed to your branch
+    level: medium
+    brief: "You squashed add-menu into one commit, \"Add the menu\". Meanwhile Tariq pushed a commit to add-menu on GitHub, and you have not fetched since. Publish your clean version without losing his commit: at the end, the server's add-menu holds your one commit and his, and no WIP commit."
+    github:
+      repo: gitremastered-practice-force-push-safely
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Sunrise Bakery" > README.md
+      - git add README.md
+      - git commit -q -m "Add homepage"
+      - echo "Call 555-0100" > contact.txt
+      - git add contact.txt
+      - git commit -q -m "Add contact page"
+      - git switch -q -c add-menu
+      - echo "Croissant" > menu.txt
+      - git add menu.txt
+      - git commit -q -m "WIP menu"
+      - echo "Baguette" >> menu.txt
+      - git commit -q -am "WIP more menu"
+      - echo "Sourdough" >> menu.txt
+      - git commit -q -am "WIP bread"
+      - git remote add origin "$PRACTICE_GITHUB_URL"
+      - git push -q --force --mirror origin
+      - git fetch -q origin
+      - git branch -q -u origin/main main
+      - git branch -q -u origin/add-menu add-menu
+      # The clean-up, done on your computer only:
+      - git reset -q --soft main
+      - git commit -q -m "Add the menu"
+      # Tariq pushes a commit you have not fetched:
+      - git clone -q -c core.autocrlf=false "$PRACTICE_GITHUB_URL" ../teammate
+      - git -C ../teammate config user.name "Tariq (teammate)"
+      - git -C ../teammate config user.email "tariq@example.com"
+      - git -C ../teammate switch -q add-menu
+      - echo "Cinnamon roll (weekends)" >> ../teammate/menu.txt
+      - git -C ../teammate commit -q -am "Add the weekend special"
+      - git -C ../teammate push -q
+    goal:
+      - check: github-branch-exists
+        branch: add-menu
+        label: "add-menu is still on GitHub"
+      - check: branch-contains-commit
+        branch: origin/add-menu
+        message: "Add the weekend special"
+        label: "Tariq's commit \"Add the weekend special\" is on the server's add-menu"
+      - check: branch-contains-commit
+        branch: origin/add-menu
+        message: "Add the menu"
+        label: "Your commit \"Add the menu\" is on the server's add-menu"
+      - check: branch-lacks-commit
+        branch: origin/add-menu
+        message: "WIP"
+        label: "No WIP commit is left on the server's add-menu"
+      - check: history-is-linear
+        label: "The history has no merge commit"
+      - check: branch-is-in-sync
+        branch: add-menu
+        label: "Your add-menu is level with origin/add-menu"
+    hints:
+      - "Try git push --force-with-lease first. Git answers (stale info): the server's branch is not where your origin/add-menu says. Nothing was overwritten."
+      - "Run git fetch, then git log --oneline add-menu..origin/add-menu. The three WIP commits are your own old drafts. The newest one is Tariq's."
+      - "Copy Tariq's commit on top of yours: git cherry-pick origin/add-menu. Do not pull or merge: that would bring the WIP commits back."
+      - "Run: git fetch, then git cherry-pick origin/add-menu, then git push --force-with-lease"
+    solution:
+      - git fetch -q
+      - git cherry-pick origin/add-menu
+      - git push -q --force-with-lease
+
+  - id: the-background-fetch
+    title: The fetch you did not look at
+    level: hard
+    brief: "You squashed add-menu into \"Add the menu\". Tariq then pushed two commits to add-menu, and your editor fetched them in the background: origin/add-menu already shows them, so a plain --force-with-lease would overwrite both. Make the lease strict in this repository (push.useForceIfIncludes), then publish your clean commit with Tariq's two commits on top, in his order."
+    github:
+      repo: gitremastered-practice-force-push-safely
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Sunrise Bakery" > README.md
+      - git add README.md
+      - git commit -q -m "Add homepage"
+      - echo "Call 555-0100" > contact.txt
+      - git add contact.txt
+      - git commit -q -m "Add contact page"
+      - git switch -q -c add-menu
+      - echo "Croissant" > menu.txt
+      - git add menu.txt
+      - git commit -q -m "WIP menu"
+      - echo "Baguette" >> menu.txt
+      - git commit -q -am "WIP more menu"
+      - echo "Sourdough" >> menu.txt
+      - git commit -q -am "WIP bread"
+      - git remote add origin "$PRACTICE_GITHUB_URL"
+      - git push -q --force --mirror origin
+      - git fetch -q origin
+      - git branch -q -u origin/main main
+      - git branch -q -u origin/add-menu add-menu
+      # The clean-up, done on your computer only:
+      - git reset -q --soft main
+      - git commit -q -m "Add the menu"
+      # Tariq pushes two commits:
+      - git clone -q -c core.autocrlf=false "$PRACTICE_GITHUB_URL" ../teammate
+      - git -C ../teammate config user.name "Tariq (teammate)"
+      - git -C ../teammate config user.email "tariq@example.com"
+      - git -C ../teammate switch -q add-menu
+      - echo "Cinnamon roll (weekends)" >> ../teammate/menu.txt
+      - git -C ../teammate commit -q -am "Add the weekend special"
+      - echo "Open daily from 7" > ../teammate/hours.txt
+      - git -C ../teammate add hours.txt
+      - git -C ../teammate commit -q -m "Add opening hours"
+      - git -C ../teammate push -q
+      # The editor's background fetch: your record moves, you never looked.
+      - git fetch -q origin
+    goal:
+      - check: config-is
+        key: push.useForceIfIncludes
+        value: "true"
+        label: "push.useForceIfIncludes is true in this repository's own settings"
+      - check: branch-contains-commit
+        branch: origin/add-menu
+        message: "Add the menu"
+        label: "Your commit \"Add the menu\" is on the server's add-menu"
+      - check: branch-lacks-commit
+        branch: origin/add-menu
+        message: "WIP"
+        label: "No WIP commit is left on the server's add-menu"
+      - check: commit-comes-before
+        message: "Add the weekend special"
+        later: "Add opening hours"
+        label: "Tariq's two commits are in your history, in his order"
+      - check: branch-is-at-commit
+        branch: origin/add-menu
+        message: "Add opening hours"
+        label: "The server's add-menu ends with Tariq's \"Add opening hours\""
+      - check: history-is-linear
+        label: "The history has no merge commit"
+      - check: branch-is-in-sync
+        branch: add-menu
+        label: "Your add-menu is level with origin/add-menu"
+      - check: github-branch-exists
+        branch: add-menu
+        label: "add-menu is still on GitHub"
+    hints:
+      - "Run git status: 1 commit is only yours, 5 are only on the server, although you never looked at two of them. Ask what a plain lease would do without doing it: git push --force-with-lease --dry-run."
+      - "Turn the strict check on for this repository only: git config --local push.useForceIfIncludes true. Now git push --force-with-lease is refused (remote ref updated since checkout). \"The trap\" in Must know explains why."
+      - "Look at Tariq's commits with git log --oneline -2 origin/add-menu, then copy them in order: git cherry-pick origin/add-menu~1 origin/add-menu."
+      - "The strict check still refuses after a cherry-pick: the copies have new IDs. You have looked at his commits, so name the commit you expect on the server yourself (Advanced, \"Name the commit you expect\")."
+      - "Run: git config --local push.useForceIfIncludes true, then git cherry-pick origin/add-menu~1 origin/add-menu, then git push --force-with-lease=add-menu:origin/add-menu"
+    solution:
+      - git config --local push.useForceIfIncludes true
+      - git cherry-pick origin/add-menu~1 origin/add-menu
+      - git push -q --force-with-lease=add-menu:origin/add-menu

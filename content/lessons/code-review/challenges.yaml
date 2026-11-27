@@ -1,0 +1,172 @@
+challenges:
+  - id: check-out-teammates-pr
+    title: Check out a teammate's pull request
+    level: easy
+    brief: "Your teammate Tariq opened the pull request \"Fix a typo in the menu\" on the bakery guide and asked you to review it. The title names one file, but the pull request changes a second one. Check out the pull request's branch on your computer, find the second file, and write its name into answer.txt (the file name only, like notes.txt)."
+    github:
+      repo: gitremastered-practice-code-review
+      teammate:
+        - action: open-pull-request
+          head: fix-menu-typo
+          base: main
+          title: "Fix a typo in the menu"
+          body: "Sourdough loaf was spelled wrong. Please review."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - git config pull.rebase false
+      - echo "# Corner Bakery" > README.md
+      - printf 'Sourdough laof\nCinnamon bun\nAlmond cake\n' > menu.txt
+      - echo "Open 7 to 15, closed on Mondays" > hours.txt
+      - git add README.md menu.txt hours.txt
+      - git commit -q -m "Start the bakery guide"
+      - echo answer.txt >> .git/info/exclude
+      - git remote add origin "$PRACTICE_GITHUB_URL"
+      - git push -q --force --mirror origin
+      - git fetch -q origin
+      - git branch -q --set-upstream-to=origin/main main
+      # Tariq pushes a branch; the teammate step above then opens its pull request.
+      - git clone -q -c core.autocrlf=false "$PRACTICE_GITHUB_URL" ../teammate
+      - git -C ../teammate config user.name "Tariq (teammate)"
+      - git -C ../teammate config user.email "tariq@example.com"
+      - git -C ../teammate switch -q -c fix-menu-typo
+      - sed -i -e 's/laof/loaf/' ../teammate/menu.txt
+      - echo "Open 7 to 14, closed on Mondays" > ../teammate/hours.txt
+      - git -C ../teammate commit -q -am "Fix a typo in the menu"
+      - git -C ../teammate push -q -u origin fix-menu-typo
+    goal:
+      - check: head-is-on-branch
+        branch: fix-menu-typo
+        label: "You are on the pull request's branch, fix-menu-typo"
+      - check: answer-is
+        answer: hours.txt
+        label: "answer.txt names the second file the pull request changes"
+      - check: github-pull-request-is-open
+        head: fix-menu-typo
+        label: "The pull request is still open: you only looked"
+    hints:
+      - "Run gh pr list. It shows the open pull request, its number and its branch."
+      - "gh pr checkout takes the number or the branch name and puts you on the pull request's branch. Then compare that branch with main."
+      - "Run: gh pr checkout fix-menu-typo, then git diff --name-only main...HEAD. Write the file that is not menu.txt: echo hours.txt > answer.txt"
+    solution:
+      - gh pr checkout fix-menu-typo
+      - git diff --name-only main...HEAD
+      - echo hours.txt > answer.txt
+
+  - id: review-with-a-comment
+    title: Review a pull request and say what you found
+    level: medium
+    brief: "Tariq opened the pull request \"Add delivery hours\". One of the hours he wrote cannot be right. Check out the pull request's branch, read what it changes, and submit a review of the kind \"comment\" that tells him which line is wrong and why. Do not merge it: the fix is his to make."
+    github:
+      repo: gitremastered-practice-code-review
+      teammate:
+        - action: open-pull-request
+          head: add-delivery
+          base: main
+          title: "Add delivery hours"
+          body: "We deliver now. Please review before I merge."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - git config pull.rebase false
+      - echo "# Corner Bakery" > README.md
+      - printf 'Sourdough loaf\nCinnamon bun\nAlmond cake\n' > menu.txt
+      - echo "Open 7 to 15, closed on Mondays" > hours.txt
+      - git add README.md menu.txt hours.txt
+      - git commit -q -m "Start the bakery guide"
+      - git remote add origin "$PRACTICE_GITHUB_URL"
+      - git push -q --force --mirror origin
+      - git fetch -q origin
+      - git branch -q --set-upstream-to=origin/main main
+      - git clone -q -c core.autocrlf=false "$PRACTICE_GITHUB_URL" ../teammate
+      - git -C ../teammate config user.name "Tariq (teammate)"
+      - git -C ../teammate config user.email "tariq@example.com"
+      - git -C ../teammate switch -q -c add-delivery
+      - echo "Delivery from 9 to 25, every day" >> ../teammate/hours.txt
+      - echo "Delivery is free above 20 euros." >> ../teammate/README.md
+      - git -C ../teammate commit -q -am "Add delivery hours"
+      - git -C ../teammate push -q -u origin add-delivery
+    goal:
+      - check: head-is-on-branch
+        branch: add-delivery
+        label: "You are on the pull request's branch, add-delivery"
+      - check: github-pull-request-has-review
+        head: add-delivery
+        label: "The pull request has a review from you"
+      - check: github-pull-request-is-open
+        head: add-delivery
+        label: "The pull request is still open: Tariq has a fix to make"
+    hints:
+      - "Get the branch with gh pr checkout, then read the change: gh pr diff, or cat hours.txt. Which hour does not exist on a clock?"
+      - "gh pr review submits a review of the pull request of the branch you are on. --comment picks the kind, and -b gives the text."
+      - "Run: gh pr checkout add-delivery, then gh pr review --comment -b \"hours.txt, line 2: a day has no hour 25. Did you mean 15?\""
+    solution:
+      - gh pr checkout add-delivery
+      - gh pr diff
+      - 'gh pr review --comment -b "hours.txt, line 2: a day has no hour 25. Did you mean 15?"'
+
+  - id: answer-a-review
+    title: Answer a review on your own pull request
+    level: hard
+    brief: "Yesterday you opened the pull request \"Add an allergen list\" from your branch add-allergens. Tariq reviewed it and left a comment: the almond cake line must also list nuts. Make the change he asks for in allergens.txt, get it into the pull request, tell him it is done with a comment, and merge the pull request. Finish on main, with the merged work in your own copy."
+    github:
+      repo: gitremastered-practice-code-review
+      teammate:
+        - action: open-pull-request
+          head: add-allergens
+          base: main
+          title: "Add an allergen list"
+          body: "A list of allergens per item, for the counter."
+        - action: comment-pull-request
+          head: add-allergens
+          body: "Thanks for this. One thing before we merge: the almond cake also contains nuts. Please add nuts to that line in allergens.txt."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - git config pull.rebase false
+      - echo "# Corner Bakery" > README.md
+      - printf 'Sourdough loaf\nCinnamon bun\nAlmond cake\n' > menu.txt
+      - echo "Open 7 to 15, closed on Mondays" > hours.txt
+      - git add README.md menu.txt hours.txt
+      - git commit -q -m "Start the bakery guide"
+      - git switch -q -c add-allergens
+      - printf 'Sourdough loaf contains gluten\nCinnamon bun contains gluten and milk\nAlmond cake contains gluten and milk\n' > allergens.txt
+      - git add allergens.txt
+      - git commit -q -m "Add an allergen list"
+      - git remote add origin "$PRACTICE_GITHUB_URL"
+      - git push -q --force --mirror origin
+      - git fetch -q origin
+      - git branch -q --set-upstream-to=origin/main main
+      - git branch -q --set-upstream-to=origin/add-allergens add-allergens
+    goal:
+      - check: github-pull-request-is-merged
+        head: add-allergens
+        label: "The pull request from add-allergens is merged on GitHub"
+      - check: head-is-on-branch
+        branch: main
+        label: "You are back on main"
+      - check: committed-file-contains
+        file: allergens.txt
+        text: "nuts"
+        label: "allergens.txt on your main lists nuts"
+      - check: branch-is-in-sync
+        branch: main
+        label: "main is level with origin/main"
+    hints:
+      - "Read the review first: gh pr view --comments. You are already on the pull request's branch."
+      - "A pull request follows its branch (see Under the hood): commit the fix on add-allergens and push, and the pull request shows it. A push sends no notification, so say it is done with gh pr comment."
+      - "Edit allergens.txt so the almond cake line lists nuts. Then: git commit -am \"List nuts for the almond cake\", git push, gh pr comment -b \"Done: the almond cake line lists nuts now.\", gh pr merge --merge, git switch main, git pull"
+    solution:
+      - sed -i -e 's/Almond cake contains gluten and milk/Almond cake contains gluten, milk and nuts/' allergens.txt
+      - git commit -q -am "List nuts for the almond cake"
+      - git push -q
+      - 'gh pr comment -b "Done: the almond cake line lists nuts now."'
+      - gh pr merge --merge
+      - git switch -q main
+      - git pull -q

@@ -1,0 +1,208 @@
+challenges:
+  - id: sync-your-fork
+    title: Catch up with the project
+    level: easy
+    brief: "Your copy of the cookbook (origin) is behind the project it came from. The project's repository has the same address as your origin, with -upstream added to the repository's name. Add it as a remote named upstream, bring your main level with the project's main, and push main to your origin."
+    github:
+      repo: gitremastered-practice-team-contributing
+      upstream: gitremastered-practice-team-contributing-upstream
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - git config pull.rebase false
+      - echo "# Community cookbook" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - 'echo "Lentil soup: lentils, onion, cumin, lemon." > soup.md'
+      - git add soup.md
+      - git commit -q -m "Add lentil soup"
+      # The project and your copy of it start out the same:
+      - git push -q --force --mirror "$PRACTICE_GITHUB_UPSTREAM_URL"
+      - git remote add origin "$PRACTICE_GITHUB_URL"
+      - git push -q --force --mirror origin
+      - git fetch -q origin
+      - git branch -q --set-upstream-to=origin/main main
+      # The project's maintainer adds two commits you do not have:
+      - git clone -q -c core.autocrlf=false "$PRACTICE_GITHUB_UPSTREAM_URL" ../maintainer
+      - git -C ../maintainer config user.name "Salma (maintainer)"
+      - git -C ../maintainer config user.email "salma@example.com"
+      - 'echo "Flatbread: flour, water, salt, olive oil." > ../maintainer/bread.md'
+      - git -C ../maintainer add bread.md
+      - git -C ../maintainer commit -q -m "Add flatbread"
+      - echo "One recipe per file. One topic branch per recipe." > ../maintainer/CONTRIBUTING.md
+      - git -C ../maintainer add CONTRIBUTING.md
+      - git -C ../maintainer commit -q -m "Add a contributing guide"
+      - git -C ../maintainer push -q
+      # A teammate's clone of your repository, for the lesson's Try-its:
+      - git clone -q -c core.autocrlf=false "$PRACTICE_GITHUB_URL" ../teammate
+      - git -C ../teammate config user.name "Tariq (teammate)"
+      - git -C ../teammate config user.email "tariq@example.com"
+      - git -C ../teammate config pull.rebase false
+    goal:
+      - check: remote-exists
+        remote: upstream
+        label: "A remote named upstream is set up"
+      - check: branch-contains-commit
+        branch: main
+        message: "Add a contributing guide"
+        label: "Your main has the project's newest commit"
+      - check: branch-contains-commit
+        branch: origin/main
+        message: "Add a contributing guide"
+        label: "Your origin has it too (you pushed main)"
+      - check: branch-is-in-sync
+        branch: main
+        label: "main is level with origin/main"
+    hints:
+      - "Run git remote -v. You have one remote, origin. The project needs a second name."
+      - "Print your origin's address with git remote get-url origin. The project's address is the same, with -upstream right before .git. Add it with git remote add upstream <address>."
+      - "Three steps bring the new commits to your origin: fetch from upstream, merge upstream/main into main, push main to origin."
+      - "Run: git fetch upstream, then git merge upstream/main, then git push origin main"
+    solution:
+      - git remote add upstream "$(git remote get-url origin | sed 's/\.git$/-upstream.git/')"
+      - git fetch -q upstream
+      - git merge -q upstream/main
+      - git push -q origin main
+
+  - id: small-team-push
+    title: Share your branch after a teammate pushed
+    level: medium
+    brief: "Here the cookbook is a small private team's project: you and Tariq both push to main on origin. Your mint tea recipe on the branch add-tea is finished, and Tariq pushed to main while you worked. Get your recipe and Tariq's commits onto the team's main on GitHub, without losing either side."
+    github:
+      repo: gitremastered-practice-team-contributing
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - git config pull.rebase false
+      - echo "# Community cookbook" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - 'echo "Lentil soup: lentils, onion, cumin, lemon." > soup.md'
+      - git add soup.md
+      - git commit -q -m "Add lentil soup"
+      - git remote add origin "$PRACTICE_GITHUB_URL"
+      - git push -q --force --mirror origin
+      - git fetch -q origin
+      - git branch -q --set-upstream-to=origin/main main
+      # Your finished topic branch:
+      - git switch -q -c add-tea
+      - 'echo "Mint tea: fresh mint, green tea, sugar." > tea.md'
+      - git add tea.md
+      - git commit -q -m "Add mint tea"
+      - echo "Serve very hot, in small glasses." >> tea.md
+      - git commit -q -am "Say how to serve the tea"
+      # Tariq pushes two commits to main after your last fetch:
+      - git clone -q -c core.autocrlf=false "$PRACTICE_GITHUB_URL" ../teammate
+      - git -C ../teammate config user.name "Tariq (teammate)"
+      - git -C ../teammate config user.email "tariq@example.com"
+      - git -C ../teammate config pull.rebase false
+      - 'echo "Tip: soak the lentils for an hour." >> ../teammate/soup.md'
+      - git -C ../teammate commit -q -am "Add a soup tip"
+      - 'echo "Flatbread: flour, water, salt, olive oil." > ../teammate/bread.md'
+      - git -C ../teammate add bread.md
+      - git -C ../teammate commit -q -m "Add flatbread"
+      - git -C ../teammate push -q
+    goal:
+      - check: branch-contains-commit
+        branch: origin/main
+        message: "Say how to serve the tea"
+        label: "The team's main on GitHub has your tea recipe"
+      - check: branch-contains-commit
+        branch: origin/main
+        message: "Add flatbread"
+        label: "The team's main still has Tariq's commits"
+      - check: branch-is-in-sync
+        branch: main
+        label: "Your main is level with origin/main"
+      - check: no-operation-in-progress
+        label: "No merge is left unfinished"
+    hints:
+      - "Your repository has not heard about Tariq's push yet. Which command downloads his commits without changing your branches?"
+      - "After git fetch origin, run git log --no-merges add-tea..origin/main to read what Tariq pushed that your branch lacks."
+      - "Switch to main and merge twice: your branch add-tea, then origin/main. The order does not matter. Then push."
+      - "Run: git fetch origin, git switch main, git merge add-tea, git merge origin/main (save and close the editor), git push origin main"
+    solution:
+      - git fetch -q origin
+      - git switch -q main
+      - git merge -q add-tea
+      - git merge -q --no-edit origin/main
+      - git push -q origin main
+
+  - id: rebase-and-open-pr
+    title: Rebase your contribution and ask for a pull
+    level: hard
+    brief: "You pushed your mint tea recipe to the project as the branch add-tea. Before the maintainer looked at it, the project's main got two new commits, and she asks you to rebase. Rebase add-tea on the project's current main, replace the old add-tea on upstream with the rebased one, and open a pull request there from add-tea into main. Leave your own main as it is. (Here you push to upstream as a collaborator would: both practice repositories are yours and they are not a real fork, so a pull request from your origin to upstream is not possible.)"
+    github:
+      repo: gitremastered-practice-team-contributing
+      upstream: gitremastered-practice-team-contributing-upstream
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - git config pull.rebase false
+      - echo "# Community cookbook" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - 'echo "Lentil soup: lentils, onion, cumin, lemon." > soup.md'
+      - git add soup.md
+      - git commit -q -m "Add lentil soup"
+      - git push -q --force --mirror "$PRACTICE_GITHUB_UPSTREAM_URL"
+      - git remote add origin "$PRACTICE_GITHUB_URL"
+      - git push -q --force --mirror origin
+      - git fetch -q origin
+      - git branch -q --set-upstream-to=origin/main main
+      - git remote add upstream "$PRACTICE_GITHUB_UPSTREAM_URL"
+      - git fetch -q upstream
+      # Your contribution, already pushed to the project:
+      - git switch -q -c add-tea
+      - 'echo "Mint tea: fresh mint, green tea, sugar." > tea.md'
+      - git add tea.md
+      - git commit -q -m "Add mint tea"
+      - echo "Serve very hot, in small glasses." >> tea.md
+      - git commit -q -am "Say how to serve the tea"
+      - git push -q -u upstream add-tea
+      # The maintainer moves the project's main on:
+      - git clone -q -c core.autocrlf=false "$PRACTICE_GITHUB_UPSTREAM_URL" ../maintainer
+      - git -C ../maintainer config user.name "Salma (maintainer)"
+      - git -C ../maintainer config user.email "salma@example.com"
+      - 'echo "Flatbread: flour, water, salt, olive oil." > ../maintainer/bread.md'
+      - git -C ../maintainer add bread.md
+      - git -C ../maintainer commit -q -m "Add flatbread"
+      - echo "One recipe per file. One topic branch per recipe." > ../maintainer/CONTRIBUTING.md
+      - git -C ../maintainer add CONTRIBUTING.md
+      - git -C ../maintainer commit -q -m "Add a contributing guide"
+      - git -C ../maintainer push -q
+    goal:
+      - check: commit-comes-before
+        message: "Add a contributing guide"
+        later: "Say how to serve the tea"
+        label: "Your tea commits sit on top of the project's newest commit"
+      - check: history-is-linear
+        label: "The branch is a straight line (rebased, not merged)"
+      - check: branch-contains-commit
+        branch: upstream/add-tea
+        message: "Add a contributing guide"
+        label: "The rebased add-tea replaced the old one on upstream"
+      - check: branch-lacks-commit
+        branch: main
+        message: "Add mint tea"
+        label: "Your main does not hold the tea commits"
+      - check: github-pull-request-is-open
+        head: add-tea
+        label: "A pull request from add-tea is open on the project"
+    hints:
+      - "Start with git fetch upstream, then git log --oneline --graph --all. Where does add-tea start, and where is upstream/main now?"
+      - "On add-tea, run git rebase upstream/main. Your two commits are made again on top of the project's newest commit."
+      - "A plain git push upstream add-tea is rejected now: the rebased commits are new ones, and the old add-tea on upstream is not their ancestor. Read \"After a rebase, the push needs force\" in Advanced."
+      - "Run: git push --force-with-lease upstream add-tea"
+      - "Open the pull request: gh pr create --base main --head add-tea --title \"Add mint tea\" --body \"Rebased on the current main\". If gh asks which repository is the base, pick the one whose name ends in -upstream."
+    solution:
+      - git fetch -q upstream
+      - git rebase -q upstream/main
+      - git push -q --force-with-lease upstream add-tea
+      - gh pr create --base main --head add-tea --title "Add mint tea" --body "A mint tea recipe, rebased on the current main."

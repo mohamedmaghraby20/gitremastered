@@ -1,0 +1,40 @@
+questions:
+  - question: "Your pull request from the branch add-search is open. A reviewer asks you to rename one function. What is the usual way to get the fix into the pull request?"
+    answers:
+      - text: "Close the pull request and open a new one that includes the fix"
+        explanation: "That throws away the conversation. A pull request follows its branch, so there is no need to start over."
+      - text: "Commit the fix on add-search and push; the open pull request shows the new commit by itself"
+        correct: true
+        explanation: "A pull request is tied to the branch, not to the commits it had on the day you opened it. Every push to the branch updates it. Leave a short comment too: a push alone does not notify the reviewer."
+      - text: "Commit the fix on main and push main"
+        explanation: "That puts the fix into main without review and leaves the pull request unchanged. The fix belongs on the pull request's branch."
+
+  - question: "You merged your pull request with the button on GitHub and deleted the branch there. On your computer you run git switch main and look for the new feature. It is not there. Why?"
+    answers:
+      - text: "The merge happened on GitHub; your local main does not move until you run git pull"
+        correct: true
+        explanation: "The merge commit was made on the server. Your main and your origin/main are as old as your last fetch. git pull brings the merge down."
+      - text: "Deleting the branch on GitHub also deleted its commits"
+        explanation: "The commits are in main now. Deleting a merged branch removes only the label."
+      - text: "GitHub merges into a hidden branch first, and main is updated a day later"
+        explanation: "The merge goes into the base branch at once. It is your local copy that is behind."
+
+  - question: "You found a typo in the documentation of a popular open-source project. You are not a member of the project and cannot push to its repository. How do you propose the fix?"
+    answers:
+      - text: "Ask the owner to make you a collaborator, then push to main"
+        explanation: "Projects do not hand out push access for a typo. Forks exist so that nobody has to."
+      - text: "Fork the project, push a topic branch to your fork, and open a pull request from that branch to the original repository"
+        correct: true
+        explanation: "The fork is your own copy on GitHub, so you may push to it. The pull request asks the project's maintainers to pull your branch into theirs."
+      - text: "Clone the project and run git push origin main; GitHub turns a refused push into a pull request"
+        explanation: "A refused push stays refused. You need a place you are allowed to push to, which is what a fork is."
+
+  - question: "Your pull request has been open for a week. Meanwhile main gained ten commits, and GitHub now says the branch has conflicts. Pro Git's advice for most people is which of these?"
+    answers:
+      - text: "Fetch, merge origin/main into your topic branch, fix the conflict, and push the branch"
+        correct: true
+        explanation: "The merge brings main's new commits into your branch. After the push GitHub checks again and the pull request can be merged. You can repeat this as often as main moves."
+      - text: "Rebase the branch on main and force-push over the open pull request"
+        explanation: "It gives a tidier history, but the book advises against force-pushing a branch with an open pull request: anyone who fetched it now has commits that no longer exist."
+      - text: "Merge your topic branch into your local main and push main"
+        explanation: "That skips the review and pushes to main directly. The pull request's own branch is what needs the update."

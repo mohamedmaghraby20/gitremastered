@@ -1,0 +1,40 @@
+questions:
+  - question: "You opened a pull request yourself and run gh pr review --approve on it. What happens, and what would you do on a real team?"
+    answers:
+      - text: "GitHub refuses: authors cannot approve their own pull request. You ask a teammate to review it"
+        correct: true
+        explanation: "An approval means a second person agrees. You can still submit a comment review on your own pull request, but the green tick has to come from someone else."
+      - text: "The pull request is approved, because the repository owner may approve anything"
+        explanation: "Owning the repository lets you merge without an approval, but not approve your own pull request. GitHub answers \"Can not approve your own pull request\"."
+      - text: "GitHub refuses, so you close the pull request and open a new one from another branch"
+        explanation: "A new pull request from your account has the same author: you. The limit is about who wrote the change, not about the branch."
+
+  - question: "Tariq requested changes on your pull request: one line in allergens.txt is wrong. What is the right way to answer?"
+    answers:
+      - text: "Close the pull request, fix the line, and open a new pull request"
+        explanation: "The discussion would be split over two pages for no reason. A pull request follows its branch, so new commits on the branch show up in it."
+      - text: "Fix the line, commit on the same branch, push, then tell Tariq and re-request his review"
+        correct: true
+        explanation: "The push updates the pull request by itself. It sends no notification, so a comment and a re-request tell the reviewer to look again."
+      - text: "Fix the line on main and push it there, so the pull request has nothing left to fix"
+        explanation: "That puts unreviewed work straight on main, which is what the review is there to prevent. The fix belongs on the pull request's branch."
+
+  - question: "You have time to read only two of the five files in a teammate's pull request. Both look fine. Which review do you submit?"
+    answers:
+      - text: "Approve: nothing you saw was wrong"
+        explanation: "An approval tells the team the whole change was checked. Three files were not."
+      - text: "Request changes, to make sure nobody merges it before you finish"
+        explanation: "Request changes means you found a problem that must be fixed. You found none; you just have not finished."
+      - text: "Comment, and say which two files you read"
+        correct: true
+        explanation: "A comment review gives feedback without a verdict. The author knows what was covered and can ask someone else for the rest."
+
+  - question: "You approved a pull request at 10:00. At 10:30 the author pushed two more commits to its branch. What does your approval cover?"
+    answers:
+      - text: "The pull request as it was at 10:00: a review is recorded against the commit that was newest when you submitted it"
+        correct: true
+        explanation: "The two new commits are unreviewed. That is why a repository can be set to dismiss approvals when new commits arrive."
+      - text: "Everything on the branch, including the new commits, because the approval belongs to the pull request"
+        explanation: "The pull request follows the branch, but your review does not: it stays on the commit you looked at."
+      - text: "Nothing any more: pushing new commits always deletes earlier reviews"
+        explanation: "By default the approval stays. It is only dismissed when the repository has the setting that dismisses stale approvals."

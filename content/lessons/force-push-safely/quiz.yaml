@@ -1,0 +1,40 @@
+questions:
+  - question: "You rebased your pull request branch onto the newest main. git push is rejected as non-fast-forward, and the hint suggests git pull. Only you commit to this branch. What do you run?"
+    answers:
+      - text: "git pull, then git push"
+        explanation: "The pull merges the server's old commits back into your branch, so every commit you rewrote is there twice. The hint is written for a branch that was not rewritten."
+      - text: "git push --force-with-lease"
+        correct: true
+        explanation: "The branch is yours and the commits left out are your own old versions. The lease overwrites them, and still refuses if somebody pushed in the meantime."
+      - text: "git push --force"
+        explanation: "It would work today. But it also overwrites a commit a teammate or a bot pushed a minute ago, without a word. The lease costs nothing extra."
+
+  - question: "git push --force-with-lease answers \"! [rejected] feature -> feature (stale info)\". What has Git just told you?"
+    answers:
+      - text: "The server's feature is not where your origin/feature says, so someone pushed since your last fetch. Nothing was overwritten"
+        correct: true
+        explanation: "The lease compares the server's branch with your record of it. They differ, so Git refused. Fetch, look at the new commits, keep them, then push again."
+      - text: "Your commits are too old to be pushed"
+        explanation: "The age of a commit never matters to a push. \"Stale\" is about your record origin/feature, which is behind the server."
+      - text: "The force push went through, but your record of the server was not updated"
+        explanation: "\"rejected\" means nothing changed on the server. A push that goes through prints a line starting with + and ending with (forced update)."
+
+  - question: "Your editor runs git fetch every few minutes. A teammate pushed to your branch an hour ago; you never looked. You squash your commits and run git push --force-with-lease, with no other option or setting. What happens?"
+    answers:
+      - text: "Git refuses with (stale info), because the teammate pushed"
+        explanation: "It would, if your record were old. But the editor's fetch already moved origin/<branch> onto the teammate's commit, so the record matches the server."
+      - text: "The push goes through and the teammate's commit is dropped from the server's branch"
+        correct: true
+        explanation: "The lease only checks that the server is where origin/<branch> says, and the background fetch made that true. --force-if-includes, or push.useForceIfIncludes true, would have refused: the teammate's commit was never in your branch."
+      - text: "Git merges the teammate's commit into your branch before pushing"
+        explanation: "A push never changes your commits and never merges. It only asks the server to move a branch."
+
+  - question: "Someone on the team says: \"The fix on main has a typo in its message. I'll amend it and push with --force-with-lease, that is the safe one.\" What is wrong with the plan?"
+    answers:
+      - text: "Nothing: the lease makes a force push safe on any branch"
+        explanation: "The lease protects commits you have not seen. It does nothing for the teammates who already pulled the old commit: their main no longer matches the server."
+      - text: "--force-with-lease does not work together with --amend"
+        explanation: "It works. An amended commit is a rewritten commit like any other; that is the problem, not the option."
+      - text: "main is shared: everyone who pulled the old commit now has a different history than the server. On main, live with the typo or add a new commit"
+        correct: true
+        explanation: "Never rewrite commits other people build on. Teams also protect main on the server, so the force push would be refused anyway."
