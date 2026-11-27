@@ -78,6 +78,7 @@ describe('isGitHubGoalMet', () => {
 		};
 		const context = contextWith({ issues: [issue] });
 		expect(isGitHubGoalMet({ check: 'github-issue-is-closed', title: 'typo' }, context)).toBe(true);
+		expect(isGitHubGoalMet({ check: 'github-issue-is-open', title: 'typo' }, context)).toBe(false);
 		const label = { check: 'github-issue-has-label' as const, title: 'typo', labelName: 'docs' };
 		expect(isGitHubGoalMet(label, context)).toBe(false);
 	});

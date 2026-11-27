@@ -83,6 +83,7 @@ export type GitHubGoalCheck =
 	| { check: 'github-pull-request-has-review'; head: string }
 	| { check: 'github-issue-exists'; title: string }
 	| { check: 'github-issue-is-closed'; title: string }
+	| { check: 'github-issue-is-open'; title: string }
 	| { check: 'github-issue-has-label'; title: string; labelName: string }
 	| { check: 'github-release-exists'; tag: string }
 	| { check: 'github-default-branch-has-rule'; rule: string }
@@ -175,6 +176,7 @@ export const goalCheckFields: Record<GoalCheckKind, readonly string[]> = {
 	'github-pull-request-has-review': ['head'],
 	'github-issue-exists': ['title'],
 	'github-issue-is-closed': ['title'],
+	'github-issue-is-open': ['title'],
 	'github-issue-has-label': ['title', 'labelName'], // not 'label': every goal's label is its checklist sentence
 	'github-release-exists': ['tag'],
 	'github-default-branch-has-rule': ['rule'],

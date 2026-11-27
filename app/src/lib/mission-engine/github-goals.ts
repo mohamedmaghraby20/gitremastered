@@ -42,6 +42,8 @@ export function isGitHubGoalMet(
 			return hasIssue(context, goalCheck.title, () => true);
 		case 'github-issue-is-closed':
 			return hasIssue(context, goalCheck.title, (issue) => issue.state === 'closed');
+		case 'github-issue-is-open':
+			return hasIssue(context, goalCheck.title, (issue) => issue.state === 'open');
 		case 'github-issue-has-label':
 			return hasIssue(context, goalCheck.title, (issue) =>
 				issue.labels.includes(goalCheck.labelName)
