@@ -32,8 +32,12 @@ vite.config.ts.timestamp-*
 
 # --- Factory tools ---
 
-# `npx skills` puts Windows links (junctions) here that point into .agents/skills.
-# Git handles those links badly, so we ignore them and commit .agents/skills instead.
+# Third-party skills installed by `npx skills` (MIT, from addyosmani/agent-skills). Kept local:
+# skills-lock.json is committed, so anyone can reinstall the same versions with `npx skills`.
+.agents/skills/
+
+# `npx skills` also puts Windows links (junctions) here that point into .agents/skills.
+# Git handles those links badly, so we ignore them.
 .claude/skills/*
 
 # Exceptions: these are real folders, not links, so they are committed.
