@@ -1,0 +1,42 @@
+questions:
+  - question: "You pushed your branch gallery and opened a pull request. Nobody else commits to gallery. main has moved on, so you run git rebase origin/main, and now a plain git push is rejected. What is the right next step?"
+    answers:
+      - text: "git pull, then git push"
+        explanation: "Git's hint suggests it, but the pull merges the old copies of your commits back in. Every change then appears twice in the branch."
+      - text: "git push --force-with-lease"
+        correct: true
+        explanation: "The rebased commits are new commits, so the branch on GitHub must be replaced. The branch is yours alone, which is the case where that is fine. The pull request follows the branch and shows the new commits."
+      - text: "Close the pull request: a rebased branch can never be pushed again"
+        explanation: "It can, with a force push. The pull request stays open and updates itself, because it follows the branch."
+      - text: "git rebase --abort"
+        explanation: "The rebase has already finished, so there is nothing to abort. And the rebase was the right thing to do on a branch only you use."
+
+  - question: "A teammate's pull request from the branch hours was squash-merged on GitHub. You pull main, then run git branch -d hours, and Git says the branch is not fully merged. What happened?"
+    answers:
+      - text: "The squash merge failed halfway, and part of the work is missing from main"
+        explanation: "Nothing failed. main has all the changes; it has them in one new commit instead of the branch's own commits."
+      - text: "main got one new commit with the same changes, so the commits of hours are not in main's history"
+        correct: true
+        explanation: "git branch -d only asks whether the branch's newest commit is in your history. Check that git diff main hours prints nothing, then delete the branch with git branch -D hours."
+      - text: "You must run git fetch --prune before a branch can be deleted"
+        explanation: "Pruning removes stale remote-tracking branches such as origin/hours. It does not change whether the local branch counts as merged."
+
+  - question: "Your team uses Git Flow. A contributor's branch signup, started from develop, has five commits. One of them fixes a wrong date that users see on the live site today; the other four are not ready. How do you get the fix to users?"
+    answers:
+      - text: "Read git log main..signup to find the commit, start a hotfix branch from main, git cherry-pick that commit there, then merge the hotfix into main and develop"
+        correct: true
+        explanation: "The two-dot range lists what signup has and main lacks. The cherry-pick copies one commit's change as a new commit. A hotfix starts from main, because that is what users run, and goes into develop too so the next release keeps the fix."
+      - text: "git merge signup on main"
+        explanation: "A merge brings in all five commits, and whatever develop holds under them. The four unfinished ones would reach users."
+      - text: "Merge signup into develop and wait for the next release"
+        explanation: "Users keep seeing the wrong date until the release, and develop gets four commits that are not ready."
+
+  - question: "You reviewed a teammate's pull request, found a real bug, and want it fixed before anyone merges. The pull request was opened from her account. What do you submit?"
+    answers:
+      - text: "gh pr review --approve, with the bug described in the text"
+        explanation: "An approval says \"this can be merged\", whatever the text says. Someone may merge it on the strength of the green tick."
+      - text: "gh pr review --request-changes -b \"...\" that names the line and the problem"
+        correct: true
+        explanation: "A request for changes tells the author the pull request must be fixed first, and stays visible until you review again. It works because you are not the author; on your own pull request only a comment review is possible."
+      - text: "gh pr close, so the broken change cannot be merged"
+        explanation: "Closing throws the whole request out for one fixable bug. She only needs to push a fix to the same branch, and the pull request updates itself."

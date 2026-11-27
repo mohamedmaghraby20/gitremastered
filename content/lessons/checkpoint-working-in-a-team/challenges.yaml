@@ -1,0 +1,254 @@
+challenges:
+  - id: hotfix-and-a-feature
+    title: One urgent fix, one feature, two commits
+    level: easy
+    brief: "The bakery site follows Git Flow: main is what visitors see, develop collects work for the next release. You are on main with two uncommitted jobs. hours.txt now has the right closing hour: an urgent fix. gift-cards.txt is a new feature for the next release. Make a branch named hotfix-hours from main, commit only hours.txt there with the message \"Fix the closing hour\", merge it into main and into develop, and delete it. Then commit gift-cards.txt on develop with the message \"Add gift cards\". main must get the fix and nothing else. End on develop with a clean working tree."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "<h1>Corner Bakery</h1>" > index.html
+      - echo "Open 9 to 5" > hours.txt
+      - git add index.html hours.txt
+      - git commit -q -m "Add homepage and opening hours"
+      - git switch -q -c develop
+      - echo "Every tenth loaf is free" > loyalty.txt
+      - git add loyalty.txt
+      - git commit -q -m "Start loyalty cards"
+      - git switch -q main
+      # Two unrelated jobs, both uncommitted:
+      - echo "Open 9 to 6" > hours.txt
+      - echo "Gift cards for 10, 20 and 50" > gift-cards.txt
+    goal:
+      - check: branch-contains-commit
+        branch: main
+        message: "Fix the closing hour"
+        label: "main holds the commit \"Fix the closing hour\""
+      - check: branch-contains-commit
+        branch: develop
+        message: "Fix the closing hour"
+        label: "develop holds the fix too"
+      - check: branch-lacks-commit
+        branch: main
+        message: "Start loyalty cards"
+        label: "main did not get develop's unreleased work"
+      - check: branch-lacks-commit
+        branch: main
+        message: "Add gift cards"
+        label: "main did not get the gift cards"
+      - check: branch-contains-commit
+        branch: develop
+        message: "Add gift cards"
+        label: "develop holds the commit \"Add gift cards\""
+      - check: branch-is-missing
+        branch: hotfix-hours
+        label: "The hotfix-hours branch is deleted"
+      - check: head-is-on-branch
+        branch: develop
+        label: "You are on develop"
+      - check: committed-file-contains
+        file: hours.txt
+        text: "Open 9 to 6"
+        label: "hours.txt on develop reads \"Open 9 to 6\""
+      - check: working-folder-clean
+        label: "git status shows nothing left to do"
+    solution:
+      - git switch -q -c hotfix-hours
+      - git add hours.txt
+      - git commit -q -m "Fix the closing hour"
+      - git switch -q main
+      - git merge -q hotfix-hours
+      - git switch -q develop
+      - git merge -q --no-edit hotfix-hours
+      - git branch -q -d hotfix-hours
+      - git add gift-cards.txt
+      - git commit -q -m "Add gift cards"
+
+  - id: one-commit-then-rebase
+    title: Take one commit, then land your branch in a straight line
+    level: medium
+    brief: "You maintain the community cookbook, and its main must stay a straight line with no merge commits. Tariq's branch tariq-desserts has three commits. Two are an unfinished dessert chapter. The third fixes the oven temperature in bread.md, and main needs that fix today. Put only that fix on main. Your own branch add-tea is finished: bring its two commits onto main, on top of the fix, with no merge commit. Leave tariq-desserts as it is. End on main."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - git config pull.rebase false
+      - echo "# Community cookbook" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - 'echo "Lentil soup: lentils, onion, cumin, lemon." > soup.md'
+      - git add soup.md
+      - git commit -q -m "Add lentil soup"
+      - 'printf "Flatbread: flour, water, salt, olive oil.\nBake at 120 degrees for 8 minutes.\n" > bread.md'
+      - git add bread.md
+      - git commit -q -m "Add flatbread"
+      # Tariq's branch: an unfinished chapter with one urgent fix in the middle.
+      - git switch -q -c tariq-desserts
+      - 'echo "Rice pudding: rice, milk, sugar." > desserts.md'
+      - git add desserts.md
+      - git -c user.name="Tariq (teammate)" -c user.email="tariq@example.com" commit -q -m "Start dessert chapter"
+      - sed -i -e 's/120 degrees/220 degrees/' bread.md
+      - git -c user.name="Tariq (teammate)" -c user.email="tariq@example.com" commit -q -am "Fix the oven temperature for flatbread"
+      - 'echo "Date cake: (to be written)" >> desserts.md'
+      - git -c user.name="Tariq (teammate)" -c user.email="tariq@example.com" commit -q -am "Add half a date cake recipe"
+      # Your finished topic branch, started from main:
+      - git switch -q -c add-tea main
+      - 'echo "Mint tea: fresh mint, green tea, sugar." > tea.md'
+      - git add tea.md
+      - git commit -q -m "Add mint tea"
+      - echo "Serve very hot, in small glasses." >> tea.md
+      - git commit -q -am "Say how to serve the tea"
+    goal:
+      - check: branch-contains-commit
+        branch: main
+        message: "Fix the oven temperature for flatbread"
+        label: "main holds the oven temperature fix"
+      - check: committed-file-contains
+        file: bread.md
+        text: "220 degrees"
+        label: "bread.md on main says 220 degrees"
+      - check: branch-lacks-commit
+        branch: main
+        message: "Start dessert chapter"
+        label: "The unfinished dessert chapter is not in main"
+      - check: branch-is-at-commit
+        branch: main
+        message: "Say how to serve the tea"
+        label: "main ends with your tea commits"
+      - check: commit-comes-before
+        message: "Fix the oven temperature for flatbread"
+        later: "Add mint tea"
+        label: "Your tea commits sit on top of the fix"
+      - check: history-is-linear
+        label: "main is a straight line (no merge commit)"
+      - check: commit-count-is
+        count: 6
+        label: "main has 6 commits: its three, the fix, and your two"
+      - check: branch-is-at-commit
+        branch: tariq-desserts
+        message: "Add half a date cake recipe"
+        label: "tariq-desserts is as Tariq left it"
+      - check: head-is-on-branch
+        branch: main
+        label: "You are on main"
+      - check: no-operation-in-progress
+        label: "No rebase or cherry-pick is left unfinished"
+    solution:
+      - git log --oneline main..tariq-desserts
+      - git switch -q main
+      - git cherry-pick tariq-desserts~1
+      - git switch -q add-tea
+      - git rebase -q main
+      - git switch -q main
+      - git merge -q --ff-only add-tea
+
+  - id: review-rebase-squash
+    title: Review a teammate, then get your own pull request in
+    level: hard
+    brief: "The cookbook team works with GitHub Flow and two rules: every pull request gets a review, and each one arrives on main as a single commit. Tariq's pull request from add-bread is open. Submit a review of the kind \"comment\" on it, then squash-merge it. His change touches the recipe list in README.md, and so does your branch add-tea, which is already on GitHub. Rebase add-tea on the new main; the list must end up with both \"- bread.md\" and \"- tea.md\". Replace the old add-tea on GitHub with the rebased one, open a pull request from add-tea into main titled \"Add mint tea\", and squash-merge it. Finish on an up-to-date main, with add-tea deleted on GitHub and on your computer."
+    github:
+      repo: gitremastered-practice-checkpoint-working-in-a-team
+      teammate:
+        - action: open-pull-request
+          head: add-bread
+          base: main
+          title: "Add flatbread"
+          body: "A flatbread recipe, and its line in the recipe list. Please review."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - git config pull.rebase false
+      - 'printf "# Community cookbook\n\nRecipes:\n- soup.md\n" > README.md'
+      - git add README.md
+      - git commit -q -m "Add README"
+      - 'echo "Lentil soup: lentils, onion, cumin, lemon." > soup.md'
+      - git add soup.md
+      - git commit -q -m "Add lentil soup"
+      # Your topic branch, already pushed:
+      - git switch -q -c add-tea
+      - 'echo "Mint tea: fresh mint, green tea, sugar." > tea.md'
+      - echo "- tea.md" >> README.md
+      - git add tea.md README.md
+      - git commit -q -m "Add mint tea"
+      - echo "Serve very hot, in small glasses." >> tea.md
+      - git commit -q -am "Say how to serve the tea"
+      - git remote add origin "$PRACTICE_GITHUB_URL"
+      - git push -q --force --mirror origin
+      - git fetch -q origin
+      - git branch -q --set-upstream-to=origin/main main
+      - git branch -q --set-upstream-to=origin/add-tea add-tea
+      # Tariq pushes a branch; the teammate step above then opens its pull request.
+      - git clone -q -c core.autocrlf=false "$PRACTICE_GITHUB_URL" ../teammate
+      - git -C ../teammate config user.name "Tariq (teammate)"
+      - git -C ../teammate config user.email "tariq@example.com"
+      - git -C ../teammate switch -q -c add-bread origin/main
+      - 'echo "Flatbread: flour, water, salt, olive oil." > ../teammate/bread.md'
+      - echo "- bread.md" >> ../teammate/README.md
+      - git -C ../teammate add bread.md README.md
+      - git -C ../teammate commit -q -m "Add flatbread"
+      - git -C ../teammate push -q -u origin add-bread
+    goal:
+      - check: github-pull-request-has-review
+        head: add-bread
+        label: "Tariq's pull request has your review"
+      - check: github-pull-request-is-merged
+        head: add-bread
+        label: "Tariq's pull request is merged on GitHub"
+      - check: github-pull-request-is-merged
+        head: add-tea
+        label: "Your pull request from add-tea is merged on GitHub"
+      - check: head-is-on-branch
+        branch: main
+        label: "You are on main"
+      - check: branch-is-in-sync
+        branch: main
+        label: "Your main is level with main on GitHub"
+      - check: commit-count-is
+        count: 4
+        label: "main has 4 commits: the two it had, plus one for each pull request"
+      - check: history-is-linear
+        label: "main is a straight line (no merge commit)"
+      - check: commit-exists
+        message: "Add mint tea"
+        label: "The commit for your pull request is titled \"Add mint tea\""
+      - check: committed-file-contains
+        file: README.md
+        text: "- bread.md"
+        label: "The recipe list on main names bread.md"
+      - check: committed-file-contains
+        file: README.md
+        text: "- tea.md"
+        label: "The recipe list on main names tea.md"
+      - check: committed-file-lacks
+        file: README.md
+        text: "<<<<<<<"
+        label: "No conflict markers are left in README.md"
+      - check: github-branch-is-missing
+        branch: add-tea
+        label: "The branch add-tea is gone from GitHub"
+      - check: branch-is-missing
+        branch: add-tea
+        label: "The local branch add-tea is deleted"
+      - check: no-operation-in-progress
+        label: "No rebase is left unfinished"
+    solution:
+      - gh pr review add-bread --comment -b "Read the recipe and the list line. Both look right to me."
+      - gh pr merge add-bread --squash
+      - git fetch -q origin
+      - git rebase origin/main || true
+      - 'printf "# Community cookbook\n\nRecipes:\n- soup.md\n- bread.md\n- tea.md\n" > README.md'
+      - git add README.md
+      - git rebase --continue
+      - git push -q --force-with-lease origin add-tea
+      - gh pr create --base main --head add-tea --title "Add mint tea" --body "A mint tea recipe, rebased on the current main."
+      # GitHub needs a moment after a push before it can merge (a person types slower than this script):
+      - sleep 8
+      - gh pr merge add-tea --squash
+      - git switch -q main
+      - git pull -q
+      - git push -q origin --delete add-tea
+      - git branch -q -D add-tea
