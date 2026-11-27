@@ -1,0 +1,40 @@
+questions:
+  - question: "sh test.sh passed at the tag v2.0 and fails today, 40 commits later. A teammate proposes git reset --hard v2.0 followed by a force push, \"to get back to a working state\". What do you do instead?"
+    answers:
+      - text: "git bisect start HEAD v2.0, then git bisect run sh test.sh, and git revert the commit it names"
+        correct: true
+        explanation: "Bisect finds the one bad commit in about six tests, and the revert takes back that commit alone. The other 39 commits stay, and nobody's history is rewritten."
+      - text: "Agree: the reset is the fastest way to a passing test"
+        explanation: "It is fast, and it throws away 39 commits that did nothing wrong. The force push also rewrites history every teammate already has."
+      - text: "Read all 40 diffs with git log -p until the bug shows"
+        explanation: "That can work, but it is slow and easy to get wrong. With a test script and a known good commit, bisect does the search for you."
+
+  - question: "You removed a key file from every commit with git filter-branch. Then you remember the branch drafts that you deleted yesterday, and you bring it back with an ID from git reflog. Is the key file out of your branches?"
+    answers:
+      - text: "Yes: the rewrite cleaned every commit in the repository"
+        explanation: "It rewrote the commits that a branch or a tag reached at that moment. Commits only the reflog remembered were left as they were."
+      - text: "No: the reflog led to an old commit, so drafts sits on the old history, key file included. The rewrite has to run again"
+        correct: true
+        explanation: "The restored branch points at commits from before the rewrite. Restore deleted branches first and rewrite second, or run the rewrite again (with -f, because the backup refs of the first run are still there)."
+      - text: "No, and nothing can fix it: a restored branch cannot be rewritten"
+        explanation: "A restored branch is an ordinary branch. Running the rewrite again with -- --all cleans it too."
+
+  - question: "git bisect named the first bad commit: a1b2c3d. You wrote the ID in the incident note. Then you removed a secret from a commit older than a1b2c3d with a history rewrite. A teammate runs git show a1b2c3d in a fresh clone of the cleaned repository. What happens?"
+    answers:
+      - text: "Git shows the bad commit: its own changes were not touched by the rewrite"
+        explanation: "Its changes are the same, but its ID is computed from its parent's ID too. The parent chain changed, so the commit has a new ID."
+      - text: "Git does not know that ID: every commit after the rewritten one has a new ID, so the note must name the new one"
+        correct: true
+        explanation: "A rewrite gives a new ID to the changed commit and to every commit after it. Find the commit again by its message in the new history, or do the rewrite first and the bisect second."
+      - text: "Git shows the commit, but marks it as rewritten"
+        explanation: "Git has no such mark. The fresh clone holds only the new commits, and the old ID names nothing there."
+
+  - question: "Your newest commit, not pushed, fixes a typo in prices.txt and adds a new file report.sh. The reviewer wants the typo fix today and the report next week. Which is the shortest safe way to get two commits?"
+    answers:
+      - text: "git reset HEAD~1, then git add and git commit once for each file"
+        correct: true
+        explanation: "A plain (mixed) reset moves the branch back one commit and keeps both changes in your files, unstaged. You stage and commit each job on its own."
+      - text: "git reset --hard HEAD~1, then make the two commits"
+        explanation: "--hard also resets your files, so there is nothing left to commit. The work is still reachable through git reflog, but you have made yourself a recovery job."
+      - text: "git revert HEAD, then commit the typo fix again"
+        explanation: "Revert adds a commit that undoes both jobs and keeps the mixed commit in the history. It is the tool for pushed commits, and it does not split anything."

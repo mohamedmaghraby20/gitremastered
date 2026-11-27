@@ -1,0 +1,267 @@
+# All three challenges use the same small project: a bike rental shop. rent.sh prints the price
+# of a rental in cents (sh rent.sh 3 is three hours: 3 x 400 plus 150 for the helmet = 1350).
+# The medium and hard challenges hide one bug in the history: "Use a clearer name for the hourly
+# rate" renames RATE to HOUR_RATE in the settings but not in the sum, so the total drops to 150.
+# test-rent.sh, an untracked script the setup writes last, checks the total.
+challenges:
+  - id: friday-commit
+    title: A commit thrown away, and it did two jobs anyway
+    level: easy
+    brief: "Your last commit on main, \"Friday work\", did two jobs: it fixed the helmet price in rent.sh (1500 was a typo for 150) and it added sizes.txt, a list of bike sizes. You wanted to take the commit apart, but you typed git reset --hard HEAD~1: the commit is off main and both changes are gone from your files. Nothing was pushed. Get the work back, then record it as two commits. The price fix ships today: on main, a commit \"Fix the helmet price\" with the rent.sh change only. The size list is not reviewed yet: on a new branch named sizes, on top of the fix, a commit \"List the bike sizes\" with sizes.txt. No commit named \"Friday work\" may be left on either branch. End on main."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - printf '# Bike rental\n\nSmall shell scripts for a bike rental shop.\nAll prices are in cents.\n' > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - 'printf ''#!/bin/sh\n# Prints the price of a bike rental in cents: sh rent.sh 3\n\nRATE=400\n\nhours=$1\ntotal=$((hours * RATE))\n\necho "Total: $total"\n'' > rent.sh'
+      - git add rent.sh
+      - git commit -q -m "Add the rental script"
+      - sed -i -e 's/^RATE=400$/RATE=400\nHELMET=1500/' -e 's/hours \* RATE/hours * RATE + HELMET/' rent.sh
+      - git commit -q -am "Charge for the helmet"
+      - sed -i -e 's/^HELMET=1500$/HELMET=150/' rent.sh
+      - printf 'Small  = up to 165 cm\nMedium = 165 to 180 cm\nLarge  = over 180 cm\n' > sizes.txt
+      - git add .
+      - git commit -q -m "Friday work"
+      - git reset -q --hard HEAD~1
+    goal:
+      - check: branch-is-at-commit
+        branch: main
+        message: "Fix the helmet price"
+        label: "\"Fix the helmet price\" is the newest commit of main"
+      - check: commit-count-is
+        count: 4
+        label: "main has four commits"
+      - check: committed-file-contains
+        file: rent.sh
+        text: "HELMET=150"
+        label: "On main, rent.sh has a helmet price"
+      - check: committed-file-lacks
+        file: rent.sh
+        text: "HELMET=1500"
+        label: "On main, the helmet price is 150, not 1500"
+      - check: file-is-not-committed
+        file: sizes.txt
+        label: "The price fix on main does not carry sizes.txt"
+      - check: branch-is-at-commit
+        branch: sizes
+        message: "List the bike sizes"
+        label: "The branch sizes ends with \"List the bike sizes\""
+      - check: branch-contains-commit
+        branch: sizes
+        message: "Fix the helmet price"
+        label: "sizes is built on top of the price fix"
+      - check: branch-lacks-commit
+        branch: sizes
+        message: "Friday work"
+        label: "No \"Friday work\" commit is left on sizes"
+      - check: commit-is-gone
+        message: "Friday work"
+        label: "No \"Friday work\" commit is left on main"
+      - check: head-is-on-branch
+        branch: main
+        label: "You are on main"
+      - check: working-folder-clean
+        label: "git status shows nothing left to do"
+    solution:
+      - git reset -q --hard ORIG_HEAD
+      - git reset -q HEAD~1
+      - git add rent.sh
+      - git commit -q -m "Fix the helmet price"
+      - git switch -q -c sizes
+      - git add sizes.txt
+      - git commit -q -m "List the bike sizes"
+      - git switch -q main
+
+  - id: reset-is-not-a-fix
+    title: A panic reset, and the bug it was meant to fix
+    level: medium
+    brief: "This morning the shop's totals were wrong: sh rent.sh 3 should print Total: 1350 (three hours at 400, plus 150 for the helmet), as it did at the tag v1.0. In a panic you ran git reset --hard v1.0, and main lost its five newest commits. Four of them were good work. Put main back on its newest commit, \"Add a deposit note to the README\". Then find the first bad commit among the five after v1.0: the script test-rent.sh in the practice folder ends with exit code 0 when the total is right and 1 when it is wrong, and Git does not track it. Write the bad commit's short ID into answer.txt. Your teammates have all five commits, so do not rewrite history: take the bad commit back with one new commit. Finish on main, with the total right again."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo answer.txt >> .git/info/exclude
+      - echo test-rent.sh >> .git/info/exclude
+      - printf '# Bike rental\n\nSmall shell scripts for a bike rental shop.\nAll prices are in cents.\n' > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - 'printf ''#!/bin/sh\n# Prints the price of a bike rental in cents: sh rent.sh 3\n\nRATE=400\n\nhours=$1\ntotal=$((hours * RATE))\n\necho "Total: $total"\n'' > rent.sh'
+      - git add rent.sh
+      - git commit -q -m "Add the rental script"
+      - sed -i -e 's/^RATE=400$/RATE=400\nHELMET=150/' -e 's/hours \* RATE/hours * RATE + HELMET/' rent.sh
+      - git commit -q -am "Charge for the helmet"
+      - git tag -a v1.0 -m "Version 1.0"
+      - printf 'Monday to Friday = 08:00 to 18:00\nSaturday = 09:00 to 16:00\nSunday = closed\n' > hours.txt
+      - git add hours.txt
+      - git commit -q -m "Add opening hours"
+      - sed -i -e 's/^RATE=400$/HOUR_RATE=400/' rent.sh
+      - git commit -q -am "Use a clearer name for the hourly rate"
+      - echo 'echo "Thank you for riding with us"' >> rent.sh
+      - git commit -q -am "Print a thank-you line"
+      - printf 'Small  = up to 165 cm\nMedium = 165 to 180 cm\nLarge  = over 180 cm\n' > sizes.txt
+      - git add sizes.txt
+      - git commit -q -m "List the bike sizes"
+      - printf '\n## Deposit\n\nEvery rental needs a deposit of 5000, paid back on return.\n' >> README.md
+      - git commit -q -am "Add a deposit note to the README"
+      - 'printf ''#!/bin/sh\n# Passes (exit code 0) when three hours with a helmet cost 1350.\nsh rent.sh 3 | grep -q "^Total: 1350$"\n'' > test-rent.sh'
+      - git reset -q --hard v1.0
+    goal:
+      - check: branch-contains-commit
+        branch: main
+        message: "Add a deposit note to the README"
+        label: "main has \"Add a deposit note to the README\" again"
+      - check: answer-is-commit
+        message: "Use a clearer name for the hourly rate"
+        label: "answer.txt holds the ID of the first bad commit"
+      - check: latest-commit-message-contains
+        text: "Revert \"Use a clearer name for the hourly rate\""
+        label: "The newest commit of main reverts the bad commit"
+      - check: commit-count-is
+        count: 9
+        label: "main has nine commits: the eight from before, and the revert"
+      - check: committed-file-lacks
+        file: rent.sh
+        text: "HOUR_RATE"
+        label: "rent.sh uses the name RATE again, so the total is right"
+      - check: committed-file-contains
+        file: rent.sh
+        text: "Thank you for riding with us"
+        label: "rent.sh still prints the thank-you line that came after the bug"
+      - check: file-is-committed
+        file: sizes.txt
+        label: "sizes.txt is still committed"
+      - check: head-is-on-branch
+        branch: main
+        label: "You are back on main"
+      - check: no-operation-in-progress
+        label: "No revert is left open"
+      - check: working-folder-clean
+        label: "git status shows nothing left to do"
+    solution:
+      - git reset -q --hard ORIG_HEAD
+      - git bisect start HEAD v1.0
+      - git bisect run sh test-rent.sh
+      - git rev-parse --short refs/bisect/bad > answer.txt
+      - git bisect reset
+      - git revert --no-edit $(cat answer.txt)
+
+  - id: monday-rescue
+    title: "Monday morning: four problems in one repository"
+    level: hard
+    brief: "You take over the rental project, and nothing is pushed yet. Four things are wrong. (1) The branch loyalty was deleted before it was merged. It held two commits, \"Add loyalty points\" and \"Give double points for day rentals\": bring it back under its old name, and do not merge it. (2) payment-key.txt, a real key, went in with \"Add card payment\", before the tag v1.0. Remove the file from every commit of every branch and of the tag; v1.0 must still mark \"Charge for the helmet\". (3) The newest commit of main, \"Weekend changes\", did two jobs. Replace it with two commits: first \"Add repair prices\" with repairs.txt, then \"Add a deposit note to the README\" with the README change. (4) sh rent.sh 3 should print Total: 1350, as it did at v1.0. The untracked script test-rent.sh ends with exit code 0 when the total is right. Find the first bad commit, write its short ID into answer.txt, and take it back with a new commit at the end of main. The order is yours, but think about which steps give commits new IDs: answer.txt must hold the ID the bad commit has in your final history. End on main."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo answer.txt >> .git/info/exclude
+      - echo test-rent.sh >> .git/info/exclude
+      - printf '# Bike rental\n\nSmall shell scripts for a bike rental shop.\nAll prices are in cents.\n' > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - 'printf ''#!/bin/sh\n# Prints the price of a bike rental in cents: sh rent.sh 3\n\nRATE=400\n\nhours=$1\ntotal=$((hours * RATE))\n\necho "Total: $total"\n'' > rent.sh'
+      - git add rent.sh
+      - git commit -q -m "Add the rental script"
+      - 'printf ''#!/bin/sh\n# Sends a card payment to the bank: sh pay.sh 1350\n\necho "Paying $1 by card"\n'' > pay.sh'
+      - echo "PAYMENT_KEY=demo-key-12345" > payment-key.txt
+      - git add .
+      - git commit -q -m "Add card payment"
+      - sed -i -e 's/^RATE=400$/RATE=400\nHELMET=150/' -e 's/hours \* RATE/hours * RATE + HELMET/' rent.sh
+      - git commit -q -am "Charge for the helmet"
+      - git tag -a v1.0 -m "Version 1.0"
+      - git switch -q -c loyalty
+      - 'printf ''#!/bin/sh\n# Prints the loyalty points for a rental: sh loyalty.sh 3\n\nhours=$1\npoints=$((hours * 10))\n\necho "Points: $points"\n'' > loyalty.sh'
+      - git add loyalty.sh
+      - git commit -q -m "Add loyalty points"
+      - 'printf ''if [ "$hours" -ge 8 ]; then\n  echo "Day rental: double points"\nfi\n'' >> loyalty.sh'
+      - git commit -q -am "Give double points for day rentals"
+      - git switch -q main
+      - printf 'Monday to Friday = 08:00 to 18:00\nSaturday = 09:00 to 16:00\nSunday = closed\n' > hours.txt
+      - git add hours.txt
+      - git commit -q -m "Add opening hours"
+      - sed -i -e 's/^RATE=400$/HOUR_RATE=400/' rent.sh
+      - git commit -q -am "Use a clearer name for the hourly rate"
+      - echo 'echo "Thank you for riding with us"' >> rent.sh
+      - git commit -q -am "Print a thank-you line"
+      - printf 'Small  = up to 165 cm\nMedium = 165 to 180 cm\nLarge  = over 180 cm\n' > sizes.txt
+      - git add sizes.txt
+      - git commit -q -m "List the bike sizes"
+      - printf 'Flat tyre = 800\nNew chain = 2500\nBrake service = 1800\n' > repairs.txt
+      - printf '\n## Deposit\n\nEvery rental needs a deposit of 5000, paid back on return.\n' >> README.md
+      - git add .
+      - git commit -q -m "Weekend changes"
+      - 'printf ''#!/bin/sh\n# Passes (exit code 0) when three hours with a helmet cost 1350.\nsh rent.sh 3 | grep -q "^Total: 1350$"\n'' > test-rent.sh'
+      - git branch -q -D loyalty
+    goal:
+      - check: branch-is-at-commit
+        branch: loyalty
+        message: "Give double points for day rentals"
+        label: "The branch loyalty is back, on \"Give double points for day rentals\""
+      - check: branch-contains-commit
+        branch: loyalty
+        message: "Add loyalty points"
+        label: "loyalty holds \"Add loyalty points\" too"
+      - check: branch-lacks-commit
+        branch: main
+        message: "Add loyalty points"
+        label: "The loyalty work is not merged into main"
+      - check: file-is-in-no-commit
+        file: payment-key.txt
+        label: "No commit that a branch or the tag reaches contains payment-key.txt"
+      - check: tag-is-on-commit
+        tag: v1.0
+        message: "Charge for the helmet"
+        label: "The tag v1.0 still marks \"Charge for the helmet\""
+      - check: file-is-committed
+        file: pay.sh
+        label: "pay.sh, from the same commit as the key, is still committed"
+      - check: commit-is-gone
+        message: "Weekend changes"
+        label: "No \"Weekend changes\" commit is left on main"
+      - check: commit-comes-before
+        message: "Add repair prices"
+        later: "Add a deposit note to the README"
+        label: "\"Add repair prices\" comes before \"Add a deposit note to the README\""
+      - check: answer-is-commit
+        message: "Use a clearer name for the hourly rate"
+        label: "answer.txt holds the ID of the first bad commit"
+      - check: latest-commit-message-contains
+        text: "Revert \"Use a clearer name for the hourly rate\""
+        label: "The newest commit of main reverts the bad commit"
+      - check: committed-file-lacks
+        file: rent.sh
+        text: "HOUR_RATE"
+        label: "rent.sh uses the name RATE again, so the total is right"
+      - check: committed-file-contains
+        file: rent.sh
+        text: "Thank you for riding with us"
+        label: "rent.sh still prints the thank-you line that came after the bug"
+      - check: commit-count-is
+        count: 11
+        label: "main has eleven commits"
+      - check: history-is-linear
+        label: "The history of main is one straight line, with no merge"
+      - check: head-is-on-branch
+        branch: main
+        label: "You are on main"
+      - check: no-operation-in-progress
+        label: "No revert or rebase is left open"
+      - check: working-folder-clean
+        label: "git status shows nothing left to do"
+    solution:
+      - git branch loyalty $(git log -g --format=%h --grep="Give double points" -1)
+      - "FILTER_BRANCH_SQUELCH_WARNING=1 git filter-branch --index-filter 'git rm --cached --ignore-unmatch payment-key.txt' --tag-name-filter cat -- --all"
+      - git reset -q HEAD~1
+      - git add repairs.txt
+      - git commit -q -m "Add repair prices"
+      - git add README.md
+      - git commit -q -m "Add a deposit note to the README"
+      - git bisect start HEAD v1.0
+      - git bisect run sh test-rent.sh
+      - git rev-parse --short refs/bisect/bad > answer.txt
+      - git bisect reset
+      - git revert --no-edit $(cat answer.txt)
