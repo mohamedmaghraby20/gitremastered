@@ -16,18 +16,35 @@
 	const reader = new GitHubConnectionReader();
 	let isAccepting = $state(false);
 
+	/** What went wrong when saving the consent, in words, or null. */
+	let acceptProblem: string | null = $state(null);
+
 	onMount(() => {
 		void reader.check();
 	});
 
 	/** Passes the student's yes on, with a busy state while it is saved. */
 	async function accept(): Promise<void> {
+		if (isAccepting) {
+			return;
+		}
 		isAccepting = true;
+		acceptProblem = null;
 		try {
 			await onConsent();
+		} catch (error) {
+			acceptProblem = `Could not save your choice: ${String(error)}`;
 		} finally {
 			isAccepting = false;
 		}
+	}
+
+	/** Reads the GitHub CLI again. Does nothing while a read runs (the button stays focusable). */
+	async function checkAgain(): Promise<void> {
+		if (reader.isChecking) {
+			return;
+		}
+		await reader.check();
 	}
 </script>
 
@@ -65,32 +82,41 @@
 		delete all practice repositories later in Settings, GitHub.
 	</p>
 
+	<!-- One live region: the check result is announced here; the steps and buttons stay outside. -->
 	<div role="status" aria-live="polite">
 		{#if !reader.isDesktopApp}
 			<p class="type-small m-0 text-ink-muted">GitHub challenges work in the desktop app.</p>
-		{:else if reader.isChecking && reader.connection === null}
+		{:else if reader.isChecking}
 			<p class="type-small m-0 text-ink-muted">Checking the GitHub CLI…</p>
 		{:else if reader.problem !== null}
 			<p class="type-small m-0">Could not check the GitHub CLI: {reader.problem}</p>
+		{:else if reader.connection !== null && reader.isConnected}
+			<p class="type-small m-0 font-semibold">
+				GitHub CLI ready, signed in as {reader.connection.login}.
+			</p>
+		{:else if reader.connection !== null}
+			<p class="type-small m-0 font-semibold">
+				{reader.connection.isGhInstalled
+					? 'The GitHub CLI is installed, but you are not signed in.'
+					: 'The GitHub CLI is not installed.'}
+			</p>
+		{/if}
+		{#if acceptProblem !== null}
+			<p class="type-small m-0">{acceptProblem}</p>
 		{/if}
 	</div>
 
 	{#if reader.isDesktopApp && reader.connection !== null}
 		{#if reader.isConnected}
 			<div>
-				<Button onclick={accept} disabled={isAccepting}>
+				<Button onclick={accept} aria-disabled={isAccepting}>
 					{isAccepting ? 'Saving…' : 'Allow practice on GitHub'}
 				</Button>
 			</div>
 		{:else}
-			<p class="type-small m-0 font-semibold">
-				{reader.connection.isGhInstalled
-					? 'The GitHub CLI is installed, but you are not signed in.'
-					: 'The GitHub CLI is not installed.'}
-			</p>
 			<GitHubSetupSteps />
 			<div>
-				<Button variant="secondary" onclick={() => reader.check()} disabled={reader.isChecking}>
+				<Button variant="secondary" onclick={checkAgain} aria-disabled={reader.isChecking}>
 					Check again
 				</Button>
 			</div>

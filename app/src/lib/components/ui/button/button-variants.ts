@@ -20,6 +20,7 @@ export const buttonVariants = tv({
 		'active:translate-y-0.5 active:border-b active:mb-0.5',
 		'focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-primary',
 		'disabled:cursor-not-allowed disabled:opacity-50 disabled:active:translate-y-0',
+		'aria-disabled:cursor-not-allowed aria-disabled:opacity-50 aria-disabled:active:translate-y-0',
 		'motion-reduce:transition-none'
 	],
 	variants: {
@@ -40,5 +41,7 @@ export type ButtonVariant = NonNullable<VariantProps<typeof buttonVariants>['var
 export type ButtonProps = HTMLButtonAttributes & {
 	variant?: ButtonVariant;
 	shortcut?: string;
+	/** The real <button> element, so a parent can move focus to it. */
+	ref?: HTMLButtonElement | null;
 	children?: Snippet;
 };

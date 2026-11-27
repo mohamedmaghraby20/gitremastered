@@ -80,6 +80,58 @@ describe('GitHubChallengePanel consent', () => {
 	});
 });
 
+describe('GitHubChallengePanel accessibility', () => {
+	it('puts the check result inside the status region', async () => {
+		connectionIs({ isSignedIn: false, login: null });
+		await render(GitHubChallengePanel, {
+			repoName,
+			watch: null,
+			needsConsent: true,
+			onConsent: vi.fn()
+		});
+
+		await expect
+			.element(
+				page
+					.getByRole('status')
+					.filter({ hasText: 'The GitHub CLI is installed, but you are not signed in.' })
+			)
+			.toBeVisible();
+	});
+
+	it('says who is signed in when the CLI is ready', async () => {
+		connectionIs({});
+		await render(GitHubChallengePanel, {
+			repoName,
+			watch: null,
+			needsConsent: true,
+			onConsent: vi.fn()
+		});
+
+		await expect
+			.element(
+				page.getByRole('status').filter({ hasText: 'GitHub CLI ready, signed in as octocat.' })
+			)
+			.toBeVisible();
+	});
+
+	it('keeps "Check GitHub now" focusable while GitHub is being read', async () => {
+		const { watch, readNow } = fakeWatch({ isReading: true });
+		await render(GitHubChallengePanel, {
+			repoName,
+			watch,
+			needsConsent: false,
+			onConsent: vi.fn()
+		});
+
+		const button = page.getByRole('button', { name: 'Check GitHub now' });
+		await expect.element(button).not.toHaveAttribute('disabled');
+		await expect.element(button).toHaveAttribute('aria-disabled', 'true');
+		await button.click({ force: true });
+		expect(readNow).not.toHaveBeenCalled();
+	});
+});
+
 describe('GitHubChallengePanel status', () => {
 	it('says it is preparing while the watch is missing', async () => {
 		await render(GitHubChallengePanel, {

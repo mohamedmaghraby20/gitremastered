@@ -5,7 +5,7 @@
   The classes for each variant live in button-variants.ts.
 
   Inputs:  variant ("primary" | "secondary" | "ghost"), shortcut (optional key hint, like "Enter"),
-           children (the label), plus any normal <button> attribute (onclick, disabled, type…).
+           ref (bindable: the <button> element, for moving focus), children (the label), plus any normal <button> attribute (onclick, disabled, type…).
   Output:  a real <button> element.
 -->
 <script lang="ts">
@@ -13,6 +13,7 @@
 	import { buttonVariants, type ButtonProps } from './button-variants';
 
 	let {
+		ref = $bindable(null),
 		variant = 'primary',
 		shortcut,
 		type = 'button',
@@ -23,6 +24,7 @@
 </script>
 
 <button
+	bind:this={ref}
 	{type}
 	data-variant={variant}
 	class={cn(buttonVariants({ variant }), extraClasses)}

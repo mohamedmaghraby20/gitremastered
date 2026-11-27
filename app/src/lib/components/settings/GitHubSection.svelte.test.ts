@@ -99,4 +99,44 @@ describe('GitHubSection', () => {
 		expect(deletePracticeRepositories).toHaveBeenCalledWith(['gitremastered-practice-flow']);
 		await expect.element(page.getByText('Deleted: gitremastered-practice-flow.')).toBeVisible();
 	});
+
+	it('moves focus to Cancel when the confirm question opens', async () => {
+		connectionIs({});
+		await render(GitHubSection);
+		await page.getByRole('button', { name: 'Show my practice repositories' }).click();
+		await page.getByRole('button', { name: 'Delete these repositories…' }).click();
+
+		await expect.element(page.getByRole('button', { name: 'Cancel' })).toHaveFocus();
+	});
+
+	it('puts focus back on the delete button after Cancel', async () => {
+		connectionIs({});
+		await render(GitHubSection);
+		await page.getByRole('button', { name: 'Show my practice repositories' }).click();
+		await page.getByRole('button', { name: 'Delete these repositories…' }).click();
+		await page.getByRole('button', { name: 'Cancel' }).click();
+
+		await expect
+			.element(page.getByRole('button', { name: 'Delete these repositories…' }))
+			.toHaveFocus();
+	});
+
+	it('announces how many repositories were found', async () => {
+		connectionIs({});
+		await render(GitHubSection);
+		await page.getByRole('button', { name: 'Show my practice repositories' }).click();
+
+		await expect
+			.element(page.getByRole('status').filter({ hasText: 'Found 1 practice repository.' }))
+			.toBeVisible();
+	});
+
+	it('keeps the "Check again" button focusable while reading', async () => {
+		connectionIs({});
+		await render(GitHubSection);
+
+		await expect
+			.element(page.getByRole('button', { name: 'Check again' }))
+			.not.toHaveAttribute('disabled');
+	});
 });

@@ -20,7 +20,8 @@
 <ol class="m-0 flex flex-col gap-3 pl-5">
 	<li>
 		<span class="font-semibold">Install the GitHub CLI.</span>
-		<ul class="type-small m-0 mt-1 flex list-none flex-col gap-1 p-0">
+		<!-- role="list" keeps the list for screen readers, which drop it when list-style is none. -->
+		<ul class="type-small m-0 mt-1 flex list-none flex-col gap-1 p-0" role="list">
 			<li>Windows: {@render command('winget install --id GitHub.cli')}</li>
 			<li>macOS: {@render command('brew install gh')}</li>
 			<li>

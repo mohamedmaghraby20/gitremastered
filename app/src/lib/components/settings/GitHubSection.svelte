@@ -5,7 +5,7 @@
   Input: none.
 -->
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onMount, tick } from 'svelte';
 	import { Button } from '$lib/components/ui/button';
 	import GitHubSetupSteps from '$lib/components/github/GitHubSetupSteps.svelte';
 	import { GitHubConnectionReader } from '$lib/components/github/github-connection.svelte';
@@ -24,10 +24,38 @@
 		}
 	}
 
-	/** Takes the consent back and shows the new state. */
+	/** The consent text region; focus moves here after the consent is taken back. */
+	let consentStatusElement: HTMLElement | null = $state(null);
+
+	/** What went wrong when taking the consent back, in words, or null. */
+	let consentProblem: string | null = $state(null);
+
+	/** The sentence that says whether practice on GitHub is allowed. */
+	const consentText = $derived(
+		hasConsent
+			? 'Allowed: GitHub challenges may create and reset practice repositories on your account.'
+			: 'Not allowed yet: you will be asked before the first GitHub challenge.'
+	);
+
+	/** Takes the consent back, shows the new state, and moves focus to it. */
 	async function takeBackConsent(): Promise<void> {
-		await revokeGitHubConsent();
-		await readConsent();
+		consentProblem = null;
+		try {
+			await revokeGitHubConsent();
+			await readConsent();
+		} catch (error) {
+			consentProblem = `Could not take back your consent: ${String(error)}`;
+		}
+		await tick();
+		consentStatusElement?.focus();
+	}
+
+	/** Reads the GitHub CLI again. Does nothing while a read runs (the button stays focusable). */
+	async function checkAgain(): Promise<void> {
+		if (reader.isChecking) {
+			return;
+		}
+		await reader.check();
 	}
 
 	onMount(() => {
@@ -59,7 +87,7 @@
 				{/if}
 			</span>
 			{#if reader.isDesktopApp}
-				<Button variant="secondary" onclick={() => reader.check()} disabled={reader.isChecking}>
+				<Button variant="secondary" onclick={checkAgain} aria-disabled={reader.isChecking}>
 					Check again
 				</Button>
 			{/if}
@@ -71,16 +99,23 @@
 
 	<div class="flex flex-wrap items-center justify-between gap-3 border-t px-5 py-4">
 		<div>
-			<div class="font-semibold">Practice on GitHub</div>
-			<div class="type-small text-ink-muted">
-				{hasConsent
-					? 'Allowed: GitHub challenges may create and reset practice repositories on your account.'
-					: 'Not allowed yet: you will be asked before the first GitHub challenge.'}
+			<h3 class="m-0 font-semibold">Practice on GitHub</h3>
+			<div
+				bind:this={consentStatusElement}
+				class="type-small rounded-small text-ink-muted focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-primary"
+				role="status"
+				aria-live="polite"
+				tabindex="-1"
+			>
+				{consentProblem ?? consentText}
 			</div>
 		</div>
-		{#if hasConsent}
-			<Button variant="secondary" onclick={takeBackConsent}>Take back consent</Button>
-		{/if}
+		<!-- The button area stays in the page, so focus has somewhere to be after taking consent back. -->
+		<div>
+			{#if hasConsent}
+				<Button variant="secondary" onclick={takeBackConsent}>Take back consent</Button>
+			{/if}
+		</div>
 	</div>
 
 	{#if reader.isDesktopApp && reader.isConnected && reader.connection !== null}
