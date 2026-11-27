@@ -9,12 +9,9 @@
  */
 
 import { spawnSync } from 'node:child_process';
-import { ContentError } from '@gitremastered/course-engine/content/content-error';
-import { buildCourseContent } from '@gitremastered/course-engine/content/load-lessons';
-import {
-	readDraftContentFiles,
-	type Draft
-} from '@gitremastered/course-engine/node/read-draft-content';
+import { ContentError } from '../src/content/content-error.ts';
+import { buildCourseContent } from '../src/content/load-lessons.ts';
+import { readDraftContentFiles, type Draft } from '../src/node/read-draft-content.ts';
 
 /**
  * Checks the draft's content files.
@@ -55,7 +52,7 @@ function checkDraftContent(draft: Draft): boolean {
  */
 function runDraftChallenges(draft: Draft): boolean {
 	// One command line run by the shell: on Windows, pnpm is a script only a shell can start.
-	const result = spawnSync('pnpm exec vitest run --config tests/missions/vitest.config.ts', {
+	const result = spawnSync('pnpm --filter @gitremastered/desktop test:missions', {
 		stdio: 'inherit',
 		shell: true,
 		env: {

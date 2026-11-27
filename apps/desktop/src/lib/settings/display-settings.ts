@@ -7,7 +7,7 @@
  *   on top of the computer's own "reduce motion" setting, which always counts too.
  */
 
-import designTokensJson from '../../../docs/design/tokens.json';
+import designTokensJson from '../../../../../docs/design/tokens.json';
 import type { DesignTokens } from '$lib/types/design-tokens';
 
 /** The parts of the <html> element these helpers use (tests pass a stand-in). */

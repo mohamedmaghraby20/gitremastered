@@ -183,7 +183,9 @@ settings:
 
 importers:
 
-  .:
+  .: {}
+
+  apps/desktop:
     dependencies:
       '@fontsource/ibm-plex-sans':
         specifier: ^5.3.0
@@ -196,7 +198,7 @@ importers:
         version: 5.3.1
       '@gitremastered/course-engine':
         specifier: workspace:*
-        version: link:packages/course-engine
+        version: link:../../packages/course-engine
       '@tauri-apps/api':
         specifier: ^2
         version: 2.12.5

@@ -56,7 +56,7 @@ At the release, each idea becomes a GitHub issue labelled `idea` or `after-1.0`,
 - **Problem:** students who finish the course ask "what next?"
 - **Idea:** a page of trusted Git and GitHub resources: official docs, well-known articles, videos and courses, each with one line on why it is worth the time.
 - **Note:** separate from the sources the lessons were written from (those are already linked on each lesson).
-- **Open question:** who reviews new links, and how often dead links are checked (a link check in `scripts/content/` could cover it).
+- **Open question:** who reviews new links, and how often dead links are checked (a link check in `packages/course-engine/scripts/` could cover it).
 
 ## F5. Repository docs cleanup
 

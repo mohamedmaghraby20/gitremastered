@@ -12,7 +12,7 @@
 
 import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { contentFolderPath } from '@gitremastered/course-engine/node/read-content-files';
+import { contentFolderPath } from '../src/node/read-content-files.ts';
 
 /** Shorter names lessons are known by, besides their full title. */
 const extraNames: Record<string, string[]> = {

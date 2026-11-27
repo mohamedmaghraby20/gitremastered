@@ -10,7 +10,7 @@
     {
       "name": "app-screens-check",
       "runtimeExecutable": "pnpm",
-      "runtimeArgs": ["exec", "vite", "dev", "--port", "1430"],
+      "runtimeArgs": ["--dir", "apps/desktop", "exec", "vite", "dev", "--port", "1430"],
       "port": 1430,
       "autoPort": false
     }

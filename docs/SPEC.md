@@ -99,7 +99,7 @@ Changing this contract needs the user's approval (see Boundaries). The GitHub co
 
 ### 3.4 Shared data shapes
 
-Defined once in TypeScript (`packages/course-engine/src/types/`) and mirrored in Rust (`src-tauri/src/models/`, serialized with serde):
+Defined once in TypeScript (`packages/course-engine/src/types/`) and mirrored in Rust (`apps/desktop/src-tauri/src/models/`, serialized with serde):
 
 ```ts
 /** The state of the practice repository at one moment. */
@@ -289,48 +289,46 @@ The loader (`packages/course-engine/src/content/`) rejects a broken file with `<
 
 ## 5. Project structure
 
-The repository root is the desktop app (Tauri + SvelteKit). Code the future website will share lives in `packages/`.
+One repository, one pnpm workspace: programs people use live in `apps/`, code they share lives in `packages/`. Every command runs from the repository root.
 
 ```
-package.json                   the app, plus the workspace scripts (pnpm content:check …)
-pnpm-workspace.yaml            lists packages/*
-src/
-├── routes/                    pages: home, lessons/[lessonId], paths, glossary, search
-└── lib/
-    ├── content/               the app's course loader (Vite reads content/ at build time)
-    ├── mission-engine/        the app's practice sessions (they call the Rust core)
-    ├── components/
-    │   ├── lesson-reader/
-    │   ├── terminal-view/
-    │   ├── visualizer/
-    │   ├── quiz/
-    │   └── ui/                shadcn-svelte building blocks
-    ├── stores/                shared stores (snapshot, progress)
-    ├── tauri/                 typed wrappers around every contract command and event
-    └── types/                 app-only data shapes (design tokens)
-src-tauri/
-├── Cargo.toml
-├── tauri.conf.json
-├── capabilities/              what the screens are allowed to call
-└── src/
-    ├── main.rs                starts the app, registers commands
-    ├── commands/              one file per contract command group
-    ├── git_runner/            module: git-runner
-    ├── repo_inspector/        module: repo-inspector
-    └── models/                Rust versions of the shared data shapes
+apps/
+└── desktop/                       the desktop app (Tauri + SvelteKit)
+    ├── src/
+    │   ├── routes/                pages: home, lessons/[lessonId], paths, glossary, search
+    │   └── lib/
+    │       ├── content/           the app's course loader (Vite reads content/ at build time)
+    │       ├── mission-engine/    the app's practice sessions (they call the Rust core)
+    │       ├── components/        lesson-reader, terminal-view, visualizer, quiz, ui …
+    │       ├── stores/            shared stores (snapshot, progress)
+    │       ├── tauri/             typed wrappers around every contract command and event
+    │       └── types/             app-only data shapes (design tokens)
+    ├── src-tauri/
+    │   ├── Cargo.toml  tauri.conf.json
+    │   ├── capabilities/          what the screens are allowed to call
+    │   └── src/
+    │       ├── main.rs            starts the app, registers commands
+    │       ├── commands/          one file per contract command group
+    │       ├── git_runner/        module: git-runner
+    │       ├── repo_inspector/    module: repo-inspector
+    │       └── models/            Rust versions of the shared data shapes
+    ├── scripts/
+    │   ├── design-tokens/         builds src/lib/styles/tokens.css from docs/design/tokens.json
+    │   └── review/                the review driver: plays the built app like a student
+    └── tests/
+        ├── missions/              runs every mission's setup + solution against real Git
+        └── github/                runs every GitHub challenge against a real account
 packages/
-└── course-engine/             no screens, no Tauri: shared by the app and the future website
-    ├── src/content/           module: content (parse and check lessons, paths, reference)
-    ├── src/mission-engine/    module: mission-engine (goal checks)
-    ├── src/types/             shared data shapes
-    ├── src/node/              read content/ from disk (for scripts and tests)
-    └── tests/fixtures/        a sample lesson for tests
-scripts/content/               content checks: content:check, lesson:check, lesson:link
-scripts/design-tokens/         builds src/lib/styles/tokens.css from docs/design/tokens.json
-scripts/review/                the review driver: plays the built app like a student
-tests/missions/                runs every mission's setup + solution against real Git
-tests/github/                  runs every GitHub challenge against a real account
-content/  docs/  vendor/progit2/  (see README)
+└── course-engine/                 no screens, no Tauri: shared by the apps
+    ├── src/content/               module: content (parse and check lessons, paths, reference)
+    ├── src/mission-engine/        module: mission-engine (goal checks)
+    ├── src/types/                 shared data shapes
+    ├── src/node/                  read content/ from disk (for scripts and tests)
+    ├── scripts/                   content checks: content:check, lesson:check, lesson:link
+    └── tests/fixtures/            a sample lesson for tests
+content/  docs/  vendor/progit2/   (see README)
+package.json                       root commands: each one runs in the right project
+pnpm-workspace.yaml                lists apps/* and packages/*
 ```
 
 Code imports the engine by package name, for example `@gitremastered/course-engine/content/load-lessons`.
@@ -350,9 +348,9 @@ Run from the repository root:
 | Type check | `pnpm check` |
 | Lint | `pnpm lint` |
 | Format | `pnpm format` |
-| Rust tests | `cargo test --manifest-path src-tauri/Cargo.toml` |
-| Rust lint | `cargo clippy --manifest-path src-tauri/Cargo.toml -- -D warnings` |
-| Rust format | `cargo fmt --manifest-path src-tauri/Cargo.toml` |
+| Rust tests | `cargo test --manifest-path apps/desktop/src-tauri/Cargo.toml` |
+| Rust lint | `cargo clippy --manifest-path apps/desktop/src-tauri/Cargo.toml -- -D warnings` |
+| Rust format | `cargo fmt --manifest-path apps/desktop/src-tauri/Cargo.toml` |
 | Mission tests | `pnpm test:missions` |
 
 ## 7. Code style
@@ -392,8 +390,8 @@ Naming: `kebab-case` file names (TypeScript, Svelte components in `PascalCase.sv
 | Level | What | Tool | Where |
 |---|---|---|---|
 | Unit | Pure logic: content parsing, goal checks, snapshot parsing | Vitest, `cargo test` | Next to the code |
-| Integration | Rust core against a real temporary Git repo | `cargo test` | `src-tauri/tests/` |
-| Mission | Every mission: setup + reference solution reaches the goal with real Git | Vitest + real Git | `tests/missions/` |
+| Integration | Rust core against a real temporary Git repo | `cargo test` | `apps/desktop/src-tauri/tests/` |
+| Mission | Every mission: setup + reference solution reaches the goal with real Git | Vitest + real Git | `apps/desktop/tests/missions/` |
 | Manual | The pilot lesson played as a student | You | Checkpoint |
 
 A task is done only when all tests, type checks and lints pass.

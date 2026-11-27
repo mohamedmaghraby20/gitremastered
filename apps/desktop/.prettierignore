@@ -14,18 +14,3 @@ skills-lock.json
 # Generated from tokens.json by `pnpm tokens`; its exact text is checked by a test.
 /src/lib/styles/tokens.css
 
-# The course engine formats itself (packages/course-engine has its own Prettier settings).
-/packages/
-
-# Not code: lessons, documents, the Pro Git book, AI tooling and work notes keep their own layout.
-/content/
-/docs/
-/vendor/
-/tasks/
-/study/
-/.claude/
-/.agents/
-/*.md
-
-# Local AI tool settings keep their own layout.
-/.mcp.json

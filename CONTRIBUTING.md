@@ -6,12 +6,11 @@ How to run the desktop app, where things live, and the checks every change must 
 
 | Folder | What it is | Language |
 | --- | --- | --- |
-| `src/` | The screens (SvelteKit, built as static files) | Svelte + TypeScript |
-| `src-tauri/` | The core: window, real shell, Git, files (Tauri) | Rust |
-| `packages/course-engine/` | Course logic with no screens and no Tauri: reads and checks lessons, checks mission goals. Shared with the future website | TypeScript |
+| `apps/desktop/src/` | The screens (SvelteKit, built as static files) | Svelte + TypeScript |
+| `apps/desktop/src-tauri/` | The core: window, real shell, Git, files (Tauri) | Rust |
+| `apps/desktop/scripts/`, `tests/` | Design tokens, the review driver; challenge and GitHub runners (real Git, real GitHub) | TypeScript |
+| `packages/course-engine/` | Course logic with no screens and no Tauri: reads and checks lessons, checks challenge goals, and the content checks. Shared by the apps | TypeScript |
 | `content/` | The lessons, paths, command pages and glossary | Markdown + YAML |
-| `scripts/` | Content checks for lesson writers, design tokens, the review driver | TypeScript |
-| `tests/` | Mission and GitHub challenge runners (real Git, real GitHub) | TypeScript |
 
 Tech stack and folder layout: [`docs/SPEC.md`](docs/SPEC.md). How to write a lesson: [`docs/writing-lessons.md`](docs/writing-lessons.md). Design rules: [`docs/DESIGN.md`](docs/DESIGN.md).
 
@@ -43,14 +42,14 @@ All run from the repository root.
 | Check every lesson file | `pnpm content:check` |
 | Check one lesson while writing it | `pnpm lesson:check <lesson-id>` |
 | Run every mission with real Git | `pnpm test:missions` |
-| Rebuild `src/lib/styles/tokens.css` after editing `docs/design/tokens.json` | `pnpm tokens` |
-| Build the screens only (static files in `build/`) | `pnpm build` |
-| Rust tests | `cargo test --manifest-path src-tauri/Cargo.toml` |
-| Rust lint | `cargo clippy --manifest-path src-tauri/Cargo.toml -- -D warnings` |
-| Rust format | `cargo fmt --manifest-path src-tauri/Cargo.toml` |
+| Rebuild `apps/desktop/src/lib/styles/tokens.css` after editing `docs/design/tokens.json` | `pnpm tokens` |
+| Build the screens only (static files in `apps/desktop/build/`) | `pnpm build` |
+| Rust tests | `cargo test --manifest-path apps/desktop/src-tauri/Cargo.toml` |
+| Rust lint | `cargo clippy --manifest-path apps/desktop/src-tauri/Cargo.toml -- -D warnings` |
+| Rust format | `cargo fmt --manifest-path apps/desktop/src-tauri/Cargo.toml` |
 | Build installers | `pnpm tauri build` |
 
-To run a command in the course engine only: `pnpm --filter @gitremastered/course-engine test`.
+Every root command passes the work to the right project. To run one project only, filter it: `pnpm --filter @gitremastered/course-engine test` or `pnpm --filter @gitremastered/desktop test`.
 
 ## Tests
 
@@ -60,7 +59,7 @@ To run a command in the course engine only: `pnpm --filter @gitremastered/course
 | Svelte component | `Name.svelte.test.ts` next to `Name.svelte` | Headless Chromium (real browser) |
 | Rust | `#[cfg(test)] mod tests` at the bottom of the same file | `cargo test` |
 
-Before the first component test run on a new PC, download the test browser once: `pnpm exec playwright install chromium`.
+Before the first component test run on a new PC, download the test browser once: `pnpm --filter @gitremastered/desktop exec playwright install chromium`.
 
 GitHub runs all of these on every push (`.github/workflows/ci.yml`).
 

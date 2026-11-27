@@ -2,7 +2,7 @@
 
 The pilot lesson (`three-areas`) and the second lesson (`ignoring-files`) played as a student in the real desktop app on Windows, 2026-11-25.
 
-**How:** a release build with its own app identifier (a "review copy", so your own progress and practice folders are untouched), driven by `scripts/review/` through the web view's DevTools port: it clicks, types into the real terminal and reads the screen. Your own run-through as a student is still to come (Checkpoint D).
+**How:** a release build with its own app identifier (a "review copy", so your own progress and practice folders are untouched), driven by `apps/desktop/scripts/review/` through the web view's DevTools port: it clicks, types into the real terminal and reads the screen. Your own run-through as a student is still to come (Checkpoint D).
 
 ## Findings
 

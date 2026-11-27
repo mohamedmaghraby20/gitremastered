@@ -19,22 +19,6 @@ export default defineConfig(
 	includeIgnoreFile(gitignorePath),
 	// Rust output and generated files are not ours to lint.
 	{ ignores: ['src-tauri/target/', 'src-tauri/gen/'] },
-	/**
-	 * Not app code: the course engine lints itself (packages/course-engine/eslint.config.js),
-	 * and the other folders hold content, documents, the book or AI tooling.
-	 */
-	{
-		ignores: [
-			'packages/',
-			'vendor/',
-			'content/',
-			'docs/',
-			'tasks/',
-			'study/',
-			'.claude/',
-			'.agents/'
-		]
-	},
 	js.configs.recommended,
 	ts.configs.recommendedTypeChecked,
 	svelte.configs.recommended,

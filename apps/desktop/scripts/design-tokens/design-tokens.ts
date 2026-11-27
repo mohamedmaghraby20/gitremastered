@@ -16,7 +16,7 @@ export type { DesignTokens };
 
 const generatedFileNotice = `/**
  * tokens.css
- * GENERATED from docs/design/tokens.json by scripts/design-tokens/build-tokens.ts.
+ * GENERATED from docs/design/tokens.json by apps/desktop/scripts/design-tokens/build-tokens.ts.
  * Do not edit by hand: change tokens.json, then run \`pnpm tokens\`.
  *
  * Light values are the default. Dark values apply when <html data-theme="dark">,

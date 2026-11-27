@@ -26,16 +26,16 @@ import type { CommandPage, GlossaryTerm } from '@gitremastered/course-engine/typ
 
 /**
  * Every lesson, path, command page and glossary file, as text, keyed by Vite's relative path
- * (e.g. "../../../content/lessons/three-areas/lesson.md").
+ * (e.g. "../../../../../content/lessons/three-areas/lesson.md").
  */
 const filesByImportPath = import.meta.glob<string>(
 	[
-		'../../../content/lessons/*/*.{md,yaml}',
-		'../../../content/paths/*.yaml',
-		'../../../content/commands/*.md',
-		'../../../content/glossary.yaml',
+		'../../../../../content/lessons/*/*.{md,yaml}',
+		'../../../../../content/paths/*.yaml',
+		'../../../../../content/commands/*.md',
+		'../../../../../content/glossary.yaml',
 		// coverage.md is for course reviewers, not students: it stays out of the app.
-		'!../../../content/lessons/*/coverage.md'
+		'!../../../../../content/lessons/*/coverage.md'
 	],
 	{ query: '?raw', import: 'default', eager: true }
 );

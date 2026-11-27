@@ -10,20 +10,23 @@ GitRemastered turns the Pro Git book into an interactive course. Each lesson giv
 
 The course follows [Pro Git, 2nd edition](https://git-scm.com/book), by Scott Chacon and Ben Straub. Every lesson links to the book section it comes from, so you can always go back to the source. Topics the book doesn't cover come from the official [Git documentation](https://git-scm.com/docs) and [GitHub Docs](https://docs.github.com), and are marked as such.
 
+## Download
+
+To use the app, download the installer for your system from the [Releases page](https://github.com/mohamedmaghraby20/gitremastered/releases). You don't need this repository for that: it holds the source code, for people who want to change or improve the course.
+
 ## What's in this repository
 
 | Folder | What it holds |
 |---|---|
-| `src/`, `src-tauri/` | The desktop app: lesson screens (SvelteKit) and the Rust core (Tauri) |
-| `packages/course-engine/` | Course logic shared by the app and the future website: reads lessons, checks mission goals |
+| `apps/desktop/` | The desktop app: lesson screens (SvelteKit) and the Rust core (Tauri) |
+| `packages/course-engine/` | Course logic the apps share: reads and checks lessons, checks challenge goals |
 | `content/` | The course: lessons, learning paths, reference pages |
-| `scripts/`, `tests/` | Content checks, design tokens, the review driver; mission and GitHub challenge tests |
-| `vendor/progit2/` | The Pro Git source, pinned to one version (a Git submodule) |
 | `docs/` | Spec, design, course map, lesson writing guide, decisions, roadmap |
+| `vendor/progit2/` | The Pro Git source, pinned to one version (a Git submodule) |
 
 How to run and change the app: [CONTRIBUTING.md](CONTRIBUTING.md).
 
-## Get a copy
+## Get the source code
 
 The book is a submodule, so clone with `--recurse-submodules`:
 

@@ -14,7 +14,10 @@
 		"test:watch": "vitest",
 		"check": "tsc --project tsconfig.json",
 		"lint": "prettier --check . && eslint .",
-		"format": "prettier --write ."
+		"format": "prettier --write .",
+		"content:check": "node scripts/check-content.ts",
+		"lesson:check": "node scripts/check-lesson.ts",
+		"lesson:link": "node scripts/link-lessons.ts"
 	},
 	"dependencies": {
 		"marked": "^18.3.0",

@@ -5,9 +5,9 @@
  * The loading itself is the same code the app uses (packages/course-engine/src/content/load-lessons.ts).
  */
 
-import { buildCourseContent } from '@gitremastered/course-engine/content/load-lessons';
-import { ContentError } from '@gitremastered/course-engine/content/content-error';
-import { readContentFiles } from '@gitremastered/course-engine/node/read-content-files';
+import { buildCourseContent } from '../src/content/load-lessons.ts';
+import { ContentError } from '../src/content/content-error.ts';
+import { readContentFiles } from '../src/node/read-content-files.ts';
 
 /**
  * Loads the content and reports the result. Inputs: none. Output: none; sets a failing exit

@@ -4,7 +4,7 @@
   plus a switch for the whole app's theme. Not linked from the app; open it by URL.
 -->
 <script lang="ts">
-	import designTokensJson from '../../../../docs/design/tokens.json';
+	import designTokensJson from '../../../../../../docs/design/tokens.json';
 	import type { DesignTokens } from '$lib/types/design-tokens';
 	import { buildPageTitle } from '$lib/app-info/page-title';
 	import { applyTheme, readAppliedTheme, themeChoices, type ThemeChoice } from '$lib/theme/theme';

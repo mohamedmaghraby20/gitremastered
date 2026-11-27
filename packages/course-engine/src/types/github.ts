@@ -3,7 +3,7 @@
  * What the app knows about GitHub (phase 6, wave B): the student's connection through their
  * own `gh` login, a GitHub challenge's practice repository and teammate steps, and the
  * state of that repository for the goal checks.
- * Mirrors src-tauri/src/models/github.rs and github/teammate.rs.
+ * Mirrors apps/desktop/src-tauri/src/models/github.rs and github/teammate.rs.
  */
 
 /** Whether the app can reach GitHub through the student's `gh` login. */

@@ -8,10 +8,9 @@ GitRemastered is an interactive Git and GitHub course built on the Pro Git book:
 
 | Folder | What it is |
 |---|---|
-| `src/`, `src-tauri/` | The desktop app: screens (Svelte + TypeScript) and core (Rust) |
-| `packages/course-engine/` | Course logic with no screens and no Tauri, shared with the future website |
+| `apps/desktop/` | The desktop app: screens in `src/` (Svelte + TypeScript), core in `src-tauri/` (Rust), its scripts and test runners |
+| `packages/course-engine/` | Course logic with no screens and no Tauri, shared by the apps; also the content checks |
 | `content/` | Lessons, paths, command pages, glossary |
-| `scripts/` | Content checks, design tokens, the review driver (`scripts/content`, `scripts/design-tokens`, `scripts/review`) |
 | `docs/` | Course map, lesson writing guide, design, decisions, roadmap |
 | `vendor/progit2/` | Pro Git source (Git submodule), the source every lesson follows |
 
@@ -44,7 +43,7 @@ Code is written for humans first: someone learning software engineering must be 
 | Step | Who | What |
 |---|---|---|
 | Write lessons | `lesson-writer` agent, or you | Only files under `content/lessons/<id>/` and new command or glossary entries. Never shared files (`content/paths/*.yaml`, other lessons); the main session adds new lessons to the paths and runs the link pass (`pnpm lesson:link`) |
-| Write routine UI | `ui-builder` agent, or you | Screens and components under `src/` |
+| Write routine UI | `ui-builder` agent, or you | Screens and components under `apps/desktop/src/` |
 | Rust, stores, mission engine, visualizer, terminal, course map, design changes | main session | Kept together because they are hard to get right |
 | Check | the check agents (below) | After each phase of work |
 | Commit | main session only | After reviewing the work and explaining it |

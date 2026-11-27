@@ -1,6 +1,6 @@
 # ci.yml: runs every test and code check on GitHub for each push and pull request.
 # Same commands as on your PC (docs/SPEC.md section 6), so "green here" means "green there".
-# Everything runs from the repository root, where the app lives; the course engine is in packages/.
+# Everything runs from the repository root: the desktop app is in apps/desktop, shared code in packages/.
 
 name: CI
 
@@ -42,13 +42,14 @@ jobs:
       - name: Reuse compiled Rust libraries
         uses: Swatinem/rust-cache@v2
         with:
-          workspaces: src-tauri
+          workspaces: apps/desktop/src-tauri
 
       - name: Install JavaScript libraries
         run: pnpm install --frozen-lockfile
 
       # Component tests run in a real headless Chromium.
       - name: Install the test browser
+        working-directory: apps/desktop
         run: pnpm exec playwright install --with-deps chromium
 
       - name: Lint and format check (all projects)
@@ -65,13 +66,13 @@ jobs:
         run: pnpm build
 
       - name: Format check (Rust)
-        run: cargo fmt --manifest-path src-tauri/Cargo.toml --check
+        run: cargo fmt --manifest-path apps/desktop/src-tauri/Cargo.toml --check
 
       - name: Lint (Rust)
-        run: cargo clippy --manifest-path src-tauri/Cargo.toml -- -D warnings
+        run: cargo clippy --manifest-path apps/desktop/src-tauri/Cargo.toml -- -D warnings
 
       - name: Tests (Rust)
-        run: cargo test --manifest-path src-tauri/Cargo.toml
+        run: cargo test --manifest-path apps/desktop/src-tauri/Cargo.toml
 
       # Every lesson's mission, run with real Git: setup + reference solution must reach every goal.
       - name: Mission tests

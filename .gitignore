@@ -11,24 +11,11 @@ study/
 # Personal PDF copy of Pro Git (18 MB). The course reads the text source in vendor/progit2 instead.
 progit.pdf
 
-# --- App: downloaded libraries, build output, local settings ---
+# --- JavaScript ---
 
-# Downloaded JavaScript libraries (pnpm install recreates them), here and in packages/*.
+# Downloaded libraries (pnpm install recreates them), at the root and in every project.
+# Each app adds its own build output rules in its own .gitignore.
 node_modules/
-
-# Build output: the static screens (pnpm build) and SvelteKit's generated files.
-/build
-/.svelte-kit
-/package
-
-# Local secrets and settings. Only the example file is shared.
-.env
-.env.*
-!.env.example
-
-# Temporary files Vite leaves behind while loading its config.
-vite.config.js.timestamp-*
-vite.config.ts.timestamp-*
 
 # --- Factory tools ---
 
