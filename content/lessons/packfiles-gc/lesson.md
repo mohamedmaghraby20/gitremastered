@@ -7,7 +7,7 @@ bookUrl: https://git-scm.com/book/en/v2/Git-Internals-Packfiles
 bookSources:
   - book/progit2/book/10-git-internals/sections/packfiles.asc
   - book/progit2/book/10-git-internals/sections/maintenance.asc
-readFirst: [first-look-inside]
+readFirst: [objects-deep]
 ---
 
 You add one line to a 400-line file and commit, and Git stores the whole file a second time. After a thousand commits that should fill your disk, yet a `.git` folder stays small. This lesson shows the tidy-up that makes it so, how to measure it, and what it does and does not throw away.

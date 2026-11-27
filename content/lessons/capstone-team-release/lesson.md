@@ -169,7 +169,7 @@ One `git rebase -i origin/main` does two jobs at once: it reshapes the commits a
 
 ### Publish a rewritten branch
 
-After a rebase, your branch on GitHub still holds the old commits. A normal push is refused, because it would leave those commits out. From the lesson "Force-pushing safely with --force-with-lease".
+After a rebase, your branch on GitHub still holds the old commits. A normal push is refused, because it would leave those commits out. From the lesson [Force-pushing safely with --force-with-lease](lesson:force-push-safely).
 
 | Command | Job |
 |---|---|
@@ -180,7 +180,7 @@ A [force push](term:force-push) is for your own topic branch only. Never force-p
 
 ### Pull requests from the terminal
 
-From the lesson "Forks, GitHub Flow and pull requests". `gh` is GitHub's command-line tool; it finds the repository through `origin`.
+From the lesson [Forks, GitHub Flow and pull requests](lesson:github-flow-prs). `gh` is GitHub's command-line tool; it finds the repository through `origin`.
 
 | Command | Job |
 |---|---|
@@ -194,7 +194,7 @@ From the lesson "Forks, GitHub Flow and pull requests". `gh` is GitHub's command
 
 ### Three ways to merge a pull request
 
-The last choice of a pull request is its merge method. A team picks one and writes it down. From the lesson "Merge, squash or rebase-merge a pull request".
+The last choice of a pull request is its merge method. A team picks one and writes it down. From the lesson [Merge, squash or rebase-merge a pull request](lesson:pr-merge-strategies).
 
 | | Merge commit (`--merge`) | Squash (`--squash`) | Rebase (`--rebase`) |
 |---|---|---|---|
@@ -378,15 +378,15 @@ The practice team is two people with no safety nets. Here is what a larger team 
 
 ### Rules that GitHub enforces
 
-In these challenges nothing stops you from pushing straight to `main`. Real teams switch on rules: no direct pushes, a required review, a fixed merge method, no force pushes. The lesson "Branch protection, rulesets and CODEOWNERS" sets them up, and "CI with GitHub Actions" adds tests that must pass before the merge button works.
+In these challenges nothing stops you from pushing straight to `main`. Real teams switch on rules: no direct pushes, a required review, a fixed merge method, no force pushes. The lesson [Branch protection, rulesets and CODEOWNERS](lesson:branch-protection-codeowners) sets them up, and [CI with GitHub Actions](lesson:github-actions-ci) adds tests that must pass before the merge button works.
 
 ### The review you skipped
 
-The step between "open" and "merge" is a teammate reading your changes. The lesson "Reviewing a pull request" teaches both sides: how to read a diff and comment on it, and how to answer a review with new commits.
+The step between "open" and "merge" is a teammate reading your changes. The lesson [Reviewing a pull request](lesson:code-review) teaches both sides: how to read a diff and comment on it, and how to answer a review with new commits.
 
 ### When you cannot push at all
 
-On an open-source project you have no push access. You fork, push to your copy and send the pull request from there, which is Pro Git's integration-manager workflow. The lesson "Contributing in real teams: small team, managed team, public fork" and the third capstone practise it.
+On an open-source project you have no push access. You fork, push to your copy and send the pull request from there, which is Pro Git's integration-manager workflow. The lesson [Contributing in real teams: small team, managed team, public fork](lesson:team-contributing) and the third capstone practise it.
 
 ### Releases beyond one tag
 

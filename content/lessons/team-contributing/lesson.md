@@ -6,7 +6,7 @@ bookSection: "5.2 Contributing to a Project"
 bookUrl: https://git-scm.com/book/en/v2/Distributed-Git-Contributing-to-a-Project
 bookSources:
   - book/progit2/book/05-distributed-git/sections/contributing.asc
-readFirst: [integrating-work]
+readFirst: [github-flow-prs]
 ---
 
 On your first team, your push to `main` is rejected because a teammate was faster. On your second, you are not allowed to push to `main` at all. And the open-source project whose typo you want to fix lets you push nothing. These are three different setups, and each has its own short routine: this lesson walks you through all three, so you know what to type whichever one you land in.
@@ -224,7 +224,7 @@ $ git push -u origin featureB:featureBee
 
 The part with the colon reads `<my branch>:<the server's branch>`. It is a [refspec](term:refspec), and the lesson [Refspecs](lesson:refspecs) takes it apart. You need it only when the two names differ.
 
-**Tell the integrators.** When a feature is ready, the group tells the integrators which branch to merge. In the book that is an email. Today it is almost always a [pull request](term:pull-request): a page on GitHub that says "please merge this branch into `main`", where the team reviews the change first. The lesson "Forks, GitHub Flow and pull requests" teaches it. After the integrators merge, your next `git fetch origin` brings the merge down and `origin/main` contains your feature.
+**Tell the integrators.** When a feature is ready, the group tells the integrators which branch to merge. In the book that is an email. Today it is almost always a [pull request](term:pull-request): a page on GitHub that says "please merge this branch into `main`", where the team reviews the change first. The lesson [Forks, GitHub Flow and pull requests](lesson:github-flow-prs) teaches it. After the integrators merge, your next `git fetch origin` brings the merge down and `origin/main` contains your feature.
 
 :::try-it
 1. Run `git fetch origin`, then `git switch -c try-dessert origin/main`. Git says the new branch is "set up to track 'origin/main'". In the picture, a `branch try-dessert` tag appears on the station that carries `remote origin/main`.

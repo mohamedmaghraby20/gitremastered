@@ -212,7 +212,7 @@ A conflict in a rebase or a cherry-pick is resolved like a conflict in a merge. 
 
 ### Rules the repository enforces
 
-In this module the rules ("every pull request gets a review", "squash only") were agreements. The GitHub lessons later in the course turn them into settings: required reviews and required checks in "Branch protection, rulesets and CODEOWNERS", and tests that run on every pull request in "CI with GitHub Actions".
+In this module the rules ("every pull request gets a review", "squash only") were agreements. The GitHub lessons later in the course turn them into settings: required reviews and required checks in [Branch protection, rulesets and CODEOWNERS](lesson:branch-protection-codeowners), and tests that run on every pull request in [CI with GitHub Actions](lesson:github-actions-ci).
 
 ### The whole thing, end to end
 

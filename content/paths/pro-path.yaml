@@ -15,16 +15,19 @@ modules:
     lessons: [branches-are-pointers, switch-and-detached-head, branch-and-merge, branch-management, stash-and-clean, checkpoint-branching]
   - id: remotes
     title: Remotes
-    lessons: [how-git-talks, remotes, remote-branches, refspecs, tags-and-releases, checkpoint-remotes]
+    lessons: [github-account-ssh, how-git-talks, remotes, remote-branches, refspecs, tags-and-releases, checkpoint-remotes]
   - id: working-in-a-team
     title: Working in a team
-    lessons: [team-workflows, commit-craft, rebasing, integrating-work]
+    lessons: [team-workflows, commit-craft, github-flow-prs, code-review, team-contributing, rebasing, pr-merge-strategies, integrating-work, checkpoint-working-in-a-team]
   - id: history-mastery
     title: History mastery
-    lessons: [revision-selection, clean-up-history, partial-staging, search-blame-bisect, advanced-merging, checkpoint-history-mastery]
+    lessons: [revision-selection, clean-up-history, force-push-safely, partial-staging, search-blame-bisect, advanced-merging, checkpoint-history-mastery]
   - id: recovery
     title: Recovery and incidents
     lessons: [rescue-lost-work, incident-playbook, remove-sensitive-data, checkpoint-recovery]
+  - id: professional-github
+    title: Professional GitHub
+    lessons: [maintaining-github-repo, orgs-teams-permissions, branch-protection-codeowners, github-actions-ci, gh-cli-and-api, issues-projects-security, checkpoint-professional-github]
   - id: make-git-yours
     title: Make Git yours
     lessons: [config-pro, git-in-your-tools, hooks, attributes, signing, checkpoint-make-git-yours]
@@ -34,3 +37,6 @@ modules:
   - id: under-the-hood
     title: Under the hood
     lessons: [objects-deep, refs-deep, packfiles-gc, plumbing-toolkit, checkpoint-under-the-hood]
+  - id: capstones
+    title: Capstones
+    lessons: [capstone-solo-rescue, capstone-team-release, capstone-open-source]

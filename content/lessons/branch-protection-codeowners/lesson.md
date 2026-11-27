@@ -6,7 +6,7 @@ bookSection: "6.3 Maintaining a Project"
 bookUrl: https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/about-rulesets
 bookSources:
   - book/progit2/book/06-github/sections/3-maintaining.asc
-readFirst: []
+readFirst: [maintaining-github-repo]
 ---
 
 It is Friday evening, a teammate force-pushes to `main` by mistake, and three commits the whole team built on are gone from the server. Nothing stopped them, because the team's rule "we never do that" lived only in people's heads. This lesson moves such rules onto GitHub, where the server enforces them: protected branches, rulesets, and a CODEOWNERS file that asks the right people to review.
@@ -25,7 +25,7 @@ The lesson "Run a repository" showed the maintainer's side of GitHub: you give p
 | The branch is deleted | Open pull requests lose their target; the default branch is gone | Block deletion |
 | An unreviewed commit pushed straight to `main` | Broken code reaches everyone at once | Require a pull request |
 
-A reminder in two lines: a pull request is a request on GitHub to merge one branch into another, with a page where the team can read the change and discuss it. The lesson "Forks, GitHub Flow and pull requests" teaches it in full.
+A reminder in two lines: a pull request is a request on GitHub to merge one branch into another, with a page where the team can read the change and discuss it. The lesson [Forks, GitHub Flow and pull requests](lesson:github-flow-prs) teaches it in full.
 
 A rule on the server is better than a promise, because the server checks every push, from every person, every time.
 
@@ -207,7 +207,7 @@ X Pull request your-name/gitremastered-practice-branch-protection-codeowners#4 i
 On a team, a teammate approves and the merge opens up. In a repository you run alone, keep the count at `0`, as the challenges here do.
 :::
 
-**Status checks.** A [status check](term:status-check) is a verdict, pass or fail, that an automated tool attaches to a commit; the usual one is "the tests ran". With this rule, the merge button stays locked until the checks you name have passed. The lesson "CI with GitHub Actions" builds such a check.
+**Status checks.** A [status check](term:status-check) is a verdict, pass or fail, that an automated tool attaches to a commit; the usual one is "the tests ran". With this rule, the merge button stays locked until the checks you name have passed. The lesson [CI with GitHub Actions](lesson:github-actions-ci) builds such a check.
 
 **Signed commits.** The lesson [Sign commits and tags](lesson:signing) showed how to sign. This rule makes it compulsory: an unsigned commit is refused like any other violation.
 
@@ -256,7 +256,7 @@ A rule can demand a review. It cannot know who understands the payment code. The
 | `*.md` | Every file whose name ends in `.md`, in any folder |
 | `/docs/` | The `docs` folder at the top of the repository and everything inside it. Without the leading `/`, a `docs` folder anywhere would match |
 | `@maya-k` | A person, by GitHub user name |
-| `@cafe/writers` | A team: `@organization/team-name`. Teams exist only inside an organization (the lesson "Organizations, teams and permissions" explains them), so a personal repository can name people only |
+| `@cafe/writers` | A team: `@organization/team-name`. Teams exist only inside an organization (the lesson [Organizations, teams and permissions](lesson:orgs-teams-permissions) explains them), so a personal repository can name people only |
 
 The patterns follow most of the `.gitignore` rules, with a few gaps: `!` to exclude and `[a-z]` ranges do not work here. Paths are case sensitive.
 

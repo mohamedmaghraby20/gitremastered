@@ -7,7 +7,7 @@ bookUrl: https://git-scm.com/book/en/v2/Git-Tools-Rewriting-History
 bookSources:
   - book/progit2/book/07-git-tools/sections/rewriting-history.asc
   - book/progit2/book/10-git-internals/sections/maintenance.asc
-readFirst: [reset-demystified]
+readFirst: [rescue-lost-work]
 ---
 
 A password went into a commit, or a 2 GB video did. You delete the file and commit again, and it is still there: every older commit keeps its copy, and everyone who downloads the project gets it. This lesson shows what to do in the first five minutes, and how to take a file out of every commit for real.
@@ -329,7 +329,7 @@ You cannot remove the last two yourself. You contact GitHub Support, who delete 
 - **Stage by name.** `git add .` takes everything in the folder, which is how most secrets get in. `git add payment.js` takes what you chose.
 - **Read before you commit.** `git status` shows which files are staged; `git diff --staged` shows their content.
 - **Keep secrets out of the code.** Programs read them from the environment or from a secret manager, not from a tracked file.
-- **Turn on push protection on GitHub.** It checks each push for known kinds of keys and refuses the push when it finds one. A later GitHub lesson, "Issues, projects, Dependabot and secret scanning", sets it up.
+- **Turn on push protection on GitHub.** It checks each push for known kinds of keys and refuses the push when it finds one. A later GitHub lesson, [Issues, projects, Dependabot and secret scanning](lesson:issues-projects-security), sets it up.
 
 ### When it goes wrong
 

@@ -6,7 +6,7 @@ bookSection: "GitHub Docs: Quickstart for GitHub Actions"
 bookUrl: https://docs.github.com/en/actions/writing-workflows/quickstart
 bookSources:
   - book/progit2/book/06-github/sections/5-scripting.asc
-readFirst: [hooks]
+readFirst: [github-flow-prs]
 ---
 
 A teammate pushes late on Friday. On Monday the project does not start, and nobody knows which of the weekend's twelve commits broke it, because nobody ran the tests. GitHub can run them for you on every push and every pull request, and this lesson shows how to set that up, read the result and fix a failed run.

@@ -6,7 +6,7 @@ bookSection: "2.5 Working with Remotes"
 bookUrl: https://git-scm.com/book/en/v2/Git-Basics-Working-with-Remotes
 bookSources:
   - book/progit2/book/02-git-basics/sections/remotes.asc
-readFirst: [start-a-repo, how-git-talks]
+readFirst: [start-a-repo, github-account-ssh]
 ---
 
 Your teammate finished a feature an hour ago, and your copy of the project still does not have it. Your own commits from this morning exist only on your laptop. This lesson teaches the three commands that move commits between your repository and the team's server: `git fetch`, `git pull` and `git push`.
@@ -461,7 +461,7 @@ $ git merge upstream/main
 $ git push origin main
 ```
 
-Each remote gets its own remote-tracking branches: `origin/main` and `upstream/main` are two separate records. The lesson "Forks, GitHub Flow and pull requests" uses this setup.
+Each remote gets its own remote-tracking branches: `origin/main` and `upstream/main` are two separate records. The lesson [Forks, GitHub Flow and pull requests](lesson:github-flow-prs) uses this setup.
 
 ### Change a remote's address
 

@@ -7,7 +7,7 @@ bookUrl: https://git-scm.com/book/en/v2/Git-Tools-Advanced-Merging#_undoing_merg
 bookSources:
   - book/progit2/book/07-git-tools/sections/reset.asc
   - book/progit2/book/07-git-tools/sections/advanced-merging.asc
-readFirst: [reset-demystified]
+readFirst: [rescue-lost-work]
 ---
 
 Three commits went to the wrong branch, a rebase swallowed half your work, or a merge landed that nobody wanted, and your stomach drops. This lesson is a calm playbook: the same first steps for every Git accident, then a short recipe for each of the common ones.

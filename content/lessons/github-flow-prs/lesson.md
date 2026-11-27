@@ -24,7 +24,7 @@ The practice project is the website of a small cafe: a `README.md` and a `menu.t
 You will use two programs side by side:
 
 - `git`, as always, for commits, branches and pushes.
-- `gh`, the [GitHub CLI](term:github-cli): GitHub's own command-line program. It does from the terminal what you would otherwise click on the website: open a pull request, list them, merge one. Pro Git recommends it as the alternative to the web pages. You signed it in with `gh auth login` in the lesson "GitHub account, SSH keys, credentials".
+- `gh`, the [GitHub CLI](term:github-cli): GitHub's own command-line program. It does from the terminal what you would otherwise click on the website: open a pull request, list them, merge one. Pro Git recommends it as the alternative to the web pages. You signed it in with `gh auth login` in the lesson [GitHub account, SSH keys, credentials](lesson:github-account-ssh).
 
 In the output below, `your-name` stands for your GitHub user name. Your commit IDs will differ, and so may the pull request numbers: GitHub keeps counting when the practice repository is used again.
 
@@ -171,7 +171,7 @@ Open • your-name wants to merge 1 commit into main from try-footer • less th
 View this pull request on GitHub: https://github.com/your-name/gitremastered-practice-github-flow-prs/pull/1
 ```
 
-Read it line by line: the title and number; the state (`Open`) and the sentence "wants to merge 1 commit into main from try-footer", which names the base and the head; then `+1 -0`, one line added and none removed. "No checks" means no automatic tests ran. The lesson "CI with GitHub Actions" adds them.
+Read it line by line: the title and number; the state (`Open`) and the sentence "wants to merge 1 commit into main from try-footer", which names the base and the head; then `+1 -0`, one line added and none removed. "No checks" means no automatic tests ran. The lesson [CI with GitHub Actions](lesson:github-actions-ci) adds them.
 
 The page in the browser has the same facts, spread over tabs:
 
@@ -251,7 +251,7 @@ Adds the address line for the bottom of every page.
 Fixes #2
 ```
 
-`Closes #2` and `Resolves #2` do the same. This works when the pull request goes into the repository's default branch. The lesson "Issues, projects, Dependabot and secret scanning" covers issues in full.
+`Closes #2` and `Resolves #2` do the same. This works when the pull request goes into the repository's default branch. The lesson [Issues, projects, Dependabot and secret scanning](lesson:issues-projects-security) covers issues in full.
 
 ### Markdown in a pull request, in short
 
@@ -391,7 +391,7 @@ head: main
 :::
 
 :::careful
-In the practice repository you merge your own pull request, because you own the repository and are alone in it. On a team, the point of the pull request is that **someone else** reads it first. Wait for the review, even where GitHub lets you press the button. The lesson "Reviewing a pull request" teaches the reviewer's side.
+In the practice repository you merge your own pull request, because you own the repository and are alone in it. On a team, the point of the pull request is that **someone else** reads it first. Wait for the review, even where GitHub lets you press the button. The lesson [Reviewing a pull request](lesson:code-review) teaches the reviewer's side.
 :::
 
 ### The `gh pr` commands at a glance
@@ -542,7 +542,7 @@ book: "`git checkout master` and `git pull https://github.com/progit/progit2.git
 
 ### Update by rebasing
 
-You can bring a branch up to date by rebasing it on `main` in place of merging `main` into it. The history is tidier, with no merge commit. Pro Git's view: it is harder and more error-prone, and the final merge is what matters. If you do rebase, the book advises against force-pushing over a branch with an open pull request that others may have fetched: push the rebased work as a new branch, open a new pull request that mentions the old number, and close the old one. The lessons "Rebasing, and when not to" and "Force-pushing safely with --force-with-lease" cover both tools.
+You can bring a branch up to date by rebasing it on `main` in place of merging `main` into it. The history is tidier, with no merge commit. Pro Git's view: it is harder and more error-prone, and the final merge is what matters. If you do rebase, the book advises against force-pushing over a branch with an open pull request that others may have fetched: push the rebased work as a new branch, open a new pull request that mentions the old number, and close the old one. The lessons [Rebasing, and when not to](lesson:rebasing) and [Force-pushing safely with --force-with-lease](lesson:force-push-safely) cover both tools.
 
 ### Update from GitHub
 

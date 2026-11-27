@@ -7,7 +7,7 @@ bookUrl: https://git-scm.com/book/en/v2/Customizing-Git-Git-Attributes
 bookSources:
   - book/progit2/book/08-customizing-git/sections/attributes.asc
   - book/progit2/book/08-customizing-git/sections/config.asc
-readFirst: [ignoring-files]
+readFirst: [config-pro]
 ---
 
 A teammate on Windows fixes one typo, and the diff says all 300 lines of the file changed. Or Git tries to merge a file that only a machine can read, and leaves it broken. A `.gitattributes` file tells Git how to treat each kind of file, so the whole team gets the same, sane behavior.

@@ -1,0 +1,40 @@
+questions:
+  - question: "A ruleset on main has one rule, pull_request. You are the repository's admin, the bypass list is empty, and you run git push origin main with one new commit. What happens?"
+    answers:
+      - text: "The push goes through, because an admin may always push"
+        explanation: "A ruleset binds admins too. Only a role, team or app on the ruleset's bypass list may break its rules, and here the list is empty."
+      - text: "GitHub refuses it with GH013 and [remote rejected]; the commit stays safe on your computer and can go in from a new branch through a pull request"
+        correct: true
+        explanation: "The server checks the rule during the push. A branch is a pointer, so git switch -c makes a branch on the same commit, and that branch can be pushed, opened as a pull request and merged."
+      - text: "Git refuses it with [rejected], and git pull fixes it"
+        explanation: "Plain [rejected] is Git's own check for being behind. [remote rejected] means the server said no for a reason of its own, and pulling does not change that."
+
+  - question: "Your branch adds a new workflow file with on: pull_request, and main has no workflow at all. You push the branch and open a pull request into main. Does the workflow run?"
+    answers:
+      - text: "Yes: for a pull request, GitHub reads the workflow file from the trial merge of your branch into main, so the branch's own file is used"
+        correct: true
+        explanation: "A pull request that adds or changes a workflow is tested with its own version of it. That is how a team can bring CI in through a pull request."
+      - text: "No: a workflow must be on the default branch before it can run for anything"
+        explanation: "That holds for templates, CODEOWNERS and dependabot.yml, which GitHub reads from the default branch. A pull_request workflow is read from the pull request's trial merge."
+      - text: "Only after someone approves the pull request"
+        explanation: "A run starts when the pull request is opened and again on each new push to its branch. Approval plays no part in starting it."
+
+  - question: "You commit a fix on a branch with the message \"Fixes #14\" and push the branch. The pull request is still open. Is issue 14 closed?"
+    answers:
+      - text: "Yes, GitHub closes the issue as soon as it sees the keyword in a pushed commit"
+        explanation: "The keyword alone is not enough. The commit must reach the default branch on GitHub, and this one is only on a topic branch."
+      - text: "No, a closing keyword only works in a pull request's description"
+        explanation: "The keywords work in commit messages and in pull request descriptions alike. What matters is where the change has arrived."
+      - text: "Not yet: it closes when the commit reaches the default branch, here when the pull request is merged"
+        correct: true
+        explanation: "Until the merge, the issue stays open and its page links to your commit. After the merge the commit is on the default branch, and GitHub closes the issue."
+
+  - question: "A script counts the open issues with gh api \"repos/{owner}/{repo}/issues\" --jq length and prints 30. The repository has 52 open issues and 6 open pull requests. Which two facts explain the wrong number?"
+    answers:
+      - text: "The API answers in pages of 30 items, and the REST list of issues also holds pull requests"
+        correct: true
+        explanation: "One request gets one page, so the count stops at 30; --paginate fetches the rest. Even then the list would hold the 6 pull requests. gh issue list leaves them out."
+      - text: "The token has no permission to read the other issues, and closed issues are counted too"
+        explanation: "A token without access gets an error, not a shorter list, and this endpoint lists open issues unless you ask for more."
+      - text: "gh fills in {owner} and {repo} with the wrong repository, and --jq length counts the fields of one issue"
+        explanation: "gh takes both names from the origin remote of the folder you are in, and on a list, length counts the items."

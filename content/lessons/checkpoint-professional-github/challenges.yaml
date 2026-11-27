@@ -1,0 +1,204 @@
+challenges:
+  - id: guide-and-next-job
+    title: Answer an issue with a commit, then note the next job
+    level: easy
+    brief: "You run the recipe box on GitHub. Salma opened an issue: \"Contributing guide is missing\". Add a CONTRIBUTING.md that tells contributors to run sh check.sh before they open a pull request, and let your commit close her issue when it reaches main on GitHub (do not close it by hand). While you are there, you notice the project has no license. Nobody has time today, so open an issue titled \"Add a license\" with the label documentation."
+    github:
+      repo: gitremastered-practice-checkpoint-professional-github
+      teammate:
+        - action: create-issue
+          title: "Contributing guide is missing"
+          body: "New contributors do not know that sh check.sh must pass before a pull request. Please add a CONTRIBUTING.md."
+          labels: [documentation]
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - git config pull.rebase false
+      - echo "# Recipe box" > README.md
+      - echo "Quick recipes from the neighbourhood. One line per recipe, with its cooking time." >> README.md
+      - echo "Pancakes (20 min)" > recipes.txt
+      - echo "Fried rice (15 min)" >> recipes.txt
+      - echo 'if grep -v "min)$" recipes.txt; then echo "FAIL. These recipes have no cooking time."; exit 1; fi' > check.sh
+      - echo 'echo "OK. Every recipe has a cooking time."' >> check.sh
+      - git add README.md recipes.txt check.sh
+      - git commit -q -m "Add README, two recipes and the check"
+      - git remote add origin "$PRACTICE_GITHUB_URL"
+      - git push -q --force --mirror origin
+      - git fetch -q origin
+      - git branch -q --set-upstream-to=origin/main main
+    goal:
+      - check: committed-file-contains
+        file: CONTRIBUTING.md
+        text: "check.sh"
+        label: "CONTRIBUTING.md is in your latest commit and names the check, check.sh"
+      - check: branch-is-in-sync
+        branch: main
+        label: "main is pushed: level with origin/main"
+      - check: github-issue-is-closed
+        title: "Contributing guide is missing"
+        label: "Salma's issue \"Contributing guide is missing\" is closed on GitHub"
+      - check: github-issue-is-open
+        title: "Add a license"
+        label: "An issue titled \"Add a license\" is open on GitHub"
+      - check: github-issue-has-label
+        title: "Add a license"
+        labelName: documentation
+        label: "The new issue has the label documentation"
+    solution:
+      - echo "Run sh check.sh before you open a pull request." > CONTRIBUTING.md
+      - git add CONTRIBUTING.md
+      - "git commit -q -m \"Add a contributing guide\" -m \"Fixes #$(gh issue list --json number,title --jq '.[] | select(.title == \"Contributing guide is missing\") | .number')\""
+      - git push -q
+      - gh issue create --title "Add a license" --body "The project has no LICENSE file, so nobody is allowed to reuse the recipes." --label documentation
+
+  - id: ready-for-the-team
+    title: Get the repository ready for a team
+    level: medium
+    brief: "Next week the recipe box moves into the company's organization, octo-org, and the team named cooks takes over the recipes. Three things must be in place first. One: GitHub runs sh check.sh on every push, from a workflow named exactly Recipe checks in the file .github/workflows/recipe-checks.yml. Two: a .github/CODEOWNERS file names the cooks team, with a team mention, as the owner of recipes.txt. Three: nobody can delete main or force-push to it. The file ruleset.json in your project is a ruleset with no rules yet: add the two rules, then create the ruleset on GitHub with gh api. Commit the two new files on main and push; the run of Recipe checks must succeed."
+    github:
+      repo: gitremastered-practice-checkpoint-professional-github
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - git config pull.rebase false
+      - echo "# Recipe box" > README.md
+      - echo "Quick recipes from the neighbourhood. One line per recipe, with its cooking time." >> README.md
+      - echo "Pancakes (20 min)" > recipes.txt
+      - echo "Fried rice (15 min)" >> recipes.txt
+      - echo 'if grep -v "min)$" recipes.txt; then echo "FAIL. These recipes have no cooking time."; exit 1; fi' > check.sh
+      - echo 'echo "OK. Every recipe has a cooking time."' >> check.sh
+      - echo "Run sh check.sh before you open a pull request." > CONTRIBUTING.md
+      - git add README.md recipes.txt check.sh CONTRIBUTING.md
+      - git commit -q -m "Add README, two recipes and the check"
+      - git remote add origin "$PRACTICE_GITHUB_URL"
+      - git push -q --force --mirror origin
+      - git fetch -q origin
+      - git branch -q --set-upstream-to=origin/main main
+      - echo ruleset.json >> .git/info/exclude
+      - >-
+        printf '%s\n' '{' '  "name": "protect-main",' '  "target": "branch",' '  "enforcement": "active",' '  "conditions": {"ref_name": {"include": ["~DEFAULT_BRANCH"], "exclude": []}},' '  "rules": []' '}' > ruleset.json
+    goal:
+      - check: committed-file-contains
+        file: .github/workflows/recipe-checks.yml
+        text: "sh check.sh"
+        label: "The workflow file is committed and runs sh check.sh"
+      - check: committed-file-contains
+        file: .github/CODEOWNERS
+        text: "recipes.txt"
+        label: "The committed CODEOWNERS file has a line for recipes.txt"
+      - check: committed-file-contains
+        file: .github/CODEOWNERS
+        text: "@octo-org/cooks"
+        label: "The line names the cooks team with a team mention"
+      - check: branch-is-in-sync
+        branch: main
+        label: "main is pushed: level with origin/main"
+      - check: github-workflow-succeeded
+        workflow: Recipe checks
+        label: "On GitHub, a run of the workflow named Recipe checks succeeded"
+      - check: github-default-branch-has-rule
+        rule: deletion
+        label: "On GitHub, main cannot be deleted"
+      - check: github-default-branch-has-rule
+        rule: non_fast_forward
+        label: "On GitHub, nobody can force-push to main"
+    solution:
+      - mkdir -p .github/workflows
+      - |-
+        printf '%s\n' 'name: Recipe checks' 'on: push' 'jobs:' '  test:' '    runs-on: ubuntu-latest' '    steps:' '      - uses: actions/checkout@v7' '      - run: sh check.sh' > .github/workflows/recipe-checks.yml
+      - echo "recipes.txt @octo-org/cooks" > .github/CODEOWNERS
+      - git add .github
+      - git commit -q -m "Add the Recipe checks workflow and code owners"
+      - git push -q
+      - >-
+        printf '%s\n' '{"name": "protect-main", "target": "branch", "enforcement": "active", "conditions": {"ref_name": {"include": ["~DEFAULT_BRANCH"], "exclude": []}}, "rules": [{"type": "deletion"}, {"type": "non_fast_forward"}]}' > ruleset.json
+      - gh api -X POST repos/{owner}/{repo}/rulesets --input ruleset.json --silent
+
+  - id: fix-through-the-gate
+    title: Lock main, then bring a fix in through the gate
+    level: hard
+    brief: "The recipe box has a bug, and Yusuf reported it in the issue \"Fried rice has no cooking time\": sh check.sh fails on main. The team also decided that from today main changes only through pull requests that were tested. Do it in this order. First create a ruleset on GitHub from ruleset.json, after you added two rules to it: main requires a pull request, and main cannot be deleted. Then, on a branch named fix-fried-rice, give the fried rice its time so the line reads \"Fried rice (15 min)\", and add a workflow named exactly PR gate, in .github/workflows/pr-gate.yml, that runs sh check.sh on every pull request. Open a pull request from fix-fried-rice into main whose description closes Yusuf's issue, wait until its check passes, and merge it. Finish on main, level with origin/main. Do not close the issue by hand."
+    github:
+      repo: gitremastered-practice-checkpoint-professional-github
+      teammate:
+        - action: create-issue
+          title: "Fried rice has no cooking time"
+          body: "sh check.sh fails on main. The fried rice takes 15 minutes."
+          labels: [bug]
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - git config pull.rebase false
+      - echo "# Recipe box" > README.md
+      - echo "Quick recipes from the neighbourhood. One line per recipe, with its cooking time." >> README.md
+      - echo "Pancakes (20 min)" > recipes.txt
+      - echo "Fried rice" >> recipes.txt
+      - echo "Lentil soup (35 min)" >> recipes.txt
+      - echo 'if grep -v "min)$" recipes.txt; then echo "FAIL. These recipes have no cooking time."; exit 1; fi' > check.sh
+      - echo 'echo "OK. Every recipe has a cooking time."' >> check.sh
+      - echo "Run sh check.sh before you open a pull request." > CONTRIBUTING.md
+      - git add README.md recipes.txt check.sh CONTRIBUTING.md
+      - git commit -q -m "Add README, three recipes and the check"
+      - git remote add origin "$PRACTICE_GITHUB_URL"
+      - git push -q --force --mirror origin
+      - git fetch -q origin
+      - git branch -q --set-upstream-to=origin/main main
+      - echo ruleset.json >> .git/info/exclude
+      - >-
+        printf '%s\n' '{' '  "name": "protect-main",' '  "target": "branch",' '  "enforcement": "active",' '  "conditions": {"ref_name": {"include": ["~DEFAULT_BRANCH"], "exclude": []}},' '  "rules": []' '}' > ruleset.json
+    goal:
+      - check: github-default-branch-has-rule
+        rule: pull_request
+        label: "On GitHub, main requires a pull request"
+      - check: github-default-branch-has-rule
+        rule: deletion
+        label: "On GitHub, main cannot be deleted"
+      - check: github-workflow-succeeded
+        workflow: PR gate
+        label: "On GitHub, a run of the workflow named PR gate succeeded"
+      - check: github-pull-request-is-merged
+        head: fix-fried-rice
+        label: "The pull request from fix-fried-rice is merged"
+      - check: github-issue-is-closed
+        title: "Fried rice has no cooking time"
+        label: "Yusuf's issue \"Fried rice has no cooking time\" is closed on GitHub"
+      - check: head-is-on-branch
+        branch: main
+        label: "You are on main"
+      - check: committed-file-contains
+        file: recipes.txt
+        text: "Fried rice (15 min)"
+        label: "Your main's recipes.txt gives the fried rice its time"
+      - check: committed-file-contains
+        file: .github/workflows/pr-gate.yml
+        text: "pull_request"
+        label: "Your main has the workflow, and it runs on pull_request"
+      - check: branch-is-in-sync
+        branch: main
+        label: "main is level with origin/main"
+    solution:
+      - >-
+        printf '%s\n' '{"name": "protect-main", "target": "branch", "enforcement": "active", "conditions": {"ref_name": {"include": ["~DEFAULT_BRANCH"], "exclude": []}}, "rules": [{"type": "deletion"}, {"type": "pull_request"}]}' > ruleset.json
+      - gh api -X POST repos/{owner}/{repo}/rulesets --input ruleset.json --silent
+      - git switch -q -c fix-fried-rice
+      - sed -i -e 's/^Fried rice$/Fried rice (15 min)/' recipes.txt
+      - sh check.sh
+      - mkdir -p .github/workflows
+      - |-
+        printf '%s\n' 'name: PR gate' 'on: pull_request' 'jobs:' '  test:' '    runs-on: ubuntu-latest' '    steps:' '      - uses: actions/checkout@v7' '      - run: sh check.sh' > .github/workflows/pr-gate.yml
+      - git add recipes.txt .github/workflows/pr-gate.yml
+      - git commit -q -m "Give the fried rice its cooking time and add the PR gate"
+      - git push -q -u origin fix-fried-rice
+      - "gh pr create --base main --head fix-fried-rice --title \"Give the fried rice its cooking time\" --body \"Closes #$(gh issue list --json number,title --jq '.[] | select(.title == \"Fried rice has no cooking time\") | .number')\""
+      # GitHub needs a moment before the check shows up (a person types slower than this script):
+      - sleep 15
+      - for attempt in 1 2 3 4 5 6; do gh pr checks fix-fried-rice --watch && break; sleep 10; done
+      - gh pr merge fix-fried-rice --merge
+      - git switch -q main
+      - git pull -q

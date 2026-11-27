@@ -6,7 +6,7 @@ bookSection: "6.5 Scripting GitHub"
 bookUrl: https://git-scm.com/book/en/v2/GitHub-Scripting-GitHub
 bookSources:
   - book/progit2/book/06-github/sections/5-scripting.asc
-readFirst: []
+readFirst: [maintaining-github-repo]
 ---
 
 Forty issues need the same label, and the website wants three clicks for each one. Everything you can click on GitHub you can also type, and what you can type you can put in a script. This lesson teaches the `gh` program for daily work, `gh api` for everything else, and webhooks, GitHub's way of telling your own programs that something happened.

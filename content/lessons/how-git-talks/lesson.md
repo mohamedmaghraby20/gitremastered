@@ -61,7 +61,7 @@ You now know where this practice server is. A real one is on the internet, and i
 
 **SSH.** You create a key pair once: a private key that stays on your computer and a public key that you give to the server. After that Git signs in by itself, with no prompts. Some networks block SSH, and it has no anonymous access: without a key the server refuses even to let you read.
 
-Which one a team picks is mostly taste. HTTPS is quicker to start with. SSH is less trouble once it is set up. Both transfer exactly the same data, and you can switch a repository from one to the other at any time (the Advanced layer shows how). The lesson "GitHub account, SSH keys, credentials" sets both up for real.
+Which one a team picks is mostly taste. HTTPS is quicker to start with. SSH is less trouble once it is set up. Both transfer exactly the same data, and you can switch a repository from one to the other at any time (the Advanced layer shows how). The lesson [GitHub account, SSH keys, credentials](lesson:github-account-ssh) sets both up for real.
 
 ### Git sends commits, not files
 

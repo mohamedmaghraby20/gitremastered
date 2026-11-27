@@ -7,7 +7,7 @@ bookUrl: https://git-scm.com/book/en/v2/Git-Internals-Environment-Variables
 bookSources:
   - book/progit2/book/10-git-internals/sections/environment.asc
   - book/progit2/book/07-git-tools/sections/replace.asc
-readFirst: [first-look-inside]
+readFirst: [refs-deep]
 ---
 
 A script has to commit as "Release Bot" without touching your settings, a push fails and Git will not say why, and half of a project's history sits on another branch. This lesson gives you the switches for all three: variables that change how one Git command behaves, and `git replace`, which changes what the history looks like without rewriting a single commit.

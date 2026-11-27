@@ -6,14 +6,14 @@ bookSection: "GitHub Docs: About merge methods on GitHub"
 bookUrl: https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/configuring-pull-request-merges/about-merge-methods-on-github
 bookSources:
   - book/progit2/book/03-git-branching/sections/rebasing.asc
-readFirst: [rebasing]
+readFirst: [rebasing, github-flow-prs]
 ---
 
 Your pull request is approved, and the green button on GitHub turns out to be three buttons. Each one leaves a different history on `main`, and two of them make Git tell you afterwards that your finished branch was never merged. This lesson shows what each button does, how to choose, and how to clean up after each one.
 
 ## Must know
 
-In [Rebasing, and when not to](lesson:rebasing) you met the two ways Git brings one branch into another: a merge and a rebase. On GitHub you rarely run either by hand on `main`. You open a [pull request](term:pull-request): a page on GitHub where you ask the team to bring your branch into `main`, and where they review it first. (The lesson "Forks, GitHub Flow and pull requests" teaches pull requests in full.) When the review is done, somebody presses a button, and GitHub does the merge on its own servers. The question of this lesson is which button.
+In [Rebasing, and when not to](lesson:rebasing) you met the two ways Git brings one branch into another: a merge and a rebase. On GitHub you rarely run either by hand on `main`. You open a [pull request](term:pull-request): a page on GitHub where you ask the team to bring your branch into `main`, and where they review it first. (The lesson [Forks, GitHub Flow and pull requests](lesson:github-flow-prs) teaches pull requests in full.) When the review is done, somebody presses a button, and GitHub does the merge on its own servers. The question of this lesson is which button.
 
 Two names first, because GitHub uses them everywhere:
 
@@ -404,7 +404,7 @@ A new repository allows all three methods and does not delete head branches. A t
 
 You do not need to change these for the challenges. The app sets your practice repository to "all three allowed, no automatic deletion" every time a challenge starts.
 
-There is a second, stricter tool. A rule on a branch can **require linear history**: GitHub then refuses any merge commit on that branch, so pull requests into it can only be squashed or rebase-merged. The lesson "Branch protection, rulesets and CODEOWNERS" teaches such rules.
+There is a second, stricter tool. A rule on a branch can **require linear history**: GitHub then refuses any merge commit on that branch, so pull requests into it can only be squashed or rebase-merged. The lesson [Branch protection, rulesets and CODEOWNERS](lesson:branch-protection-codeowners) teaches such rules.
 
 ### When it goes wrong
 

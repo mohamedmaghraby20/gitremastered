@@ -6,7 +6,7 @@ bookSection: "10.3 Git References"
 bookUrl: https://git-scm.com/book/en/v2/Git-Internals-Git-References
 bookSources:
   - book/progit2/book/10-git-internals/sections/refs.asc
-readFirst: [first-look-inside]
+readFirst: [objects-deep]
 ---
 
 A deploy script has to move a branch without switching to it. A project you worked on for a year suddenly says "No commits yet". A release tag has an ID that is not the ID of the commit it marks. All three are about the same small thing: the names Git keeps for commits. This lesson shows where every name lives on disk, and how to read and write one safely.

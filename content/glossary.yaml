@@ -617,3 +617,299 @@ terms:
     term: cruft pack
     meaning: "A separate packfile where `git gc` keeps objects that nothing leads to any more, until they are old enough to delete."
     lessons: [packfiles-gc]
+  - id: non-fast-forward
+    term: non-fast-forward
+    meaning: "A move of a branch that leaves out commits the branch had before, for example after an amend or a rebase. A normal push refuses it; only a force push makes the server do it."
+    lessons: [force-push-safely]
+  - id: force-with-lease
+    term: lease (force-with-lease)
+    meaning: "A condition on a force push: `git push --force-with-lease` overwrites the server's branch only if it is still where you last saw it. If someone pushed in the meantime, Git refuses."
+    lessons: [force-push-safely]
+  - id: ssh
+    term: SSH
+    meaning: "Secure Shell: a secure way to connect to a server and sign in with a key pair in place of a password. Git can fetch and push over it, with addresses like `git@github.com:user/repo.git`."
+    lessons: [github-account-ssh]
+  - id: public-key
+    term: public key
+    meaning: "The half of a key pair you hand out, kept in a file ending in `.pub`. A server such as GitHub uses it to check that you hold the matching private key."
+    lessons: [github-account-ssh]
+  - id: private-key
+    term: private key
+    meaning: "The secret half of a key pair. It stays on your computer and is never sent, pasted or committed; whoever holds it can sign in as you."
+    lessons: [github-account-ssh]
+  - id: passphrase
+    term: passphrase
+    meaning: "A password that locks a private key file, so a copied file is useless without it."
+    lessons: [github-account-ssh]
+  - id: ssh-agent
+    term: SSH agent
+    meaning: "A small background program that holds your unlocked SSH keys in memory, so you type each passphrase once. `ssh-add` gives it a key."
+    lessons: [github-account-ssh]
+  - id: key-fingerprint
+    term: key fingerprint
+    meaning: "A short checksum of a key, like `SHA256:DBB/zlu...`. Two keys are the same exactly when their fingerprints match. `ssh-keygen -lf <file>` prints it."
+    lessons: [github-account-ssh]
+  - id: credential-helper
+    term: credential helper
+    meaning: "A small program Git asks for your user name and password or token, so you do not type them at every push. The setting `credential.helper` names it."
+    lessons: [github-account-ssh]
+  - id: personal-access-token
+    term: personal access token
+    meaning: "A long password GitHub generates for you, limited in what it may do and when it expires. Git sends it over HTTPS in place of your account password. Also called a PAT, or just a token."
+    lessons: [github-account-ssh]
+  - id: two-factor-authentication
+    term: two-factor authentication
+    meaning: "Signing in with two different proofs: your password, and a second thing only you have, usually a code from an app on your phone. Also called 2FA."
+    lessons: [github-account-ssh]
+  - id: github-cli
+    term: GitHub CLI
+    meaning: "GitHub's own command-line program, `gh`. It signs you in to GitHub and works with pull requests, issues and other things on GitHub from the terminal."
+    lessons: [github-account-ssh]
+  - id: organization
+    term: organization
+    meaning: "A shared account on GitHub that belongs to a group, such as a company or an open source project. Nobody signs in as the organization: people join it with their personal accounts."
+    lessons: [orgs-teams-permissions]
+  - id: organization-owner
+    term: organization owner
+    meaning: "A person with full control of an organization on GitHub: they manage its people, teams and settings, and have admin access to every repository in it."
+    lessons: [orgs-teams-permissions]
+  - id: team
+    term: team
+    meaning: "A named group of members inside an organization on GitHub. A role given to the team on a repository goes to everyone on it, and the whole team can be mentioned at once."
+    lessons: [orgs-teams-permissions]
+  - id: team-mention
+    term: team mention
+    meaning: "Writing `@organization/team-name` in an issue, a pull request or a CODEOWNERS file. In a conversation it notifies every member of that team."
+    lessons: [orgs-teams-permissions]
+  - id: repository-role
+    term: repository role
+    meaning: "A named set of permissions for one repository on GitHub: Read, Triage, Write, Maintain or Admin. Each role includes everything the lower ones can do. Also called an access level."
+    lessons: [orgs-teams-permissions]
+  - id: base-permissions
+    term: base permissions
+    meaning: "The level of access every member of an organization has on all of its repositories, set by an owner. A higher role from a team or given directly wins over it."
+    lessons: [orgs-teams-permissions]
+  - id: outside-collaborator
+    term: outside collaborator
+    meaning: "A person who has access to one or more repositories of an organization without being a member of it, such as a consultant. They cannot be on a team."
+    lessons: [orgs-teams-permissions]
+  - id: audit-log
+    term: audit log
+    meaning: "An organization's record of who did what and when, such as adding a person or deleting a repository. Only owners can read it."
+    lessons: [orgs-teams-permissions]
+  - id: single-sign-on
+    term: single sign-on
+    meaning: "Signing in through your company's own sign-in page before GitHub shows you the organization's work. Often shortened to SSO."
+    lessons: [orgs-teams-permissions]
+  - id: issue
+    term: issue
+    meaning: "One numbered entry in a repository's to-do list on GitHub: a bug, an idea, a question or a task, with a conversation below it. Issues live on GitHub, not in Git."
+    lessons: [issues-projects-security]
+  - id: label
+    term: label
+    meaning: "A coloured word on an issue or pull request that says what kind it is, like `bug` or `documentation`. Used to sort and filter the list."
+    lessons: [issues-projects-security]
+  - id: milestone
+    term: milestone
+    meaning: "A named goal on GitHub, such as a release, that groups issues and pull requests. Its page shows a due date and how much is done."
+    lessons: [issues-projects-security]
+  - id: closing-keyword
+    term: closing keyword
+    meaning: "A word like `Fixes`, `Closes` or `Resolves` written before an issue number in a commit message or a pull request description. GitHub closes that issue when the change reaches the default branch."
+    lessons: [issues-projects-security]
+  - id: issue-template
+    term: issue template
+    meaning: "A file in `.github/ISSUE_TEMPLATE` that fills in the text of a new issue in advance, so reporters answer the questions the team needs. An issue form is a template with real form fields."
+    lessons: [issues-projects-security]
+  - id: github-project
+    term: project (GitHub Projects)
+    meaning: "A planning page on GitHub that collects issues and pull requests and shows them as a table, a board of columns or a roadmap. It belongs to a person or an organization, not to one repository."
+    lessons: [issues-projects-security]
+  - id: dependency
+    term: dependency
+    meaning: "A package someone else wrote that your project needs in order to run, listed in a file such as `package.json` or `requirements.txt`."
+    lessons: [issues-projects-security]
+  - id: vulnerability
+    term: vulnerability
+    meaning: "A mistake in code that lets an attacker do something they should not, such as read private data. Also called a security hole."
+    lessons: [issues-projects-security]
+  - id: dependabot
+    term: Dependabot
+    meaning: "GitHub's robot for dependencies. It warns about versions with a known vulnerability (alerts) and opens pull requests that move packages to newer versions (updates)."
+    lessons: [issues-projects-security]
+  - id: secret-scanning
+    term: secret scanning
+    meaning: "GitHub reading a repository's whole history for strings shaped like known secrets, such as access tokens, and raising an alert for each one it finds."
+    lessons: [issues-projects-security]
+  - id: push-protection
+    term: push protection
+    meaning: "A GitHub check that runs while a push arrives and refuses the push if a commit holds a secret it knows. The secret never reaches the repository."
+    lessons: [issues-projects-security]
+  - id: security-policy
+    term: security policy
+    meaning: "A file named `SECURITY.md` that tells people how to report a vulnerability in private, and which versions still get fixes."
+    lessons: [issues-projects-security]
+  - id: security-advisory
+    term: security advisory
+    meaning: "A page on a GitHub repository where maintainers discuss and fix a vulnerability in private, then publish the details once a fixed version is out."
+    lessons: [issues-projects-security]
+  - id: branch-protection
+    term: branch protection
+    meaning: "Rules a hosting service such as GitHub enforces on a branch, like no force pushes, no deletion, or changes only through a pull request. On GitHub the older form is a branch protection rule; the newer one is a ruleset."
+    lessons: [branch-protection-codeowners]
+  - id: ruleset
+    term: ruleset
+    meaning: "A named list of rules on GitHub, together with the branches or tags they apply to and the people who may bypass them. Several rulesets can apply to one branch, and their rules add up."
+    lessons: [branch-protection-codeowners]
+  - id: bypass-list
+    term: bypass list
+    meaning: "The roles, teams or apps a ruleset allows to break its rules. Everyone else, admins included, is bound by them."
+    lessons: [branch-protection-codeowners]
+  - id: code-owner
+    term: code owner
+    meaning: "A person or team that the CODEOWNERS file of a repository names as responsible for some files. GitHub asks them to review every pull request that changes those files."
+    lessons: [branch-protection-codeowners]
+  - id: status-check
+    term: status check
+    meaning: "A pass or fail verdict that an automated tool, such as a test run, attaches to a commit. A branch rule can require it to pass before a pull request is merged."
+    lessons: [branch-protection-codeowners]
+  - id: collaborator
+    term: collaborator
+    meaning: "A person the owner invited to a repository on GitHub. A collaborator can push commits to it directly; everyone else contributes through pull requests."
+    lessons: [maintaining-github-repo]
+  - id: pull-request-ref
+    term: pull request ref
+    meaning: "A name GitHub keeps on the server for every pull request, like `refs/pull/4/head`, that points at its newest commit. Fetching it brings the pull request to your computer, even when its branch lives in a fork."
+    lessons: [maintaining-github-repo]
+  - id: community-health-file
+    term: community health file
+    meaning: "A file GitHub finds by name and shows in the right place, such as `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md` or `SECURITY.md`. It may sit in the top folder, in `docs` or in `.github`."
+    lessons: [maintaining-github-repo]
+  - id: pull-request-template
+    term: pull request template
+    meaning: "A file, usually `.github/pull_request_template.md`, whose text GitHub puts into the description of every new pull request, so contributors answer the same questions each time."
+    lessons: [maintaining-github-repo]
+  - id: default-branch
+    term: default branch
+    meaning: "The branch GitHub shows first, that a new clone starts on, and that new pull requests target. Usually `main`; the owner can change it in the repository settings."
+    lessons: [maintaining-github-repo]
+  - id: upstream-remote
+    term: upstream (remote)
+    meaning: "The usual name for the remote that points at the original project you forked, next to `origin` for your own fork. You fetch from `upstream` and push to `origin`. Not the same thing as the upstream branch of a branch."
+    lessons: [team-contributing]
+  - id: contributor
+    term: contributor
+    meaning: "Someone who sends work to a project: commits on a branch that a maintainer or integrator then merges, or turns down."
+    lessons: [team-contributing]
+  - id: integrator
+    term: integrator
+    meaning: "On a managed team, one of the few engineers allowed to update `main`. They merge the feature branches the other developers push. Also called an integration manager."
+    lessons: [team-contributing]
+  - id: pull-request
+    term: pull request
+    meaning: "A page on GitHub that asks to merge one branch (the head) into another (the base), with room to discuss and review the change first. Often shortened to PR; other sites call it a merge request."
+    lessons: [github-flow-prs]
+  - id: github-flow
+    term: GitHub Flow
+    meaning: "A simple team routine built on pull requests: branch from `main`, commit, push, open a pull request, review, merge, delete the branch."
+    lessons: [github-flow-prs]
+  - id: fork
+    term: fork
+    meaning: "Your own copy, on GitHub and under your account, of a repository that belongs to someone else. You can push to it, and open pull requests from it to the original."
+    lessons: [github-flow-prs]
+  - id: draft-pull-request
+    term: draft pull request
+    meaning: "A pull request marked as work in progress. People can read and comment on it, but GitHub does not let anyone merge it until it is marked ready for review."
+    lessons: [github-flow-prs]
+  - id: code-review
+    term: review
+    meaning: "A second person reading a change before it is merged, to catch mistakes and share knowledge. On GitHub a review of a pull request ends with one of three outcomes: comment, approve or request changes. Also called code review."
+    lessons: [code-review]
+  - id: line-comment
+    term: line comment
+    meaning: "A comment on a pull request that is attached to one line, or a few lines, of the diff, so the author sees exactly which code it is about. Also called a review comment."
+    lessons: [code-review]
+  - id: suggested-change
+    term: suggested change
+    meaning: "A line comment on GitHub that holds the reviewer's own version of the line. The author can put it into the pull request as a commit with one click."
+    lessons: [code-review]
+  - id: approval
+    term: approval
+    meaning: "A review that says the pull request can be merged. A repository can require one or more approvals before merging, and nobody can approve their own pull request."
+    lessons: [code-review]
+  - id: release
+    term: release
+    meaning: "On GitHub, a page built on a tag: the tag marks the commit, and the page adds a title, release notes and files to download. Also called a GitHub release."
+    lessons: [tags-and-releases]
+  - id: base-branch
+    term: base branch
+    meaning: "In a pull request, the branch that receives the work, usually `main`."
+    lessons: [pr-merge-strategies]
+  - id: head-branch
+    term: head branch
+    meaning: "In a pull request, the branch the work comes from: your topic branch. GitHub can delete it automatically once the pull request is merged."
+    lessons: [pr-merge-strategies]
+  - id: merge-method
+    term: merge method
+    meaning: "The way GitHub brings a pull request into its base branch: a merge commit, a squash, or a rebase. The repository's settings decide which ones are offered. Also called a merge strategy for pull requests."
+    lessons: [pr-merge-strategies]
+  - id: squash-merge
+    term: squash merge
+    meaning: "Merging a pull request as one new commit that holds all of its changes. The pull request's own commits do not become part of the base branch. On GitHub the button is Squash and merge."
+    lessons: [pr-merge-strategies]
+  - id: rebase-merge
+    term: rebase merge
+    meaning: "Merging a pull request by copying each of its commits onto the base branch, with new commit IDs and no merge commit. On GitHub the button is Rebase and merge."
+    lessons: [pr-merge-strategies]
+  - id: continuous-integration
+    term: continuous integration
+    meaning: "Having a server build the project and run its tests by itself on every push, and report the result. Also called CI."
+    lessons: [github-actions-ci]
+  - id: github-actions
+    term: GitHub Actions
+    meaning: "GitHub's built-in tool that runs commands on GitHub's computers when something happens in a repository, such as a push or a pull request. Mostly used for continuous integration."
+    lessons: [github-actions-ci]
+  - id: actions-workflow
+    term: workflow file
+    meaning: "A YAML file in `.github/workflows` that tells GitHub Actions which event starts it and which commands to run. Also called a workflow, not to be confused with a team's workflow."
+    lessons: [github-actions-ci]
+  - id: runner
+    term: runner
+    meaning: "The computer that does one job of a GitHub Actions workflow. GitHub starts a fresh one for each job and deletes it afterwards."
+    lessons: [github-actions-ci]
+  - id: workflow-run
+    term: workflow run
+    meaning: "One execution of a GitHub Actions workflow for one commit, with a result of success or failure. Also called a run."
+    lessons: [github-actions-ci]
+  - id: api
+    term: API
+    meaning: "A way for a program, not a person, to use a service: a fixed list of requests it may send and the data it gets back. Short for application programming interface. GitHub's API can do nearly everything its website can."
+    lessons: [gh-cli-and-api]
+  - id: endpoint
+    term: endpoint
+    meaning: "One address of an API, for one kind of thing, like `repos/OWNER/REPO/issues` for a repository's issues."
+    lessons: [gh-cli-and-api]
+  - id: json
+    term: JSON
+    meaning: "A plain-text format for data that almost every program can read. Curly braces hold names with values, square brackets hold lists. GitHub's API answers in JSON."
+    lessons: [gh-cli-and-api]
+  - id: rest-api
+    term: REST API
+    meaning: "GitHub's main API: each thing has its own address, and the kind of request says what to do with it (GET reads, POST creates, PATCH changes, DELETE removes)."
+    lessons: [gh-cli-and-api]
+  - id: graphql
+    term: GraphQL
+    meaning: "GitHub's second API. You send one query that names exactly the fields you want, and the answer holds those fields and nothing more."
+    lessons: [gh-cli-and-api]
+  - id: webhook
+    term: webhook
+    meaning: "A message GitHub sends to a web address of yours at the moment something happens in a repository, such as a push. Your own program receives it and reacts. Also called a hook on GitHub, not to be confused with Git's hooks."
+    lessons: [gh-cli-and-api]
+  - id: rate-limit
+    term: rate limit
+    meaning: "The number of requests GitHub's API accepts from you per hour: 60 without signing in, 5,000 signed in. Past it, requests fail until the hour is over."
+    lessons: [gh-cli-and-api]
+  - id: pagination
+    term: pagination
+    meaning: "An API sending a long list in pages, 30 items at a time on GitHub. A script must ask for every page, or it sees only the first."
+    lessons: [gh-cli-and-api]

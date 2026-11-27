@@ -8,7 +8,7 @@ bookSources:
   - book/progit2/book/06-github/sections/2-contributing.asc
   - book/progit2/book/06-github/sections/3-maintaining.asc
   - book/progit2/book/05-distributed-git/sections/contributing.asc
-readFirst: [remotes, remote-branches, rebasing, integrating-work]
+readFirst: [github-flow-prs, code-review, team-contributing, maintaining-github-repo, branch-protection-codeowners]
 checkpoint: true
 ---
 
@@ -57,7 +57,7 @@ Everything else is what you would type for a real project: the two remotes, the 
 
 ### Step 1: two remotes
 
-From [Work with remotes: fetch, pull, push](lesson:remotes) and the lesson "Contributing in real teams: small team, managed team, public fork".
+From [Work with remotes: fetch, pull, push](lesson:remotes) and the lesson [Contributing in real teams: small team, managed team, public fork](lesson:team-contributing).
 
 | Command | Job |
 |---|---|
@@ -116,7 +116,7 @@ head: add-forest-path
 
 ### Step 4: open the pull request
 
-From the lessons "Forks, GitHub Flow and pull requests" and "The gh CLI, the API and webhooks". `gh` is GitHub's own command-line program; it does from the terminal what the buttons on the website do.
+From the lessons [Forks, GitHub Flow and pull requests](lesson:github-flow-prs) and [The gh CLI, the API and webhooks](lesson:gh-cli-and-api). `gh` is GitHub's own command-line program; it does from the terminal what the buttons on the website do.
 
 | Command | Job |
 |---|---|
@@ -133,7 +133,7 @@ A good pull request is small, does one thing, and says why. Writing `Fixes #12` 
 
 ### Step 5: answer the review
 
-From the lesson "Reviewing a pull request", [Rebasing, and when not to](lesson:rebasing) and the lesson "Force-pushing safely with --force-with-lease".
+From the lesson [Reviewing a pull request](lesson:code-review), [Rebasing, and when not to](lesson:rebasing) and the lesson [Force-pushing safely with --force-with-lease](lesson:force-push-safely).
 
 A pull request follows its branch. You never open a second one to answer a review: you push more commits to the same branch, and the page updates.
 
@@ -170,7 +170,7 @@ On a real project you do not run `gh pr merge`: the maintainer does. You are tol
 
 ### The maintainer's side
 
-From the lessons "Run a repository: collaborators, managing pull requests, README, CONTRIBUTING" and "Reviewing a pull request", and [Bring in others' work](lesson:integrating-work).
+From the lessons [Run a repository: collaborators, managing pull requests, README, CONTRIBUTING](lesson:maintaining-github-repo) and "Reviewing a pull request", and [Bring in others' work](lesson:integrating-work).
 
 | Command | Job |
 |---|---|
@@ -189,7 +189,7 @@ A review is one of three verdicts: comment, approve, request changes. A plain co
 
 ### The project's own rules
 
-From the lessons "Run a repository" and "Branch protection, rulesets and CODEOWNERS".
+From the lessons "Run a repository" and [Branch protection, rulesets and CODEOWNERS](lesson:branch-protection-codeowners).
 
 | File | Job |
 |---|---|
@@ -263,7 +263,7 @@ Three challenges cannot hold a whole open-source career. This is what a real pro
 
 ### Checks, rules and permissions
 
-Larger projects run tests on every pull request and refuse a merge until they pass; the lesson "CI with GitHub Actions" covers that. They protect `main` with rules, as in "Branch protection, rulesets and CODEOWNERS", and they hand out rights through teams, as in "Organizations, teams and permissions". Organizations and teams need more than a free personal account, which is why this capstone leaves them out.
+Larger projects run tests on every pull request and refuse a merge until they pass; the lesson [CI with GitHub Actions](lesson:github-actions-ci) covers that. They protect `main` with rules, as in "Branch protection, rulesets and CODEOWNERS", and they hand out rights through teams, as in [Organizations, teams and permissions](lesson:orgs-teams-permissions). Organizations and teams need more than a free personal account, which is why this capstone leaves them out.
 
 ### Releases
 

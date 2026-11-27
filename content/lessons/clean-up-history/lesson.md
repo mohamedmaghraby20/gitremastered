@@ -6,7 +6,7 @@ bookSection: "7.6 Rewriting History"
 bookUrl: https://git-scm.com/book/en/v2/Git-Tools-Rewriting-History
 bookSources:
   - book/progit2/book/07-git-tools/sections/rewriting-history.asc
-readFirst: [fix-last-commit]
+readFirst: [rebasing, revision-selection]
 ---
 
 Your feature works, but its history reads "WIP", "more WIP", "fix typo". Before anyone else sees those commits, you can turn them into a few clean ones: fix a message, join commits, change their order, or cut one in two. This lesson teaches the tool for that, `git rebase -i`.

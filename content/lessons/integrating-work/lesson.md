@@ -6,7 +6,7 @@ bookSection: "5.3 Maintaining a Project"
 bookUrl: https://git-scm.com/book/en/v2/Distributed-Git-Maintaining-a-Project
 bookSources:
   - book/progit2/book/05-distributed-git/sections/maintaining.asc
-readFirst: [branch-and-merge]
+readFirst: [team-contributing]
 ---
 
 A teammate hands you a branch with three commits and says "please merge this". One of them is a fix the project needs today; the other two are a feature that is not ready. This lesson shows how to see exactly what a branch would bring into `main` before you accept it, and how to take all of it, or only the one commit you want, with `git cherry-pick`.

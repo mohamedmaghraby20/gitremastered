@@ -6,7 +6,7 @@ bookSection: "6.4 Managing an organization"
 bookUrl: https://git-scm.com/book/en/v2/GitHub-Managing-an-organization
 bookSources:
   - book/progit2/book/06-github/sections/4-managing-organization.asc
-readFirst: []
+readFirst: [maintaining-github-repo]
 ---
 
 It is your first day at a company. You can clone the code, but your first push is refused, and nobody told you why. This lesson shows how GitHub decides what each person may do in a shared project, and how to read your own access in ten seconds.

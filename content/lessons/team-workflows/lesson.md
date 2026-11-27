@@ -277,7 +277,7 @@ head: add-labels
 
 Two things make this safe. The team needs automated tests that run on every change, so a broken commit is caught in minutes. And a feature that takes two weeks still lands in daily pieces, hidden behind a **feature flag**: a setting in the code that keeps the new feature switched off for users until it is complete.
 
-**GitHub Flow.** `main` is always ready to release. Every change is a topic branch from `main`. You push the branch and open a **pull request**: a page on GitHub where you ask the team to merge your branch, and where they review it first. After approval the branch is merged into `main` and deleted. The lesson "Forks, GitHub Flow and pull requests" teaches it in full.
+**GitHub Flow.** `main` is always ready to release. Every change is a topic branch from `main`. You push the branch and open a **pull request**: a page on GitHub where you ask the team to merge your branch, and where they review it first. After approval the branch is merged into `main` and deleted. The lesson [Forks, GitHub Flow and pull requests](lesson:github-flow-prs) teaches it in full.
 
 :::graph
 caption: "GitHub Flow: a topic branch from main, reviewed, then merged back into main"
@@ -444,7 +444,7 @@ $ cat .git/refs/heads/develop
 ee20ddd65973ac7bb5c00880d28d9595036ba7cb
 ```
 
-Nothing marks `main` as stable or `add-search` as temporary. "Long-running" and "topic" describe how people treat a [ref](term:ref). So Git will not stop you from committing straight to `main` or from deleting `develop`. Teams enforce their rules on the server, with settings the lesson "Branch protection, rulesets and CODEOWNERS" covers.
+Nothing marks `main` as stable or `add-search` as temporary. "Long-running" and "topic" describe how people treat a [ref](term:ref). So Git will not stop you from committing straight to `main` or from deleting `develop`. Teams enforce their rules on the server, with settings the lesson [Branch protection, rulesets and CODEOWNERS](lesson:branch-protection-codeowners) covers.
 
 Pro Git ends its section with a related point: all of this branching and merging happens in your own repository. No server is involved until you push.
 

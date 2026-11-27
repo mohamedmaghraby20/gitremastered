@@ -6,14 +6,14 @@ bookSection: "GitHub Docs: About pull request reviews"
 bookUrl: https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/reviewing-changes-in-pull-requests/about-pull-request-reviews
 bookSources:
   - book/progit2/book/06-github/sections/2-contributing.asc
-readFirst: []
+readFirst: [github-flow-prs]
 ---
 
 A teammate writes "can you review my pull request?", and you are looking at a page of red and green lines with no idea what you are supposed to say. A week later it is your change, and someone left five comments on it. This lesson teaches both seats: how to read, run and judge someone's change, and how to answer a review of your own.
 
 ## Must know
 
-A [pull request](term:pull-request) is a page on GitHub that asks for one branch to be merged into another, with room for people to discuss the change first. The lesson "Forks, GitHub Flow and pull requests" showed how to open one and how to merge it. This lesson is about the time in between, when a second person reads the change. That reading is called a [review](term:code-review), or code review.
+A [pull request](term:pull-request) is a page on GitHub that asks for one branch to be merged into another, with room for people to discuss the change first. The lesson [Forks, GitHub Flow and pull requests](lesson:github-flow-prs) showed how to open one and how to merge it. This lesson is about the time in between, when a second person reads the change. That reading is called a [review](term:code-review), or code review.
 
 ### What a review is for
 
@@ -81,7 +81,7 @@ View this pull request on GitHub: https://github.com/your-name/gitremastered-pra
 
 - `wants to merge 1 commit into main from add-allergens`: the direction. `add-allergens` is the branch with the new work, and `main` receives it.
 - `+3 -0`: three lines added, none removed. A small number here means a quick review.
-- `No checks`: no automated test ran on this pull request. The lesson "CI with GitHub Actions" adds such tests.
+- `No checks`: no automated test ran on this pull request. The lesson [CI with GitHub Actions](lesson:github-actions-ci) adds such tests.
 - `Newest comment`: Tariq's remark. The app wrote it from your account, which is why it carries your name.
 
 `gh pr diff` prints the change itself, as a [diff](term:diff):
@@ -373,7 +373,7 @@ In the practice repository you merge without an approval, because nobody else ca
 
 So far the review was a habit: nothing stopped an impatient author from pressing the merge button. A repository's administrators can turn the habit into a rule. With [branch protection](term:branch-protection), GitHub refuses to merge a pull request into `main` until it has a set number of approvals, and while a review that requested changes is still standing.
 
-On such a repository, the merge box of an unapproved pull request says that a review is required, and the merge button stays blocked until a teammate approves. The lesson "Branch protection, rulesets and CODEOWNERS" sets this up.
+On such a repository, the merge box of an unapproved pull request says that a review is required, and the merge button stays blocked until a teammate approves. The lesson [Branch protection, rulesets and CODEOWNERS](lesson:branch-protection-codeowners) sets this up.
 
 ### When it goes wrong
 

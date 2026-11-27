@@ -6,7 +6,7 @@ bookSection: "10.7 Maintenance and Data Recovery"
 bookUrl: https://git-scm.com/book/en/v2/Git-Internals-Maintenance-and-Data-Recovery
 bookSources:
   - book/progit2/book/10-git-internals/sections/maintenance.asc
-readFirst: [reset-demystified]
+readFirst: [revision-selection]
 ---
 
 You ran `git reset --hard` one commit too far, or deleted a branch that still had a week of work on it, and now `git log` shows nothing of it. Git almost never deletes a commit on the spot, and this lesson gives you a calm method to find the work and bring it back.

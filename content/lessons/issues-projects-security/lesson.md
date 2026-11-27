@@ -6,7 +6,7 @@ bookSection: "GitHub Docs: Issues and code security"
 bookUrl: https://docs.github.com/en/issues/tracking-your-work-with-issues/about-issues
 bookSources:
   - book/progit2/book/06-github/sections/2-contributing.asc
-readFirst: []
+readFirst: [maintaining-github-repo]
 ---
 
 A customer reports a bug in a chat message, and two weeks later nobody remembers it. A teammate pastes a password into a file and pushes it to a public repository. This lesson shows the GitHub tools that stop both: issues and projects to keep track of the work, and Dependabot, secret scanning and a security policy to keep the code safe.

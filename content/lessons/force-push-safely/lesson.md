@@ -296,7 +296,7 @@ The lease protects commits you have not seen. It does not protect the people who
 
 A pull request is a request on GitHub to merge your branch into `main`; the GitHub lessons teach it. Its branch is the usual place for a force push. Mind one cost: reviewers who already read your commits now see new ones, so tell them what changed.
 
-Teams do not rely on everyone remembering the last row. On GitHub, a repository owner can mark `main` as a protected branch: a setting on the server that refuses every force push to that branch, with or without a lease, from anyone. The lesson "Branch protection, rulesets and CODEOWNERS" shows how to turn it on.
+Teams do not rely on everyone remembering the last row. On GitHub, a repository owner can mark `main` as a protected branch: a setting on the server that refuses every force push to that branch, with or without a lease, from anyone. The lesson [Branch protection, rulesets and CODEOWNERS](lesson:branch-protection-codeowners) shows how to turn it on.
 
 ### When it goes wrong
 

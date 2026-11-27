@@ -6,7 +6,7 @@ bookSection: "6.3 GitHub - Maintaining a Project"
 bookUrl: https://git-scm.com/book/en/v2/GitHub-Maintaining-a-Project
 bookSources:
   - book/progit2/book/06-github/sections/3-maintaining.asc
-readFirst: []
+readFirst: [github-flow-prs]
 ---
 
 Your project is public, and this morning a stranger sent a change to it. Is it good? Will it break anything? What do you tell them if the answer is no? This lesson puts you on the owner's side of GitHub: you set the repository up, try other people's changes on your own computer before you accept them, and merge or turn them down politely.

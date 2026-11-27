@@ -76,6 +76,9 @@ chapters:
       - number: "4.1"
         title: The Protocols
         lessons: [how-git-talks]
+      - number: "4.3"
+        title: Generating Your SSH Public Key
+        lessons: [github-account-ssh]
   - number: 5
     title: Distributed Git
     sections:
@@ -84,10 +87,28 @@ chapters:
         lessons: [team-workflows]
       - number: "5.2"
         title: Contributing to a Project
-        lessons: [commit-craft]
+        lessons: [commit-craft, team-contributing]
       - number: "5.3"
         title: Maintaining a Project
         lessons: [integrating-work]
+  - number: 6
+    title: GitHub
+    sections:
+      - number: "6.1"
+        title: Account Setup and Configuration
+        lessons: [github-account-ssh]
+      - number: "6.2"
+        title: Contributing to a Project
+        lessons: [github-flow-prs, code-review]
+      - number: "6.3"
+        title: Maintaining a Project
+        lessons: [maintaining-github-repo, branch-protection-codeowners, issues-projects-security]
+      - number: "6.4"
+        title: Managing an organization
+        lessons: [orgs-teams-permissions]
+      - number: "6.5"
+        title: Scripting GitHub
+        lessons: [gh-cli-and-api, github-actions-ci]
   - number: 7
     title: Git Tools
     sections:
@@ -130,6 +151,9 @@ chapters:
       - number: "7.13"
         title: Replace
         lessons: [plumbing-toolkit]
+      - number: "7.14"
+        title: Credential Storage
+        lessons: [github-account-ssh]
   - number: 8
     title: Customizing Git
     sections:
