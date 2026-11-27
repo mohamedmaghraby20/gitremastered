@@ -14,6 +14,7 @@ SPEC §10 items 4 and 10, measured in the real desktop app with the pilot lesson
 | 2026-11-25 | Snapshot's four Git reads run in parallel | 234 ms | 238 ms | **Under target** |
 | 2026-11-26 | Phase 5, first try: snapshot version 2 with six Git reads (config and stash added) | 281 ms | 314 ms | Slowest over target |
 | 2026-11-26 | Stash read only when a stash exists; settings remembered until `.git/config` changes (four reads again) | 251–266 ms (three runs) | 280–286 ms | **Under target** |
+| 2026-11-27 | Phase 6: snapshot version 3 (changed files and signatures from the same log call, file texts read from disk, one `git cat-file` only for files with a pending change) | 236–237 ms (two runs) | 251–269 ms | **Under target** |
 
 Where the time went before the fix:
 
@@ -37,7 +38,21 @@ The history map no longer loads a layout library (ELK); `lane-layout.ts` places 
 | 2026-11-25 (before the speed fix) | 10 | 455 MB | 235 MB |
 | 2026-11-25 (after) | 10 | 457 MB | 233 MB |
 | 2026-11-26 (phase 5: 27 lessons, new map and board) | 10 | 476–487 MB | 250–261 MB (three runs) |
+| 2026-11-27 (phase 6: 73 lessons, GitHub screens) | 10 | 502–505 MB | 274–279 MB (three runs) |
 
 The process tree: the app (26 MB), six WebView2 processes (browser, renderer, GPU and helpers: 10–116 MB each), Git Bash (2 × bash.exe) and OpenConsole (the Windows pseudo-console).
 
 **Which number counts:** "private memory" is what the app alone holds, and it is close to what Task Manager shows. The working set adds pages shared with other programs (WebView2's libraries are shared with Edge), so it counts some memory twice. By private memory the pilot is **under the ~250 MB target, with little room**: the WebView2 processes are ~80% of it, and the app's own code is small. Watch this as lessons and screens grow; first candidates are the history map (Svelte Flow) and keeping only one terminal alive.
+
+## Phase 6: where the memory goes (2026-11-27)
+
+Private memory went over the ~250 MB mark (274–279 MB). Measured in the review app before changing anything:
+
+| Part | Size |
+|---|---|
+| JavaScript heap, home screen | 20 MB |
+| JavaScript heap, pilot open | 31 MB used (41 MB reserved) |
+| Course text bundled in the app | about 2.6 MB, inside one 2.9 MB chunk |
+| The two largest WebView2 processes (renderer, GPU) | 110–145 MB each |
+
+Everything the course holds lives in the ~31 MB heap, so loading each lesson's text only when it opens would save under 10 MB. Most of the memory is WebView2, which every Tauri app on Windows pays. Options for later: load lesson text on demand (small gain), keep one terminal alive, look at the history map's memory, or accept a higher target for a 62-lesson course.
