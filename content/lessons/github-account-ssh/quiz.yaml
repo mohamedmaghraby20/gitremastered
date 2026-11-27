@@ -1,0 +1,40 @@
+questions:
+  - question: "You run git push to a remote whose address starts with https://github.com/. Git asks for a password, you type your GitHub account password correctly, and the push fails with \"Authentication failed\". Why?"
+    answers:
+      - text: "GitHub does not accept account passwords from Git; over HTTPS it wants a token"
+        correct: true
+        explanation: "Sign in with gh auth login and run gh auth setup-git, or paste a personal access token where Git asks for the password."
+      - text: "Two-factor authentication blocks every push until you turn it off"
+        explanation: "2FA protects the sign-in on the website. Pushing works with 2FA on, through a token or an SSH key."
+      - text: "The remote must use an SSH address before you can push"
+        explanation: "HTTPS pushes work fine. Only the kind of secret was wrong: a password where a token is needed."
+
+  - question: "A teammate asks for your SSH key so they can give you access to a server. You have id_ed25519 and id_ed25519.pub. What do you send?"
+    answers:
+      - text: "id_ed25519, because it is the real key and the .pub file is only a copy"
+        explanation: "That is the private key. It never leaves your computer; whoever holds it can sign in as you."
+      - text: "id_ed25519.pub, the public key"
+        correct: true
+        explanation: "The public key is made to be handed out. It lets a server check your sign-in and cannot be used to sign in as you."
+      - text: "Both files, so the pair stays together"
+        explanation: "Sending the private key gives your identity away. The server only ever needs the public half."
+
+  - question: "On a shared lab computer you need to push a few times this afternoon. Which credential.helper value fits best?"
+    answers:
+      - text: "store, so you type the token once and never again"
+        explanation: "store writes the token into a plain text file that stays on the lab computer for the next person to read."
+      - text: "cache, which keeps the token in memory for a short time"
+        correct: true
+        explanation: "Nothing is written to disk, and the token is forgotten after 15 minutes unless you set another timeout."
+      - text: "None is needed, because Git remembers the last password by itself"
+        explanation: "With no helper Git remembers nothing and asks at every connection."
+
+  - question: "ssh -T git@github.com answers \"Permission denied (publickey)\". ssh-add -l prints your key's fingerprint. What do you check next?"
+    answers:
+      - text: "Whether that fingerprint is listed under \"SSH and GPG keys\" in your GitHub account"
+        correct: true
+        explanation: "The agent holds the key, so your side is ready. GitHub refuses because no account has the matching public key yet, or a different key was added."
+      - text: "Whether your account password is still correct"
+        explanation: "SSH never uses the account password. GitHub recognises you by your key alone."
+      - text: "Whether credential.helper is set"
+        explanation: "Credential helpers serve HTTPS addresses. An SSH sign-in does not ask them anything."

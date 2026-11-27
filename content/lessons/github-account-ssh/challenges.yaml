@@ -1,0 +1,107 @@
+challenges:
+  - id: pick-the-public-key
+    title: Which file goes to GitHub?
+    level: easy
+    brief: "A teammate left two key pairs in the folder ../keys, next to the project, and asks which file to add to her GitHub account. Find the public key of the Ed25519 pair and write its file name (like name.pub) into answer.txt."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo answer.txt >> .git/info/exclude
+      - echo "# Trail map" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - mkdir ../keys
+      - ssh-keygen -q -t rsa -b 3072 -N "" -C "noor@old-desktop" -f ../keys/alpha
+      - ssh-keygen -q -t ed25519 -N "" -C "noor@laptop" -f ../keys/bravo
+    goal:
+      - check: answer-is
+        answer: bravo.pub
+        label: "answer.txt names the Ed25519 public key file"
+    hints:
+      - "Run ls ../keys. Each pair is two files. Which of the two is safe to hand out?"
+      - "ssh-keygen -lf <file> prints a key's fingerprint, and its type in brackets at the end of the line. Try it on each .pub file."
+      - "Run ssh-keygen -lf ../keys/alpha.pub, then ssh-keygen -lf ../keys/bravo.pub. One line ends in (ED25519). Then run echo bravo.pub > answer.txt"
+    solution:
+      - ssh-keygen -lf ../keys/alpha.pub
+      - ssh-keygen -lf ../keys/bravo.pub
+      - echo bravo.pub > answer.txt
+
+  - id: push-with-gh
+    title: Push a branch with the gh helper
+    level: medium
+    brief: "The practice repository is on your GitHub account, and origin holds its HTTPS address. The branch add-opening-hours exists only on your computer. In this repository's own settings (not --global), make gh the credential helper, then push the branch to origin."
+    github:
+      repo: gitremastered-practice-github-account-ssh
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Corner bakery" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - echo "Bread, rolls, cinnamon buns" > menu.txt
+      - git add menu.txt
+      - git commit -q -m "Add the menu"
+      - git remote add origin "$PRACTICE_GITHUB_URL"
+      - git push -q --force --mirror origin
+      - git switch -q -c add-opening-hours
+      - echo "Open 7 to 15, closed on Mondays" > hours.txt
+      - git add hours.txt
+      - git commit -q -m "Add opening hours"
+    goal:
+      - check: config-is
+        key: credential.helper
+        value: "!gh auth git-credential"
+        label: "This repository's own settings name gh as a credential helper"
+      - check: github-branch-exists
+        branch: add-opening-hours
+        label: "The branch add-opening-hours is on GitHub"
+      - check: remote-branch-exists
+        branch: origin/add-opening-hours
+        label: "Your repository recorded the push as origin/add-opening-hours"
+    hints:
+      - "Run git remote -v. The address starts with https, so Git will ask a credential helper. Which setting names the helper, and which option keeps a setting inside this repository?"
+      - "The helper that asks gh is written !gh auth git-credential, in quotes. An empty value first (git config --local credential.helper \"\") clears the helpers of other levels, so gh is the only one asked."
+      - "Run git config --local credential.helper \"\", then git config --local --add credential.helper \"!gh auth git-credential\", then git push origin add-opening-hours"
+    solution:
+      - git config --local credential.helper ""
+      - git config --local --add credential.helper "!gh auth git-credential"
+      - git push -q origin add-opening-hours
+
+  - id: switch-to-ssh
+    title: Move a repository to SSH with its own key
+    level: hard
+    brief: "This project's server, git.example.com, stops accepting HTTPS sign-ins tomorrow. Change origin to the SSH address of the same repository, in the short form git@host:path. Then make this repository alone use the key ../keys/deploy, so that Git runs exactly: ssh -i ../keys/deploy -o IdentitiesOnly=yes. The server is not real, so do not push; only the settings count."
+    setup:
+      - git init -q -b main
+      - git config core.autocrlf false
+      - git config user.name > /dev/null || git config user.name "Practice Student"
+      - git config user.email > /dev/null || git config user.email "student@example.com"
+      - echo "# Trail map" > README.md
+      - git add README.md
+      - git commit -q -m "Add README"
+      - git remote add origin https://git.example.com/trail-team/trail-map.git
+      - mkdir ../keys
+      - ssh-keygen -q -t ed25519 -N "" -C "deploy@trail-map" -f ../keys/deploy
+    goal:
+      - check: remote-exists
+        remote: origin
+        label: "The remote origin is still set up"
+      - check: config-is
+        key: remote.origin.url
+        value: "git@git.example.com:trail-team/trail-map.git"
+        label: "origin uses the SSH address of the same repository"
+      - check: config-is
+        key: core.sshCommand
+        value: "ssh -i ../keys/deploy -o IdentitiesOnly=yes"
+        label: "This repository runs SSH with the key ../keys/deploy only"
+    hints:
+      - "Run git remote -v to read the address. The Advanced layer has a table that turns an HTTPS address into the SSH form. Which parts stay, and which change?"
+      - "git remote set-url origin <address> replaces the address. The setting that replaces the ssh command Git runs is core.sshCommand (Advanced, \"One key for one repository\"). Its value has spaces, so quote it."
+      - "Run git remote set-url origin git@git.example.com:trail-team/trail-map.git, then git config core.sshCommand \"ssh -i ../keys/deploy -o IdentitiesOnly=yes\""
+    solution:
+      - git remote set-url origin git@git.example.com:trail-team/trail-map.git
+      - git config core.sshCommand "ssh -i ../keys/deploy -o IdentitiesOnly=yes"
